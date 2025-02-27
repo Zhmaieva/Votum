@@ -1,10 +1,14 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-import VotingView from "./components/views/VotingView";
+import React from "react";
+import { NavigationContainer } from '@react-navigation/native';
+import { StyleSheet } from 'react-native';
+
+import AwesomeTabs from "./components/views/navigation/AwesomeTabs";
 
 export default function App() {
   return (
-    <VotingView/>
+      <NavigationContainer>
+        <AwesomeTabs />
+      </NavigationContainer>
   );
 }
 
