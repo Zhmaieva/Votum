@@ -2,94 +2,53 @@ import React, { useState, useEffect } from "react";
 import {View, Text, TouchableOpacity, StyleSheet, Animated, SafeAreaView, ScrollView, Image} from "react-native";
 import { Colors } from '../../utils/colorUtils'
 import { Ionicons, EvilIcons, FontAwesome } from '@expo/vector-icons';
+import {Pressable} from "react-native-gesture-handler";
+import AwesomeVote from "../customComponents/AwesomeVote.jsx"
+import AwesomeUserHeader from "../customComponents/AwesomeUserHeader";
+
+const pollData = [
+    {
+        id: 1,
+        question: "What is your favorite color?",
+        options: ["Red", "Blue", "Green", "Yellow"],
+        results: { Red: 20, Blue: 50, Green: 15, Yellow: 15 },
+        timeLeft: "10m 30s",
+        totalVotes: 1457
+    }
+];
 
 const VotingView = () => {
-    const [selected, setSelected] = useState(null);
-    const [animation] = useState(new Animated.Value(0));
 
-    useEffect(() => {
-        if (selected) {
-            Animated.timing(animation, {
-                toValue: 1,
-                duration: 500,
-                useNativeDriver: false,
-            }).start();
-        }
-    }, [selected]);
+    const [polls, setPolls] = useState(pollData);
 
-    const results = {
-        optionA: 10,
-        optionB: 50,
-        optionC: 15,
-        optionD: 25,
+    const handleVote = (pollId, selectedOption) => {
+        setPolls(polls.map(poll =>
+            poll.id === pollId ? {
+                ...poll,
+                results: { ...poll.results, [selectedOption]: (poll.results[selectedOption] || 0) + 1 },
+                totalVotes: poll.totalVotes + 1
+            } : poll
+        ));
     };
-
-    const data = [
-        { label: 'Telegram', value: 'Telegram' },
-        { label: 'Whatsapp', value: 'Whatsapp' },
-        { label: 'Facebook', value: 'Facebook' },
-        { label: 'Instagram', value: 'Instagram' },
-    ];
 
     return (
         <View style={styles.container}>
             <SafeAreaView style={styles.safeArea}>
                 <ScrollView>
                     <View style={styles.contentWrapper}>
-                        <View style={[styles.row, styles.bottomMargin20]}>
-                            <View style={styles.avatar}>
-                                <Image source={require('../../assets/images/emil.jpg')} style={styles.avatar}/>
-                            </View>
-                            <View style={styles.userSubContainer}>
-                                <Text style={[styles.font14, styles.userNameBold, styles.fontFamily]}>Emil Ovechko</Text>
-                                <Text style={[styles.font14, styles.greyTextStyle, styles.fontFamily]}>Took part in 105 polls</Text>
-                            </View>
-                            <View>
-                                <Text></Text>
-                            </View>
-                        </View>
-                        <View style={[styles.row, styles.bottomMargin10]}>
-                            <Text style={[styles.qTextStyle, styles.fontFamily]}>Q: </Text>
-                            <Text style={[styles.title, styles.fontFamily, styles.greyTextStyle]}>What is your favorite?</Text>
-                        </View>
-                        <View style={styles.votingFrame}>
-                            <View style={[styles.controlSignsContainer, styles.row]}>
-                                <View style={styles.iconContainer}><Ionicons name='warning-outline' size='26' color={Colors.grey}/></View>
-                                <View style={styles.iconContainer}><Ionicons name='share-outline' size='26' color={Colors.grey}/></View>
-                                <View style={styles.iconContainer}><Ionicons name='bookmark-outline' size='26' color={Colors.grey}/></View>
-                                <View style={styles.iconContainer}><Ionicons name='heart-outline' size='26' color={Colors.grey}/></View>
-                            </View>
-                            {!selected ? (
-                                Object.keys(results).map((option) => (
-                                    <TouchableOpacity
-                                        key={option}
-                                        style={styles.button}
-                                        onPress={() => setSelected(option)}
-                                    >
-                                        <Text style={[styles.buttonText, styles.fontFamily]}>{option.replace("option", "Option ")}</Text>
-                                    </TouchableOpacity>
-                                ))
-                            ) : (
-                                Object.keys(results).map((option) => (
-                                    <View key={option} style={styles.buttonContainer}>
-                                        <Animated.View
-                                            style={[styles.resultBar, {
-                                                width: `${results[option]}%`,
-                                                backgroundColor: selected === option ? Colors.green : Colors.grey,
-                                                opacity: animation,
-                                            }]}
-                                        />
-                                        <Text style={styles.resultText}>{results[option]}%</Text>
-                                    </View>
-                                ))
-                            )}
-                            <View style={[styles.countStyle, styles.row]}>
-                                <Text style={[styles.greyTextStyle, styles.fontFamily]}>Ends in 10m 30s</Text>
-                                <Text style={[styles.greyTextStyle, styles.fontFamily]}>1 457 voted</Text>
-                            </View>
-                        </View>
+                        <AwesomeUserHeader />
+                        {polls.map(poll => (
+                            <AwesomeVote
+                                key={poll.id}
+                                question={poll.question}
+                                options={poll.options}
+                                results={poll.results}
+                                timeLeft={poll.timeLeft}
+                                totalVotes={poll.totalVotes}
+                                onVote={(option) => handleVote(poll.id, option)}
+                            />
+                        ))}
                     </View>
-
                 </ScrollView>
             </SafeAreaView>
         </View>
@@ -235,5 +194,20 @@ const styles = StyleSheet.create({
         height: 50,
         borderBottomWidth: 1,
         borderColor: "#777"
+    },
+    followButton: {
+        height: 30,
+        width: 70,
+        backgroundColor: Colors.black,
+        justifyContent: 'center',
+        alignItems: "center"
+    },
+    followButtonText: {
+        color: Colors.white,
+        fontSize: 14
+    },
+    userContainer: {
+        justifyContent: 'space-between',
+        alignItems: 'flex-end',
     }
 });
