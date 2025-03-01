@@ -32,7 +32,7 @@ const AwesomeVote = ({
     };
 
     return (
-        <View>
+        <View style={styles.container}>
             {/* Question */}
             <View style={[styles.row, styles.bottomMargin10]}>
                 <Text style={[styles.qTextStyle, styles.fontFamily]}>Q: </Text>
@@ -40,7 +40,6 @@ const AwesomeVote = ({
                     {question}
                 </Text>
             </View>
-
             {/* Voting Frame */}
             <View style={styles.votingFrame}>
                 {/* Action Icons */}
@@ -51,7 +50,6 @@ const AwesomeVote = ({
                         </View>
                     ))}
                 </View>
-
                 {/* Voting Options */}
                 {!selected ? (
                     options.map((option) => (
@@ -77,7 +75,6 @@ const AwesomeVote = ({
                         </View>
                     ))
                 )}
-
                 {/* Voting Info */}
                 <View style={[styles.countStyle, styles.row]}>
                     <Text style={[styles.greyTextStyle, styles.fontFamily]}>Ends in {timeLeft}</Text>
@@ -91,6 +88,7 @@ const AwesomeVote = ({
 export default AwesomeVote;
 
 const styles = StyleSheet.create({
+    //container: {marginBottom: 200},
     title: { fontSize: 18 },
     votingFrame: {
         borderWidth: 1,

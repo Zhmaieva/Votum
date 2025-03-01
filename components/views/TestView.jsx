@@ -4,18 +4,34 @@ import AwesomeVote from "../customComponents/AwesomeVote";
 import AwesomeUserHeader from "../customComponents/AwesomeUserHeader";
 
 const { height, width } = Dimensions.get('window');
-const POLL_HEIGHT = height * 0.8; // 90% of the screen height
-const NEXT_POLL_OFFSET = height * 0.2; // 10% of the next poll visible
+const POLL_HEIGHT = height * 0.7; // 90% of the screen height
+const NEXT_POLL_OFFSET = height * 0.1; // 10% of the next poll visible
 
 const pollData = [
     {
         id: 1,
         question: "What is your favorite color?",
-        options: ["Red", "Blue", "Green", "Yellow"],
+        options: ["Red", "Blue"],
         results: { Red: 20, Blue: 50, Green: 15, Yellow: 15 },
         timeLeft: "10m 30s",
         totalVotes: 1457
-    }
+    },
+    {
+        id: 2,
+        question: "What is your favorite city?",
+        options: ["NY", "London", "Gdansk", "Kherson"],
+        results: { Red: 20, Blue: 50, Green: 15, Yellow: 15 },
+        timeLeft: "1m 15s",
+        totalVotes: 2
+    },
+    {
+        id: 3,
+        question: "What is your favorite animal?",
+        options: ["Lion", "Dog", "Cat", "Chicken"],
+        results: { Red: 80, Blue: 10, Green: 3, Yellow: 7 },
+        timeLeft: "5h 0s",
+        totalVotes: 209543
+    },
 ];
 
 const TestView = () => {
@@ -49,18 +65,6 @@ const TestView = () => {
 
     return (
         <View style={styles.container}>
-            {/*<AwesomeUserHeader />
-            {polls.map(poll => (
-                <AwesomeVote
-                    key={poll.id}
-                    question={poll.question}
-                    options={poll.options}
-                    results={poll.results}
-                    timeLeft={poll.timeLeft}
-                    totalVotes={poll.totalVotes}
-                    onVote={(option) => handleVote(poll.id, option)}
-                />
-            ))}*/}
             <Animated.FlatList
                 data={polls}
                 keyExtractor={(item) => item.id}
@@ -98,7 +102,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#f5f5f5',
     },
     pollContainer: {
-        width,
         height: POLL_HEIGHT,
         backgroundColor: '#ffffff',
         borderRadius: 0,
@@ -106,10 +109,10 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
         alignItems: 'center',
         padding: 20,
-        shadowColor: '#000',
-        shadowOpacity: 0.1,
-        shadowRadius: 10,
-        elevation: 5,
+        //shadowColor: '#000',
+        //shadowOpacity: 0.1,
+        //shadowRadius: 10,
+        //elevation: 5,
     },
     question: {
         fontSize: 22,
@@ -129,6 +132,10 @@ const styles = StyleSheet.create({
         color: '#ffffff',
         fontSize: 18,
     },
+    emptyStyle: {
+        height: 100,
+        backgroundColor: 'red'
+    }
 });
 
 export default TestView;

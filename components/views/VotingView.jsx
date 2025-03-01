@@ -14,7 +14,15 @@ const pollData = [
         results: { Red: 20, Blue: 50, Green: 15, Yellow: 15 },
         timeLeft: "10m 30s",
         totalVotes: 1457
-    }
+    },
+    {
+        id: 2,
+        question: "What is your favorite city?",
+        options: ["NY", "London", "Gdansk", "Kherson"],
+        results: { Red: 20, Blue: 50, Green: 15, Yellow: 15 },
+        timeLeft: "1m 15s",
+        totalVotes: 2
+    },
 ];
 
 const VotingView = () => {
