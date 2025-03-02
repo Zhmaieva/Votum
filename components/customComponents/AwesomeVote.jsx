@@ -36,7 +36,7 @@ const AwesomeVote = ({
             {/* Question */}
             <View style={[styles.row, styles.bottomMargin10]}>
                 <Text style={[styles.qTextStyle, styles.fontFamily]}>Q: </Text>
-                <Text style={[styles.title, styles.fontFamily, styles.greyTextStyle]}>
+                <Text style={[styles.title, styles.fontFamily, styles.blackTextStyle]}>
                     {question}
                 </Text>
             </View>
@@ -89,7 +89,10 @@ export default AwesomeVote;
 
 const styles = StyleSheet.create({
     //container: {marginBottom: 200},
-    title: { fontSize: 18 },
+    title: {
+        fontWeight: '500',
+        fontSize: 18
+    },
     votingFrame: {
         borderWidth: 1,
         borderColor: Colors.grey,
@@ -125,6 +128,7 @@ const styles = StyleSheet.create({
     },
     countStyle: { justifyContent: 'space-between' },
     greyTextStyle: { color: Colors.grey },
+    blackTextStyle: { color: Colors.grey },
     qTextStyle: { color: Colors.green, fontSize: 18, fontWeight: 'bold' },
     row: { flexDirection: 'row' },
     bottomMargin10: { marginBottom: 10 },

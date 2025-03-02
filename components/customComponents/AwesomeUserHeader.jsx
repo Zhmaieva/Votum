@@ -2,17 +2,17 @@ import React from "react";
 import {View, Text, StyleSheet, Image} from "react-native";
 import { Colors } from '../../utils/colorUtils'
 
-const AwesomeUserHeader = () => {
+const AwesomeUserHeader = ({image, userName, followersNumber}) => {
 
     return (
-        <View style={[styles.row, styles.bottomMargin20, styles.userContainer]}>
+        <View style={[styles.row, styles.bottomMargin18, styles.userContainer]}>
             <View style={styles.row}>
                 <View style={styles.avatar}>
-                    <Image source={require('../../assets/images/emil.jpg')} style={styles.avatar}/>
+                    <Image source={image} style={styles.avatar}/>
                 </View>
                 <View style={styles.userSubContainer}>
-                    <Text style={[styles.font14, styles.userNameBold, styles.fontFamily]}>Emil Ovechko</Text>
-                    <Text style={[styles.font14, styles.greyTextStyle, styles.fontFamily]}>15K followers</Text>
+                    <Text style={[styles.font14, styles.userNameBold, styles.fontFamily]}>{userName}</Text>
+                    <Text style={[styles.font14, styles.greyTextStyle, styles.fontFamily]}>{followersNumber} followers</Text>
                 </View>
             </View>
             <View style={styles.followButton}>
@@ -31,8 +31,8 @@ const styles = StyleSheet.create({
     row: {
         flexDirection: 'row'
     },
-    bottomMargin20: {
-        marginBottom: 20
+    bottomMargin18: {
+        marginBottom: 18
     },
     avatar: {
         height: 46,
@@ -59,8 +59,8 @@ const styles = StyleSheet.create({
         fontFamily: 'arial',
     },
     followButton: {
-        height: 30,
-        width: 70,
+        height: 40,
+        width: 64,
         backgroundColor: Colors.black,
         justifyContent: 'center',
         alignItems: "center"

@@ -5,6 +5,8 @@ import { Ionicons, EvilIcons, FontAwesome } from '@expo/vector-icons';
 import {Pressable} from "react-native-gesture-handler";
 import AwesomeVote from "../customComponents/AwesomeVote.jsx"
 import AwesomeUserHeader from "../customComponents/AwesomeUserHeader";
+import AwesomeCard from "../customComponents/AwesomeCard";
+import AwesomeFeed from "../customComponents/AwesomeFeed";
 
 const pollData = [
     {
@@ -39,27 +41,34 @@ const VotingView = () => {
         ));
     };
 
+    // Simulate refreshing & loading new polls
+    const onRefresh = () => {
+        setRefreshing(true);
+        setTimeout(() => {
+            const newPolls = [
+                { id: String(Date.now()), question: 'What is your favorite sport?', options: ['Football', 'Basketball', 'Tennis', 'Swimming'] },
+                ...polls, // Add new poll at the top
+            ];
+            setPolls(newPolls);
+            setRefreshing(false);
+        }, 1500);
+    };
+
     return (
-        <View style={styles.container}>
-            <SafeAreaView style={styles.safeArea}>
-                <ScrollView>
-                    <View style={styles.contentWrapper}>
-                        <AwesomeUserHeader />
-                        {polls.map(poll => (
-                            <AwesomeVote
-                                key={poll.id}
-                                question={poll.question}
-                                options={poll.options}
-                                results={poll.results}
-                                timeLeft={poll.timeLeft}
-                                totalVotes={poll.totalVotes}
-                                onVote={(option) => handleVote(poll.id, option)}
-                            />
-                        ))}
-                    </View>
-                </ScrollView>
-            </SafeAreaView>
-        </View>
+        // <View style={styles.container}>
+        //     <SafeAreaView style={styles.safeArea}>
+        //         <AwesomeFeed data={polls} onRefresh={onRefresh} renderItem={(item) => {
+        //             return (
+        //                 <AwesomeCard item={item} handleVote={handleVote} />
+        //             )}
+        //         }/>
+        //     </SafeAreaView>
+        // </View>
+        <AwesomeFeed data={polls} onRefresh={onRefresh} renderItem={(item) => {
+            return (
+                <AwesomeCard item={item} handleVote={handleVote} />
+            )}
+        }/>
     );
 };
 

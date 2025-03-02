@@ -3,6 +3,7 @@ import {View, Text, StyleSheet, SafeAreaView, ScrollView} from "react-native";
 import { Colors } from '../../utils/colorUtils'
 import AwesomeVote from "../customComponents/AwesomeVote";
 import AwesomeUserHeader from "../customComponents/AwesomeUserHeader";
+import AwesomeSwitcher from "../customComponents/AwesomeSwitcher";
 
 const UserProfileView = () => {
 
@@ -10,7 +11,7 @@ const UserProfileView = () => {
         <View style={styles.container}>
             <SafeAreaView style={styles.safeArea}>
                 <View style={styles.contentWrapper}>
-                    <AwesomeUserHeader />
+                    <AwesomeUserHeader userName='Yullia Zhmaieva' followersNumber='1' image={require('../../assets/images/emil.jpg')} />
                     <View style={[styles.followersContainer, styles.row]}>
                         <View style={styles.followersLeftSubContainer}>
                             <Text style={styles.followersText}>21</Text>
@@ -24,6 +25,9 @@ const UserProfileView = () => {
                             <Text style={styles.followersText}>103</Text>
                             <Text style={styles.followersText}>following</Text>
                         </View>
+                    </View>
+                    <View style={styles.bottomMargin20}>
+                        <AwesomeSwitcher leftOption='active' rightOption='closed' />
                     </View>
                     <ScrollView>
                         <AwesomeVote />
@@ -96,13 +100,14 @@ const styles = StyleSheet.create({
         fontSize: 14
     },
     followersContainer: {
-        borderTopWidth: 1,
+        //borderTopWidth: 1,
         borderBottomWidth: 1,
         borderColor: '#888',
         justifyContent: 'space-between',
-        paddingTop: 10,
-        paddingBottom: 10,
-        marginBottom:  20
+        //paddingTop: 5,
+        paddingBottom: 5,
+        //height: 50,
+        //marginBottom:  20
     },
     followersLeftSubContainer: {
         //borderRightWidth: 1,
