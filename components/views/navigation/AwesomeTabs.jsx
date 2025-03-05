@@ -1,7 +1,6 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';  // Icons
-import VotingView from "../VotingView";
 import {Colors} from "../../../utils/colorUtils.js";
 import UserProfileView from "../UserProfileView";
 import LikedView from '../LikedView'
@@ -18,9 +17,6 @@ export default function AwesomeTabs() {
             screenOptions={({ route }) => ({
                 tabBarIcon: ({ focused, color, size }) => {
                     let iconName;
-                    if (route.name === 'Vote') {
-                        iconName = focused ? 'home' : 'home-outline';
-                    }
                     if (route.name === 'User') {
                         iconName = focused ? 'flame' : 'flame-outline';
                     }
@@ -42,12 +38,11 @@ export default function AwesomeTabs() {
                 tabBarInactiveTintColor: Colors.black,
             })}
         >
-            <Tab.Screen name="User" component={UserProfileView} />
-            <Tab.Screen name="Feed" component={FeedView} />
-            <Tab.Screen name="liked" component={LikedView} />
-            <Tab.Screen name="Add" component={AddView} />
-            <Tab.Screen name="Search" component={SearchView} />
-            <Tab.Screen name="Vote" component={VotingView} />
+            <Tab.Screen name="User" component={UserProfileView} options={{ headerShown: false }} />
+            <Tab.Screen name="Feed" component={FeedView} options={{ headerShown: false }} />
+            <Tab.Screen name="liked" component={LikedView} options={{ headerShown: false }} />
+            <Tab.Screen name="Add" component={AddView} options={{ headerShown: false }} />
+            <Tab.Screen name="Search" component={SearchView} options={{ headerShown: false }} />
         </Tab.Navigator>
     );
 }

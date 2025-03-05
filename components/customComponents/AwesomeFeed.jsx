@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useRef } from 'react';
 import { View, Animated, Dimensions, StyleSheet, RefreshControl } from 'react-native';
 const { height, width } = Dimensions.get('window');
 const POLL_HEIGHT = height * 0.82; // 90% of the screen height
@@ -46,12 +46,6 @@ const styles = StyleSheet.create({
         borderRadius: 0,
         marginBottom: -NEXT_POLL_OFFSET, // Partially show the next poll
         justifyContent: 'flex-start',
-        //alignItems: 'center',
-        padding: 20,
-        //shadowColor: '#000',
-        //shadowOpacity: 0.1,
-        //shadowRadius: 10,
-        //elevation: 5,
     },
 });
 

@@ -1,16 +1,19 @@
-import React, { useState, useRef } from 'react';
-import { Animated, Dimensions, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
 import AwesomeFeed from "../customComponents/AwesomeFeed";
 import AwesomeCard from "../customComponents/AwesomeCard";
+import { View, StyleSheet } from 'react-native';
 
 const pollData = [
     {
         id: 1,
         question: "What is your favorite color?",
-        options: ["Red", "Blue"],
+        options: ["Red", "Blue", "Green", "Yellow"],
         results: { Red: 20, Blue: 50, Green: 15, Yellow: 15 },
         timeLeft: "10m 30s",
-        totalVotes: 1457
+        totalVotes: 1457,
+        userName: "Yuliia Zhmaieva",
+        followersNumber: 13,
+        image: "require('../../assets/images/emil.jpg')"
     },
     {
         id: 2,
@@ -18,23 +21,32 @@ const pollData = [
         options: ["NY", "London", "Gdansk", "Kherson"],
         results: { Red: 20, Blue: 50, Green: 15, Yellow: 15 },
         timeLeft: "1m 15s",
-        totalVotes: 2
+        totalVotes: 2,
+        userName: "Yuliia Zhmaieva",
+        followersNumber: 13,
+        image: "require('../../assets/images/emil.jpg')"
     },
     {
         id: 3,
-        question: "What is your favorite singer?",
-        options: ["Weeknd", "Lady Gaga"],
+        question: "Fav song?",
+        options: ["Mil horas", "Start Boy", "None of them"],
         results: { Red: 20, Blue: 50, Green: 15, Yellow: 15 },
-        timeLeft: "10m 30s",
-        totalVotes: 1457
+        timeLeft: "1m 15s",
+        totalVotes: 20972426,
+        userName: "Yuliia Zhmaieva",
+        followersNumber: 13,
+        image: "require('../../assets/images/emil.jpg')"
     },
     {
         id: 4,
-        question: "What is your favorite animal?",
-        options: ["Lion", "Dog", "Cat", "Chicken"],
-        results: { Red: 80, Blue: 10, Green: 3, Yellow: 7 },
-        timeLeft: "5h 0s",
-        totalVotes: 209543
+        question: "What to eat now",
+        options: ["Chicken", "Noodles", "Fruits"],
+        results: { Red: 20, Blue: 50, Green: 15, Yellow: 15 },
+        timeLeft: "15s",
+        totalVotes: 20972426,
+        userName: "Yuliia Zhmaieva",
+        followersNumber: 13,
+        image: "require('../../assets/images/emil.jpg')"
     },
 ];
 
@@ -69,10 +81,18 @@ const FeedView = () => {
     return (
         <AwesomeFeed data={polls} onRefresh={onRefresh} refreshing={refreshing} renderItem={(item) => {
             return (
-                <AwesomeCard item={item} handleVote={handleVote} />
+                <View style={styles.container}>
+                    <AwesomeCard item={item} handleVote={handleVote} />
+                </View>
             )}
         }/>
     );
 };
+
+const styles = StyleSheet.create({
+    container: {
+        padding: 20
+    }
+});
 
 export default FeedView;

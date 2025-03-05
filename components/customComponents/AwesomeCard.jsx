@@ -1,12 +1,16 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View } from "react-native";
 import AwesomeUserHeader from "./AwesomeUserHeader";
 import AwesomeVote from "./AwesomeVote";
 
 const AwesomeCard = ({item, handleVote}) => {
     return (
         <View>
-            <AwesomeUserHeader  userName='Artem Ovechko' followersNumber='109' image={require('../../assets/images/emil.jpg')} />
+            <AwesomeUserHeader
+                userName={item?.userName}
+                followersNumber={item?.followersNumber}
+                image={item?.image}
+            />
             <AwesomeVote
                 key={item?.id ?? item}
                 question={item?.question}
