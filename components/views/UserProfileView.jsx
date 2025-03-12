@@ -1,18 +1,20 @@
-import React, {useState} from "react";
-import {View, Text, StyleSheet, SafeAreaView, ScrollView} from "react-native";
-import { Colors } from '../../utils/colorUtils'
+import React, {useEffect, useState} from "react";
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, Modal } from "react-native";
+import { Colors } from '../../utils/colorUtils';
 import AwesomeVote from "../customComponents/AwesomeVote";
 import AwesomeUserHeader from "../customComponents/AwesomeUserHeader";
 import AwesomeSwitcher from "../customComponents/AwesomeSwitcher";
 import AwesomeCard from "../customComponents/AwesomeCard";
 import AwesomeFeed from "../customComponents/AwesomeFeed";
+import AwesomeButton, { Color } from "../customComponents/AwesomeButton";
+import {fetchProfile, isLoggedIn} from "../../shared/api/apiClient.js";
 
 const pollData = [
     {
         id: 1,
         question: "What is your favorite color?",
         options: ["Red", "Blue"],
-        results: { Red: 20, Blue: 50, Green: 15, Yellow: 15 },
+        results: { "Red": 20, "Blue": 80 },
         timeLeft: "10m 30s",
         totalVotes: 1457
     },
@@ -20,61 +22,48 @@ const pollData = [
         id: 2,
         question: "What is your favorite city?",
         options: ["NY", "London", "Gdansk", "Kherson"],
-        results: { Red: 20, Blue: 50, Green: 15, Yellow: 15 },
+        results: { "NY": 20, "London": 50, "Gdansk": 15, "Kherson": 15 },
         timeLeft: "1m 15s",
         totalVotes: 2
-    },
+    }
+];
+
+const closedPollData = [
     {
         id: 3,
         question: "What is your favorite singer?",
         options: ["Weeknd", "Lady Gaga"],
-        results: { Red: 20, Blue: 50, Green: 15, Yellow: 15 },
-        timeLeft: "10m 30s",
+        results: { "Weeknd": 50, "Lady Gaga": 50 },
+        timeLeft: "Expired",
         totalVotes: 1457
     },
     {
         id: 4,
         question: "What is your favorite animal?",
         options: ["Lion", "Dog", "Cat", "Chicken"],
-        results: { Red: 80, Blue: 10, Green: 3, Yellow: 7 },
-        timeLeft: "5h 0s",
+        results: { "Lion": 80, "Dog": 10, "Cat": 3, "Chicken": 7 },
+        timeLeft: "Expired",
         totalVotes: 209543
-    },
+    }
 ];
 
 const UserProfileView = () => {
+    const [selectedOption, setSelectedOption] = useState("active");
 
-    const [polls, setPolls] = useState(pollData);
+    const [modalVisible, setModalVisible] = useState(false);
 
-    const [refreshing, setRefreshing] = useState(false);
+    const [user, setUser] = useState(null);
 
-    const onRefresh = () => {
-        setRefreshing(true);
-        setTimeout(() => {
-            const newPolls = [
-                { id: String(Date.now()), question: 'What is your favorite sport?', options: ['Football', 'Basketball', 'Tennis', 'Swimming'] },
-                ...polls, // Add new poll at the top
-            ];
-            setPolls(newPolls);
-            setRefreshing(false);
-        }, 1500);
-    };
-
-    const handleVote = (pollId, selectedOption) => {
-        setPolls(polls.map(poll =>
-            poll.id === pollId ? {
-                ...poll,
-                results: { ...poll.results, [selectedOption]: (poll.results[selectedOption] || 0) + 1 },
-                totalVotes: poll.totalVotes + 1
-            } : poll
-        ));
-    };
+    if (!user)
+        fetchProfile().then(res => {
+            setUser(res);
+        })
 
     return (
         <View style={styles.container}>
             <SafeAreaView style={styles.safeArea}>
                 <View style={styles.contentWrapper}>
-                    <AwesomeUserHeader userName='Yullia Zhmaieva' followersNumber='15K' image={require('../../assets/images/emil.jpg')} />
+                    <AwesomeUserHeader userName={user?.username} followersNumber='15K' image={require('../../assets/images/emil.jpg')} />
                     <View style={[styles.followersContainer, styles.row]}>
                         <View style={styles.followersLeftSubContainer}>
                             <Text style={styles.followersText}>21</Text>
@@ -90,24 +79,17 @@ const UserProfileView = () => {
                         </View>
                     </View>
                     <View style={styles.bottomMargin20}>
-                        <AwesomeSwitcher leftOption='active' rightOption='closed' />
+                        <AwesomeSwitcher
+                            leftOption='active'
+                            rightOption='closed'
+                            onDisplayModeChangedHandler={setSelectedOption}
+                        />
                     </View>
-                    {/*<ScrollView>
-                        {pollData.map((item) => (
-                            <View style={styles.bottomMargin20}>
-                                <AwesomeVote
-                                    totalVotes={item.totalVotes}
-                                    question={item.question}
-                                    options={item.options}
-                                    timeLeft={item.timeLeft}
-                                    results={item.results}
-                                />
-                            </View>
-                        ))}
-                    </ScrollView>*/}
-                    <AwesomeFeed data={polls} onRefresh={onRefresh} refreshing={refreshing} renderItem={(item) => {
-                        return (
-                            /*<AwesomeCard item={item} handleVote={handleVote} />*/
+                    <AwesomeFeed
+                        data={selectedOption === "active" ? pollData : closedPollData}
+                        onRefresh={() => {}}
+                        refreshing={false}
+                        renderItem={(item) => (
                             <AwesomeVote
                                 totalVotes={item.totalVotes}
                                 timeLeft={item.timeLeft}
@@ -116,9 +98,19 @@ const UserProfileView = () => {
                                 results={item.results}
                             />
                         )}
-                    }/>
+                    />
                 </View>
             </SafeAreaView>
+            <Modal
+                animationType="fade"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => {
+                    //Alert.alert('Modal has been closed.');
+                    setModalVisible(!modalVisible);
+                }}>
+                <Text>TEST TEST</Text>
+            </Modal>
         </View>
     );
 };
@@ -131,8 +123,8 @@ const styles = StyleSheet.create({
         height: "100%",
     },
     contentWrapper: {
-        padding: 20,
-        height: '100%'
+        padding: 15,
+        height: '100%',
     },
     safeArea: {
         backgroundColor: Colors.white,
@@ -216,5 +208,11 @@ const styles = StyleSheet.create({
     },
     followersText: {
         color: Colors.grey
-    }
+    },
+    visible: {
+        display: 'flex'
+    },
+    invisible: {
+        display: 'none'
+    },
 });

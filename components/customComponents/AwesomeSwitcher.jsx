@@ -1,9 +1,14 @@
 import React, { useState } from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
-import { Colors } from '../../utils/colorUtils'
+import { Colors } from '../../utils/colorUtils';
 
-const AwesomeSwitcher = () => {
-    const [activeTab, setActiveTab] = useState("Active");
+const AwesomeSwitcher = ({ leftOption, rightOption, onDisplayModeChangedHandler }) => {
+    const [selected, setSelected] = useState(leftOption);
+
+    const onPressHandler = (option) => {
+        setSelected(option);
+        onDisplayModeChangedHandler(option);
+    };
 
     return (
         <View style={styles.container}>
@@ -11,14 +16,18 @@ const AwesomeSwitcher = () => {
                 <View
                     style={[
                         styles.indicator,
-                        { left: activeTab === "Active" ? 0 : "50%" },
+                        { left: selected === leftOption ? 0 : "50%" },
                     ]}
                 />
-                <Pressable style={styles.tab} onPress={() => setActiveTab("Active")}>
-                    <Text style={[styles.text, activeTab === "Active" && styles.activeText]}>active</Text>
+                <Pressable style={styles.tab} onPress={() => onPressHandler(leftOption)}>
+                    <Text style={[styles.text, selected === leftOption && styles.activeText]}>
+                        {leftOption}
+                    </Text>
                 </Pressable>
-                <Pressable style={styles.tab} onPress={() => setActiveTab("Closed")}>
-                    <Text style={[styles.text, activeTab === "Closed" && styles.activeText]}>closed</Text>
+                <Pressable style={styles.tab} onPress={() => onPressHandler(rightOption)}>
+                    <Text style={[styles.text, selected === rightOption && styles.activeText]}>
+                        {rightOption}
+                    </Text>
                 </Pressable>
             </View>
         </View>
@@ -31,8 +40,10 @@ const styles = StyleSheet.create({
     },
     switcher: {
         flexDirection: "row",
-        width: '100%',
+        width: "100%",
         position: "relative",
+        borderColor: Colors.grey,
+        overflow: "hidden",
     },
     tab: {
         flex: 1,
@@ -43,7 +54,7 @@ const styles = StyleSheet.create({
     text: {
         fontSize: 14,
         color: Colors.grey,
-        fontFamily: 'arial'
+        fontFamily: "Arial",
     },
     activeText: {
         color: Colors.black,
@@ -55,7 +66,8 @@ const styles = StyleSheet.create({
         height: "100%",
         backgroundColor: Colors.white,
         borderBottomWidth: 1,
-        borderColor: '#888'
+        borderColor: "#888",
+        transition: "left 0.3s ease",
     },
 });
 

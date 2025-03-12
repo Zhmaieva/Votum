@@ -3,6 +3,7 @@ import { View, TextInput, Dimensions, Button, Text, StyleSheet, Modal, FlatList,
 import {Colors} from "../../utils/colorUtils";
 import {Ionicons} from "@expo/vector-icons";
 import AwesomeVote from "../customComponents/AwesomeVote";
+import AwesomeButton, {Color} from "../customComponents/AwesomeButton";
 const { height, width } = Dimensions.get('window');
 const POLL_WIDTH = width * 0.9;
 
@@ -45,7 +46,7 @@ const AddView = () => {
             id: 1,
             question: "What is your favorite color?",
             options: ["Red", "Blue"],
-            results: { Red: 20, Blue: 50, Green: 15, Yellow: 15 },
+            results: { Red: 60, Blue: 40 },
             timeLeft: "10m 30s",
             totalVotes: 1457
         }
@@ -95,17 +96,18 @@ const AddView = () => {
                         </View>
                     </View>
                     {options.length < 4 && (
-                        <TouchableOpacity style={[styles.addButton]} onPress={addOption}>
+                        <TouchableOpacity style={styles.addButton} onPress={addOption}>
                             <Text style={styles.addButtonText}>+ Add answer</Text>
                         </TouchableOpacity>
                     )}
                 </View>
             </View>
-            <View>
-                <TouchableOpacity style={[styles.createPollButton]} onPress={onPressHandler}>
-                    <Text style={styles.createPollButtonText}>Create Poll</Text>
-                </TouchableOpacity>
-            </View>
+            <AwesomeButton
+                color={Color.BLACK}
+                text="Create poll"
+                //screenName="LikedView"
+                additionalFunc={onPressHandler}
+            />
             <Modal visible={modalVisible} transparent={true} animationType="fade">
                 <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
                     <View style={styles.modalContainer}>
@@ -123,9 +125,14 @@ const AddView = () => {
                                     <Text style={styles.editButtonText}>Edit</Text>
                                 </TouchableOpacity>
                             </View>
-                            <TouchableOpacity style={[styles.confirmButton]} onPress={() => setModalVisible(false)}>
-                                <Text style={styles.createPollButtonText}>Publish</Text>
-                            </TouchableOpacity>
+                            <View style={styles.confirmButton}>
+                                <AwesomeButton
+                                    color={Color.BLACK}
+                                    text="Publish"
+                                    //screenName='LikedView'
+                                    additionalFunc={() => setModalVisible(false)}
+                                />
+                            </View>
                         </View>
                     </View>
                 </TouchableWithoutFeedback>
@@ -262,11 +269,7 @@ const styles = StyleSheet.create({
         marginBottom: 20
     },
     confirmButton: {
-        height: 40,
-        backgroundColor: Colors.green,
         width: '49%',
-        alignItems: 'center',
-        justifyContent: 'center',
     },
     editButtonContainer: {
         width: '49%',

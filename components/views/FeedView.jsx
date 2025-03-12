@@ -11,7 +11,7 @@ const pollData = [
         results: { Red: 20, Blue: 50, Green: 15, Yellow: 15 },
         timeLeft: "10m 30s",
         totalVotes: 1457,
-        userName: "Yuliia Zhmaieva",
+        userName: "Emil Ovechko",
         followersNumber: 13,
         image: "require('../../assets/images/emil.jpg')"
     },
@@ -19,34 +19,34 @@ const pollData = [
         id: 2,
         question: "What is your favorite city?",
         options: ["NY", "London", "Gdansk", "Kherson"],
-        results: { Red: 20, Blue: 50, Green: 15, Yellow: 15 },
+        results: { "NY": 20, "London": 50, "Gdansk": 15, "Kherson": 15 },
         timeLeft: "1m 15s",
         totalVotes: 2,
-        userName: "Yuliia Zhmaieva",
+        userName: "Artem Ovechko",
         followersNumber: 13,
-        image: "require('../../assets/images/emil.jpg')"
+        image: "require('../../assets/images/artem.jpg')"
     },
     {
         id: 3,
         question: "Fav song?",
         options: ["Mil horas", "Start Boy", "None of them"],
-        results: { Red: 20, Blue: 50, Green: 15, Yellow: 15 },
+        results: { "Mil horas": 62, "Start Boy": 13, "None of them": 25 },
         timeLeft: "1m 15s",
         totalVotes: 20972426,
         userName: "Yuliia Zhmaieva",
         followersNumber: 13,
-        image: "require('../../assets/images/emil.jpg')"
+        image: "require('../../assets/images/me.jpg')"
     },
     {
         id: 4,
         question: "What to eat now",
         options: ["Chicken", "Noodles", "Fruits"],
-        results: { Red: 20, Blue: 50, Green: 15, Yellow: 15 },
+        results: { "Chicken": 29, "Noodles": 37, "Fruits": 34 },
         timeLeft: "15s",
         totalVotes: 20972426,
-        userName: "Yuliia Zhmaieva",
+        userName: "Emil2",
         followersNumber: 13,
-        image: "require('../../assets/images/emil.jpg')"
+        image: "require('../../assets/images/son.jpg')"
     },
 ];
 
@@ -91,7 +91,7 @@ const FeedView = () => {
 
 const styles = StyleSheet.create({
     container: {
-        padding: 20
+        padding: 15
     }
 });
 

@@ -20,7 +20,7 @@ const pollData = [
         id: 2,
         question: "What is your favorite city?",
         options: ["NY", "London", "Gdansk", "Kherson"],
-        results: { Red: 20, Blue: 50, Green: 15, Yellow: 15 },
+        results: { "NY": 20, "London": 50, "Gdansk": 15, "Kherson": 15 },
         timeLeft: "1m 15s",
         totalVotes: 2,
         userName: "Yuliia Zhmaieva",
@@ -57,15 +57,6 @@ const VotingView = () => {
     };
 
     return (
-        // <View style={styles.container}>
-        //     <SafeAreaView style={styles.safeArea}>
-        //         <AwesomeFeed data={polls} onRefresh={onRefresh} renderItem={(item) => {
-        //             return (
-        //                 <AwesomeCard item={item} handleVote={handleVote} />
-        //             )}
-        //         }/>
-        //     </SafeAreaView>
-        // </View>
         <AwesomeFeed data={polls} onRefresh={onRefresh} renderItem={(item) => {
             return (
                 <AwesomeCard item={item} handleVote={handleVote} />

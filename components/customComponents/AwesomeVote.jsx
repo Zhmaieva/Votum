@@ -3,17 +3,8 @@ import { View, Text, TouchableOpacity, StyleSheet, Animated, Modal, TouchableWit
 import { Colors } from '../../utils/colorUtils';
 import { Ionicons } from '@expo/vector-icons';
 import ReportPoll from "./AwesomeReportPoll";
-
-const pollData = [
-    {
-        id: 1,
-        question: "What is your favorite color?",
-        options: ["Red", "Blue"],
-        results: { Red: 20, Blue: 50, Green: 15, Yellow: 15 },
-        timeLeft: "10m 30s",
-        totalVotes: 1457
-    }
-];
+import { onShare } from "../../shared/common";
+import AwesomeLikeButton from "./AwesomeLikeButton";
 
 const AwesomeVote = ({
                          question = "No question provided",
@@ -21,20 +12,21 @@ const AwesomeVote = ({
                          results = {},
                          timeLeft = "N/A",
                          totalVotes = 0,
-                         onVote
+                         onVote,
+                         createdByUser = false, // Flag to check if the current user created the poll
+                         onDeletePoll // Function to handle poll deletion
                      }) => {
     const [selected, setSelected] = useState(null);
     const [animation] = useState(new Animated.Value(0));
     const [modalVisible, setModalVisible] = useState(false);
+    const [isReportVisible, setIsReportVisible] = useState(true);
 
     useEffect(() => {
-        if (selected) {
-            Animated.timing(animation, {
-                toValue: 1,
-                duration: 500,
-                useNativeDriver: false,
-            }).start();
-        }
+        Animated.timing(animation, {
+            toValue: selected ? 1 : 0,
+            duration: 600, // Updated duration
+            useNativeDriver: false,
+        }).start();
     }, [selected]);
 
     const handleVote = (option) => {
@@ -44,11 +36,9 @@ const AwesomeVote = ({
         }
     };
 
-    const [isReportVisible, setIsReportVisible] = useState(true);
-
     const handleReportSubmit = (reason) => {
-        console.log(`Poll ${pollData.id} reported for: ${reason}`);
-        setIsReportVisible(false); // Close the modal after submission
+        console.log(`Poll reported for: ${reason}`);
+        setIsReportVisible(false);
     };
 
     return (
@@ -61,21 +51,28 @@ const AwesomeVote = ({
             </View>
             <View style={styles.votingFrame}>
                 <View style={[styles.controlSignsContainer, styles.row]}>
-                    <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.iconContainer}>
-                        {isReportVisible && (
-                            <ReportPoll
-                                pollId={pollData.id}
-                                onReportSubmit={handleReportSubmit}
-                                onCancel={() => setIsReportVisible(false)}
-                            />
-                        )}
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.iconContainer}>
+                    {!createdByUser && ( // Show report button only for non-creators
+                        <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.iconContainer}>
+                            {isReportVisible && (
+                                <ReportPoll
+                                    pollId={1}
+                                    onReportSubmit={handleReportSubmit}
+                                    onCancel={() => setIsReportVisible(false)}
+                                />
+                            )}
+                        </TouchableOpacity>
+                    )}
+                    <TouchableOpacity style={styles.iconContainer} onPress={onShare}>
                         <Ionicons name="share-outline" size={26} color={Colors.grey} />
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.iconContainer} >
-                        <Ionicons name="heart-outline" size={26} color={Colors.grey} />
-                    </TouchableOpacity>
+                    <View style={styles.iconContainer}>
+                        <AwesomeLikeButton />
+                    </View>
+                    {createdByUser && ( // Show delete button only for the poll creator
+                        <TouchableOpacity style={styles.deleteButton} onPress={onDeletePoll}>
+                            <Ionicons name="trash-outline" size={26} color={Colors.grey} />
+                        </TouchableOpacity>
+                    )}
                 </View>
                 {!selected ? (
                     options.map((option) => (
@@ -88,21 +85,34 @@ const AwesomeVote = ({
                         </TouchableOpacity>
                     ))
                 ) : (
-                    options.map((option) => (
-                        <View key={option} style={styles.buttonContainer}>
-                            <Animated.View
-                                style={[styles.resultBar, {
-                                    width: `${results[option] || 0}%`,
-                                    backgroundColor: selected === option ? Colors.green : Colors.grey,
-                                    opacity: animation,
-                                }]}
-                            />
-                            <Text style={styles.resultText}>{results[option] || 0}%</Text>
-                        </View>
-                    ))
+                    options.map((option) => {
+                        const animatedWidth = animation.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: ["0%", `${results[option] || 0}%`],
+                        });
+
+                        return (
+                            <View key={option} style={styles.buttonContainer}>
+                                <Animated.View
+                                    style={[
+                                        styles.resultBar,
+                                        {
+                                            width: animatedWidth,
+                                            backgroundColor: selected === option ? Colors.green : Colors.grey,
+                                        },
+                                    ]}
+                                />
+                                <View style={styles.resultsNumberContainer}>
+                                    <Text style={styles.buttonText}>{results[option] || 0}%</Text>
+                                </View>
+                            </View>
+                        );
+                    })
                 )}
                 <View style={[styles.countStyle, styles.row]}>
-                    <Text style={[styles.greyTextStyle, styles.fontFamily]}>Ends in {timeLeft}</Text>
+                    <Text style={[styles.greyTextStyle, styles.fontFamily]}>
+                        {timeLeft === "Expired" ? "Expired" : `Ends in ${timeLeft}`}
+                    </Text>
                     <Text style={[styles.greyTextStyle, styles.fontFamily]}>{totalVotes} voted</Text>
                 </View>
             </View>
@@ -119,7 +129,7 @@ const AwesomeVote = ({
                             <Text>test</Text>
                             {isReportVisible && (
                                 <ReportPoll
-                                    pollId={pollData.id}
+                                    pollId={1}
                                     onReportSubmit={handleReportSubmit}
                                     onCancel={() => setIsReportVisible(false)}
                                 />
@@ -147,7 +157,8 @@ const styles = StyleSheet.create({
         shadowOpacity: 1,
         shadowRadius: 0,
         shadowColor: Colors.green,
-        padding: 14
+        padding: 14,
+        marginRight: 3
     },
     button: {
         backgroundColor: Colors.white,
@@ -194,6 +205,10 @@ const styles = StyleSheet.create({
     iconContainer: {
         marginLeft: 8
     },
+    deleteButton: {
+        marginLeft: 12,
+        padding: 5
+    },
     modalContainer: {
         flex: 1,
         justifyContent: 'center',
@@ -207,18 +222,18 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         alignItems: 'center'
     },
-    modalText: {
-        fontSize: 18,
-        marginBottom: 20
+    resultBar: {
+        height: 40,
+        marginBottom: 10,
+        borderWidth: 1,
+        borderColor: Colors.white
     },
-    closeButton: {
-        backgroundColor: Colors.green,
-        padding: 10,
-        borderRadius: 5
+    buttonContainer: {
+        flexDirection: "row",
+        justifyContent: "space-between"
     },
-    closeButtonText: {
-        color: Colors.white,
-        fontSize: 16
-    },
-
+    resultsNumberContainer: {
+        height: 40,
+        justifyContent: 'center'
+    }
 });

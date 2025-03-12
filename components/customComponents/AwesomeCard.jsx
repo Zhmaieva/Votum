@@ -4,6 +4,12 @@ import AwesomeUserHeader from "./AwesomeUserHeader";
 import AwesomeVote from "./AwesomeVote";
 
 const AwesomeCard = ({item, handleVote}) => {
+
+    const handleDeletePoll = (pollId) => {
+        setPolls((prevPolls) => prevPolls.filter((poll) => poll.id !== pollId));
+        console.log(`Poll ${pollId} deleted!`);
+    };
+
     return (
         <View>
             <AwesomeUserHeader
@@ -19,6 +25,8 @@ const AwesomeCard = ({item, handleVote}) => {
                 timeLeft={item?.timeLeft}
                 totalVotes={item?.totalVotes}
                 onVote={(option) => handleVote(item?.id, option)}
+                createdByUser={item.createdByUser}
+                onDeletePoll={() => handleDeletePoll(item.id)}
             />
         </View>
     );

@@ -1,6 +1,7 @@
 import React from "react";
 import {View, Text, StyleSheet, Image} from "react-native";
 import { Colors } from '../../utils/colorUtils'
+import AwesomeButton, { Color } from "./AwesomeButton";
 
 const AwesomeUserHeader = ({image, userName, followersNumber}) => {
 
@@ -15,9 +16,7 @@ const AwesomeUserHeader = ({image, userName, followersNumber}) => {
                     <Text style={[styles.font14, styles.greyTextStyle, styles.fontFamily]}>{followersNumber} followers</Text>
                 </View>
             </View>
-            <View style={styles.followButton}>
-                <Text style={styles.followButtonText}>follow</Text>
-            </View>
+            <AwesomeButton color={Color.BLACK} text='Follow' changedText='Unfollow'/>
         </View>
     );
 };
@@ -38,13 +37,6 @@ const styles = StyleSheet.create({
         height: 46,
         width: 46,
         marginRight: 8,
-        shadowOffset: {
-            width: 3,
-            height: 3
-        },
-        shadowOpacity: 1,
-        shadowRadius: 0,
-        shadowColor: Colors.green,
     },
     userSubContainer: {
         justifyContent: 'flex-end',
@@ -60,7 +52,7 @@ const styles = StyleSheet.create({
     },
     followButton: {
         height: 40,
-        width: 64,
+        width: 65,
         backgroundColor: Colors.black,
         justifyContent: 'center',
         alignItems: "center"
