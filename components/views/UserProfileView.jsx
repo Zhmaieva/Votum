@@ -4,10 +4,9 @@ import { Colors } from '../../utils/colorUtils';
 import AwesomeVote from "../customComponents/AwesomeVote";
 import AwesomeUserHeader from "../customComponents/AwesomeUserHeader";
 import AwesomeSwitcher from "../customComponents/AwesomeSwitcher";
-import AwesomeCard from "../customComponents/AwesomeCard";
 import AwesomeFeed from "../customComponents/AwesomeFeed";
 import AwesomeButton, { Color } from "../customComponents/AwesomeButton";
-import {fetchProfile, isLoggedIn} from "../../shared/api/apiClient.js";
+import {fetchMyProfile, isLoggedIn} from "../../shared/api/apiClient";
 
 const pollData = [
     {
@@ -55,7 +54,7 @@ const UserProfileView = () => {
     const [user, setUser] = useState(null);
 
     if (!user)
-        fetchProfile().then(res => {
+        fetchMyProfile().then(res => {
             setUser(res);
         })
 
@@ -63,7 +62,7 @@ const UserProfileView = () => {
         <View style={styles.container}>
             <SafeAreaView style={styles.safeArea}>
                 <View style={styles.contentWrapper}>
-                    <AwesomeUserHeader userName={user?.username} followersNumber='15K' image={require('../../assets/images/emil.jpg')} />
+                    <AwesomeUserHeader userData={user} />
                     <View style={[styles.followersContainer, styles.row]}>
                         <View style={styles.followersLeftSubContainer}>
                             <Text style={styles.followersText}>21</Text>

@@ -4,6 +4,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 let tokenValue = null;
 
 export const getToken = async function() {
+    console.log(`token: ${tokenValue}`);
+    console.log(`stored token: ${await AsyncStorage.getItem('auth_token')}`);
     return tokenValue ?? await AsyncStorage.getItem('auth_token');
 }
 
@@ -16,7 +18,7 @@ setTimeout(async () => {
 }, 5000)
 
 const hardcodedCredentials = {
-    login: 'test@example.com',
+    login: 'zhmaievayuliia@google.com',
     password: 'securepassword',
 };
 
@@ -44,7 +46,7 @@ const retryLogin = async () => {
     }
 };
 
-export const fetchProfile = async () => {
+export const fetchMyProfile = async () => {
     try {
         console.log('fetching profile...');
         const response = await axios.get(`${BASE_URL}/profile`, {
@@ -57,5 +59,31 @@ export const fetchProfile = async () => {
     } catch (err) {
         console.log('Auth failed, retrying login...', err);
         await retryLogin();
+    }
+};
+
+export const fetchPolls = async () => {
+    try {
+        console.log('fetching polls...');
+        const response = await axios.get(`${BASE_URL}/polls`, {
+            headers: {
+                Authorization: `Bearer ${await getToken()}`,
+            },
+        });
+        console.log('fetch user response: ' + JSON.stringify(response.data));
+        return response?.data;
+    } catch (err) {
+        console.log('Auth failed, retrying login...', err);
+        await retryLogin();
+    }
+};
+
+export const fetchUserProfile = async (userId) => {
+    try {
+        console.log(`Fetching profile for user ${userId}...`);
+        const response = await axios.get(`${BASE_URL}/users/${userId}`);
+        return response?.data;
+    } catch (err) {
+        console.error("Failed to fetch user profile", err);
     }
 };

@@ -13,9 +13,7 @@ const AwesomeCard = ({item, handleVote}) => {
     return (
         <View>
             <AwesomeUserHeader
-                userName={item?.userName}
-                followersNumber={item?.followersNumber}
-                image={item?.image}
+                userData={item.user}
             />
             <AwesomeVote
                 key={item?.id ?? item}

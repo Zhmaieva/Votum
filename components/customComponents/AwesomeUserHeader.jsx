@@ -1,22 +1,30 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {View, Text, StyleSheet, Image} from "react-native";
 import { Colors } from '../../utils/colorUtils'
 import AwesomeButton, { Color } from "./AwesomeButton";
 
-const AwesomeUserHeader = ({image, userName, followersNumber}) => {
+const AwesomeUserHeader = ({userData}) => {
+    const [user, setUser] = useState(userData);
+
+    if (userData && userData !== user)
+        setUser(userData)
+
+    if (!user) return <Text>Loading...</Text>;
 
     return (
         <View style={[styles.row, styles.bottomMargin18, styles.userContainer]}>
             <View style={styles.row}>
                 <View style={styles.avatar}>
-                    <Image source={image} style={styles.avatar}/>
+                    <Image source={{ uri: user.image }} style={styles.avatar} />
                 </View>
                 <View style={styles.userSubContainer}>
-                    <Text style={[styles.font14, styles.userNameBold, styles.fontFamily]}>{userName}</Text>
-                    <Text style={[styles.font14, styles.greyTextStyle, styles.fontFamily]}>{followersNumber} followers</Text>
+                    <Text style={[styles.font14, styles.userNameBold, styles.fontFamily]}>{user.userName}</Text>
+                    <Text style={[styles.font14, styles.greyTextStyle, styles.fontFamily]}>
+                        {user.followersNumber} followers
+                    </Text>
                 </View>
             </View>
-            <AwesomeButton color={Color.BLACK} text='Follow' changedText='Unfollow'/>
+            <AwesomeButton color={Color.BLACK} text="Follow" changedText="Unfollow" />
         </View>
     );
 };

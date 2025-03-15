@@ -3,7 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import {AppState, StyleSheet} from 'react-native';
 import AwesomeTabs from "./components/views/navigation/AwesomeTabs";
 import StackNav from "./components/views/navigation/StackNav";
-import {login} from "./shared/api/apiClient.js";
+import {login} from "./shared/api/apiClient";
 
 /*SplashScreen.preventAutoHideAsync();
 
