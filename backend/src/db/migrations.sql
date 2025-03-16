@@ -28,6 +28,8 @@ CREATE TABLE poll_answer_options (
     text VARCHAR(50) NOT NULL
 );
 
+ALTER TABLE user_profiles ADD COLUMN bio TEXT DEFAULT 'Find me on other social media';
+
 /*
  INSERT INTO polls (created_by, question, votes_number, ends_in) VALUES
 -- Favorite color

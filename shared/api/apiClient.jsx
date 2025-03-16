@@ -48,14 +48,26 @@ const retryLogin = async () => {
 
 export const fetchMyProfile = async () => {
     try {
-        console.log('fetching profile...');
+        console.log('Fetching profile...');
         const response = await axios.get(`${BASE_URL}/profile`, {
             headers: {
                 Authorization: `Bearer ${await getToken()}`,
             },
         });
-        console.log('fetch user response: ' + JSON.stringify(response.data));
-        return response?.data;
+
+        const userProfile = response?.data;
+
+        if (!userProfile) {
+            throw new Error("User profile not found");
+        }
+
+        console.log('Fetched user profile:', JSON.stringify(userProfile));
+
+        // Ensure the bio field is present
+        return {
+            ...userProfile,
+            bio: userProfile.bio || "bio here", // Fallback if bio is null or undefined
+        };
     } catch (err) {
         console.log('Auth failed, retrying login...', err);
         await retryLogin();

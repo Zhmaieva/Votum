@@ -93,10 +93,15 @@ app.post('/login', async (req, res, next) => {
 app.get('/profile', authMiddleware, async (req, res) => {
     try {
         const existingUsers = await pool.query(
-            `SELECT u.username as "userName", u.email, up.image, up.followers_number as "followersNumber"
-                FROM users u 
-                JOIN user_profiles up on u.id = up.user_id 
-                WHERE u.username = $1 OR u.email = $1`,
+            `SELECT
+                 u.username AS "userName",
+                 u.email,
+                 up.image,
+                 up.followers_number AS "followersNumber",
+                 up.bio
+             FROM users u
+                      JOIN user_profiles up ON u.id = up.user_id
+             WHERE u.username = $1 OR u.email = $1`,
             [req.user.username]
         );
 
@@ -105,6 +110,7 @@ app.get('/profile', authMiddleware, async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
+
         res.json(user);
     } catch (error) {
         console.error(error);

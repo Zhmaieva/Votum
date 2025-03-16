@@ -3,7 +3,7 @@ import { View } from "react-native";
 import AwesomeUserHeader from "./AwesomeUserHeader";
 import AwesomeVote from "./AwesomeVote";
 
-const AwesomeCard = ({item, handleVote}) => {
+const AwesomeCard = ({ item, handleVote, loggedInUserId }) => {  // Pass loggedInUserId as a prop
 
     const handleDeletePoll = (pollId) => {
         setPolls((prevPolls) => prevPolls.filter((poll) => poll.id !== pollId));
@@ -14,6 +14,7 @@ const AwesomeCard = ({item, handleVote}) => {
         <View>
             <AwesomeUserHeader
                 userData={item.user}
+                loggedInUserId={loggedInUserId} // Pass it down
             />
             <AwesomeVote
                 key={item?.id ?? item}

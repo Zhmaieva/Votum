@@ -3,7 +3,7 @@
   <database-model serializer="dbm" dbms="POSTGRES" family-id="POSTGRES" format-version="4.52">
     <root id="1">
       <DateStyle>mdy</DateStyle>
-      <IntrospectionStateNumber>796</IntrospectionStateNumber>
+      <IntrospectionStateNumber>800</IntrospectionStateNumber>
       <ServerVersion>17.4</ServerVersion>
       <StartupTime>1741529667</StartupTime>
       <TimeZones>true ACDT
@@ -803,7 +803,7 @@ false Zulu
 13527||10|C|G
 13527||-9223372036854775808|U|G
 13527||10|U|G</Grants>
-      <IntrospectionStateNumber>796</IntrospectionStateNumber>
+      <IntrospectionStateNumber>800</IntrospectionStateNumber>
       <ObjectId>16390</ObjectId>
       <OwnerName>postgres</OwnerName>
     </database>
@@ -4248,8 +4248,8 @@ false Zulu
     <schema id="267" parent="3" name="public">
       <Comment>standard public schema</Comment>
       <Current>1</Current>
-      <IntrospectionStateNumber>796</IntrospectionStateNumber>
-      <LastIntrospectionLocalTimestamp>2025-03-15.08:46:39</LastIntrospectionLocalTimestamp>
+      <IntrospectionStateNumber>800</IntrospectionStateNumber>
+      <LastIntrospectionLocalTimestamp>2025-03-16.13:20:14</LastIntrospectionLocalTimestamp>
       <ObjectId>2200</ObjectId>
       <StateNumber>531</StateNumber>
       <OwnerName>pg_database_owner</OwnerName>
@@ -7625,7 +7625,7 @@ false Zulu
     </table>
     <table id="514" parent="267" name="user_profiles">
       <ObjectId>16440</ObjectId>
-      <StateNumber>770</StateNumber>
+      <StateNumber>799</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>postgres</OwnerName>
     </table>
@@ -7760,7 +7760,14 @@ false Zulu
       <StateNumber>770</StateNumber>
       <TypeId>25</TypeId>
     </column>
-    <foreign-key id="533" parent="514" name="user_profiles_user_id_fkey">
+    <column id="533" parent="514" name="bio">
+      <DasType>text|0s</DasType>
+      <DefaultExpression>&apos;Find me on other social media&apos;::text</DefaultExpression>
+      <Position>4</Position>
+      <StateNumber>799</StateNumber>
+      <TypeId>25</TypeId>
+    </column>
+    <foreign-key id="534" parent="514" name="user_profiles_user_id_fkey">
       <ColNames>user_id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16449</ObjectId>
@@ -7769,7 +7776,7 @@ false Zulu
       <RefKeyColPositions>1</RefKeyColPositions>
       <RefTableId>16391</RefTableId>
     </foreign-key>
-    <index id="534" parent="514" name="user_profiles_pkey">
+    <index id="535" parent="514" name="user_profiles_pkey">
       <ColNames>user_id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16447</ObjectId>
@@ -7778,14 +7785,14 @@ false Zulu
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="535" parent="514" name="user_profiles_pkey">
+    <key id="536" parent="514" name="user_profiles_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16448</ObjectId>
       <Primary>1</Primary>
       <StateNumber>770</StateNumber>
       <UnderlyingIndexId>16447</UnderlyingIndexId>
     </key>
-    <column id="536" parent="515" name="id">
+    <column id="537" parent="515" name="id">
       <DasType>uuid|0s</DasType>
       <DefaultExpression>gen_random_uuid()</DefaultExpression>
       <NotNull>1</NotNull>
@@ -7793,35 +7800,35 @@ false Zulu
       <StateNumber>756</StateNumber>
       <TypeId>2950</TypeId>
     </column>
-    <column id="537" parent="515" name="username">
+    <column id="538" parent="515" name="username">
       <DasType>varchar(50)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StateNumber>756</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <column id="538" parent="515" name="email">
+    <column id="539" parent="515" name="email">
       <DasType>varchar(100)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>3</Position>
       <StateNumber>756</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <column id="539" parent="515" name="password_hash">
+    <column id="540" parent="515" name="password_hash">
       <DasType>text|0s</DasType>
       <NotNull>1</NotNull>
       <Position>4</Position>
       <StateNumber>756</StateNumber>
       <TypeId>25</TypeId>
     </column>
-    <column id="540" parent="515" name="created_at">
+    <column id="541" parent="515" name="created_at">
       <DasType>timestamp with time zone|0s</DasType>
       <DefaultExpression>now()</DefaultExpression>
       <Position>5</Position>
       <StateNumber>756</StateNumber>
       <TypeId>1184</TypeId>
     </column>
-    <index id="541" parent="515" name="users_pkey">
+    <index id="542" parent="515" name="users_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16398</ObjectId>
@@ -7830,7 +7837,7 @@ false Zulu
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <index id="542" parent="515" name="users_username_key">
+    <index id="543" parent="515" name="users_username_key">
       <ColNames>username</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16400</ObjectId>
@@ -7841,7 +7848,7 @@ false Zulu
       <CollationIds>100</CollationIds>
       <CollationParentNames>pg_catalog</CollationParentNames>
     </index>
-    <index id="543" parent="515" name="users_email_key">
+    <index id="544" parent="515" name="users_email_key">
       <ColNames>email</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16402</ObjectId>
@@ -7852,20 +7859,20 @@ false Zulu
       <CollationIds>100</CollationIds>
       <CollationParentNames>pg_catalog</CollationParentNames>
     </index>
-    <key id="544" parent="515" name="users_pkey">
+    <key id="545" parent="515" name="users_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16399</ObjectId>
       <Primary>1</Primary>
       <StateNumber>756</StateNumber>
       <UnderlyingIndexId>16398</UnderlyingIndexId>
     </key>
-    <key id="545" parent="515" name="users_username_key">
+    <key id="546" parent="515" name="users_username_key">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16401</ObjectId>
       <StateNumber>756</StateNumber>
       <UnderlyingIndexId>16400</UnderlyingIndexId>
     </key>
-    <key id="546" parent="515" name="users_email_key">
+    <key id="547" parent="515" name="users_email_key">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16403</ObjectId>
       <StateNumber>756</StateNumber>

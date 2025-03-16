@@ -93,15 +93,17 @@ const AwesomeVote = ({
 
                         return (
                             <View key={option} style={styles.buttonContainer}>
-                                <Animated.View
-                                    style={[
-                                        styles.resultBar,
-                                        {
-                                            width: animatedWidth,
-                                            backgroundColor: selected === option ? Colors.green : Colors.grey,
-                                        },
-                                    ]}
-                                />
+                                <View style={styles.resultBarContainer}>
+                                    <Animated.View
+                                        style={[
+                                            styles.resultBar,
+                                            {
+                                                width: animatedWidth,
+                                                backgroundColor: selected === option ? Colors.green : Colors.grey,
+                                            },
+                                        ]}
+                                    />
+                                </View>
                                 <View style={styles.resultsNumberContainer}>
                                     <Text style={styles.buttonText}>{results[option] || 0}%</Text>
                                 </View>
@@ -172,7 +174,7 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         color: Colors.grey,
-        fontSize: 18,
+        fontSize: 16,
         marginLeft: 10
     },
     countStyle: {
@@ -224,9 +226,8 @@ const styles = StyleSheet.create({
     },
     resultBar: {
         height: 40,
+        width: '100%',
         marginBottom: 10,
-        borderWidth: 1,
-        borderColor: Colors.white
     },
     buttonContainer: {
         flexDirection: "row",
@@ -234,6 +235,11 @@ const styles = StyleSheet.create({
     },
     resultsNumberContainer: {
         height: 40,
-        justifyContent: 'center'
+        justifyContent: 'center',
+        alignItems: 'flex-end',
+        minWidth: 40,
+    },
+    resultBarContainer: {
+        flex: 1,
     }
 });

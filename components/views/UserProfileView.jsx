@@ -5,8 +5,7 @@ import AwesomeVote from "../customComponents/AwesomeVote";
 import AwesomeUserHeader from "../customComponents/AwesomeUserHeader";
 import AwesomeSwitcher from "../customComponents/AwesomeSwitcher";
 import AwesomeFeed from "../customComponents/AwesomeFeed";
-import AwesomeButton, { Color } from "../customComponents/AwesomeButton";
-import {fetchMyProfile, isLoggedIn} from "../../shared/api/apiClient";
+import { fetchMyProfile } from "../../shared/api/apiClient";
 
 const pollData = [
     {

@@ -1,30 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AwesomeFeed from "../customComponents/AwesomeFeed";
 import AwesomeCard from "../customComponents/AwesomeCard";
-import { View, StyleSheet } from 'react-native';
-import {fetchPolls} from "../../shared/api/apiClient";
+import { View, StyleSheet, ActivityIndicator } from 'react-native';
+import { fetchPolls } from "../../shared/api/apiClient";
+import {fetchMyProfile, isLoggedIn} from "../../shared/api/apiClient";
 
 const FeedView = () => {
     const [refreshing, setRefreshing] = useState(false);
+    const [polls, setPolls] = useState(null);
+    const [loggedInUserId, setLoggedInUserId] = useState(null); // Store the user ID
 
-    // Simulate refreshing & loading new polls
+    useEffect(() => {
+        // Fetch user's profile to get their ID
+        const fetchUserProfile = async () => {
+            const profile = await fetchMyProfile();
+            if (profile?.userId) {
+                setLoggedInUserId(profile.userId);
+            }
+        };
+
+        // Fetch polls data
+        fetchPolls().then(res => setPolls(res));
+
+        fetchUserProfile(); // Fetch user profile on mount
+    }, []);
+
     const onRefresh = () => {
         setRefreshing(true);
         setTimeout(() => {
             const newPolls = [
                 { id: String(Date.now()), question: 'What is your favorite sport?', options: ['Football', 'Basketball', 'Tennis', 'Swimming'] },
-                ...polls, // Add new poll at the top
+                ...polls,
             ];
             setPolls(newPolls);
             setRefreshing(false);
         }, 1500);
     };
-
-    const [polls, setPolls] = useState(null);
-    if (!polls)
-        fetchPolls().then(res => {
-            setPolls(res);
-        });
 
     const handleVote = (pollId, selectedOption) => {
         setPolls(polls.map(poll =>
@@ -36,14 +47,23 @@ const FeedView = () => {
         ));
     };
 
+    if (!polls) return <ActivityIndicator size="large" color="#0000ff" />; // Show a loader while fetching
+
     return (
-        <AwesomeFeed data={polls ?? []} onRefresh={onRefresh} refreshing={refreshing} renderItem={(item) => {
-            return (
+        <AwesomeFeed
+            data={polls}
+            onRefresh={onRefresh}
+            refreshing={refreshing}
+            renderItem={(item) => (
                 <View style={styles.container}>
-                    <AwesomeCard item={item} handleVote={handleVote} />
+                    <AwesomeCard
+                        item={item}
+                        handleVote={handleVote}
+                        loggedInUserId={loggedInUserId} // ✅ Now passing loggedInUserId
+                    />
                 </View>
             )}
-        }/>
+        />
     );
 };
 

@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { View, Animated, Dimensions, StyleSheet, RefreshControl } from 'react-native';
+import {View, Animated, Dimensions, StyleSheet, RefreshControl, SafeAreaView} from 'react-native';
 const { height, width } = Dimensions.get('window');
 const POLL_HEIGHT = height * 0.82; // 90% of the screen height
 const NEXT_POLL_OFFSET = height * 0.18; // 10% of the next poll visible
@@ -23,7 +23,7 @@ const AwesomeFeed = ({ data, onRefresh, refreshing, renderItem }) => {
     };
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             <Animated.FlatList
                 data={preloadedData}
                 keyExtractor={(item) => item?.id ?? item}
@@ -46,7 +46,7 @@ const AwesomeFeed = ({ data, onRefresh, refreshing, renderItem }) => {
                     { useNativeDriver: false }
                 )}
             />
-        </View>
+        </SafeAreaView>
     );
 };
 
