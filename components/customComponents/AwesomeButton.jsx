@@ -4,7 +4,6 @@ import {
     Pressable,
     Animated,
     TouchableWithoutFeedback,
-    Alert,
     Modal,
     View
 } from 'react-native';
@@ -20,13 +19,13 @@ export const Color = {
 export default function AwesomeButton({
                                           text,
                                           screenName,
+                                          params = {}, // Accept params for navigation
                                           color = Color.GREEN,
                                           additionalFunc,
                                           changedText,
                                           disabled = false
                                       }) {
     const navigation = useNavigation();
-    const [modalVisible, setModalVisible] = useState(false);
     const [buttonName, setButtonName] = useState(text);
     const [isDisabled, setIsDisabled] = useState(disabled);
     const scaleValue = useState(new Animated.Value(1))[0];
@@ -35,7 +34,7 @@ export default function AwesomeButton({
         if (isDisabled) return;
 
         if (screenName) {
-            navigation.navigate(screenName);
+            navigation.navigate(screenName, params); // Pass params to navigation
         }
 
         if (additionalFunc) {
@@ -69,36 +68,25 @@ export default function AwesomeButton({
     };
 
     return (
-        <View>
-            <Modal
-                animationType="slide"
-                transparent={true}
-                visible={modalVisible}
-                onRequestClose={() => setModalVisible(false)}
+        <TouchableWithoutFeedback onPress={animateButton} disabled={isDisabled}>
+            <Animated.View
+                style={[
+                    { transform: [{ scale: scaleValue }] },
+                    styles.buttonMain,
+                    buttonName === changedText ? styles.buttonTransparent
+                        : color === Color.BLACK ? styles.buttonBlack
+                            : styles.buttonGreen,
+                    isDisabled && styles.buttonDisabled
+                ]}
             >
-                <Pressable style={styles.centeredView} onPress={() => setModalVisible(false)} />
-            </Modal>
-
-            <TouchableWithoutFeedback onPress={animateButton} disabled={isDisabled}>
-                <Animated.View
-                    style={[
-                        { transform: [{ scale: scaleValue }] },
-                        styles.buttonMain,
-                        buttonName === changedText ? styles.buttonTransparent
-                            : color === Color.BLACK ? styles.buttonBlack
-                                : styles.buttonGreen,
-                        isDisabled && styles.buttonDisabled
-                    ]}
-                >
-                    <Text style={[
-                        styles.buttonMainText,
-                        buttonName === changedText && styles.buttonTransparentText
-                    ]}>
-                        {buttonName}
-                    </Text>
-                </Animated.View>
-            </TouchableWithoutFeedback>
-        </View>
+                <Text style={[
+                    styles.buttonMainText,
+                    buttonName === changedText && styles.buttonTransparentText
+                ]}>
+                    {buttonName}
+                </Text>
+            </Animated.View>
+        </TouchableWithoutFeedback>
     );
 }
 
@@ -107,9 +95,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         borderColor: Colors.black,
-        shadowColor: Colors.black,
         height: 40,
-        width: '100%',
         minWidth: 80,
     },
     buttonGreen: {

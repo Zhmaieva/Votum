@@ -118,7 +118,6 @@ app.get('/profile', authMiddleware, async (req, res) => {
     }
 });
 
-
 //let's create an endpoint to get polls
 //auth is needed bc it's regular api request for authorised users only
 app.get('/polls', authMiddleware, async (

@@ -6,28 +6,58 @@ import ReportPoll from "./AwesomeReportPoll";
 import { onShare } from "../../shared/common";
 import AwesomeLikeButton from "./AwesomeLikeButton";
 
+const formatFollowers = (num) => {
+    if (num >= 1_000_000_000) return (num / 1_000_000_000).toFixed(1) + 'B';
+    if (num >= 1_000_000) return (num / 1_000_000).toFixed(1) + 'M';
+    if (num >= 1_000) return (num / 1_000).toFixed(1) + 'K';
+    return num;
+};
+
+const formatTimeLeft = (millisecondsLeft) => {
+    if (millisecondsLeft <= 0) return "Expired";
+
+    const secondsLeft = Math.floor(millisecondsLeft / 1000);
+    const days = Math.floor(secondsLeft / (60 * 60 * 24));
+    const hours = Math.floor((secondsLeft % (60 * 60 * 24)) / (60 * 60));
+    const minutes = Math.floor((secondsLeft % (60 * 60)) / 60);
+    const seconds = secondsLeft % 60;
+
+    if (secondsLeft < 60) {
+        return `${seconds} second${seconds !== 1 ? "s" : ""}`;
+    } else if (days > 0) {
+        return `${days} day${days > 1 ? "s" : ""}`;
+    } else if (hours > 0) {
+        return `${hours} hour${hours > 1 ? "s" : ""}`;
+    } else {
+        return `${minutes} minute${minutes !== 1 ? "s" : ""}`;
+    }
+};
+
+
 const AwesomeVote = ({
                          question = "No question provided",
                          options = [],
                          results = {},
-                         timeLeft = "N/A",
+                         timeLeft = 0,
                          totalVotes = 0,
                          onVote,
-                         createdByUser = false, // Flag to check if the current user created the poll
-                         onDeletePoll // Function to handle poll deletion
+                         createdByUser = false,
+                         onDeletePoll
                      }) => {
     const [selected, setSelected] = useState(null);
     const [animation] = useState(new Animated.Value(0));
     const [modalVisible, setModalVisible] = useState(false);
     const [isReportVisible, setIsReportVisible] = useState(true);
+    const [remainingTime, setRemainingTime] = useState(timeLeft);
+    const [pollExpired, setPollExpired] = useState(timeLeft <= 0);
 
     useEffect(() => {
         Animated.timing(animation, {
-            toValue: selected ? 1 : 0,
-            duration: 600, // Updated duration
+            toValue: selected || pollExpired ? 1 : 0,
+            duration: 600,
             useNativeDriver: false,
         }).start();
-    }, [selected]);
+    }, [selected, pollExpired]);
 
     const handleVote = (option) => {
         setSelected(option);
@@ -36,27 +66,40 @@ const AwesomeVote = ({
         }
     };
 
-    const handleReportSubmit = (reason) => {
-        console.log(`Poll reported for: ${reason}`);
-        setIsReportVisible(false);
-    };
+    useEffect(() => {
+        if (remainingTime <= 0) {
+            setPollExpired(true);
+            return;
+        }
+
+        let interval = setInterval(() => {
+            setRemainingTime((prev) => {
+                const newTime = prev - 1000;
+                if (newTime <= 0) {
+                    setPollExpired(true);
+                    clearInterval(interval);
+                }
+                return newTime;
+            });
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, [remainingTime]);
 
     return (
         <View>
-            <View style={[styles.row, styles.bottomMargin10]}>
-                <Text style={[styles.qTextStyle, styles.fontFamily]}>Q: </Text>
-                <Text style={[styles.title, styles.fontFamily, styles.blackTextStyle]}>
-                    {question}
-                </Text>
+            <View style={styles.row}>
+                <Text style={styles.qTextStyle}>Q: </Text>
+                <Text style={styles.title}>{question}</Text>
             </View>
             <View style={styles.votingFrame}>
                 <View style={[styles.controlSignsContainer, styles.row]}>
-                    {!createdByUser && ( // Show report button only for non-creators
+                    {!createdByUser && (
                         <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.iconContainer}>
                             {isReportVisible && (
                                 <ReportPoll
                                     pollId={1}
-                                    onReportSubmit={handleReportSubmit}
+                                    onReportSubmit={(reason) => setIsReportVisible(false)}
                                     onCancel={() => setIsReportVisible(false)}
                                 />
                             )}
@@ -68,20 +111,16 @@ const AwesomeVote = ({
                     <View style={styles.iconContainer}>
                         <AwesomeLikeButton />
                     </View>
-                    {createdByUser && ( // Show delete button only for the poll creator
+                    {createdByUser && (
                         <TouchableOpacity style={styles.deleteButton} onPress={onDeletePoll}>
                             <Ionicons name="trash-outline" size={26} color={Colors.grey} />
                         </TouchableOpacity>
                     )}
                 </View>
-                {!selected ? (
+                {!selected && !pollExpired ? (
                     options.map((option) => (
-                        <TouchableOpacity
-                            key={option}
-                            style={styles.button}
-                            onPress={() => handleVote(option)}
-                        >
-                            <Text style={[styles.buttonText, styles.fontFamily]}>{option}</Text>
+                        <TouchableOpacity key={option} style={styles.button} onPress={() => handleVote(option)}>
+                            <Text style={styles.buttonText}>{option}</Text>
                         </TouchableOpacity>
                     ))
                 ) : (
@@ -90,19 +129,14 @@ const AwesomeVote = ({
                             inputRange: [0, 1],
                             outputRange: ["0%", `${results[option] || 0}%`],
                         });
-
                         return (
                             <View key={option} style={styles.buttonContainer}>
                                 <View style={styles.resultBarContainer}>
                                     <Animated.View
-                                        style={[
-                                            styles.resultBar,
-                                            {
-                                                width: animatedWidth,
-                                                backgroundColor: selected === option ? Colors.green : Colors.grey,
-                                            },
-                                        ]}
-                                    />
+                                        style={[styles.resultBar, { width: animatedWidth, backgroundColor: Colors.green }]} />
+                                    <View style={styles.answerStyle}>
+                                        <Text style={styles.answerTextStyle}>{option}</Text>
+                                    </View>
                                 </View>
                                 <View style={styles.resultsNumberContainer}>
                                     <Text style={styles.buttonText}>{results[option] || 0}%</Text>
@@ -112,19 +146,11 @@ const AwesomeVote = ({
                     })
                 )}
                 <View style={[styles.countStyle, styles.row]}>
-                    <Text style={[styles.greyTextStyle, styles.fontFamily]}>
-                        {timeLeft === "Expired" ? "Expired" : `Ends in ${timeLeft}`}
-                    </Text>
-                    <Text style={[styles.greyTextStyle, styles.fontFamily]}>{totalVotes} voted</Text>
+                    <Text style={styles.greyTextStyle}>{pollExpired ? "Expired" : `Ends in ${formatTimeLeft(remainingTime)}`}</Text>
+                    <Text style={styles.greyTextStyle}>{formatFollowers(totalVotes)} voted</Text>
                 </View>
             </View>
-            {/* Modal */}
-            <Modal
-                animationType="fade"
-                transparent={true}
-                visible={modalVisible}
-                onRequestClose={() => setModalVisible(false)}
-            >
+            <Modal animationType="fade" transparent={true} visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
                 <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
                     <View style={styles.modalContainer}>
                         <View style={styles.modalContent}>
@@ -132,7 +158,7 @@ const AwesomeVote = ({
                             {isReportVisible && (
                                 <ReportPoll
                                     pollId={1}
-                                    onReportSubmit={handleReportSubmit}
+                                    onReportSubmit={(reason) => setIsReportVisible(false)}
                                     onCancel={() => setIsReportVisible(false)}
                                 />
                             )}
@@ -183,14 +209,6 @@ const styles = StyleSheet.create({
     greyTextStyle: {
         color: Colors.grey
     },
-    blackTextStyle: {
-        color: Colors.grey
-    },
-    qTextStyle: {
-        color: Colors.green,
-        fontSize: 18,
-        fontWeight: 'bold'
-    },
     row: {
         flexDirection: 'row'
     },
@@ -215,7 +233,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)'
+        backgroundColor: Colors.white
     },
     modalContent: {
         width: 300,
@@ -226,7 +244,7 @@ const styles = StyleSheet.create({
     },
     resultBar: {
         height: 40,
-        width: '100%',
+        //width: '100%',
         marginBottom: 10,
     },
     buttonContainer: {
@@ -241,5 +259,20 @@ const styles = StyleSheet.create({
     },
     resultBarContainer: {
         flex: 1,
+    },
+    qTextStyle: {
+        fontSize: 18
+    },
+    answerStyle: {
+        position: 'absolute',
+        justifyContent: 'center',
+        alignItems: 'center',
+        //backgroundColor: Colors.yellow,
+        height: 40,
+    },
+    answerTextStyle: {
+        color: Colors.red,
+        fontSize: 16,
+        marginLeft: 10
     }
 });

@@ -9,6 +9,7 @@ import LikedView from '../LikedView';
 import SearchView from '../SearchView';
 import AddView from "../AddView";
 import FeedView from "../FeedView";
+import ProfileEditView from "../ProfileEditView";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -18,7 +19,7 @@ function UserStack() {
     return (
         <Stack.Navigator id="Test">
             <Stack.Screen name="UserProfile" component={UserProfileView} options={{ headerShown: true, gestureEnabled: true }} />
-            <Stack.Screen name="LikedView" component={LikedView} options={{ headerShown: true, gestureEnabled: true }} />
+            <Stack.Screen name="ProfileEditView" component={ProfileEditView} options={{ headerShown: true, gestureEnabled: true }} />
         </Stack.Navigator>
     );
 }
@@ -27,8 +28,8 @@ function UserStack() {
 function FeedStack() {
     return (
         <Stack.Navigator id="Test2">
-            <Stack.Screen name="FeedMain" component={FeedView} options={{ headerShown: false, gestureEnabled: true }} />
-            <Stack.Screen name="SearchView" component={SearchView} options={{ headerShown: false, gestureEnabled: true }} />
+            <Stack.Screen name="FeedMain" component={FeedView} options={{ headerShown: true, gestureEnabled: true }} />
+            <Stack.Screen name="SearchView" component={SearchView} options={{ headerShown: true, gestureEnabled: true }} />
         </Stack.Navigator>
     );
 }
@@ -37,7 +38,7 @@ function FeedStack() {
 function VotedStack() {
     return (
         <Stack.Navigator id="Test3">
-            <Stack.Screen name="VotedMain" component={LikedView} options={{ headerShown: false, gestureEnabled: true }} />
+            <Stack.Screen name="VotedMain" component={LikedView} options={{ headerShown: true, gestureEnabled: true }} />
         </Stack.Navigator>
     );
 }
@@ -46,7 +47,7 @@ function VotedStack() {
 function AddStack() {
     return (
         <Stack.Navigator id="Test4">
-            <Stack.Screen name="AddMain" component={AddView} options={{ headerShown: false, gestureEnabled: true }} />
+            <Stack.Screen name="AddMain" component={AddView} options={{ headerShown: true, gestureEnabled: true }} />
         </Stack.Navigator>
     );
 }
@@ -55,7 +56,7 @@ function AddStack() {
 function SearchStack() {
     return (
         <Stack.Navigator id="Test5">
-            <Stack.Screen name="SearchMain" component={SearchView} options={{ headerShown: false, gestureEnabled: true }} />
+            <Stack.Screen name="SearchMain" component={SearchView} options={{ headerShown: true, gestureEnabled: true }} />
         </Stack.Navigator>
     );
 }

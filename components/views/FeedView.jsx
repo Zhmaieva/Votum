@@ -54,18 +54,32 @@ const FeedView = () => {
             data={polls}
             onRefresh={onRefresh}
             refreshing={refreshing}
-            renderItem={(item) => (
-                <View style={styles.container}>
-                    <AwesomeCard
-                        item={item}
-                        handleVote={handleVote}
-                        loggedInUserId={loggedInUserId} // ✅ Now passing loggedInUserId
-                    />
-                </View>
-            )}
+            renderItem={(item) => {
+                item.timeLeft = calculateTimeDifference(item.endsIn);
+                return (
+                    <View style={styles.container}>
+                        <AwesomeCard
+                            item={item}
+                            handleVote={handleVote}
+                            loggedInUserId={loggedInUserId} // ✅ Now passing loggedInUserId
+                        />
+                    </View>
+                )
+            }}
         />
     );
 };
+
+const calculateTimeDifference = function(dateString) {
+    // Get the current date and the given date
+    const now = new Date();
+    const targetDate = new Date(dateString);
+
+    // Calculate the time difference in milliseconds
+    const timeDifference = targetDate - now;
+
+    return timeDifference;
+    }
 
 const styles = StyleSheet.create({
     container: {

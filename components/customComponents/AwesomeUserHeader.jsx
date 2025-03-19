@@ -3,7 +3,13 @@ import { View, Text, StyleSheet, Image } from "react-native";
 import { Colors } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from "./AwesomeButton";
 
-// Assume `loggedInUserId` is passed as a prop (e.g., from authentication context)
+const formatFollowers = (num) => {
+    if (num >= 1_000_000_000) return (num / 1_000_000_000).toFixed(1) + 'B';
+    if (num >= 1_000_000) return (num / 1_000_000).toFixed(1) + 'M';
+    if (num >= 1_000) return (num / 1_000).toFixed(1) + 'K';
+    return num;
+};
+
 const AwesomeUserHeader = ({ userData, loggedInUserId }) => {
     const [user, setUser] = useState(userData);
 
@@ -16,6 +22,8 @@ const AwesomeUserHeader = ({ userData, loggedInUserId }) => {
     if (!user) return <Text>Loading...</Text>;
 
     const isOwnProfile = user.userId === loggedInUserId;
+    const followersText = user.followersNumber === 1 ? "follower" : "followers";
+    const formattedFollowers = formatFollowers(user.followersNumber);
 
     return (
         <View style={[styles.row, styles.bottomMargin18, styles.userContainer]}>
@@ -33,12 +41,19 @@ const AwesomeUserHeader = ({ userData, loggedInUserId }) => {
                         </Text>
                     ) : (
                         <Text style={[styles.font14, styles.greyTextStyle, styles.fontFamily]}>
-                            {user.followersNumber} followers
+                            {formattedFollowers} {followersText}
                         </Text>
                     )}
                 </View>
             </View>
-            {!isOwnProfile && (
+            {isOwnProfile ? (
+                <AwesomeButton
+                    color={Color.BLACK}
+                    text="Edit"
+                    screenName="ProfileEditView"
+                    params={{ user }}
+                />
+            ) : (
                 <AwesomeButton color={Color.BLACK} text="Follow" changedText="Unfollow" />
             )}
         </View>

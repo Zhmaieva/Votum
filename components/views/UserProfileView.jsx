@@ -45,7 +45,7 @@ const closedPollData = [
     }
 ];
 
-const UserProfileView = () => {
+const MyUserProfileView = () => {
     const [selectedOption, setSelectedOption] = useState("active");
 
     const [modalVisible, setModalVisible] = useState(false);
@@ -79,7 +79,7 @@ const UserProfileView = () => {
                     <View style={styles.bottomMargin20}>
                         <AwesomeSwitcher
                             leftOption='active'
-                            rightOption='closed'
+                            rightOption='expired'
                             onDisplayModeChangedHandler={setSelectedOption}
                         />
                     </View>
@@ -113,7 +113,7 @@ const UserProfileView = () => {
     );
 };
 
-export default UserProfileView;
+export default MyUserProfileView;
 
 const styles = StyleSheet.create({
     container: {
