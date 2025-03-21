@@ -30,6 +30,19 @@ CREATE TABLE poll_answer_options (
 
 ALTER TABLE user_profiles ADD COLUMN bio TEXT DEFAULT 'Find me on other social media';
 
+CREATE TABLE poll_likes (
+    user_id UUID NOT NULL,            -- ID of the user who liked the poll
+    poll_id UUID NOT NULL,            -- ID of the poll that was liked
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- Timestamp when the like was created
+
+-- Foreign keys to reference users and polls
+    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_poll FOREIGN KEY (poll_id) REFERENCES polls(id) ON DELETE CASCADE,
+
+-- Unique constraint to ensure each (user_id, poll_id) pair is unique
+    CONSTRAINT unique_user_poll UNIQUE (user_id, poll_id)
+);
+
 /*
  INSERT INTO polls (created_by, question, votes_number, ends_in) VALUES
 -- Favorite color

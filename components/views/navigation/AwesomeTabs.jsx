@@ -4,7 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from "../../../utils/colorUtils.js";
 
-import UserProfileView from "../UserProfileView";
+import MyUserProfileView from "../MyUserProfileView";
 import LikedView from '../LikedView';
 import SearchView from '../SearchView';
 import AddView from "../AddView";
@@ -18,7 +18,7 @@ const Stack = createStackNavigator();
 function UserStack() {
     return (
         <Stack.Navigator id="Test">
-            <Stack.Screen name="UserProfile" component={UserProfileView} options={{ headerShown: true, gestureEnabled: true }} />
+            <Stack.Screen name="UserProfile" component={MyUserProfileView} options={{ headerShown: true, gestureEnabled: true }} />
             <Stack.Screen name="ProfileEditView" component={ProfileEditView} options={{ headerShown: true, gestureEnabled: true }} />
         </Stack.Navigator>
     );

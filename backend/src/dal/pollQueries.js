@@ -1,13 +1,23 @@
 const {pool} = require("./pool");
 
-const fetchPolls = async () => {
+const fetchPolls = async (userId) => {
     try {
         const pollsQuery = `
-            SELECT p.id, p.question, p.votes_number, p.ends_in, 
-                   u.username, up.image, up.followers_number
+            SELECT p.id,
+                   p.question,
+                   p.votes_number,
+                   p.ends_in,
+                   u.username,
+                   up.image,
+                   up.followers_number,
+                   CASE
+                       WHEN pl.user_id IS NOT NULL THEN TRUE
+                       ELSE FALSE
+                       END AS is_liked
             FROM polls p
-            JOIN users u ON p.created_by = u.id
-            JOIN user_profiles up ON u.id = up.user_id
+                     JOIN users u ON p.created_by = u.id
+                     JOIN user_profiles up ON u.id = up.user_id
+                     LEFT JOIN poll_likes pl ON p.id = pl.poll_id AND pl.user_id = $1
             WHERE p.ends_in > NOW();
         `;
 
@@ -17,7 +27,7 @@ const fetchPolls = async () => {
         `;
 
         const [pollsResult, optionsResult] = await Promise.all([
-            pool.query(pollsQuery),
+            pool.query(pollsQuery, [userId]),
             pool.query(optionsQuery)
         ]);
 
@@ -30,6 +40,7 @@ const fetchPolls = async () => {
                 results: {},
                 endsIn: row.ends_in,
                 totalVotes: row.votes_number,
+                isLiked: row.is_liked,
                 user: {
                     userName: row.username,
                     image: row.image,

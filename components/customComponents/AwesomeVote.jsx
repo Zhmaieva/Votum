@@ -35,12 +35,14 @@ const formatTimeLeft = (millisecondsLeft) => {
 
 
 const AwesomeVote = ({
+                         id = "",
                          question = "No question provided",
                          options = [],
                          results = {},
                          timeLeft = 0,
                          totalVotes = 0,
                          onVote,
+                         isLiked = false,
                          createdByUser = false,
                          onDeletePoll
                      }) => {
@@ -109,7 +111,7 @@ const AwesomeVote = ({
                         <Ionicons name="share-outline" size={26} color={Colors.grey} />
                     </TouchableOpacity>
                     <View style={styles.iconContainer}>
-                        <AwesomeLikeButton />
+                        <AwesomeLikeButton pollId={id} isLikedParam={isLiked}/>
                     </View>
                     {createdByUser && (
                         <TouchableOpacity style={styles.deleteButton} onPress={onDeletePoll}>
@@ -129,13 +131,23 @@ const AwesomeVote = ({
                             inputRange: [0, 1],
                             outputRange: ["0%", `${results[option] || 0}%`],
                         });
+
                         return (
                             <View key={option} style={styles.buttonContainer}>
                                 <View style={styles.resultBarContainer}>
                                     <Animated.View
-                                        style={[styles.resultBar, { width: animatedWidth, backgroundColor: Colors.green }]} />
+                                        style={[styles.resultBar, {
+                                            width: animatedWidth,
+                                            backgroundColor: selected === option ? Colors.green : '#999',
+                                        }]}
+                                    />
                                     <View style={styles.answerStyle}>
-                                        <Text style={styles.answerTextStyle}>{option}</Text>
+                                        <Text style={[styles.answerTextStyle, {
+                                            color: Colors.black,
+                                            fontWeight: selected === option ? "500" : "400"
+                                        }]}>
+                                            {option}
+                                        </Text>
                                     </View>
                                 </View>
                                 <View style={styles.resultsNumberContainer}>
@@ -271,8 +283,12 @@ const styles = StyleSheet.create({
         height: 40,
     },
     answerTextStyle: {
-        color: Colors.red,
+        color: Colors.black,
         fontSize: 16,
         marginLeft: 10
+    },
+    rightPartBar: {
+        height: 40,
+        position: 'absolute'
     }
 });

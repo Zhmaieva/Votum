@@ -18,11 +18,13 @@ const AwesomeCard = ({ item, handleVote, loggedInUserId }) => {  // Pass loggedI
             />
             <AwesomeVote
                 key={item?.id ?? item}
+                id={item?.id ?? item}
                 question={item?.question}
                 options={item?.options}
                 results={item?.results}
                 timeLeft={item?.timeLeft}
                 totalVotes={item?.totalVotes}
+                isLiked={item?.isLiked ?? false}
                 onVote={(option) => handleVote(item?.id, option)}
                 createdByUser={item.createdByUser}
                 onDeletePoll={() => handleDeletePoll(item.id)}

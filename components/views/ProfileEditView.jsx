@@ -11,20 +11,25 @@ import {
 } from 'react-native';
 import { Colors } from '../../utils/colorUtils'; // assuming Colors is your utility file for color styles
 import * as ImagePicker from 'expo-image-picker';
-import AwesomeButton from '../customComponents/AwesomeButton'; // Reuse your AwesomeButton component
+import AwesomeButton, {Color} from '../customComponents/AwesomeButton'; // Reuse your AwesomeButton component
 import { Ionicons } from '@expo/vector-icons';
+import AwesomeEmailInput  from '../customComponents/AwesomeEmailInput';
 
 const ProfileEditView = ({ navigation, route }) => {
     const { user } = route.params; // Assume user data is passed via navigation params
 
     const [username, setUsername] = useState(user.userName);
-    const [bio, setBio] = useState(user.bio);
+    const [bioD, setBioD] = useState(user.bio);
     const [profileImage, setProfileImage] = useState(user.image);
+
+    const handleSave = () => {
+
+    };
 
     useEffect(() => {
         if (user) {
             setUsername(user.userName);
-            setBio(user.bio);
+            setBioD(user.bio);
             setProfileImage(user.image);
         }
     }, [user]);
@@ -48,7 +53,7 @@ const ProfileEditView = ({ navigation, route }) => {
 
     const handleSaveProfile = () => {
         // Perform any validation before saving
-        if (username.trim() === '' || bio.trim() === '') {
+        if (username.trim() === '' || bioD.trim() === '') {
             Alert.alert('Error', 'Username and bio cannot be empty');
             return;
         }
@@ -57,6 +62,8 @@ const ProfileEditView = ({ navigation, route }) => {
         // For now, let's just show an alert for the sake of this example
         Alert.alert('Profile Updated', 'Your profile has been updated successfully');
         navigation.goBack(); // Go back to the previous screen after saving
+        const updatedData = { username, bioD };
+        onSave(updatedData);  // Calls the function from the parent
     };
 
     return (
@@ -80,17 +87,26 @@ const ProfileEditView = ({ navigation, route }) => {
 
             <TextInput
                 style={styles.input}
-                value={bio}
-                onChangeText={setBio}
+                value={bioD}
+                onChangeText={setBioD}
                 placeholder="Bio"
                 multiline
                 numberOfLines={4}
             />
 
+            <AwesomeEmailInput />
+
             <AwesomeButton
                 text="Save Profile"
                 screenName={null} // No navigation needed here since we're saving the profile
-                color={Colors.green}
+                color={Color.GREEN}
+                additionalFunc={handleSaveProfile}
+            />
+
+            <AwesomeButton
+                text="Log out"
+                color={Color.BLACK}
+                screenName={null}
                 additionalFunc={handleSaveProfile}
             />
         </View>

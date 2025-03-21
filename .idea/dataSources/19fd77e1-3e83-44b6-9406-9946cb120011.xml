@@ -3,7 +3,7 @@
   <database-model serializer="dbm" dbms="POSTGRES" family-id="POSTGRES" format-version="4.52">
     <root id="1">
       <DateStyle>mdy</DateStyle>
-      <IntrospectionStateNumber>800</IntrospectionStateNumber>
+      <IntrospectionStateNumber>845</IntrospectionStateNumber>
       <ServerVersion>17.4</ServerVersion>
       <StartupTime>1741529667</StartupTime>
       <TimeZones>true ACDT
@@ -803,7 +803,7 @@ false Zulu
 13527||10|C|G
 13527||-9223372036854775808|U|G
 13527||10|U|G</Grants>
-      <IntrospectionStateNumber>800</IntrospectionStateNumber>
+      <IntrospectionStateNumber>845</IntrospectionStateNumber>
       <ObjectId>16390</ObjectId>
       <OwnerName>postgres</OwnerName>
     </database>
@@ -4248,8 +4248,8 @@ false Zulu
     <schema id="267" parent="3" name="public">
       <Comment>standard public schema</Comment>
       <Current>1</Current>
-      <IntrospectionStateNumber>800</IntrospectionStateNumber>
-      <LastIntrospectionLocalTimestamp>2025-03-16.13:20:14</LastIntrospectionLocalTimestamp>
+      <IntrospectionStateNumber>845</IntrospectionStateNumber>
+      <LastIntrospectionLocalTimestamp>2025-03-21.12:08:12</LastIntrospectionLocalTimestamp>
       <ObjectId>2200</ObjectId>
       <StateNumber>531</StateNumber>
       <OwnerName>pg_database_owner</OwnerName>
@@ -7617,25 +7617,31 @@ false Zulu
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>postgres</OwnerName>
     </table>
-    <table id="513" parent="267" name="polls">
+    <table id="513" parent="267" name="poll_likes">
+      <ObjectId>16507</ObjectId>
+      <StateNumber>830</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>postgres</OwnerName>
+    </table>
+    <table id="514" parent="267" name="polls">
       <ObjectId>16483</ObjectId>
       <StateNumber>794</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>postgres</OwnerName>
     </table>
-    <table id="514" parent="267" name="user_profiles">
+    <table id="515" parent="267" name="user_profiles">
       <ObjectId>16440</ObjectId>
       <StateNumber>799</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>postgres</OwnerName>
     </table>
-    <table id="515" parent="267" name="users">
+    <table id="516" parent="267" name="users">
       <ObjectId>16391</ObjectId>
       <StateNumber>770</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>postgres</OwnerName>
     </table>
-    <column id="516" parent="512" name="id">
+    <column id="517" parent="512" name="id">
       <DasType>uuid|0s</DasType>
       <DefaultExpression>gen_random_uuid()</DefaultExpression>
       <NotNull>1</NotNull>
@@ -7643,20 +7649,20 @@ false Zulu
       <StateNumber>795</StateNumber>
       <TypeId>2950</TypeId>
     </column>
-    <column id="517" parent="512" name="poll_id">
+    <column id="518" parent="512" name="poll_id">
       <DasType>uuid|0s</DasType>
       <Position>2</Position>
       <StateNumber>795</StateNumber>
       <TypeId>2950</TypeId>
     </column>
-    <column id="518" parent="512" name="text">
+    <column id="519" parent="512" name="text">
       <DasType>varchar(50)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>3</Position>
       <StateNumber>795</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <foreign-key id="519" parent="512" name="poll_answer_options_poll_id_fkey">
+    <foreign-key id="520" parent="512" name="poll_answer_options_poll_id_fkey">
       <ColNames>poll_id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16501</ObjectId>
@@ -7664,7 +7670,7 @@ false Zulu
       <RefKeyColPositions>1</RefKeyColPositions>
       <RefTableId>16483</RefTableId>
     </foreign-key>
-    <index id="520" parent="512" name="poll_answer_options_pkey">
+    <index id="521" parent="512" name="poll_answer_options_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16499</ObjectId>
@@ -7673,14 +7679,64 @@ false Zulu
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="521" parent="512" name="poll_answer_options_pkey">
+    <key id="522" parent="512" name="poll_answer_options_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16500</ObjectId>
       <Primary>1</Primary>
       <StateNumber>795</StateNumber>
       <UnderlyingIndexId>16499</UnderlyingIndexId>
     </key>
-    <column id="522" parent="513" name="id">
+    <column id="523" parent="513" name="user_id">
+      <DasType>uuid|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>830</StateNumber>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="524" parent="513" name="poll_id">
+      <DasType>uuid|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StateNumber>830</StateNumber>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="525" parent="513" name="created_at">
+      <DasType>timestamp|0s</DasType>
+      <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
+      <Position>3</Position>
+      <StateNumber>830</StateNumber>
+      <TypeId>1114</TypeId>
+    </column>
+    <foreign-key id="526" parent="513" name="fk_user">
+      <ColNames>user_id</ColNames>
+      <ObjectId>16513</ObjectId>
+      <OnDelete>cascade</OnDelete>
+      <StateNumber>830</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>16391</RefTableId>
+    </foreign-key>
+    <foreign-key id="527" parent="513" name="fk_poll">
+      <ColNames>poll_id</ColNames>
+      <ObjectId>16518</ObjectId>
+      <OnDelete>cascade</OnDelete>
+      <StateNumber>830</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>16483</RefTableId>
+    </foreign-key>
+    <index id="528" parent="513" name="unique_user_poll">
+      <ColNames>user_id
+poll_id</ColNames>
+      <ObjectId>16511</ObjectId>
+      <StateNumber>830</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="529" parent="513" name="unique_user_poll">
+      <ObjectId>16512</ObjectId>
+      <StateNumber>830</StateNumber>
+      <UnderlyingIndexId>16511</UnderlyingIndexId>
+    </key>
+    <column id="530" parent="514" name="id">
       <DasType>uuid|0s</DasType>
       <DefaultExpression>gen_random_uuid()</DefaultExpression>
       <NotNull>1</NotNull>
@@ -7688,34 +7744,34 @@ false Zulu
       <StateNumber>794</StateNumber>
       <TypeId>2950</TypeId>
     </column>
-    <column id="523" parent="513" name="created_by">
+    <column id="531" parent="514" name="created_by">
       <DasType>uuid|0s</DasType>
       <Position>2</Position>
       <StateNumber>794</StateNumber>
       <TypeId>2950</TypeId>
     </column>
-    <column id="524" parent="513" name="question">
+    <column id="532" parent="514" name="question">
       <DasType>varchar(50)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>3</Position>
       <StateNumber>794</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <column id="525" parent="513" name="votes_number">
+    <column id="533" parent="514" name="votes_number">
       <DasType>integer|0s</DasType>
       <DefaultExpression>0</DefaultExpression>
       <Position>4</Position>
       <StateNumber>794</StateNumber>
       <TypeId>23</TypeId>
     </column>
-    <column id="526" parent="513" name="ends_in">
+    <column id="534" parent="514" name="ends_in">
       <DasType>timestamp with time zone|0s</DasType>
       <NotNull>1</NotNull>
       <Position>5</Position>
       <StateNumber>794</StateNumber>
       <TypeId>1184</TypeId>
     </column>
-    <foreign-key id="527" parent="513" name="polls_created_by_fkey">
+    <foreign-key id="535" parent="514" name="polls_created_by_fkey">
       <ColNames>created_by</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16490</ObjectId>
@@ -7723,7 +7779,7 @@ false Zulu
       <RefKeyColPositions>1</RefKeyColPositions>
       <RefTableId>16391</RefTableId>
     </foreign-key>
-    <index id="528" parent="513" name="polls_pkey">
+    <index id="536" parent="514" name="polls_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16488</ObjectId>
@@ -7732,42 +7788,42 @@ false Zulu
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="529" parent="513" name="polls_pkey">
+    <key id="537" parent="514" name="polls_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16489</ObjectId>
       <Primary>1</Primary>
       <StateNumber>794</StateNumber>
       <UnderlyingIndexId>16488</UnderlyingIndexId>
     </key>
-    <column id="530" parent="514" name="user_id">
+    <column id="538" parent="515" name="user_id">
       <DasType>uuid|0s</DasType>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>770</StateNumber>
       <TypeId>2950</TypeId>
     </column>
-    <column id="531" parent="514" name="followers_number">
+    <column id="539" parent="515" name="followers_number">
       <DasType>integer|0s</DasType>
       <DefaultExpression>0</DefaultExpression>
       <Position>2</Position>
       <StateNumber>770</StateNumber>
       <TypeId>23</TypeId>
     </column>
-    <column id="532" parent="514" name="image">
+    <column id="540" parent="515" name="image">
       <DasType>text|0s</DasType>
       <DefaultExpression>&apos;https://example.com/default-avatar.jpg&apos;::text</DefaultExpression>
       <Position>3</Position>
       <StateNumber>770</StateNumber>
       <TypeId>25</TypeId>
     </column>
-    <column id="533" parent="514" name="bio">
+    <column id="541" parent="515" name="bio">
       <DasType>text|0s</DasType>
       <DefaultExpression>&apos;Find me on other social media&apos;::text</DefaultExpression>
       <Position>4</Position>
       <StateNumber>799</StateNumber>
       <TypeId>25</TypeId>
     </column>
-    <foreign-key id="534" parent="514" name="user_profiles_user_id_fkey">
+    <foreign-key id="542" parent="515" name="user_profiles_user_id_fkey">
       <ColNames>user_id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16449</ObjectId>
@@ -7776,7 +7832,7 @@ false Zulu
       <RefKeyColPositions>1</RefKeyColPositions>
       <RefTableId>16391</RefTableId>
     </foreign-key>
-    <index id="535" parent="514" name="user_profiles_pkey">
+    <index id="543" parent="515" name="user_profiles_pkey">
       <ColNames>user_id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16447</ObjectId>
@@ -7785,14 +7841,14 @@ false Zulu
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="536" parent="514" name="user_profiles_pkey">
+    <key id="544" parent="515" name="user_profiles_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16448</ObjectId>
       <Primary>1</Primary>
       <StateNumber>770</StateNumber>
       <UnderlyingIndexId>16447</UnderlyingIndexId>
     </key>
-    <column id="537" parent="515" name="id">
+    <column id="545" parent="516" name="id">
       <DasType>uuid|0s</DasType>
       <DefaultExpression>gen_random_uuid()</DefaultExpression>
       <NotNull>1</NotNull>
@@ -7800,35 +7856,35 @@ false Zulu
       <StateNumber>756</StateNumber>
       <TypeId>2950</TypeId>
     </column>
-    <column id="538" parent="515" name="username">
+    <column id="546" parent="516" name="username">
       <DasType>varchar(50)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StateNumber>756</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <column id="539" parent="515" name="email">
+    <column id="547" parent="516" name="email">
       <DasType>varchar(100)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>3</Position>
       <StateNumber>756</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <column id="540" parent="515" name="password_hash">
+    <column id="548" parent="516" name="password_hash">
       <DasType>text|0s</DasType>
       <NotNull>1</NotNull>
       <Position>4</Position>
       <StateNumber>756</StateNumber>
       <TypeId>25</TypeId>
     </column>
-    <column id="541" parent="515" name="created_at">
+    <column id="549" parent="516" name="created_at">
       <DasType>timestamp with time zone|0s</DasType>
       <DefaultExpression>now()</DefaultExpression>
       <Position>5</Position>
       <StateNumber>756</StateNumber>
       <TypeId>1184</TypeId>
     </column>
-    <index id="542" parent="515" name="users_pkey">
+    <index id="550" parent="516" name="users_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16398</ObjectId>
@@ -7837,7 +7893,7 @@ false Zulu
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <index id="543" parent="515" name="users_username_key">
+    <index id="551" parent="516" name="users_username_key">
       <ColNames>username</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16400</ObjectId>
@@ -7848,7 +7904,7 @@ false Zulu
       <CollationIds>100</CollationIds>
       <CollationParentNames>pg_catalog</CollationParentNames>
     </index>
-    <index id="544" parent="515" name="users_email_key">
+    <index id="552" parent="516" name="users_email_key">
       <ColNames>email</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16402</ObjectId>
@@ -7859,20 +7915,20 @@ false Zulu
       <CollationIds>100</CollationIds>
       <CollationParentNames>pg_catalog</CollationParentNames>
     </index>
-    <key id="545" parent="515" name="users_pkey">
+    <key id="553" parent="516" name="users_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16399</ObjectId>
       <Primary>1</Primary>
       <StateNumber>756</StateNumber>
       <UnderlyingIndexId>16398</UnderlyingIndexId>
     </key>
-    <key id="546" parent="515" name="users_username_key">
+    <key id="554" parent="516" name="users_username_key">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16401</ObjectId>
       <StateNumber>756</StateNumber>
       <UnderlyingIndexId>16400</UnderlyingIndexId>
     </key>
-    <key id="547" parent="515" name="users_email_key">
+    <key id="555" parent="516" name="users_email_key">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16403</ObjectId>
       <StateNumber>756</StateNumber>

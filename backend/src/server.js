@@ -11,17 +11,12 @@ const app = express();
 app.use(express.json());
 
 // Function to generate JWT
-function generateToken(username) {
+function generateToken({id, username}) {
     //const expirationTime = '15m'; // Token expires in 1 hour
     //return jwt.sign({ username }, SECRET_KEY, { expiresIn: expirationTime });
-    return jwt.sign({ username }, SECRET_KEY);//let's make it non-expirale for convenience
+    return jwt.sign({ id, username }, SECRET_KEY);//let's make it non-expirale for convenience
     //always restart to apply changes
     //that's new
-}
-
-// Function to generate JWT
-function generateRefreshToken(username) {
-    return jwt.sign({ username }, SECRET_KEY);
 }
 
 app.post("/register", async (req, res, next) => {
@@ -68,7 +63,7 @@ app.post('/login', async (req, res, next) => {
 
         // Перевіряємо, чи вже існує користувач з таким ім'ям або email
         const existingUsers = await pool.query(
-            "SELECT password_hash as password FROM users WHERE username = $1 OR email = $1",
+            "SELECT id, password_hash as password FROM users WHERE username = $1 OR email = $1",
             [login]
         );
 
@@ -81,9 +76,48 @@ app.post('/login', async (req, res, next) => {
         }
 
         // If credentials are correct, generate JWT token
-        const token = generateToken(login);
-        const refreshToken = generateRefreshToken(login);
-        return res.json({ message: 'Login successful', token, refreshToken });
+        const token = generateToken({id: existingUsers.rows[0].id, username: login});
+        return res.json({ message: 'Login successful', token });
+    }
+    catch (e) {
+        next(e);
+    }
+});
+
+// Login endpoint
+app.post('/polls/like', authMiddleware, async (req, res, next) => {
+    try {
+        const { pollId } = req.body;
+
+        // Перевіряємо, чи вже існує опросник
+        const poll = await pool.query(
+            "SELECT id as po FROM polls WHERE id = $1",
+            [pollId]
+        );
+
+        const likedPoll = await pool.query(
+            "SELECT poll_id FROM poll_likes WHERE poll_id = $1 AND user_id = $2",
+            [pollId, req.user.id]
+        );
+
+        if (poll.rows.length === 0) {
+            return res.status(400).json({ isLiked: false });
+        }
+
+        if (likedPoll.rows.length !== 0) {
+            await pool.query(
+                "DELETE FROM poll_likes WHERE poll_likes.poll_id = $1 AND user_id = $2",
+                [pollId, req.user.id]
+            );
+            return res.status(200).json({ isLiked: false });
+        }
+
+        await pool.query(
+            "INSERT INTO poll_likes(poll_id, user_id) VALUES ($1, $2)",
+            [pollId, req.user.id]
+        );
+
+        return res.json({ isLiked: true });
     }
     catch (e) {
         next(e);
@@ -157,14 +191,13 @@ app.get('/polls', authMiddleware, async (
 
 
     //let's try our new DAL function
-    const result = await fetchPolls();
+    const result = await fetchPolls(req.user.id);
     //we await, because fetchPolls return Promise
     //we'll talk later about this
     //bad thing we don't have a lot of server logging, but let's debug again
 
     res.json(result);
 });
-
 
 // Catch-all handler for undefined routes
 app.use(async (req, res) => {

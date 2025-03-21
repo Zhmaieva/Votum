@@ -7,44 +7,27 @@ import {fetchMyProfile, isLoggedIn} from "../../shared/api/apiClient";
 
 const FeedView = () => {
     const [refreshing, setRefreshing] = useState(false);
-    const [polls, setPolls] = useState(null);
+    const [polls, setPolls] = useState([]);
     const [loggedInUserId, setLoggedInUserId] = useState(null); // Store the user ID
 
     useEffect(() => {
         // Fetch user's profile to get their ID
-        const fetchUserProfile = async () => {
-            const profile = await fetchMyProfile();
-            if (profile?.userId) {
-                setLoggedInUserId(profile.userId);
+        fetchMyProfile().then(res => {
+            if (res?.userId) {
+                setLoggedInUserId(res.userId);
             }
-        };
+        });
 
         // Fetch polls data
         fetchPolls().then(res => setPolls(res));
-
-        fetchUserProfile(); // Fetch user profile on mount
     }, []);
 
     const onRefresh = () => {
         setRefreshing(true);
-        setTimeout(() => {
-            const newPolls = [
-                { id: String(Date.now()), question: 'What is your favorite sport?', options: ['Football', 'Basketball', 'Tennis', 'Swimming'] },
-                ...polls,
-            ];
-            setPolls(newPolls);
+        fetchPolls().then(res => {
+            setPolls(res.slice());
             setRefreshing(false);
-        }, 1500);
-    };
-
-    const handleVote = (pollId, selectedOption) => {
-        setPolls(polls.map(poll =>
-            poll.id === pollId ? {
-                ...poll,
-                results: { ...poll.results, [selectedOption]: (poll.results[selectedOption] || 0) + 1 },
-                totalVotes: poll.totalVotes + 1
-            } : poll
-        ));
+        });
     };
 
     if (!polls) return <ActivityIndicator size="large" color="#0000ff" />; // Show a loader while fetching
@@ -60,7 +43,7 @@ const FeedView = () => {
                     <View style={styles.container}>
                         <AwesomeCard
                             item={item}
-                            handleVote={handleVote}
+                            handleVote={() => {}}
                             loggedInUserId={loggedInUserId} // ✅ Now passing loggedInUserId
                         />
                     </View>

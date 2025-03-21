@@ -69,7 +69,7 @@ export const fetchMyProfile = async () => {
             bio: userProfile.bio || "bio here", // Fallback if bio is null or undefined
         };
     } catch (err) {
-        console.log('Auth failed, retrying login...', err);
+        console.log('My profile failed, retrying login...', err);
         await retryLogin();
     }
 };
@@ -82,10 +82,29 @@ export const fetchPolls = async () => {
                 Authorization: `Bearer ${await getToken()}`,
             },
         });
-        console.log('fetch user response: ' + JSON.stringify(response.data));
+        console.log('fetch polls response, total: ' + response.data.length);
+        console.log('response: ' + JSON.stringify(response.data));
         return response?.data;
     } catch (err) {
-        console.log('Auth failed, retrying login...', err);
+        console.log('Fetch failed, retrying login...', err);
+        await retryLogin();
+    }
+};
+
+export const likePoll = async (id) => {
+    try {
+        console.log(`liking poll ${id}`);
+        const response = await axios.post(`${BASE_URL}/polls/like`, {
+            pollId: id
+        }, {
+            headers: {
+                Authorization: `Bearer ${await getToken()}`,
+            },
+        });
+        console.log('like polls response: ' + JSON.stringify(response.data));
+        return response?.data;
+    } catch (err) {
+        console.log('Like failed, retrying login...', err);
         await retryLogin();
     }
 };
@@ -97,5 +116,21 @@ export const fetchUserProfile = async (userId) => {
         return response?.data;
     } catch (err) {
         console.error("Failed to fetch user profile", err);
+    }
+};
+
+const updateUserProfile = async (updatedData) => {
+    try {
+        const response = await fetch("https://yourapi.com/update-profile", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(updatedData),
+        });
+
+        if (!response.ok) throw new Error("Failed to update profile");
+
+        console.log("Profile updated successfully");
+    } catch (error) {
+        console.error(error);
     }
 };

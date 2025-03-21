@@ -45,7 +45,7 @@ const closedPollData = [
     }
 ];
 
-const MyUserProfileView = () => {
+const UserProfileView = () => {
     const [selectedOption, setSelectedOption] = useState("active");
 
     const [modalVisible, setModalVisible] = useState(false);
@@ -113,7 +113,7 @@ const MyUserProfileView = () => {
     );
 };
 
-export default MyUserProfileView;
+export default UserProfileView;
 
 const styles = StyleSheet.create({
     container: {
