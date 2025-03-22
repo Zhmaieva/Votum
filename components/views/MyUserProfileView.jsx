@@ -61,7 +61,9 @@ const MyUserProfileView = () => {
         <View style={styles.container}>
             <SafeAreaView style={styles.safeArea}>
                 <View style={styles.contentWrapper}>
-                    <AwesomeUserHeader userData={user} />
+                    <View style={styles.bottomMargin20}>
+                        <AwesomeUserHeader userData={user} />
+                    </View>
                     <View style={[styles.followersContainer, styles.row]}>
                         <View style={styles.followersLeftSubContainer}>
                             <Text style={styles.followersText}>21</Text>
@@ -76,6 +78,21 @@ const MyUserProfileView = () => {
                             <Text style={styles.followersText}>following</Text>
                         </View>
                     </View>
+
+
+                    {/*<View style={styles.testCont}>
+                        <View style={styles.one}>
+                            <Text>ONE</Text>
+                        </View>
+                        <View style={styles.two}>
+                            <Text>TWO</Text>
+                        </View>
+                        <View style={styles.three}>
+                            <Text>THREE</Text>
+                        </View>
+                    </View>*/}
+
+
                     <View style={styles.bottomMargin20}>
                         <AwesomeSwitcher
                             leftOption='active'
@@ -213,4 +230,25 @@ const styles = StyleSheet.create({
     invisible: {
         display: 'none'
     },
+
+
+
+
+
+    testCont: {
+        flexDirection: 'row',
+        flex: 1
+    },
+    one: {
+        backgroundColor: Colors.red,
+        flex: 1
+    },
+    two: {
+        backgroundColor: Colors.yellow,
+        flex: 3
+    },
+    three: {
+        backgroundColor: Colors.green,
+        flex: 1
+    }
 });

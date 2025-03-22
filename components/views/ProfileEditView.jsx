@@ -14,8 +14,9 @@ import * as ImagePicker from 'expo-image-picker';
 import AwesomeButton, {Color} from '../customComponents/AwesomeButton'; // Reuse your AwesomeButton component
 import { Ionicons } from '@expo/vector-icons';
 import AwesomeEmailInput  from '../customComponents/AwesomeEmailInput';
+import AwesomeEditButton from "../customComponents/AwesomeEditButton";
 
-const ProfileEditView = ({ navigation, route }) => {
+const ProfileEditView = ({ route }) => {
     const { user } = route.params; // Assume user data is passed via navigation params
 
     const [username, setUsername] = useState(user.userName);
@@ -78,30 +79,65 @@ const ProfileEditView = ({ navigation, route }) => {
                 </TouchableOpacity>
             </View>
 
-            <TextInput
-                style={styles.input}
-                value={username}
-                onChangeText={setUsername}
-                placeholder="Username"
-            />
+            <View style={styles.row}>
+                <View style={styles.headerStyle}>
+                    <Text>Username</Text>
+                </View>
+                <View style={styles.inputContainer}>
+                    {/*<TextInput
+                        style={styles.input}
+                        value={username}
+                        onChangeText={setUsername}
+                        placeholder="Username"
+                    />*/}
+                    <AwesomeEditButton
+                        screenName="Edit username"
+                        text="Yuliia Zhmaieva"
+                    />
+                </View>
+            </View>
 
-            <TextInput
-                style={styles.input}
-                value={bioD}
-                onChangeText={setBioD}
-                placeholder="Bio"
-                multiline
-                numberOfLines={4}
-            />
+            <View style={styles.row}>
+                <View style={styles.headerStyle}>
+                    <Text>Bio</Text>
+                </View>
+                <View style={styles.inputContainer}>
+                    {/*<TextInput
+                        style={styles.input}
+                        value={bioD}
+                        onChangeText={setBioD}
+                        placeholder="Bio"
+                        multiline
+                        numberOfLines={4}
+                    />*/}
+                    <AwesomeEditButton
+                        screenName="Edit bio"
+                        text="I am Yulka and I know it"
+                    />
+                </View>
+            </View>
 
-            <AwesomeEmailInput />
+            <View style={styles.row}>
+                <View style={styles.headerStyle}>
+                    <Text>Email</Text>
+                </View>
+                <View style={styles.inputContainer}>
+                    {/*<AwesomeEmailInput />*/}
+                    <AwesomeEditButton
+                        screenName="Edit email"
+                        text="zhmaievayuliia@gmail.com"
+                    />
+                </View>
+            </View>
 
-            <AwesomeButton
+            {/*<AwesomeButton
                 text="Save Profile"
                 screenName={null} // No navigation needed here since we're saving the profile
                 color={Color.GREEN}
                 additionalFunc={handleSaveProfile}
-            />
+            />*/}
+
+
 
             <AwesomeButton
                 text="Log out"
@@ -126,7 +162,6 @@ const styles = StyleSheet.create({
     profileImage: {
         width: 120,
         height: 120,
-        //borderRadius: 60,
         marginBottom: 10,
     },
     imagePickerButton: {
@@ -138,14 +173,24 @@ const styles = StyleSheet.create({
         padding: 5,
     },
     input: {
-        width: '100%',
         height: 40,
-        borderColor: Colors.grey,
-        borderWidth: 1,
-        //borderRadius: 8,
-        paddingHorizontal: 10,
+        borderColor: '#999',
+        borderBottomWidth: 1,
+        paddingHorizontal: 10
+    },
+    inputContainer: {
+        width: '74%',
+    },
+    row: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        width: '100%',
         marginBottom: 15,
     },
+    headerStyle: {
+        width: '26%',
+        justifyContent: "center"
+    }
 });
 
 export default ProfileEditView;

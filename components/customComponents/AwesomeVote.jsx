@@ -138,7 +138,7 @@ const AwesomeVote = ({
                                     <Animated.View
                                         style={[styles.resultBar, {
                                             width: animatedWidth,
-                                            backgroundColor: selected === option ? Colors.green : '#999',
+                                            backgroundColor: selected === option ? Colors.green : '#a1a1a1',
                                         }]}
                                     />
                                     <View style={styles.answerStyle}>

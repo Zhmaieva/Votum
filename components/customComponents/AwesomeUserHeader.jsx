@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Image } from "react-native";
 import { Colors } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from "./AwesomeButton";
+import ProfileEditView from "../views/ProfileEditView";
 
 const formatFollowers = (num) => {
     if (num >= 1_000_000_000) return (num / 1_000_000_000).toFixed(1) + 'B';
@@ -26,17 +27,24 @@ const AwesomeUserHeader = ({ userData, loggedInUserId }) => {
     const formattedFollowers = formatFollowers(user.followersNumber);
 
     return (
-        <View style={[styles.row, styles.bottomMargin18, styles.userContainer]}>
-            <View style={styles.row}>
+        <View style={[styles.row, styles.userContainer]}>
+
+            <View style={[styles.row, styles.firstSubContainer]}>
                 <View style={styles.avatar}>
                     <Image source={{ uri: user.image }} style={styles.avatar} />
                 </View>
-                <View style={styles.userSubContainer}>
-                    <Text style={[styles.font14, styles.userNameBold, styles.fontFamily]}>
+            </View>
+
+            <View style={[styles.row, styles.secondSubContainer]}>
+                <View style={styles.nameAndBio}>
+                    <Text style={[styles.font14, styles.userNameBold, styles.fontFamily]}
+                          numberOfLines={1}>
                         {user.userName}
                     </Text>
                     {isOwnProfile ? (
-                        <Text style={[styles.font14, styles.greyTextStyle, styles.fontFamily]}>
+                        <Text style={[styles.font14, styles.greyTextStyle, styles.fontFamily]}
+                              numberOfLines={2}
+                              ellipsizeMode="tail">
                             {user.bio}
                         </Text>
                     ) : (
@@ -46,16 +54,22 @@ const AwesomeUserHeader = ({ userData, loggedInUserId }) => {
                     )}
                 </View>
             </View>
-            {isOwnProfile ? (
-                <AwesomeButton
-                    color={Color.BLACK}
-                    text="Edit"
-                    screenName="ProfileEditView"
-                    params={{ user }}
-                />
-            ) : (
-                <AwesomeButton color={Color.BLACK} text="Follow" changedText="Unfollow" />
-            )}
+
+            <View style={styles.thirdSubContainer}>
+                <View style={styles.buttonContainer}>
+                    {isOwnProfile ? (
+                        <AwesomeButton
+                            color={Color.BLACK}
+                            text="Edit"
+                            screenName="Edit profile"
+                            params={{ user }}
+                        />
+                    ) : (
+                        <AwesomeButton color={Color.BLACK} text="Follow" changedText="Unfollow" />
+                    )}
+                </View>
+            </View>
+
         </View>
     );
 };
@@ -69,16 +83,10 @@ const styles = StyleSheet.create({
     row: {
         flexDirection: 'row',
     },
-    bottomMargin18: {
-        marginBottom: 18,
-    },
     avatar: {
         height: 46,
         width: 46,
         marginRight: 8,
-    },
-    userSubContainer: {
-        justifyContent: 'flex-end',
     },
     font14: {
         fontSize: 14,
@@ -90,7 +98,25 @@ const styles = StyleSheet.create({
         fontFamily: 'arial',
     },
     userContainer: {
-        justifyContent: 'space-between',
-        alignItems: 'flex-end',
+        width: '100%',
+    },
+    firstSubContainer: {
+        flex: 1,
+        //backgroundColor: Colors.blue,
+        //maxWidth: '70%',
+        alignItems: "flex-start"
+    },
+    secondSubContainer: {
+        flex: 4,
+        //backgroundColor: Colors.red,
+        alignItems: "flex-end"
+    },
+    thirdSubContainer: {
+        flex: 2,
+        //backgroundColor: Colors.green,
+        alignItems: "flex-end"
+    },
+    buttonContainer: {
+        width: 80
     },
 });

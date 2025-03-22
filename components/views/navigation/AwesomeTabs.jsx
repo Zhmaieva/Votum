@@ -1,4 +1,5 @@
 import React from 'react';
+import { TouchableOpacity, Text } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
@@ -10,6 +11,9 @@ import SearchView from '../SearchView';
 import AddView from "../AddView";
 import FeedView from "../FeedView";
 import ProfileEditView from "../ProfileEditView";
+import UserNameEditView from "../UserNameEditView";
+import BioEditView from "../BioEditView";
+import EmailEditView from "../EmailEditView";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -18,8 +22,41 @@ const Stack = createStackNavigator();
 function UserStack() {
     return (
         <Stack.Navigator id="Test">
-            <Stack.Screen name="UserProfile" component={MyUserProfileView} options={{ headerShown: true, gestureEnabled: true }} />
-            <Stack.Screen name="ProfileEditView" component={ProfileEditView} options={{ headerShown: true, gestureEnabled: true }} />
+            <Stack.Screen name="Profile" component={MyUserProfileView} options={{ headerShown: true, gestureEnabled: true }} />
+            <Stack.Screen name="Edit profile" component={ProfileEditView} options={{ headerShown: true, gestureEnabled: true }} />
+            <Stack.Screen name="Edit username"
+                          component={UserNameEditView}
+                          options={({ navigation }) => ({
+                              title: 'Edit Bio',
+                              headerRight: () => (
+                                  <TouchableOpacity onPress={() => navigation.goBack()} style={{ paddingRight: 15 }}>
+                                      <Text style={{ fontSize: 16, color: 'blue' }}>Done</Text>
+                                  </TouchableOpacity>
+                              ),
+                          })}
+            />
+            <Stack.Screen name="Edit bio"
+                          component={BioEditView}
+                          options={({ navigation }) => ({
+                              title: 'Edit Bio',
+                              headerRight: () => (
+                                  <TouchableOpacity onPress={() => navigation.goBack()} style={{ paddingRight: 15 }}>
+                                      <Text style={{ fontSize: 16, color: 'blue' }}>Done</Text>
+                                  </TouchableOpacity>
+                              ),
+                          })}
+            />
+            <Stack.Screen name="Edit email"
+                          component={EmailEditView}
+                          options={({ navigation }) => ({
+                              title: 'Edit Bio',
+                              headerRight: () => (
+                                  <TouchableOpacity onPress={() => navigation.goBack()} style={{ paddingRight: 15 }}>
+                                      <Text style={{ fontSize: 16, color: 'blue' }}>Done</Text>
+                                  </TouchableOpacity>
+                              ),
+                          })}
+            />
         </Stack.Navigator>
     );
 }

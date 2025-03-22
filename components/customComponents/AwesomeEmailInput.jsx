@@ -99,8 +99,8 @@ export default AwesomeEmailInput;
 
 const styles = StyleSheet.create({
     input: {
-        borderWidth: 1,
-        borderColor: Colors.black,
+        borderBottomWidth: 1,
+        borderBottomColor: Colors.lightGrey,
         color: Colors.black,
         paddingVertical: 10,
         paddingRight: 10,
@@ -109,10 +109,11 @@ const styles = StyleSheet.create({
         height: 40,
         fontFamily: 'san-serif',
         backgroundColor: Colors.white,
-        paddingLeft: 5
+        paddingLeft: 10
     },
     wrongEmail: {
         marginTop: 2,
+        marginLeft: 10,
         fontSize: 12,
         color: Colors.red,
         fontFamily: 'san-serif',
