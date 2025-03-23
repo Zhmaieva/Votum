@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, StyleSheet } from 'react-native';
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
 import { Colors } from '../../utils/colorUtils';
-import AwesomeButton, {Color} from '../customComponents/AwesomeButton';
 import AwesomeEmailInput from "../customComponents/AwesomeEmailInput"; // Reuse your AwesomeButton component
 
-const EmailEditView = ({ navigation, route }) => {
+const EmailEditView = ({route }) => {
+
+    const { text } = route.params || {};
 
     return (
         <View style={styles.container}>
-            <AwesomeEmailInput />
+            <AwesomeEmailInput value={text}/>
         </View>
     );
 };

@@ -15,7 +15,7 @@ export default function App() {
         // Automatically attempt to login when the app comes back from the background
         const subscription = AppState.addEventListener('change', async (nextAppState) => {
             if (nextAppState === 'active') {
-                await login(); // Attempt login when app goes back to active state
+                //await login(); // Attempt login when app goes back to active state
             }
         });
 

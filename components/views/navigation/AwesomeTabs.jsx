@@ -14,6 +14,8 @@ import ProfileEditView from "../ProfileEditView";
 import UserNameEditView from "../UserNameEditView";
 import BioEditView from "../BioEditView";
 import EmailEditView from "../EmailEditView";
+import {updateUserProfile} from "../../../shared/api/apiClient";
+import {getDataService} from "../../../shared/common";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -27,9 +29,12 @@ function UserStack() {
             <Stack.Screen name="Edit username"
                           component={UserNameEditView}
                           options={({ navigation }) => ({
-                              title: 'Edit Bio',
+                              title: 'Edit Username',
                               headerRight: () => (
-                                  <TouchableOpacity onPress={() => navigation.goBack()} style={{ paddingRight: 15 }}>
+                                  <TouchableOpacity onPress={() => {
+                                      updateUserProfile({username: getDataService().getUser()?.userName}).then();
+                                      navigation.goBack();
+                                  }} style={{ paddingRight: 15 }}>
                                       <Text style={{ fontSize: 16, color: 'blue' }}>Done</Text>
                                   </TouchableOpacity>
                               ),
@@ -40,7 +45,10 @@ function UserStack() {
                           options={({ navigation }) => ({
                               title: 'Edit Bio',
                               headerRight: () => (
-                                  <TouchableOpacity onPress={() => navigation.goBack()} style={{ paddingRight: 15 }}>
+                                  <TouchableOpacity onPress={() => {
+                                      updateUserProfile({bio: getDataService().getUser()?.bio}).then();
+                                      navigation.goBack();
+                                  }} style={{ paddingRight: 15 }}>
                                       <Text style={{ fontSize: 16, color: 'blue' }}>Done</Text>
                                   </TouchableOpacity>
                               ),
@@ -49,9 +57,13 @@ function UserStack() {
             <Stack.Screen name="Edit email"
                           component={EmailEditView}
                           options={({ navigation }) => ({
-                              title: 'Edit Bio',
+                              title: 'Edit Email',
                               headerRight: () => (
-                                  <TouchableOpacity onPress={() => navigation.goBack()} style={{ paddingRight: 15 }}>
+                                  <TouchableOpacity onPress={() => {
+                                      updateUserProfile({email: getDataService().getUser()?.email}).then();
+                                      navigation.goBack();
+                                    }
+                                  } style={{ paddingRight: 15 }}>
                                       <Text style={{ fontSize: 16, color: 'blue' }}>Done</Text>
                                   </TouchableOpacity>
                               ),

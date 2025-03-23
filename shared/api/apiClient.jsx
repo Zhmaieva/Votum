@@ -13,10 +13,6 @@ export const isLoggedIn = async function() {
     return await AsyncStorage.getItem('auth_token');
 }
 
-setTimeout(async () => {
-    await AsyncStorage.clear();
-}, 5000)
-
 const hardcodedCredentials = {
     login: 'zhmaievayuliia@google.com',
     password: 'securepassword',
@@ -42,7 +38,7 @@ const retryLogin = async () => {
     if (storedToken && !tokenValue) {
         tokenValue = storedToken;
     } else {
-        await login(); // Trigger login if no token is stored
+        //await login(); // Trigger login if no token is stored
     }
 };
 
@@ -119,17 +115,16 @@ export const fetchUserProfile = async (userId) => {
     }
 };
 
-const updateUserProfile = async (updatedData) => {
+export const updateUserProfile = async (updatedData) => {
     try {
-        const response = await fetch("https://yourapi.com/update-profile", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(updatedData),
+        console.log(`updating profile data ${JSON.stringify(updatedData)}`);
+        const response = await axios.put(`${BASE_URL}/profile`, updatedData, {
+            headers: {
+                Authorization: `Bearer ${await getToken()}`,
+            },
         });
-
-        if (!response.ok) throw new Error("Failed to update profile");
-
-        console.log("Profile updated successfully");
+        console.log('update profile response: ' + JSON.stringify(response.data));
+        return response?.data;
     } catch (error) {
         console.error(error);
     }

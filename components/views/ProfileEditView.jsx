@@ -2,12 +2,10 @@ import React, { useState, useEffect } from 'react';
 import {
     View,
     Text,
-    TextInput,
     TouchableOpacity,
     StyleSheet,
     Image,
     Alert,
-    Platform
 } from 'react-native';
 import { Colors } from '../../utils/colorUtils'; // assuming Colors is your utility file for color styles
 import * as ImagePicker from 'expo-image-picker';
@@ -15,25 +13,36 @@ import AwesomeButton, {Color} from '../customComponents/AwesomeButton'; // Reuse
 import { Ionicons } from '@expo/vector-icons';
 import AwesomeEmailInput  from '../customComponents/AwesomeEmailInput';
 import AwesomeEditButton from "../customComponents/AwesomeEditButton";
+import {fetchMyProfile, fetchUserProfile} from "../../shared/api/apiClient";
+import {getDataService} from "../../shared/common";
+import {useFocusEffect} from "@react-navigation/native";
 
 const ProfileEditView = ({ route }) => {
-    const { user } = route.params; // Assume user data is passed via navigation params
+    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
+    const [bioD, setBioD] = useState('');
+    const [profileImage, setProfileImage] = useState('');
 
-    const [username, setUsername] = useState(user.userName);
-    const [bioD, setBioD] = useState(user.bio);
-    const [profileImage, setProfileImage] = useState(user.image);
+    const dataService = getDataService();
 
-    const handleSave = () => {
+    useFocusEffect(() => {
+        const savedEmail = dataService.getUser()?.email;
+        if (savedEmail) // immediately get last locally saved email
+            setEmail(savedEmail);
 
-    };
+        if (!dataService.getUser()) { // fallback to fetching data from server if no local temp data
+            fetchMyProfile().then(res => {
+                if (res?.userName) {
+                    setUsername(res.userName);
+                    setEmail(res.email);
+                    setBioD(res.bio);
+                    setProfileImage(res.image);
 
-    useEffect(() => {
-        if (user) {
-            setUsername(user.userName);
-            setBioD(user.bio);
-            setProfileImage(user.image);
+                    dataService.setUser(res);
+                }
+            });
         }
-    }, [user]);
+    });
 
     const handleImagePick = async () => {
         const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -50,21 +59,6 @@ const ProfileEditView = ({ route }) => {
         if (!result.canceled) {
             setProfileImage(result.assets[0].uri);
         }
-    };
-
-    const handleSaveProfile = () => {
-        // Perform any validation before saving
-        if (username.trim() === '' || bioD.trim() === '') {
-            Alert.alert('Error', 'Username and bio cannot be empty');
-            return;
-        }
-
-        // Here you would send the updated data to your backend or context provider
-        // For now, let's just show an alert for the sake of this example
-        Alert.alert('Profile Updated', 'Your profile has been updated successfully');
-        navigation.goBack(); // Go back to the previous screen after saving
-        const updatedData = { username, bioD };
-        onSave(updatedData);  // Calls the function from the parent
     };
 
     return (
@@ -84,15 +78,9 @@ const ProfileEditView = ({ route }) => {
                     <Text>Username</Text>
                 </View>
                 <View style={styles.inputContainer}>
-                    {/*<TextInput
-                        style={styles.input}
-                        value={username}
-                        onChangeText={setUsername}
-                        placeholder="Username"
-                    />*/}
                     <AwesomeEditButton
                         screenName="Edit username"
-                        text="Yuliia Zhmaieva"
+                        text={username}
                     />
                 </View>
             </View>
@@ -102,17 +90,9 @@ const ProfileEditView = ({ route }) => {
                     <Text>Bio</Text>
                 </View>
                 <View style={styles.inputContainer}>
-                    {/*<TextInput
-                        style={styles.input}
-                        value={bioD}
-                        onChangeText={setBioD}
-                        placeholder="Bio"
-                        multiline
-                        numberOfLines={4}
-                    />*/}
                     <AwesomeEditButton
                         screenName="Edit bio"
-                        text="I am Yulka and I know it"
+                        text={bioD}
                     />
                 </View>
             </View>
@@ -122,28 +102,17 @@ const ProfileEditView = ({ route }) => {
                     <Text>Email</Text>
                 </View>
                 <View style={styles.inputContainer}>
-                    {/*<AwesomeEmailInput />*/}
                     <AwesomeEditButton
                         screenName="Edit email"
-                        text="zhmaievayuliia@gmail.com"
+                        text={email}
                     />
                 </View>
             </View>
-
-            {/*<AwesomeButton
-                text="Save Profile"
-                screenName={null} // No navigation needed here since we're saving the profile
-                color={Color.GREEN}
-                additionalFunc={handleSaveProfile}
-            />*/}
-
-
 
             <AwesomeButton
                 text="Log out"
                 color={Color.BLACK}
                 screenName={null}
-                additionalFunc={handleSaveProfile}
             />
         </View>
     );

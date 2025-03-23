@@ -89,29 +89,6 @@ app.post('/polls/like', authMiddleware, async (req, res, next) => {
     try {
         const { pollId } = req.body;
 
-        // Перевіряємо, чи вже існує опросник
-        const poll = await pool.query(
-            "SELECT id as po FROM polls WHERE id = $1",
-            [pollId]
-        );
-
-        const likedPoll = await pool.query(
-            "SELECT poll_id FROM poll_likes WHERE poll_id = $1 AND user_id = $2",
-            [pollId, req.user.id]
-        );
-
-        if (poll.rows.length === 0) {
-            return res.status(400).json({ isLiked: false });
-        }
-
-        if (likedPoll.rows.length !== 0) {
-            await pool.query(
-                "DELETE FROM poll_likes WHERE poll_likes.poll_id = $1 AND user_id = $2",
-                [pollId, req.user.id]
-            );
-            return res.status(200).json({ isLiked: false });
-        }
-
         await pool.query(
             "INSERT INTO poll_likes(poll_id, user_id) VALUES ($1, $2)",
             [pollId, req.user.id]
@@ -121,6 +98,34 @@ app.post('/polls/like', authMiddleware, async (req, res, next) => {
     }
     catch (e) {
         next(e);
+    }
+});
+
+//lets add a new endpoint
+app.put('/profile', authMiddleware, async (req, res) => {
+    try {
+        const { username, bio, email } = req.body;
+
+        const updateUsersSql = `UPDATE users
+         SET
+             userName = COALESCE(NULLIF($1, NULL), userName),
+             email = COALESCE(NULLIF($2, NULL), email)
+         WHERE id = $3;`
+
+        const updateProfilesSql = `UPDATE user_profiles
+         SET
+             bio = COALESCE(NULLIF($1, NULL), bio)
+         WHERE user_id = $2;`
+
+        await Promise.all([
+            pool.query(updateUsersSql, [username, email, req.user.id]),
+            pool.query(updateProfilesSql, [bio, req.user.id])
+        ]);
+
+        res.json({message: 'profile updated.'});
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
     }
 });
 
@@ -135,8 +140,8 @@ app.get('/profile', authMiddleware, async (req, res) => {
                  up.bio
              FROM users u
                       JOIN user_profiles up ON u.id = up.user_id
-             WHERE u.username = $1 OR u.email = $1`,
-            [req.user.username]
+             WHERE u.id = $1`,
+            [req.user.id]
         );
 
         const user = existingUsers.rows[0];

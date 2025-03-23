@@ -19,3 +19,20 @@ export const onShare = async () => {
         Alert.alert(error.message);
     }
 };
+
+// An object serving as a temporary local data storage to exchange between components
+// Resets when app does so
+class DataService {
+    user = null;
+
+    setUser(value) {
+        this.user = value;
+    }
+
+    getUser() {
+        return this.user;
+    }
+}
+const service = new DataService()
+
+export const getDataService = () => service;

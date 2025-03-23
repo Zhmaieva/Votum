@@ -1,13 +1,10 @@
 import {
     Text,
     StyleSheet,
-    Pressable,
-    Animated,
     TouchableWithoutFeedback,
-    Modal,
     View
 } from 'react-native';
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { Colors } from '../../utils/colorUtils';
 
@@ -18,25 +15,21 @@ export default function AwesomeEditButton({
                                           additionalFunc,
                                       }) {
     const navigation = useNavigation();
-    const [buttonName, setButtonName] = useState(text);
-    const scaleValue = useState(new Animated.Value(1))[0];
-
     const onPressHandler = () => {
-
         if (screenName) {
+            params.text = text;
             navigation.navigate(screenName, params); // Pass params to navigation
         }
 
         if (additionalFunc) {
             additionalFunc();
         }
-
     };
 
     return (
         <TouchableWithoutFeedback onPress={onPressHandler}>
             <View style={styles.buttonMain}>
-                <Text style={styles.buttonMainText}>{buttonName}</Text>
+                <Text style={styles.buttonMainText}>{text}</Text>
             </View>
         </TouchableWithoutFeedback>
     );
