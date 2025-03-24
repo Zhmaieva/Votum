@@ -89,10 +89,10 @@ const AwesomeVote = ({
     }, [remainingTime]);
 
     return (
-        <View>
-            <View style={styles.row}>
-                <Text style={styles.qTextStyle}>Q: </Text>
-                <Text style={styles.title}>{question}</Text>
+        <View style={styles.container}>
+            <View style={[styles.row, styles.questionContainer]}>
+                <Text style={[styles.qTextStyle, styles.fontFamilyStyle]}>Q: </Text>
+                <Text style={[styles.title, styles.fontFamilyStyle]}>{question}</Text>
             </View>
             <View style={styles.votingFrame}>
                 <View style={[styles.controlSignsContainer, styles.row]}>
@@ -122,7 +122,7 @@ const AwesomeVote = ({
                 {!selected && !pollExpired ? (
                     options.map((option) => (
                         <TouchableOpacity key={option} style={styles.button} onPress={() => handleVote(option)}>
-                            <Text style={styles.buttonText}>{option}</Text>
+                            <Text style={[styles.buttonText, styles.fontFamilyStyle]} numberOfLines={2} ellipsizeMode="tail">{option}</Text>
                         </TouchableOpacity>
                     ))
                 ) : (
@@ -138,28 +138,31 @@ const AwesomeVote = ({
                                     <Animated.View
                                         style={[styles.resultBar, {
                                             width: animatedWidth,
-                                            backgroundColor: selected === option ? Colors.green : '#a1a1a1',
+                                            backgroundColor: selected === option ? Colors.green : '#d5d6d5',
                                         }]}
                                     />
                                     <View style={styles.answerStyle}>
                                         <Text style={[styles.answerTextStyle, {
                                             color: Colors.black,
-                                            fontWeight: selected === option ? "500" : "400"
+                                            fontWeight: selected === option ? "700" : "400"
                                         }]}>
                                             {option}
                                         </Text>
                                     </View>
                                 </View>
                                 <View style={styles.resultsNumberContainer}>
-                                    <Text style={styles.buttonText}>{results[option] || 0}%</Text>
+                                    <Text style={[styles.buttonText, styles.fontFamilyStyle, {
+                                        color: Colors.black,
+                                        fontWeight: selected === option ? "700" : "400"
+                                        }]}>{results[option] || 0}%</Text>
                                 </View>
                             </View>
                         );
                     })
                 )}
                 <View style={[styles.countStyle, styles.row]}>
-                    <Text style={styles.greyTextStyle}>{pollExpired ? "Expired" : `Ends in ${formatTimeLeft(remainingTime)}`}</Text>
-                    <Text style={styles.greyTextStyle}>{formatFollowers(totalVotes)} voted</Text>
+                    <Text style={[styles.greyTextStyle, styles.fontFamilyStyle]}>{pollExpired ? "Expired" : `Ends in ${formatTimeLeft(remainingTime)}`}</Text>
+                    <Text style={[styles.greyTextStyle, styles.fontFamilyStyle]}>{formatFollowers(totalVotes)} voted</Text>
                 </View>
             </View>
             <Modal animationType="fade" transparent={true} visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
@@ -185,6 +188,9 @@ const AwesomeVote = ({
 export default AwesomeVote;
 
 const styles = StyleSheet.create({
+    container: {
+        width: '100%'
+    },
     title: {
         fontWeight: '500',
         fontSize: 18
@@ -209,6 +215,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
+        paddingRight: 3
     },
     buttonText: {
         color: Colors.grey,
@@ -227,8 +234,8 @@ const styles = StyleSheet.create({
     bottomMargin10: {
         marginBottom: 10
     },
-    fontFamily: {
-        fontFamily: 'arial'
+    fontFamilyStyle: {
+        fontFamily: 'Arial'
     },
     controlSignsContainer: {
         justifyContent: 'flex-end',
@@ -273,13 +280,13 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     qTextStyle: {
-        fontSize: 18
+        fontSize: 18,
+        fontWeight: 'bold'
     },
     answerStyle: {
         position: 'absolute',
         justifyContent: 'center',
         alignItems: 'center',
-        //backgroundColor: Colors.yellow,
         height: 40,
     },
     answerTextStyle: {
@@ -290,5 +297,11 @@ const styles = StyleSheet.create({
     rightPartBar: {
         height: 40,
         position: 'absolute'
+    },
+    questionContainer: {
+        width: '100%',
+        paddingRight: 20,
+        marginBottom: 5
+        //backgroundColor: Colors.yellow
     }
 });

@@ -1,7 +1,8 @@
 import React from "react";
-import { View } from "react-native";
+import {StyleSheet, View} from "react-native";
 import AwesomeUserHeader from "./AwesomeUserHeader";
 import AwesomeVote from "./AwesomeVote";
+import {Colors} from "../../utils/colorUtils";
 
 const AwesomeCard = ({ item, handleVote, loggedInUserId }) => {  // Pass loggedInUserId as a prop
 
@@ -12,10 +13,12 @@ const AwesomeCard = ({ item, handleVote, loggedInUserId }) => {  // Pass loggedI
 
     return (
         <View>
-            <AwesomeUserHeader
-                userData={item.user}
-                loggedInUserId={loggedInUserId} // Pass it down
-            />
+            <View style={styles.margin15}>
+                <AwesomeUserHeader
+                    userData={item.user}
+                    loggedInUserId={loggedInUserId} // Pass it down
+                />
+            </View>
             <AwesomeVote
                 key={item?.id ?? item}
                 id={item?.id ?? item}
@@ -34,3 +37,9 @@ const AwesomeCard = ({ item, handleVote, loggedInUserId }) => {  // Pass loggedI
 };
 
 export default AwesomeCard;
+
+const styles = StyleSheet.create({
+    margin15: {
+        marginBottom: 15
+    }
+});

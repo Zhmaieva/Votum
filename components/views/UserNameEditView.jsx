@@ -1,27 +1,37 @@
 import React, { useState, useEffect } from 'react';
-import {
-    View,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    StyleSheet,
-    Image,
-    Alert,
-    Platform
-} from 'react-native';
+import { View, Text, Modal, TouchableWithoutFeedback, TextInput, TouchableOpacity, StyleSheet, Image, Alert, Platform } from 'react-native';
 import { Colors } from '../../utils/colorUtils';
 import AwesomeButton, {Color} from '../customComponents/AwesomeButton'; // Reuse your AwesomeButton component
 
 const UserNameEditView = ({ navigation, route }) => {
+    const { text } = route.params || {};
+    const [username, setUsername] = useState(text || '');
+    const [isModalVisible, setModalVisible] = useState(false);
 
     return (
         <View style={styles.container}>
             <TextInput
                 style={styles.input}
-                //value={username}
-                //onChangeText={setUsername}
+                value={username}
+                onChangeText={setUsername}
                 placeholder="New username"
             />
+            <AwesomeButton
+                text="press"
+                color={Color.GREEN}
+                additionalFunc={() => setModalVisible(true)} />
+            <Modal visible={isModalVisible} transparent={true} animationType="fade">
+                <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
+                    <View style={styles.modalBackground}>
+                        <View style={styles.modalContainer}>
+                            <Text style={styles.modalText}>This username is already taken.</Text>
+                            <TouchableOpacity onPress={() => setModalVisible(false)}>
+                                <Text style={styles.modalButton}>OK</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </TouchableWithoutFeedback>
+            </Modal>
         </View>
     );
 };
@@ -39,7 +49,28 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         //borderTopWidth: 1,
         paddingHorizontal: 10
-    }
+    },
+    modalBackground: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0,0,0,0.5)',
+    },
+    modalContainer: {
+        backgroundColor: 'white',
+        padding: 20,
+        //borderRadius: 10,
+        alignItems: 'center',
+    },
+    modalText: {
+        fontSize: 16,
+        marginBottom: 10,
+    },
+    modalButton: {
+        color: Colors.green,
+        fontSize: 16,
+        marginTop: 10,
+    },
 });
 
 export default UserNameEditView;

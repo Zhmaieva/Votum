@@ -29,13 +29,14 @@ function UserStack() {
             <Stack.Screen name="Edit username"
                           component={UserNameEditView}
                           options={({ navigation }) => ({
-                              title: 'Edit Username',
+                              title: '',
+                              headerTintColor: Colors.green,
                               headerRight: () => (
                                   <TouchableOpacity onPress={() => {
                                       updateUserProfile({username: getDataService().getUser()?.userName}).then();
                                       navigation.goBack();
                                   }} style={{ paddingRight: 15 }}>
-                                      <Text style={{ fontSize: 16, color: 'blue' }}>Done</Text>
+                                      <Text style={{ fontSize: 16, color: Colors.green }}>Done</Text>
                                   </TouchableOpacity>
                               ),
                           })}
@@ -49,7 +50,7 @@ function UserStack() {
                                       updateUserProfile({bio: getDataService().getUser()?.bio}).then();
                                       navigation.goBack();
                                   }} style={{ paddingRight: 15 }}>
-                                      <Text style={{ fontSize: 16, color: 'blue' }}>Done</Text>
+                                      <Text style={{ fontSize: 16, color: Colors.green }}>Done</Text>
                                   </TouchableOpacity>
                               ),
                           })}
@@ -64,7 +65,7 @@ function UserStack() {
                                       navigation.goBack();
                                     }
                                   } style={{ paddingRight: 15 }}>
-                                      <Text style={{ fontSize: 16, color: 'blue' }}>Done</Text>
+                                      <Text style={{ fontSize: 16, color: Colors.green }}>Done</Text>
                                   </TouchableOpacity>
                               ),
                           })}

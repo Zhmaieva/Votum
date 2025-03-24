@@ -1,12 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-    View,
-    Text,
-    TouchableOpacity,
-    StyleSheet,
-    Image,
-    Alert,
-} from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 import { Colors } from '../../utils/colorUtils'; // assuming Colors is your utility file for color styles
 import * as ImagePicker from 'expo-image-picker';
 import AwesomeButton, {Color} from '../customComponents/AwesomeButton'; // Reuse your AwesomeButton component
@@ -30,6 +23,14 @@ const ProfileEditView = ({ route }) => {
         if (savedEmail) // immediately get last locally saved email
             setEmail(savedEmail);
 
+        const savedUsername = dataService.getUser()?.userName;
+        if (savedUsername) // immediately get last locally saved username
+            setUsername(savedUsername);
+
+        const savedBio = dataService.getUser()?.bio;
+        if (savedBio) // immediately get last locally saved bio
+            setBioD(savedBio);
+
         if (!dataService.getUser()) { // fallback to fetching data from server if no local temp data
             fetchMyProfile().then(res => {
                 if (res?.userName) {
@@ -37,7 +38,6 @@ const ProfileEditView = ({ route }) => {
                     setEmail(res.email);
                     setBioD(res.bio);
                     setProfileImage(res.image);
-
                     dataService.setUser(res);
                 }
             });
@@ -114,6 +114,13 @@ const ProfileEditView = ({ route }) => {
                 color={Color.BLACK}
                 screenName={null}
             />
+
+            <AwesomeButton
+                text="Delete profile"
+                color={Color.GREEN}
+                screenName={null}
+            />
+
         </View>
     );
 };

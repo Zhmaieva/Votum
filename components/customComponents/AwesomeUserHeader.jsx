@@ -36,7 +36,7 @@ const AwesomeUserHeader = ({ userData, loggedInUserId }) => {
             </View>
 
             <View style={[styles.row, styles.secondSubContainer]}>
-                <View style={styles.nameAndBio}>
+                <View>
                     <Text style={[styles.font14, styles.userNameBold, styles.fontFamily]}
                           numberOfLines={1}>
                         {user.userName}
@@ -102,18 +102,15 @@ const styles = StyleSheet.create({
     },
     firstSubContainer: {
         flex: 1,
-        //backgroundColor: Colors.blue,
-        //maxWidth: '70%',
-        alignItems: "flex-start"
+        alignItems: "flex-start",
+        marginRight: 5
     },
     secondSubContainer: {
         flex: 4,
-        //backgroundColor: Colors.red,
         alignItems: "flex-end"
     },
     thirdSubContainer: {
         flex: 2,
-        //backgroundColor: Colors.green,
         alignItems: "flex-end"
     },
     buttonContainer: {

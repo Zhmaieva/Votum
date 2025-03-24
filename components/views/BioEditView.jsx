@@ -4,7 +4,8 @@ import { Colors } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from "../customComponents/AwesomeButton";
 
 const BioEditView = ({ navigation, route }) => {
-    const [bio, setBio] = useState('');
+    const { text } = route.params || {};
+    const [bio, setBio] = useState(text || '');
     const charLimit = 30;
 
     return (
