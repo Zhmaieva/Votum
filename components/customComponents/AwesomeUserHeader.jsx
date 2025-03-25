@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Image } from "react-native";
 import { Colors } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from "./AwesomeButton";
-import ProfileEditView from "../views/ProfileEditView";
 
 const formatFollowers = (num) => {
     if (num >= 1_000_000_000) return (num / 1_000_000_000).toFixed(1) + 'B';
@@ -65,7 +64,10 @@ const AwesomeUserHeader = ({ userData, loggedInUserId }) => {
                             params={{ user }}
                         />
                     ) : (
-                        <AwesomeButton color={Color.BLACK} text="Follow" changedText="Unfollow" />
+                        <AwesomeButton
+                            color={Color.BLACK}
+                            text="Follow"
+                            changedText="Unfollow" />
                     )}
                 </View>
             </View>
@@ -111,6 +113,7 @@ const styles = StyleSheet.create({
     },
     thirdSubContainer: {
         flex: 2,
+        justifyContent: "flex-end",
         alignItems: "flex-end"
     },
     buttonContainer: {

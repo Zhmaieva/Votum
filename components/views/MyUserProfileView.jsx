@@ -6,6 +6,7 @@ import AwesomeUserHeader from "../customComponents/AwesomeUserHeader";
 import AwesomeSwitcher from "../customComponents/AwesomeSwitcher";
 import AwesomeFeed from "../customComponents/AwesomeFeed";
 import { fetchMyProfile } from "../../shared/api/apiClient";
+import {useFocusEffect} from "@react-navigation/native";
 
 const pollData = [
     {
@@ -57,6 +58,14 @@ const MyUserProfileView = () => {
             setUser(res);
         })
 
+    useFocusEffect(
+        React.useCallback(() => {
+            fetchMyProfile().then(res => {
+                setUser(res);
+            });
+        }, [])
+    );
+
     return (
         <View style={styles.container}>
             <SafeAreaView style={styles.safeArea}>
@@ -66,7 +75,7 @@ const MyUserProfileView = () => {
                     </View>
                     <View style={[styles.followersContainer, styles.row]}>
                         <View style={styles.followersLeftSubContainer}>
-                            <Text style={styles.followersText}>21</Text>
+                            <Text style={styles.followersText}>213</Text>
                             <Text style={styles.followersText}>polls</Text>
                         </View>
                         <View style={styles.followersCenterSubContainer}>
@@ -78,20 +87,6 @@ const MyUserProfileView = () => {
                             <Text style={styles.followersText}>following</Text>
                         </View>
                     </View>
-
-
-                    {/*<View style={styles.testCont}>
-                        <View style={styles.one}>
-                            <Text>ONE</Text>
-                        </View>
-                        <View style={styles.two}>
-                            <Text>TWO</Text>
-                        </View>
-                        <View style={styles.three}>
-                            <Text>THREE</Text>
-                        </View>
-                    </View>*/}
-
 
                     <View style={styles.bottomMargin20}>
                         <AwesomeSwitcher
@@ -230,25 +225,4 @@ const styles = StyleSheet.create({
     invisible: {
         display: 'none'
     },
-
-
-
-
-
-    testCont: {
-        flexDirection: 'row',
-        flex: 1
-    },
-    one: {
-        backgroundColor: Colors.red,
-        flex: 1
-    },
-    two: {
-        backgroundColor: Colors.yellow,
-        flex: 3
-    },
-    three: {
-        backgroundColor: Colors.green,
-        flex: 1
-    }
 });

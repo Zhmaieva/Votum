@@ -2,18 +2,29 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
 import { Colors } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from "../customComponents/AwesomeButton";
+import {getDataService} from "../../shared/common";
 
 const BioEditView = ({ navigation, route }) => {
     const { text } = route.params || {};
+
     const [bio, setBio] = useState(text || '');
     const charLimit = 30;
+
+    const handleCheckBio = async (text) => {
+        setBio(text);
+        try {
+            getDataService().getUser().bio = text;
+        } catch (error) {
+            console.error('Error saving bio:', error);
+        }
+    };
 
     return (
         <View style={styles.container}>
             <TextInput
                 style={styles.input}
                 value={bio}
-                onChangeText={setBio}
+                onChangeText={(text) => handleCheckBio(text)}
                 placeholder="New bio"
                 maxLength={charLimit}
             />

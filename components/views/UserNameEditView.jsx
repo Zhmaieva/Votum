@@ -2,18 +2,29 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Modal, TouchableWithoutFeedback, TextInput, TouchableOpacity, StyleSheet, Image, Alert, Platform } from 'react-native';
 import { Colors } from '../../utils/colorUtils';
 import AwesomeButton, {Color} from '../customComponents/AwesomeButton'; // Reuse your AwesomeButton component
+import {getDataService} from "../../shared/common";
 
 const UserNameEditView = ({ navigation, route }) => {
     const { text } = route.params || {};
+
     const [username, setUsername] = useState(text || '');
     const [isModalVisible, setModalVisible] = useState(false);
+
+    const handleCheckUsername = async (text) => {
+        setUsername(text);
+        try {
+            getDataService().getUser().userName = text;
+        } catch (error) {
+            console.error('Error saving username:', error);
+        }
+    };
 
     return (
         <View style={styles.container}>
             <TextInput
                 style={styles.input}
                 value={username}
-                onChangeText={setUsername}
+                onChangeText={(text) => handleCheckUsername(text)}
                 placeholder="New username"
             />
             <AwesomeButton

@@ -1,10 +1,9 @@
-import React from 'react';
-import { TouchableOpacity, Text } from 'react-native';
+import React, { useState } from 'react';
+import { TouchableOpacity, Text, ActivityIndicator } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from "../../../utils/colorUtils.js";
-
 import MyUserProfileView from "../MyUserProfileView";
 import LikedView from '../LikedView';
 import SearchView from '../SearchView';
@@ -16,12 +15,32 @@ import BioEditView from "../BioEditView";
 import EmailEditView from "../EmailEditView";
 import {updateUserProfile} from "../../../shared/api/apiClient";
 import {getDataService} from "../../../shared/common";
+import HeaderRightButton from "../../customComponents/HeaderRightButton";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
 // 🔹 Stack Navigator for "User" tab
 function UserStack() {
+
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleUpdateProfile = async (field, value, setIsLoading, navigation) => {
+        setIsLoading(true);
+        try {
+            const userData = getDataService().getUser();
+            const updatedData = { [field]: value };
+
+            // Update the user's profile with the dynamic field and value
+            await updateUserProfile(updatedData);
+            navigation.goBack();
+        } catch (error) {
+            console.error('Error updating profile:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     return (
         <Stack.Navigator id="Test">
             <Stack.Screen name="Profile" component={MyUserProfileView} options={{ headerShown: true, gestureEnabled: true }} />
@@ -29,44 +48,39 @@ function UserStack() {
             <Stack.Screen name="Edit username"
                           component={UserNameEditView}
                           options={({ navigation }) => ({
-                              title: '',
-                              headerTintColor: Colors.green,
+                              headerShown: true,
+                              gestureEnabled: true,
                               headerRight: () => (
-                                  <TouchableOpacity onPress={() => {
-                                      updateUserProfile({username: getDataService().getUser()?.userName}).then();
-                                      navigation.goBack();
-                                  }} style={{ paddingRight: 15 }}>
-                                      <Text style={{ fontSize: 16, color: Colors.green }}>Done</Text>
-                                  </TouchableOpacity>
+                                  <HeaderRightButton
+                                      onPress={() => handleUpdateProfile('username', getDataService().getUser()?.userName, setIsLoading, navigation)}
+                                      isLoading={isLoading}
+                                  />
                               ),
                           })}
             />
             <Stack.Screen name="Edit bio"
                           component={BioEditView}
                           options={({ navigation }) => ({
-                              title: 'Edit Bio',
+                              headerShown: true,
+                              gestureEnabled: true,
                               headerRight: () => (
-                                  <TouchableOpacity onPress={() => {
-                                      updateUserProfile({bio: getDataService().getUser()?.bio}).then();
-                                      navigation.goBack();
-                                  }} style={{ paddingRight: 15 }}>
-                                      <Text style={{ fontSize: 16, color: Colors.green }}>Done</Text>
-                                  </TouchableOpacity>
+                                  <HeaderRightButton
+                                      onPress={() => handleUpdateProfile('bio', getDataService().getUser()?.bio, setIsLoading, navigation)}
+                                      isLoading={isLoading}
+                                  />
                               ),
                           })}
             />
             <Stack.Screen name="Edit email"
                           component={EmailEditView}
                           options={({ navigation }) => ({
-                              title: 'Edit Email',
+                              headerShown: true,
+                              gestureEnabled: true,
                               headerRight: () => (
-                                  <TouchableOpacity onPress={() => {
-                                      updateUserProfile({email: getDataService().getUser()?.email}).then();
-                                      navigation.goBack();
-                                    }
-                                  } style={{ paddingRight: 15 }}>
-                                      <Text style={{ fontSize: 16, color: Colors.green }}>Done</Text>
-                                  </TouchableOpacity>
+                                  <HeaderRightButton
+                                      onPress={() => handleUpdateProfile('email', getDataService().getUser()?.email, setIsLoading, navigation)}
+                                      isLoading={isLoading}
+                                  />
                               ),
                           })}
             />
