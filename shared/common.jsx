@@ -30,12 +30,13 @@ class DataService {
     oldUser = null;
 
     error = {
-        userNameTaken: false
+        userNameTaken: false,
+        userNameEmpty: false
     };
 
     setUser(value) {
         this.user = value;
-        this.oldUser = Object.assign({}, value);
+        this.oldUser = { ...value };
     }
 
     getUser() {
@@ -43,21 +44,40 @@ class DataService {
     }
 
     setUserNameTakenError() {
+        this.resetErrors();
         this.error.userNameTaken = true;
-        globalEventEmitter.emit('errorChanged', this.error);
+        globalEventEmitter.emit('errorChanged', { ...this.error }); // Ensure the object is passed
+    }
+
+    setUserNameEmptyError() {
+        this.resetErrors();
+        this.error.userNameEmpty = true;
+        globalEventEmitter.emit('errorChanged', { ...this.error }); // Ensure the object is passed
     }
 
     resetErrors() {
-        this.error.userNameTaken = false;
+        this.error = {
+            userNameTaken: false,
+            userNameEmpty: false
+        };
     }
 
     resetUserChanges() {
-        if (this.user && this.oldUser)
-            this.user = Object.assign({}, this.oldUser);
+        if (this.user && this.oldUser) {
+            this.user = { ...this.oldUser };
+        }
     }
 
     commitUserChanges() {
-        this.oldUser = Object.assign({}, this.user);
+        this.oldUser = { ...this.user };
+    }
+
+    validateUsername() {
+        if (!this.user?.userName?.trim()) {
+            this.setUserNameEmptyError();
+            return false;
+        }
+        return true;
     }
 }
 const service = new DataService()

@@ -28,7 +28,11 @@ function UserStack() {
     const handleUpdateProfile = async (field, value, setIsLoading, navigation) => {
         setIsLoading(true);
         try {
-            const userData = getDataService().getUser();
+            if (!value?.trim()) {
+                getDataService().setUserNameEmptyError();
+                return;
+            }
+
             const updatedData = { [field]: value };
 
             // Update the user's profile with the dynamic field and value

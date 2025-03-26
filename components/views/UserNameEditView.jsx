@@ -9,26 +9,33 @@ const UserNameEditView = ({ navigation, route }) => {
 
     const [username, setUsername] = useState(text || '');
     const [isModalVisible, setModalVisible] = useState(getDataService().error.userNameTaken);
+    const [modalMessage, setModalMessage] = useState('');
 
     useEffect(() => {
-        function handleErrorChange() {
-            console.log('effect uname edit')
-            setModalVisible(getDataService().error.userNameTaken);
+        function handleErrorChange(errorState) {
+            if (!errorState) return; // Ensure errorState is not undefined
+
+            console.log('effect uname edit', errorState);
+
+            if (errorState.userNameEmpty) {
+                setModalMessage('Username cannot be empty.');
+                setModalVisible(true);
+            } else if (errorState.userNameTaken) {
+                setModalMessage('This username is already taken.');
+                setModalVisible(true);
+            }
         }
+
         globalEventEmitter.on('errorChanged', handleErrorChange);
 
         return () => {
             globalEventEmitter.off('errorChanged', handleErrorChange);
         };
-    }, [])
+    }, []);
 
-    const handleCheckUsername = async (text) => {
+    const handleCheckUsername = (text) => {
         setUsername(text);
-        try {
-            getDataService().getUser().userName = text;
-        } catch (error) {
-            console.error('Error saving username:', error);
-        }
+        getDataService().getUser().userName = text;
     };
 
     return (
@@ -47,7 +54,7 @@ const UserNameEditView = ({ navigation, route }) => {
                 <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
                     <View style={styles.modalBackground}>
                         <View style={styles.modalContainer}>
-                            <Text style={styles.modalText}>This username is already taken.</Text>
+                            <Text style={styles.modalText}>{modalMessage}</Text>
                             <TouchableOpacity onPress={() => setModalVisible(false)}>
                                 <Text style={styles.modalButton}>OK</Text>
                             </TouchableOpacity>
