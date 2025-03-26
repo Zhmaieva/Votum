@@ -4,7 +4,6 @@ import { Colors } from '../../utils/colorUtils'; // assuming Colors is your util
 import * as ImagePicker from 'expo-image-picker';
 import AwesomeButton, {Color} from '../customComponents/AwesomeButton'; // Reuse your AwesomeButton component
 import { Ionicons } from '@expo/vector-icons';
-import AwesomeEmailInput  from '../customComponents/AwesomeEmailInput';
 import AwesomeEditButton from "../customComponents/AwesomeEditButton";
 import {fetchMyProfile, fetchUserProfile} from "../../shared/api/apiClient";
 import {getDataService} from "../../shared/common";
@@ -19,6 +18,8 @@ const ProfileEditView = ({ route }) => {
     const dataService = getDataService();
 
     useFocusEffect(() => {
+        dataService.resetUserChanges();
+
         const savedEmail = dataService.getUser()?.email;
         if (savedEmail) // immediately get last locally saved email
             setEmail(savedEmail);

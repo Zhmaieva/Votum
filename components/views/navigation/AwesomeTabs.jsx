@@ -33,10 +33,11 @@ function UserStack() {
 
             // Update the user's profile with the dynamic field and value
             await updateUserProfile(updatedData);
+            getDataService().commitUserChanges();
+            getDataService().resetErrors();
             navigation.goBack();
-        } catch (error) {
-            console.error('Error updating profile:', error);
-        } finally {
+        } catch (error) {}
+        finally {
             setIsLoading(false);
         }
     };

@@ -1,5 +1,6 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {getDataService} from "../common";
 
 let tokenValue = null;
 
@@ -126,6 +127,16 @@ export const updateUserProfile = async (updatedData) => {
         console.log('update profile response: ' + JSON.stringify(response.data));
         return response?.data;
     } catch (error) {
+        switch (error.response.status) {
+            default: {
+                break;
+            }
+            case 400:{
+                getDataService().setUserNameTakenError();
+                break;
+            }
+        }
         console.error(error);
+        throw error;
     }
 };

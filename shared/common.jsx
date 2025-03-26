@@ -1,4 +1,7 @@
 import {Alert, Share} from "react-native";
+import mitt from 'mitt';
+
+export const globalEventEmitter = new mitt();
 
 export const onShare = async () => {
     try {
@@ -24,13 +27,37 @@ export const onShare = async () => {
 // Resets when app does so
 class DataService {
     user = null;
+    oldUser = null;
+
+    error = {
+        userNameTaken: false
+    };
 
     setUser(value) {
         this.user = value;
+        this.oldUser = Object.assign({}, value);
     }
 
     getUser() {
         return this.user;
+    }
+
+    setUserNameTakenError() {
+        this.error.userNameTaken = true;
+        globalEventEmitter.emit('errorChanged', this.error);
+    }
+
+    resetErrors() {
+        this.error.userNameTaken = false;
+    }
+
+    resetUserChanges() {
+        if (this.user && this.oldUser)
+            this.user = Object.assign({}, this.oldUser);
+    }
+
+    commitUserChanges() {
+        this.oldUser = Object.assign({}, this.user);
     }
 }
 const service = new DataService()

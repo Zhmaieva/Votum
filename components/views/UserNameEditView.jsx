@@ -2,13 +2,25 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Modal, TouchableWithoutFeedback, TextInput, TouchableOpacity, StyleSheet, Image, Alert, Platform } from 'react-native';
 import { Colors } from '../../utils/colorUtils';
 import AwesomeButton, {Color} from '../customComponents/AwesomeButton'; // Reuse your AwesomeButton component
-import {getDataService} from "../../shared/common";
+import {getDataService, globalEventEmitter} from "../../shared/common";
 
 const UserNameEditView = ({ navigation, route }) => {
     const { text } = route.params || {};
 
     const [username, setUsername] = useState(text || '');
-    const [isModalVisible, setModalVisible] = useState(false);
+    const [isModalVisible, setModalVisible] = useState(getDataService().error.userNameTaken);
+
+    useEffect(() => {
+        function handleErrorChange() {
+            console.log('effect uname edit')
+            setModalVisible(getDataService().error.userNameTaken);
+        }
+        globalEventEmitter.on('errorChanged', handleErrorChange);
+
+        return () => {
+            globalEventEmitter.off('errorChanged', handleErrorChange);
+        };
+    }, [])
 
     const handleCheckUsername = async (text) => {
         setUsername(text);

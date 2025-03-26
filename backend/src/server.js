@@ -117,10 +117,16 @@ app.put('/profile', authMiddleware, async (req, res) => {
              bio = COALESCE(NULLIF($1, NULL), bio)
          WHERE user_id = $2;`
 
-        await Promise.all([
-            pool.query(updateUsersSql, [username, email, req.user.id]),
-            pool.query(updateProfilesSql, [bio, req.user.id])
-        ]);
+        try {
+            await Promise.all([
+                pool.query(updateUsersSql, [username, email, req.user.id]),
+                pool.query(updateProfilesSql, [bio, req.user.id])
+            ]);
+        }
+        catch (e) {
+            res.status(400).json({ message: 'save error'});
+            return;
+        }
 
         res.json({message: 'profile updated.'});
     } catch (error) {
