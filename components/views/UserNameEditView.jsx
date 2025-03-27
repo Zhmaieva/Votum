@@ -6,6 +6,7 @@ import {getDataService, globalEventEmitter} from "../../shared/common";
 
 const UserNameEditView = ({ navigation, route }) => {
     const { text } = route.params || {};
+    const charLimit = 15;
 
     const [username, setUsername] = useState(text || '');
     const [isModalVisible, setModalVisible] = useState(getDataService().error.userNameTaken);
@@ -34,8 +35,23 @@ const UserNameEditView = ({ navigation, route }) => {
     }, []);
 
     const handleCheckUsername = (text) => {
-        setUsername(text);
-        getDataService().getUser().userName = text;
+        // Remove spaces between letters
+        const cleanedText = text.replace(/\s+/g, '');
+
+        // Regular expression to allow only Latin letters, numbers, and special characters
+        const regex = /^[A-Za-z0-9!@#$%^&*()_+\-=\[\]{};:'",.<>?/`~|\\]+$/;
+
+        // Check if the cleaned text matches the allowed pattern
+        if (regex.test(cleanedText)) {
+            // Update the username state with the cleaned text
+            setUsername(cleanedText);
+
+            // Update the user object with the cleaned username
+            getDataService().getUser().userName = cleanedText;
+        } else {
+            // Handle invalid input (show error, etc.)
+            console.log("Invalid username: Only letters, numbers, and allowed special characters are allowed.");
+        }
     };
 
     return (
@@ -45,7 +61,9 @@ const UserNameEditView = ({ navigation, route }) => {
                 value={username}
                 onChangeText={(text) => handleCheckUsername(text)}
                 placeholder="New username"
+                maxLength={charLimit}
             />
+            <Text style={styles.counter}>{username.length}/{charLimit}</Text>
             <AwesomeButton
                 text="press"
                 color={Color.GREEN}
@@ -100,6 +118,13 @@ const styles = StyleSheet.create({
         color: Colors.green,
         fontSize: 16,
         marginTop: 10,
+    },
+    counter: {
+        marginTop: 5,
+        fontSize: 14,
+        color: Colors.black,
+        textAlign: 'right',
+        paddingRight: 10,
     },
 });
 

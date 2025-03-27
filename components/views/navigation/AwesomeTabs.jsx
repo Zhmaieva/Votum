@@ -16,6 +16,7 @@ import EmailEditView from "../EmailEditView";
 import {updateUserProfile} from "../../../shared/api/apiClient";
 import {getDataService} from "../../../shared/common";
 import HeaderRightButton from "../../customComponents/HeaderRightButton";
+import FollowingView from "../FollowingView";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -50,6 +51,7 @@ function UserStack() {
         <Stack.Navigator id="Test">
             <Stack.Screen name="Profile" component={MyUserProfileView} options={{ headerShown: true, gestureEnabled: true }} />
             <Stack.Screen name="Edit profile" component={ProfileEditView} options={{ headerShown: true, gestureEnabled: true }} />
+            <Stack.Screen name="Following" component={FollowingView} options={{ headerShown: true, gestureEnabled: true }} />
             <Stack.Screen name="Edit username"
                           component={UserNameEditView}
                           options={({ navigation }) => ({

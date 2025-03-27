@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, Modal } from "react-native";
+import {View, Text, StyleSheet, SafeAreaView, ScrollView, Modal, Pressable} from "react-native";
 import { Colors } from '../../utils/colorUtils';
 import AwesomeVote from "../customComponents/AwesomeVote";
 import AwesomeUserHeader from "../customComponents/AwesomeUserHeader";
@@ -7,6 +7,7 @@ import AwesomeSwitcher from "../customComponents/AwesomeSwitcher";
 import AwesomeFeed from "../customComponents/AwesomeFeed";
 import { fetchMyProfile } from "../../shared/api/apiClient";
 import {useFocusEffect} from "@react-navigation/native";
+import { useNavigation } from '@react-navigation/native';
 
 const pollData = [
     {
@@ -66,6 +67,12 @@ const MyUserProfileView = () => {
         }, [])
     );
 
+    const navigation = useNavigation();
+
+    const onPressHandler = (screenName) => {
+        navigation.navigate(screenName)
+    }
+
     return (
         <View style={styles.container}>
             <SafeAreaView style={styles.safeArea}>
@@ -82,10 +89,11 @@ const MyUserProfileView = () => {
                             <Text style={styles.followersText}>15K</Text>
                             <Text style={styles.followersText}>followers</Text>
                         </View>
-                        <View style={styles.followersRightSubContainer}>
+                        <Pressable style={styles.followersRightSubContainer}
+                                   onPress={()=>onPressHandler('Following')}>
                             <Text style={styles.followersText}>103</Text>
                             <Text style={styles.followersText}>following</Text>
-                        </View>
+                        </Pressable>
                     </View>
 
                     <View style={styles.bottomMargin20}>
