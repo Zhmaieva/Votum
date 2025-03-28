@@ -24,7 +24,7 @@ const FollowingView = () => {
 
     return (
         <View style={styles.container}>
-            <AwesomeUserHeader userData={user} />
+            <AwesomeUserHeader userData={user} loggedInUserId={"test"}/>
         </View>
     );
 };

@@ -38,6 +38,14 @@ const UserNameEditView = ({ navigation, route }) => {
         // Remove spaces between letters
         const cleanedText = text.replace(/\s+/g, '');
 
+        // If the input is empty, allow it (you can handle empty input separately if needed)
+        if (cleanedText === '') {
+            // You may want to reset the username or perform some other action when empty
+            setUsername('');
+            getDataService().getUser().userName = '';
+            return;
+        }
+
         // Regular expression to allow only Latin letters, numbers, and special characters
         const regex = /^[A-Za-z0-9!@#$%^&*()_+\-=\[\]{};:'",.<>?/`~|\\]+$/;
 
@@ -54,6 +62,7 @@ const UserNameEditView = ({ navigation, route }) => {
         }
     };
 
+
     return (
         <View style={styles.container}>
             <TextInput
@@ -64,10 +73,6 @@ const UserNameEditView = ({ navigation, route }) => {
                 maxLength={charLimit}
             />
             <Text style={styles.counter}>{username.length}/{charLimit}</Text>
-            <AwesomeButton
-                text="press"
-                color={Color.GREEN}
-                additionalFunc={() => setModalVisible(true)} />
             <Modal visible={isModalVisible} transparent={true} animationType="fade">
                 <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
                     <View style={styles.modalBackground}>
