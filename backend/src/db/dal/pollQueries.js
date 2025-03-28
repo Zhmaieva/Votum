@@ -13,11 +13,16 @@ const fetchPolls = async (userId) => {
                    CASE
                        WHEN pl.user_id IS NOT NULL THEN TRUE
                        ELSE FALSE
-                       END AS is_liked
+                       END AS is_liked,
+                   CASE
+                       WHEN uf.user_follower_id IS NOT NULL THEN TRUE
+                       ELSE FALSE
+                       END AS is_following
             FROM polls p
                      JOIN users u ON p.created_by = u.id
                      JOIN user_profiles up ON u.id = up.user_id
                      LEFT JOIN poll_likes pl ON p.id = pl.poll_id AND pl.user_id = $1
+                     LEFT JOIN user_follows uf ON u.id = uf.user_follow_id AND uf.user_follower_id = $1
             WHERE p.ends_in > NOW();
         `;
 
@@ -44,7 +49,8 @@ const fetchPolls = async (userId) => {
                 user: {
                     userName: row.username,
                     image: row.image,
-                    followersNumber: row.followers_number
+                    followersNumber: row.followers_number,
+                    isFollowing: row.is_following,
                 }
             };
         });
@@ -68,6 +74,33 @@ const fetchPolls = async (userId) => {
     }
 };
 
+async function likePoll(pollId, userId) {
+    const query = `
+    INSERT INTO poll_likes (poll_id, user_id) 
+    VALUES ($1, $2)
+    ON CONFLICT (poll_id, user_id) DO NOTHING; -- Prevent duplicate likes
+  `;
+
+    try {
+        await pool.query(query, [pollId, userId]);
+    } catch (err) {
+        console.error('Error liking poll:', err);
+    }
+}
+
+async function unlikePoll(pollId, userId) {
+    const query = `
+    DELETE FROM poll_likes 
+    WHERE poll_id = $1 AND user_id = $2;
+  `;
+
+    try {
+        await pool.query(query, [pollId, userId]);
+    } catch (err) {
+        console.error('Error unliking poll:', err);
+    }
+}
+
 const generateRandomResults = (options) => {
     let remainingPercentage = 100;
     const results = {};
@@ -83,4 +116,8 @@ const generateRandomResults = (options) => {
     return results;
 };
 
-module.exports = fetchPolls;
+module.exports = {
+    fetchPolls,
+    likePoll,
+    unlikePoll
+};

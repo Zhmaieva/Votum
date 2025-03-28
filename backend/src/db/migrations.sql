@@ -43,6 +43,16 @@ CREATE TABLE poll_likes (
     CONSTRAINT unique_user_poll UNIQUE (user_id, poll_id)
 );
 
+CREATE TABLE user_follows(
+    user_follower_id UUID NOT NULL,
+    user_follow_id UUID NOT NULL,
+
+    CONSTRAINT fk_user_follower FOREIGN KEY (user_follower_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_user_follow FOREIGN KEY (user_follow_id) REFERENCES users(id) ON DELETE CASCADE,
+
+    CONSTRAINT unique_user_follows UNIQUE (user_follower_id, user_follow_id)
+);
+
 /*
  INSERT INTO polls (created_by, question, votes_number, ends_in) VALUES
 -- Favorite color
