@@ -1,12 +1,4 @@
-import {
-    Text,
-    StyleSheet,
-    Pressable,
-    Animated,
-    TouchableWithoutFeedback,
-    Modal,
-    View
-} from 'react-native';
+import { Text, StyleSheet, Animated, TouchableWithoutFeedback } from 'react-native';
 import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { Colors } from '../../utils/colorUtils';
@@ -88,7 +80,9 @@ export default function AwesomeButton({
             >
                 <Text style={[
                     styles.buttonMainText,
-                    buttonName === changedText && styles.buttonTransparentText
+                    buttonName === changedText ? styles.buttonTransparentText
+                        : color === Color.BLACK ? styles.buttonBlackText
+                            : styles.buttonGreenText,
                 ]}>
                     {buttonName}
                 </Text>
@@ -101,15 +95,31 @@ const styles = StyleSheet.create({
     buttonMain: {
         justifyContent: 'center',
         alignItems: 'center',
-        borderColor: Colors.black,
+        //borderColor: Colors.black,
         height: 40,
         minWidth: 80,
     },
     buttonGreen: {
         backgroundColor: Colors.green,
+        shadowRadius: 0,
+        shadowOffset: {
+            width: 2,
+            height: 2
+        },
+        shadowOpacity: 1,
+        shadowColor: '#555',
     },
     buttonBlack: {
-        backgroundColor: Colors.black,
+        borderColor: Colors.black,
+        backgroundColor: Colors.white,
+        borderWidth: 1,
+        shadowRadius: 0,
+        shadowOffset: {
+            width: 2,
+            height: 2
+        },
+        shadowOpacity: 1,
+        shadowColor: Colors.green,
     },
     buttonTransparent: {
         backgroundColor: 'transparent',
@@ -120,13 +130,16 @@ const styles = StyleSheet.create({
         opacity: 0.5,
     },
     buttonMainText: {
-        color: Colors.white,
         fontSize: 14,
         textAlign: 'center',
-        fontFamily: 'poly',
-        fontWeight: '500',
     },
     buttonTransparentText: {
         color: Colors.black,
     },
+    buttonBlackText: {
+        color: Colors.black,
+    },
+    buttonGreenText: {
+        color: Colors.white
+    }
 });

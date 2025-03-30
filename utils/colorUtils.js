@@ -9,7 +9,7 @@ export const Colors = {
     white: '#fff',
     background: '#fef8ec',
     eventBackground: '#fef8ec',
-    grey: '#555',
+    grey: '#888',
     lightGrey: '#d3d3d3',
 }
 

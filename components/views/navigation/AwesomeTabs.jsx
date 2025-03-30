@@ -17,9 +17,25 @@ import {updateUserProfile} from "../../../shared/api/apiClient";
 import {getDataService} from "../../../shared/common";
 import HeaderRightButton from "../../customComponents/HeaderRightButton";
 import FollowingView from "../FollowingView";
+import RegistrationMethodView from "../RegistrationMethodView";
+import EmailRegisterView from "../EmailRegisterView";
+import VerificationCodeView from "../VerificationCodeView";
+import LogInView from "../LogInView"
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
+const AuthStack = createStackNavigator();
+
+function AuthFlow() {
+    return (
+        <AuthStack.Navigator id='Auth'>
+            <AuthStack.Screen name="Registration" component={RegistrationMethodView} />
+            <AuthStack.Screen name="Email Register" component={EmailRegisterView} />
+            <AuthStack.Screen name="Verification Code" component={VerificationCodeView} />
+            <AuthStack.Screen name="Log in" component={LogInView} />
+        </AuthStack.Navigator>
+    );
+}
 
 // 🔹 Stack Navigator for "User" tab
 function UserStack() {
@@ -157,6 +173,7 @@ export default function AwesomeTabs() {
             <Tab.Screen name="Voted" component={VotedStack} options={{ headerShown: false, gestureEnabled: true }} />
             <Tab.Screen name="Add" component={AddStack} options={{ headerShown: false, gestureEnabled: true }} />
             <Tab.Screen name="Search" component={SearchStack} options={{ headerShown: false, gestureEnabled: true }} />
+            <Tab.Screen name="x" component={AuthFlow} options={{ headerShown: false, gestureEnabled: true }} />
         </Tab.Navigator>
     );
 }

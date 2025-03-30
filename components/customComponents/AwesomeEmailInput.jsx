@@ -49,9 +49,13 @@ export default function AwesomeEmailInput({value}) {
 
 const styles = StyleSheet.create({
     input: {
-        borderBottomWidth: 1,
-        borderBottomColor: Colors.lightGrey,
-        color: Colors.black,
+        //borderBottomWidth: 1,
+        borderWidth: 1,
+        borderBottomColor: Colors.grey,
+        borderTopColor: Colors.grey,
+        borderLeftColor: Colors.grey,
+        borderRightColor: Colors.grey,
+        //color: Colors.black,
         paddingVertical: 10,
         paddingRight: 10,
         fontSize: 14,
@@ -66,6 +70,5 @@ const styles = StyleSheet.create({
         marginLeft: 10,
         fontSize: 12,
         color: Colors.red,
-        fontFamily: 'san-serif',
     }
 });
