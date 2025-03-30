@@ -8,6 +8,7 @@ const fetchPolls = async (userId) => {
                    p.votes_number,
                    p.ends_in,
                    u.username,
+                   up.user_id,
                    up.image,
                    up.followers_number,
                    CASE
@@ -47,6 +48,7 @@ const fetchPolls = async (userId) => {
                 totalVotes: row.votes_number,
                 isLiked: row.is_liked,
                 user: {
+                    userId: row.user_id,
                     userName: row.username,
                     image: row.image,
                     followersNumber: row.followers_number,

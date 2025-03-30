@@ -23,12 +23,19 @@ export default function AwesomeButton({
                                           color = Color.GREEN,
                                           additionalFunc,
                                           changedText,
+                                          isInChangedTextMode = false,
                                           disabled = false
                                       }) {
     const navigation = useNavigation();
     const [buttonName, setButtonName] = useState(text);
     const [isDisabled, setIsDisabled] = useState(disabled);
     const scaleValue = useState(new Animated.Value(1))[0];
+
+    if (isInChangedTextMode && buttonName !== changedText) {
+        setButtonName(changedText);
+    } else if (!isInChangedTextMode && buttonName !== text) {
+        setButtonName(text);
+    }
 
     const onPressHandler = () => {
         if (isDisabled) return;

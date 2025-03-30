@@ -44,7 +44,7 @@ const FeedView = () => {
                         <AwesomeCard
                             item={item}
                             handleVote={() => {}}
-                            loggedInUserId={loggedInUserId} // ✅ Now passing loggedInUserId
+                            loggedInUserId={loggedInUserId}
                         />
                     </View>
                 )

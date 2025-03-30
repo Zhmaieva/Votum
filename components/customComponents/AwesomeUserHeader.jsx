@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Image } from "react-native";
 import { Colors } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from "./AwesomeButton";
+import {globalEventEmitter} from "../../shared/common";
+import {followProfile, unfollowProfile} from "../../shared/api/apiClient";
 
 const formatFollowers = (num) => {
     if (num >= 1_000_000_000) return (num / 1_000_000_000).toFixed(1) + 'B';
@@ -10,12 +12,27 @@ const formatFollowers = (num) => {
     return num;
 };
 
+const followChangedEventName = "followChanged";
+
 const AwesomeUserHeader = ({ userData, loggedInUserId }) => {
     const [user, setUser] = useState(userData);
+    const [isFollowing, setIsFollowing] = useState(userData?.isFollowing);
+
+    function handleFollowChangedEvent(userData) {
+        if (!userData) return; // Ensure errorState is not undefined
+
+        if (user?.userId !== userData.userId)
+            return;
+
+        setIsFollowing(userData.isFollowing);
+    }
+
+    globalEventEmitter.on(followChangedEventName, handleFollowChangedEvent);
 
     useEffect(() => {
         if (userData && userData !== user) {
             setUser(userData);
+            setIsFollowing(userData?.isFollowing);
         }
     }, [userData]);
 
@@ -66,6 +83,17 @@ const AwesomeUserHeader = ({ userData, loggedInUserId }) => {
                     ) : (
                         <AwesomeButton
                             color={Color.BLACK}
+                            isInChangedTextMode={isFollowing}
+                            additionalFunc={() => {
+                                user.isFollowing = !user.isFollowing;
+                                setIsFollowing(user.isFollowing);
+                                if (user.isFollowing) {
+                                    followProfile(user.userId).then(_ => {})
+                                } else {
+                                    unfollowProfile(user.userId).then(_ => {})
+                                }
+                                globalEventEmitter.emit(followChangedEventName, { ... user });
+                            }}
                             text="Follow"
                             changedText="Unfollow" />
                     )}

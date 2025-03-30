@@ -36,6 +36,7 @@ async function unfollowUser(userFollowerId, userFollowId) {
 async function getFollowers(userId) {
     const query = `
     SELECT
+      u.id as "userId",
       u.username AS "userName",
       up.image,
       up.followers_number AS "followersNumber",
@@ -55,9 +56,34 @@ async function getFollowers(userId) {
     }
 }
 
+async function getFollows(userId) {
+    const query = `
+    SELECT
+      u.id as "userId",
+      u.username AS "userName",
+      up.image,
+      up.followers_number AS "followersNumber",
+      up.bio
+    FROM users u
+    JOIN user_profiles up ON u.id = up.user_id
+    JOIN user_follows uf ON uf.user_follow_id = u.id
+    WHERE uf.user_follower_id = $1;
+  `;
+
+    try {
+        const res = await pool.query(query, [userId]);
+        return res.rows || []; // Returns an array of followers
+    } catch (err) {
+        console.error('Error fetching followers:', err);
+        return [];
+    }
+}
+
+
 async function getUser(userId) {
     const query = `
     SELECT
+      u.id as "userId",
       u.username AS "userName",
       u.email,
       up.image,
@@ -81,5 +107,6 @@ module.exports = {
     followUser,
     unfollowUser,
     getFollowers,
+    getFollows,
     getUser,
 }

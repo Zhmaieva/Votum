@@ -19,7 +19,14 @@ const hardcodedCredentials = {
     password: 'securepassword',
 };
 
-const BASE_URL = "http://192.168.1.224:3000";
+// for Artem
+// const hardcodedCredentials = {
+//     login: 'testuser',
+//     password: 'securepassword123',
+// };
+
+//const BASE_URL = "http://192.168.1.224:3000";//Yuliia's mac
+const BASE_URL = "http://192.168.1.102:3000";//Artem's mac
 
 export const login = async () => {
     try {
@@ -30,16 +37,6 @@ export const login = async () => {
         console.log('login successful');
     } catch (err) {
         console.log('Login failed', err);
-    }
-};
-
-// Function to retry login if auth fails
-const retryLogin = async () => {
-    const storedToken = await AsyncStorage.getItem('auth_token');
-    if (storedToken && !tokenValue) {
-        tokenValue = storedToken;
-    } else {
-        //await login(); // Trigger login if no token is stored
     }
 };
 
@@ -66,8 +63,7 @@ export const fetchMyProfile = async () => {
             bio: userProfile.bio || "bio here", // Fallback if bio is null or undefined
         };
     } catch (err) {
-        console.log('My profile failed, retrying login...', err);
-        await retryLogin();
+        console.log('My profile failed', err);
     }
 };
 
@@ -83,8 +79,7 @@ export const fetchPolls = async () => {
         console.log('response: ' + JSON.stringify(response.data));
         return response?.data;
     } catch (err) {
-        console.log('Fetch failed, retrying login...', err);
-        await retryLogin();
+        console.log('Fetch failed', err);
     }
 };
 
@@ -101,8 +96,67 @@ export const likePoll = async (id) => {
         console.log('like polls response: ' + JSON.stringify(response.data));
         return response?.data;
     } catch (err) {
-        console.log('Like failed, retrying login...', err);
-        await retryLogin();
+        console.log('Like failed', err);
+    }
+};
+
+export const followProfile = async (id) => {
+    try {
+        console.log(`following profile ${id}`);
+        const response = await axios.post(`${BASE_URL}/profile/followers`, {
+            userId: id
+        }, {
+            headers: {
+                Authorization: `Bearer ${await getToken()}`,
+            },
+        });
+        console.log('following profile response: ' + JSON.stringify(response.data));
+        return response?.data;
+    } catch (err) {
+        console.log('follow failed', err);
+    }
+};
+
+export const unfollowProfile = async (id) => {
+    try {
+        console.log(`following profile ${id}`);
+        const response = await axios.delete(`${BASE_URL}/profile/followers?userId=${id}`, {
+            headers: {
+                Authorization: `Bearer ${await getToken()}`,
+            },
+        });
+        console.log('following profile response: ' + JSON.stringify(response.data));
+        return response?.data;
+    } catch (err) {
+        console.log('follow failed', err);
+    }
+};
+
+export const fetchFollowers = async (userId) => {
+    try {
+        console.log('fetching followers...');
+        const response = await axios.get(`${BASE_URL}/profile/followers?userId=${userId}`, {
+            headers: {
+                Authorization: `Bearer ${await getToken()}`,
+            },
+        });
+        return response?.data;
+    } catch (err) {
+        console.log('Fetch followers failed', err);
+    }
+};
+
+export const fetchFollows = async (userId) => {
+    try {
+        console.log('fetching follows...');
+        const response = await axios.get(`${BASE_URL}/profile/follows?userId=${userId}`, {
+            headers: {
+                Authorization: `Bearer ${await getToken()}`,
+            },
+        });
+        return response?.data;
+    } catch (err) {
+        console.log('Fetch follows failed', err);
     }
 };
 

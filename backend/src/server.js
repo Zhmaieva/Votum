@@ -100,7 +100,6 @@ app.get('/profile', authMiddleware, async (req, res) => {
     }
 });
 
-//lets add a new endpoint
 app.put('/profile', authMiddleware, async (req, res) => {
     try {
         const { username, bio, email } = req.body;
@@ -149,7 +148,7 @@ app.post('/profile/followers', authMiddleware, async (req, res, next) => {
 
 app.delete('/profile/followers', authMiddleware, async (req, res, next) => {
     try {
-        const { userId } = req.body;
+        const { userId } = req.query;
 
         await userQueries.unfollowUser(req.user.id, userId);
 
@@ -165,6 +164,19 @@ app.get('/profile/followers', authMiddleware, async (req, res, next) => {
         const { userId } = req.query;
 
         const result = await userQueries.getFollowers(userId);
+
+        return res.json({ users: result });
+    }
+    catch (e) {
+        next(e);
+    }
+});
+
+app.get('/profile/follows', authMiddleware, async (req, res, next) => {
+    try {
+        const { userId } = req.query;
+
+        const result = await userQueries.getFollows(userId);
 
         return res.json({ users: result });
     }
