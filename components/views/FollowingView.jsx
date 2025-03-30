@@ -4,6 +4,7 @@ import { Colors } from '../../utils/colorUtils';
 import AwesomeUserHeader from "../customComponents/AwesomeUserHeader";
 import {fetchFollowers, fetchFollows, fetchMyProfile} from "../../shared/api/apiClient";
 import {useFocusEffect} from "@react-navigation/native";
+import {globalEventEmitter} from "../../shared/common";
 
 const FollowingView = () => {
     const scrollY = useRef(new Animated.Value(0)).current;
@@ -11,16 +12,25 @@ const FollowingView = () => {
     const [user, setUser] = useState(null);
     const [follows, setFollows] = useState([]);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            const res = await fetchMyProfile();
-            setUser(res);
-            const followsData = await fetchFollows(res.userId);
-            setFollows(followsData?.users);
-        };
+    const fetchData = async () => {
+        const res = await fetchMyProfile();
+        setUser(res);
+        const followsData = await fetchFollows(res.userId);
+        setFollows(followsData?.users);
+    };
+    //
+    // if (!user)
+    //     fetchData();
+    //
+    // useEffect(() => {
+    //     fetchData();
+    // }, []);
 
-        fetchData();
-    }, []);
+    useFocusEffect(
+        React.useCallback(() => {
+            fetchData();
+        }, [])
+    );
 
     return (
         <View style={styles.container}>

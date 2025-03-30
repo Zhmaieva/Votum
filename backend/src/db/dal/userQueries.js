@@ -63,7 +63,8 @@ async function getFollows(userId) {
       u.username AS "userName",
       up.image,
       up.followers_number AS "followersNumber",
-      up.bio
+      up.bio,
+      true as "isFollowing"
     FROM users u
     JOIN user_profiles up ON u.id = up.user_id
     JOIN user_follows uf ON uf.user_follow_id = u.id
