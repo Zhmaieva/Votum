@@ -25,24 +25,28 @@ const RegistrationMethodView = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <View style={styles.logoContainer}>
-                <Text>Logo</Text>
+            <View>
+                <View style={styles.logoContainer}>
+                    <Text>Logo</Text>
+                </View>
+                <View style={styles.buttonContainer}>
+                    <AwesomeButton
+                        text="Register with email"
+                        color={Color.GREEN}
+                        screenName='Email Register' />
+                </View>
+                <View style={styles.buttonContainer}>
+                    <AwesomeButton text="Google" color={Color.BLACK} />
+                </View>
+                <View style={styles.buttonContainer}>
+                    <AwesomeButton text="Apple" color={Color.BLACK} />
+                </View>
             </View>
-            <View style={styles.buttonContainer}>
-                <AwesomeButton
-                    text="Register with email"
-                    color={Color.BLACK}
-                    screenName='Email Register' />
-            </View>
-            <View style={styles.buttonContainer}>
-                <AwesomeButton text="Google" color={Color.GREEN} />
-            </View>
-            <View style={styles.buttonContainer}>
-                <AwesomeButton text="Apple" color={Color.GREEN} />
-            </View>
-            <View style={[styles.questionContainer, styles.row]}>
-                <Text style={styles.questionStyle}>Already have an account?</Text>
-                <AwesomeLink text='Log in' screenName='Log in' />
+            <View style={styles.margin15}>
+                <View style={styles.questionContainer}>
+                    <Text style={styles.questionStyle}>Already have an account?</Text>
+                </View>
+                <AwesomeButton text='Log in' color={Color.BLACK} screenName='Log in' />
             </View>
         </View>
     );
@@ -53,17 +57,19 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 15,
         backgroundColor: Colors.white,
+        justifyContent: 'space-between'
     },
     buttonContainer: {
         marginBottom: 18
     },
     questionContainer: {
-        justifyContent: 'center',
-        //alignItems: 'flex-end'
+        //alignItems: 'flex-end',
+        alignItems: 'center',
+        marginBottom: 10
     },
     questionStyle: {
-        fontSize: 16,
-        color: Colors.black
+        fontSize: 14,
+        color: Colors.black,
     },
     logoContainer: {
         height: '45%',
@@ -80,6 +86,9 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: "bold",
         color: Colors.black
+    },
+    margin15: {
+        marginBottom: 15
     }
 });
 

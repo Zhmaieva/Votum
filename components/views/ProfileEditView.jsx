@@ -65,61 +65,65 @@ const ProfileEditView = ({ route }) => {
 
     return (
         <View style={styles.container}>
-            <View style={styles.profileImageContainer}>
-                <Image
-                    source={{ uri: profileImage }}
-                    style={styles.profileImage}
-                />
-                <TouchableOpacity style={styles.imagePickerButton} onPress={handleImagePick}>
-                    <Ionicons name="camera" size={24} color={Colors.white} />
-                </TouchableOpacity>
-            </View>
-
-            <View style={styles.row}>
-                <View style={styles.headerStyle}>
-                    <Text>Username</Text>
+            <View>
+                <View style={styles.profileImageContainer}>
+                    <Image
+                        source={{ uri: profileImage }}
+                        style={styles.profileImage}
+                    />
+                    <TouchableOpacity style={styles.imagePickerButton} onPress={handleImagePick}>
+                        <Ionicons name="camera" size={24} color={Colors.white} />
+                    </TouchableOpacity>
                 </View>
-                <View style={styles.inputContainer}>
-                    <AwesomeEditButton
-                        screenName="Edit username"
-                        text={username}
+
+                <View style={styles.row}>
+                    <View style={styles.headerStyle}>
+                        <Text>Username</Text>
+                    </View>
+                    <View style={styles.inputContainer}>
+                        <AwesomeEditButton
+                            screenName="Edit username"
+                            text={username}
+                        />
+                    </View>
+                </View>
+
+                <View style={styles.row}>
+                    <View style={styles.headerStyle}>
+                        <Text>Bio</Text>
+                    </View>
+                    <View style={styles.inputContainer}>
+                        <AwesomeEditButton
+                            screenName="Edit bio"
+                            text={bioD}
+                        />
+                    </View>
+                </View>
+
+                <View style={styles.row}>
+                    <View style={styles.headerStyle}>
+                        <Text>Email</Text>
+                    </View>
+                    <View style={styles.inputContainer}>
+                        <AwesomeEditButton
+                            screenName="Edit email"
+                            text={email}
+                        />
+                    </View>
+                </View>
+
+                <View style={styles.marginTest}>
+                    <AwesomeButton
+                        text="Log out"
+                        color={Color.GREEN}
+                        screenName={null}
                     />
                 </View>
             </View>
-
-            <View style={styles.row}>
-                <View style={styles.headerStyle}>
-                    <Text>Bio</Text>
-                </View>
-                <View style={styles.inputContainer}>
-                    <AwesomeEditButton
-                        screenName="Edit bio"
-                        text={bioD}
-                    />
-                </View>
-            </View>
-
-            <View style={styles.row}>
-                <View style={styles.headerStyle}>
-                    <Text>Email</Text>
-                </View>
-                <View style={styles.inputContainer}>
-                    <AwesomeEditButton
-                        screenName="Edit email"
-                        text={email}
-                    />
-                </View>
-            </View>
-
-            <AwesomeButton
-                text="Log out"
-                color={Color.BLACK}
-                screenName={null}
-            />
 
             <AwesomeButton
                 text="Delete profile"
-                color={Color.GREEN}
+                color={Color.BLACK}
                 screenName={null}
                 additionalFunc={()=>setModalVisible(true)}
             />
@@ -150,6 +154,7 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 20,
         backgroundColor: Colors.white,
+        justifyContent: 'space-between'
     },
     profileImageContainer: {
         alignItems: 'center',
@@ -165,7 +170,6 @@ const styles = StyleSheet.create({
         bottom: 0,
         right: 0,
         backgroundColor: Colors.green,
-        //borderRadius: 20,
         padding: 5,
     },
     input: {

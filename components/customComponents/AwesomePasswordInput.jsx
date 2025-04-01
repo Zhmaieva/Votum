@@ -55,7 +55,7 @@ const AwesomePasswordInput = forwardRef((props, inputRef) => {
                 <Ionicons
                     name={showPassword ? 'eye-off-outline' : 'eye-outline'}
                     size={20}
-                    color={Colors.grey}
+                    color={Colors.black}
                     style={styles.icon}
                     onPress={toggleShowPassword}
                 />
@@ -73,14 +73,13 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         borderWidth: 1,
-        borderColor: Colors.grey,
+        borderColor: Colors.black,
         height: 40,
         backgroundColor: Colors.white,
         paddingEnd: 4
     },
     input: {
         flex: 1,
-        borderBottomColor: '#aaa',
         color: Colors.black,
         paddingVertical: 10,
         paddingRight: 10,

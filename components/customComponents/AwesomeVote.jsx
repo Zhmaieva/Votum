@@ -108,14 +108,14 @@ const AwesomeVote = ({
                         </TouchableOpacity>
                     )}
                     <TouchableOpacity style={styles.iconContainer} onPress={onShare}>
-                        <Ionicons name="share-outline" size={26} color={Colors.grey} />
+                        <Ionicons name="share-outline" size={26} color={Colors.black} />
                     </TouchableOpacity>
                     <View style={styles.iconContainer}>
                         <AwesomeLikeButton pollId={id} isLikedParam={isLiked}/>
                     </View>
                     {createdByUser && (
                         <TouchableOpacity style={styles.deleteButton} onPress={onDeletePoll}>
-                            <Ionicons name="trash-outline" size={26} color={Colors.grey} />
+                            <Ionicons name="trash-outline" size={26} color={Colors.black} />
                         </TouchableOpacity>
                     )}
                 </View>
@@ -197,36 +197,40 @@ const styles = StyleSheet.create({
     },
     votingFrame: {
         borderWidth: 1,
-        borderColor: Colors.grey,
+        borderColor: Colors.black,
         backgroundColor: Colors.white,
-        shadowOffset: { width: 3, height: 3 },
+        /*shadowOffset: { width: 2, height: 2 },
         shadowOpacity: 1,
         shadowRadius: 0,
-        shadowColor: Colors.green,
+        shadowColor: Colors.green,*/
         padding: 14,
-        marginRight: 3
+        //marginRight: 3
     },
     button: {
         backgroundColor: Colors.white,
         height: 40,
-        marginBottom: 10,
+        marginBottom: 12,
         borderWidth: 1,
-        borderColor: Colors.grey,
+        borderColor: Colors.black,
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
-        paddingRight: 3
+        paddingRight: 3,
+        shadowOffset: { width: 2, height: 2 },
+        shadowOpacity: 1,
+        shadowRadius: 0,
+        shadowColor: Colors.green,
     },
     buttonText: {
-        color: Colors.grey,
-        fontSize: 16,
+        color: Colors.black,
+        fontSize: 14,
         marginLeft: 10
     },
     countStyle: {
         justifyContent: 'space-between'
     },
     greyTextStyle: {
-        color: Colors.grey
+        color: Colors.black
     },
     row: {
         flexDirection: 'row'
@@ -264,7 +268,7 @@ const styles = StyleSheet.create({
     resultBar: {
         height: 40,
         //width: '100%',
-        marginBottom: 10,
+        marginBottom: 12,
     },
     buttonContainer: {
         flexDirection: "row",
@@ -291,7 +295,7 @@ const styles = StyleSheet.create({
     },
     answerTextStyle: {
         color: Colors.black,
-        fontSize: 16,
+        fontSize: 14,
         marginLeft: 10
     },
     rightPartBar: {

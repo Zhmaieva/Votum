@@ -25,8 +25,8 @@ const hardcodedCredentials = {
 //     password: 'securepassword123',
 // };
 
-//const BASE_URL = "http://192.168.1.224:3000";//Yuliia's mac
-const BASE_URL = "http://192.168.1.102:3000";//Artem's mac
+const BASE_URL = "http://192.168.1.224:3000";//Yuliia's mac
+//const BASE_URL = "http://192.168.1.102:3000";//Artem's mac
 
 export const login = async () => {
     try {
@@ -169,6 +169,15 @@ export const fetchUserProfile = async (userId) => {
         console.error("Failed to fetch user profile", err);
     }
 };
+
+const checkUsernameAvailability = async (username) => {
+    // Simulate an API call delay
+    await new Promise((resolve) => setTimeout(resolve, 300));
+
+    // Example logic: Assume "user123" is already taken
+    return username !== 'user123';
+};
+
 
 export const updateUserProfile = async (updatedData) => {
     try {

@@ -15,7 +15,7 @@ const LogInView = ({route }) => {
         <View style={styles.container}>
             <View>
                 <View>
-                    <AwesomeEmailInput />
+                    <AwesomeEmailInput bareStyle={false} />
                 </View>
                 <View>
                     <AwesomePasswordInput />
@@ -23,11 +23,16 @@ const LogInView = ({route }) => {
                 <View style={styles.margin15}>
                     <AwesomeButton text="Log in" color={Color.GREEN} />
                 </View>
-                <View style={[styles.margin15, styles.centeredStyle]}>
+                {/*<View style={[styles.margin15, styles.centeredStyle]}>
                     <AwesomeLink text='Forgot password?' screenName=''/>
-                </View>
+                </View>*/}
             </View>
-            <AwesomeButton text="Create new account" color={Color.BLACK} />
+            <View style={styles.margin15}>
+                <View style={styles.margin15}>
+                    <AwesomeButton text='Forgot password?' color={Color.GREEN} />
+                </View>
+                <AwesomeButton text="Create new account" color={Color.BLACK} />
+            </View>
         </View>
     );
 };

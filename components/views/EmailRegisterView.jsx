@@ -15,7 +15,7 @@ const EmailRegisterView = ({route }) => {
         <View style={styles.container}>
             <View>
                 <View style={styles.emailInputContainer}>
-                    <AwesomeEmailInput value={text}/>
+                    <AwesomeEmailInput value={text} bareStyle={false}/>
                 </View>
                 <View style={styles.nextButtonContainer}>
                     <AwesomeButton text="Next" color={Color.GREEN} screenName="Verification Code" />
@@ -48,10 +48,10 @@ const styles = StyleSheet.create({
     },
     questionContainer: {
         alignItems: 'center',
-        marginBottom: 15
+        marginBottom: 10
     },
     questionStyle: {
-        fontSize: 16,
+        fontSize: 14,
         color: Colors.black
     },
     emailInputContainer: {

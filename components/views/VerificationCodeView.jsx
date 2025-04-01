@@ -1,4 +1,4 @@
-import { Text, View, Pressable, StyleSheet } from 'react-native';
+import {Text, View, Pressable, StyleSheet, TouchableWithoutFeedback, TouchableOpacity, Modal} from 'react-native';
 import { useState } from 'react';
 import AwesomeButton, { Color } from '../customComponents/AwesomeButton';
 import {  } from '@expo/vector-icons';
@@ -10,6 +10,8 @@ export default function VerificationCodeView () {
     const[num2Input, setNum2Input] = useState()
     const[num3Input, setNum3Input] = useState()
     const[num4Input, setNum4Input] = useState()
+    const[num5Input, setNum5Input] = useState()
+    const[num6Input, setNum6Input] = useState()
 
     function onNum1Handler() {
         num2Input.focus()
@@ -23,9 +25,19 @@ export default function VerificationCodeView () {
         num4Input.focus()
     }
 
+    function onNum4Handler() {
+        num5Input.focus()
+    }
+
+    function onNum5Handler() {
+        num6Input.focus()
+    }
+
     const [hidden, setHidden] = useState(false);
 
     const [seconds, setSeconds] = useState(21);
+
+    const [isModalVisible, setModalVisible] = useState(false);
 
 
     function onResendHandler () {
@@ -53,7 +65,9 @@ export default function VerificationCodeView () {
                         <AwesomeCodeContainer onTextInput={onNum1Handler}/>
                         <AwesomeCodeContainer onTextInput={onNum2Handler} refOutlet={setNum2Input}/>
                         <AwesomeCodeContainer onTextInput={onNum3Handler} refOutlet={setNum3Input}/>
-                        <AwesomeCodeContainer refOutlet={setNum4Input}/>
+                        <AwesomeCodeContainer onTextInput={onNum4Handler} refOutlet={setNum4Input}/>
+                        <AwesomeCodeContainer onTextInput={onNum5Handler} refOutlet={setNum5Input}/>
+                        <AwesomeCodeContainer refOutlet={setNum6Input}/>
                     </View>
                 </View>
                 <View style={[styles.margin15, styles.centered]}>
@@ -75,12 +89,30 @@ export default function VerificationCodeView () {
                     </View>
                 </View>
                 <View style={styles.margin40}>
-                    <AwesomeButton text='Continue' color={Color.GREEN} />
+                    <AwesomeButton text='Next' color={Color.GREEN} screenName='Username and password' />
+                </View>
+                <View>
+                    <AwesomeButton text='modal with error' color={Color.BLACK} additionalFunc={()=>setModalVisible(true)}/>
                 </View>
             </View>
             <View style={styles.margin15}>
-                <AwesomeButton text='Log in' color={Color.BLACK} />
+                <View style={styles.questionContainer}>
+                    <Text style={styles.questionStyle}>Already have an account?</Text>
+                </View>
+                <AwesomeButton text='Log in' color={Color.BLACK} screenName='Log in' />
             </View>
+            <Modal visible={isModalVisible} transparent={true} animationType="fade">
+                <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
+                    <View style={styles.modalBackground}>
+                        <View style={styles.modalContainer}>
+                            <Text style={styles.modalText}>Incorrect verification code, try again</Text>
+                            <TouchableOpacity onPress={() => setModalVisible(false)}>
+                                <Text style={styles.modalButton}>OK</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </TouchableWithoutFeedback>
+            </Modal>
         </View>
     );
 }
@@ -142,7 +174,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     verificationCodeContainer: {
-        width: '70%'
+        width: '100%'
     },
     resendButtonContainer: {
         width: 'auto',
@@ -157,9 +189,37 @@ const styles = StyleSheet.create({
     },
     timerText: {
         color: Colors.grey,
-        fontStyle: 'italic'
     },
     timerContainer: {
         marginTop: -5,
+    },
+    questionContainer: {
+        alignItems: 'center',
+        marginBottom: 10
+    },
+    questionStyle: {
+        fontSize: 14,
+        color: Colors.black
+    },
+    modalBackground: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0,0,0,0.5)',
+    },
+    modalContainer: {
+        backgroundColor: 'white',
+        padding: 20,
+        //borderRadius: 10,
+        alignItems: 'center',
+    },
+    modalText: {
+        fontSize: 16,
+        marginBottom: 10,
+    },
+    modalButton: {
+        color: Colors.green,
+        fontSize: 16,
+        marginTop: 10,
     },
 });

@@ -9,7 +9,7 @@ const EmailEditView = ({route }) => {
 
     return (
         <View style={styles.container}>
-            <AwesomeEmailInput value={text}/>
+            <AwesomeEmailInput value={text} bareStyle={true}/>
         </View>
     );
 };

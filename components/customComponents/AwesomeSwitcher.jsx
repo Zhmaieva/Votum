@@ -54,7 +54,6 @@ const styles = StyleSheet.create({
     text: {
         fontSize: 14,
         color: Colors.grey,
-        fontFamily: "Arial",
     },
     activeText: {
         color: Colors.black,
@@ -66,7 +65,7 @@ const styles = StyleSheet.create({
         height: "100%",
         backgroundColor: Colors.white,
         borderBottomWidth: 1,
-        borderColor: "#888",
+        borderColor: Colors.black,
         transition: "left 0.3s ease",
     },
 });

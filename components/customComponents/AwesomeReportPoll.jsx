@@ -34,7 +34,7 @@ const ReportPoll = ({ onReport }) => {
     return (
         <View>
             <TouchableOpacity onPress={() => setModalVisible(true)}>
-                <Ionicons name="warning-outline" size={26} color={Colors.grey} />
+                <Ionicons name="warning-outline" size={26} color={Colors.black} />
             </TouchableOpacity>
 
             <Modal visible={modalVisible} animationType="fade" transparent={true}>

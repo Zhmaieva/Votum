@@ -21,6 +21,7 @@ import RegistrationMethodView from "../RegistrationMethodView";
 import EmailRegisterView from "../EmailRegisterView";
 import VerificationCodeView from "../VerificationCodeView";
 import LogInView from "../LogInView"
+import NamePasswordView from "../NamePassword";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -33,6 +34,7 @@ function AuthFlow() {
             <AuthStack.Screen name="Email Register" component={EmailRegisterView} />
             <AuthStack.Screen name="Verification Code" component={VerificationCodeView} />
             <AuthStack.Screen name="Log in" component={LogInView} />
+            <AuthStack.Screen name="Username and password" component={NamePasswordView} />
         </AuthStack.Navigator>
     );
 }

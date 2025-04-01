@@ -21,7 +21,7 @@ export default function AwesomeLikeButton({pollId, isLikedParam}) {
                 <Ionicons
                     name={isLiked ? 'heart-sharp' : 'heart-outline'}
                     size={26}
-                    color={isLiked ? Colors.green : Colors.grey}
+                    color={isLiked ? Colors.green : Colors.black}
                 />
             </Pressable>
         </View>

@@ -1,4 +1,4 @@
-import { Text, StyleSheet, Animated, TouchableWithoutFeedback } from 'react-native';
+import { Text, StyleSheet, Animated, TouchableWithoutFeedback, ActivityIndicator, View } from 'react-native';
 import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { Colors } from '../../utils/colorUtils';
@@ -11,7 +11,7 @@ export const Color = {
 export default function AwesomeButton({
                                           text,
                                           screenName,
-                                          params = {}, // Accept params for navigation
+                                          params = {},
                                           color = Color.GREEN,
                                           additionalFunc,
                                           changedText,
@@ -21,6 +21,7 @@ export default function AwesomeButton({
     const navigation = useNavigation();
     const [buttonName, setButtonName] = useState(text);
     const [isDisabled, setIsDisabled] = useState(disabled);
+    const [loading, setLoading] = useState(false);
     const scaleValue = useState(new Animated.Value(1))[0];
 
     if (isInChangedTextMode && buttonName !== changedText) {
@@ -29,26 +30,30 @@ export default function AwesomeButton({
         setButtonName(text);
     }
 
-    const onPressHandler = () => {
-        if (isDisabled) return;
+    const onPressHandler = async () => {
+        if (isDisabled || loading) return;
 
-        if (screenName) {
-            navigation.navigate(screenName, params); // Pass params to navigation
-        }
+        setLoading(true);
 
-        if (additionalFunc) {
-            additionalFunc();
-        }
-
-        if (changedText && buttonName !== changedText) {
-            setButtonName(changedText);
-        } else {
-            setButtonName(text);
+        try {
+            if (screenName) {
+                navigation.navigate(screenName, params);
+            }
+            if (additionalFunc) {
+                await additionalFunc(); // Ensure it awaits the function
+            }
+            if (changedText && buttonName !== changedText) {
+                setButtonName(changedText);
+            } else {
+                setButtonName(text);
+            }
+        } finally {
+            setLoading(false);
         }
     };
 
     const animateButton = () => {
-        if (isDisabled) return;
+        if (isDisabled || loading) return;
 
         Animated.sequence([
             Animated.timing(scaleValue, {
@@ -67,7 +72,7 @@ export default function AwesomeButton({
     };
 
     return (
-        <TouchableWithoutFeedback onPress={animateButton} disabled={isDisabled}>
+        <TouchableWithoutFeedback onPress={animateButton} disabled={isDisabled || loading}>
             <Animated.View
                 style={[
                     { transform: [{ scale: scaleValue }] },
@@ -75,17 +80,21 @@ export default function AwesomeButton({
                     buttonName === changedText ? styles.buttonTransparent
                         : color === Color.BLACK ? styles.buttonBlack
                             : styles.buttonGreen,
-                    isDisabled && styles.buttonDisabled
+                    (isDisabled || loading) && styles.buttonDisabled
                 ]}
             >
-                <Text style={[
-                    styles.buttonMainText,
-                    buttonName === changedText ? styles.buttonTransparentText
-                        : color === Color.BLACK ? styles.buttonBlackText
-                            : styles.buttonGreenText,
-                ]}>
-                    {buttonName}
-                </Text>
+                {loading ? (
+                    <ActivityIndicator color={color === Color.BLACK ? Colors.black : Colors.white} />
+                ) : (
+                    <Text style={[
+                        styles.buttonMainText,
+                        buttonName === changedText ? styles.buttonTransparentText
+                            : color === Color.BLACK ? styles.buttonBlackText
+                                : styles.buttonGreenText,
+                    ]}>
+                        {buttonName}
+                    </Text>
+                )}
             </Animated.View>
         </TouchableWithoutFeedback>
     );
@@ -95,7 +104,6 @@ const styles = StyleSheet.create({
     buttonMain: {
         justifyContent: 'center',
         alignItems: 'center',
-        //borderColor: Colors.black,
         height: 40,
         minWidth: 80,
     },
@@ -107,7 +115,7 @@ const styles = StyleSheet.create({
             height: 2
         },
         shadowOpacity: 1,
-        shadowColor: '#555',
+        shadowColor: Colors.black,
     },
     buttonBlack: {
         borderColor: Colors.black,

@@ -1,12 +1,12 @@
-import { Text, TextInput, StyleSheet, View, Animated, Easing, TouchableWithoutFeedback } from 'react-native';
-import React, { forwardRef, useEffect, useRef, useState } from 'react';
+import { Text, TextInput, StyleSheet, View } from 'react-native';
+import React, { useState } from 'react';
 import { Colors } from '../../utils/colorUtils';
-import {updateUserProfile} from "../../shared/api/apiClient";
-import {getDataService} from "../../shared/common";
+import { getDataService } from "../../shared/common";
 
-export default function AwesomeEmailInput({value}) {
+export default function AwesomeEmailInput({ value, bareStyle = false }) {
     const [email, setEmail] = useState(value);
     const [validationErrorMessage, setValidationErrorMessage] = useState('');
+    const [isFocused, setIsFocused] = useState(false);
 
     const handleCheckEmail = async (text) => {
         let re = /\S+@\S+\.\S+/;
@@ -26,49 +26,42 @@ export default function AwesomeEmailInput({value}) {
         }
     };
 
-    const [isFocused, setIsFocused] = useState(true);
-
-    let color = isFocused ? '#000' : '#000';
-
     return (
         <View>
             <TextInput
-                style={[styles.input, { borderColor: color }]}
+                style={[styles.input, bareStyle ? styles.bareStyleInput : styles.defaultInput]}
                 placeholder='example@gmail.com'
                 value={email}
                 onChangeText={(text) => handleCheckEmail(text)}
                 placeholderTextColor='#aaa'
-                onFocus={(event) => {
-                    setIsFocused(true);
-                }}
+                onFocus={() => setIsFocused(true)}
             />
             <Text style={styles.wrongEmail}>{validationErrorMessage}</Text>
         </View>
     );
-};
+}
 
 const styles = StyleSheet.create({
     input: {
-        //borderBottomWidth: 1,
-        borderWidth: 1,
-        borderBottomColor: Colors.grey,
-        borderTopColor: Colors.grey,
-        borderLeftColor: Colors.grey,
-        borderRightColor: Colors.grey,
-        //color: Colors.black,
         paddingVertical: 10,
         paddingRight: 10,
         fontSize: 14,
         width: '100%',
         height: 40,
-        fontFamily: 'san-serif',
         backgroundColor: Colors.white,
         paddingLeft: 10
     },
+    bareStyleInput: {
+        borderBottomWidth: 1,
+        borderBottomColor: Colors.lightGrey,
+    },
+    defaultInput: {
+        borderWidth: 1,
+        borderColor: Colors.black
+    },
     wrongEmail: {
-        marginTop: 2,
-        marginLeft: 10,
         fontSize: 12,
         color: Colors.red,
+        marginBottom: 3
     }
 });

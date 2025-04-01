@@ -20,8 +20,8 @@ export default function AwesomeCodeContainer ({value, onTextInput, refOutlet}) {
 
 const styles = StyleSheet.create({
     codeInputContainer: {
-        width: 52,
-        height: 52,
+        width: 50,
+        height: 50,
         //backgroundColor: 'pink',
         borderRadius: 0,
         borderWidth: 1,
@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
     codeInputField: {
         flex:1,
         alignItems:'center',
-        paddingLeft: 20,
+        paddingLeft: 19,
         fontSize: 18
     }
 });
