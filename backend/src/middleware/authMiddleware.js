@@ -11,6 +11,11 @@ module.exports = (req, res, next) => {
     try {
         const decoded = jwt.verify(token.split(' ')[1], SECRET_KEY); // Verify token
         req.user = decoded;
+
+        if (!req?.user?.id) {
+            return res.status(401).json({ message: 'Invalid token' });
+        }
+
         next();
     } catch (err) {
         res.status(401).json({ message: 'Invalid token' });

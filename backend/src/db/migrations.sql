@@ -53,6 +53,15 @@ CREATE TABLE user_follows(
     CONSTRAINT unique_user_follows UNIQUE (user_follower_id, user_follow_id)
 );
 
+CREATE TABLE activation_codes(
+    email VARCHAR NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL,
+    code VARCHAR NOT NULL
+);
+
+ALTER TABLE activation_codes
+    ADD COLUMN attempts_made INT DEFAULT 0;
+
 /*
  INSERT INTO polls (created_by, question, votes_number, ends_in) VALUES
 -- Favorite color

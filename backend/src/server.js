@@ -7,6 +7,8 @@ const {SECRET_KEY} = require("./constants");
 const {pool} = require("./db/dal/pool");
 const pollQueries = require("./db/dal/pollQueries");
 const userQueries = require("./db/dal/userQueries");
+const {getActivationCode, checkActivationCode} = require("./db/dal/userQueries");
+const sendEmail = require("./mail/mailing");
 
 const app = express();
 app.use(express.json());
@@ -20,6 +22,15 @@ function generateToken({id, username}) {
     //that's new
 }
 
+function generateSignUpToken({email}) {
+    //const expirationTime = '15m'; // Token expires in 1 hour
+    //return jwt.sign({ username }, SECRET_KEY, { expiresIn: expirationTime });
+    return jwt.sign({ email }, SECRET_KEY);//let's make it non-expirale for convenience
+    //always restart to apply changes
+    //that's new
+}
+
+//deprecated
 app.post("/profile/register", async (req, res, next) => {
     try {
         const { username, email, password } = req.body;
@@ -47,6 +58,51 @@ app.post("/profile/register", async (req, res, next) => {
         res.status(201).json({ message: "User registered successfully", user_id: userId });
     }
     catch (e) {
+        next(e);
+    }
+});
+
+app.post("/users/register", async (req, res, next) => {
+    try {
+        const { email } = req.body;
+
+        const result = await getActivationCode(email);
+
+        if (parseInt(result?.code) === -1) {
+            return res.status(201).json({ error: "user registered" });
+        }
+
+        if (result?.code) {
+            if (result.cansend) {
+                await sendEmail(email, 'Poll App email verification', 'Welcome to Poll App, please enter this code in Poll App to continue registration: ' + result.code);
+            }
+
+            return res.status(200);
+        }
+        else
+            throw "invalid code";
+    } catch (e) {
+        next(e);
+    }
+});
+
+app.post("/user/register/verify", async (req, res, next) => {
+    try {
+        const { email, code } = req.body;
+
+        const result = await checkActivationCode(email, code);
+        switch (result) {
+            default:
+            case 0:
+                return res.status(404).json({ error: "invalid code" });
+            case 1:
+                return res.json({ message: "email confirmed", token: (await generateSignUpToken(email)) });
+            case 2:
+                return res.status(410).json({ error: "code expired" });
+            case -1:
+                return res.status(403).json({ error: "too many attempts - request another code" });
+        }
+    } catch (e) {
         next(e);
     }
 });

@@ -104,10 +104,115 @@ async function getUser(userId) {
     }
 }
 
+/**
+ * Get or update activation code for a given email.
+ * @param {string} email - The email address.
+ * @returns {Promise<string>} - The activation code.
+ */
+async function getActivationCode(email) {
+    try {
+        const query = `
+            WITH user_exists AS (
+                SELECT '-1'  AS code, false AS canSend FROM users WHERE email = LOWER($1) LIMIT 1
+            ),
+                 existing_record AS (
+                     SELECT code, false AS canSend FROM activation_codes
+                     WHERE LOWER(email) = LOWER($1)
+                       AND created_at >= (NOW() AT TIME ZONE 'UTC') - INTERVAL '15 minutes'
+                 ),
+                 updated AS (
+                     UPDATE activation_codes
+                         SET created_at = (NOW() AT TIME ZONE 'UTC'), 
+                             code = LPAD(FLOOR(RANDOM() * 10000)::TEXT, 4, '0'),
+                             attempts_made = 0
+                         WHERE email = LOWER($1)
+                             AND created_at <= (NOW() AT TIME ZONE 'UTC') - INTERVAL '15 minutes'
+                         RETURNING code, true AS canSend
+                 ),
+                 inserted AS (
+                     INSERT INTO activation_codes (email, created_at, code)
+                         SELECT LOWER($1), (NOW() AT TIME ZONE 'UTC'), LPAD(FLOOR(RANDOM() * 10000)::TEXT, 4, '0')
+                         WHERE NOT EXISTS (SELECT 1 FROM activation_codes WHERE email = LOWER($1))
+                         AND NOT EXISTS (SELECT 'EXISTS' AS code FROM users WHERE email = LOWER($1))
+                         RETURNING code, true AS canSend
+                 )
+            SELECT code, canSend FROM user_exists
+            UNION ALL
+            SELECT code, canSend FROM existing_record
+            UNION ALL
+            SELECT code, canSend FROM updated
+            UNION ALL
+            SELECT code, canSend FROM inserted;
+        `;
+
+        const result = await pool.query(query, [email]);
+
+        if (result.rows.length > 0) {
+            return result.rows[0];
+        } else {
+            throw new Error('Failed to retrieve activation code');
+        }
+    } catch (error) {
+        console.error('Error fetching activation code:', error);
+        throw error;
+    }
+}
+
+async function checkActivationCode(email, code) {
+    try {
+        const query = `
+            WITH matched_email AS (
+                SELECT * FROM activation_codes
+                WHERE email = LOWER($1)
+                  AND created_at >= (NOW() AT TIME ZONE 'UTC') - INTERVAL '15 minutes'
+            ),
+             updated_attempts AS (
+                 UPDATE activation_codes
+                     SET attempts_made = attempts_made + 1
+                     WHERE email = LOWER($1)
+                         AND created_at >= (NOW() AT TIME ZONE 'UTC') - INTERVAL '15 minutes'
+                         AND code <> $2
+                         AND attempts_made < 4
+                     RETURNING attempts_made
+             ),
+             expired_code AS (
+                 SELECT 1 AS expired FROM activation_codes
+                 WHERE email = LOWER($1)
+                   AND code = $2
+                   AND created_at < (NOW() AT TIME ZONE 'UTC') - INTERVAL '15 minutes'
+             )
+            SELECT
+                CASE
+                    WHEN NOT EXISTS (SELECT 1 FROM activation_codes WHERE email = LOWER($1)) THEN 0
+                    WHEN (SELECT COUNT(*) FROM matched_email WHERE code = $2) > 0 THEN 1
+                    WHEN (SELECT COUNT(*) FROM expired_code) > 0 THEN 2
+                    WHEN (SELECT attempts_made FROM updated_attempts LIMIT 1) > 3 THEN -1
+                    WHEN (SELECT COUNT(*) FROM matched_email) > 0 THEN 0
+                    ELSE 0
+                    END AS result;
+
+        `;
+
+        const result = await pool.query(query, [email, code]);
+
+        // Get the result of the query
+        if (result.rows.length > 0) {
+            return result.rows[0].result;
+        } else {
+            throw new Error('Unexpected result from the database');
+        }
+    } catch (error) {
+        console.error('Error checking activation code:', error);
+        throw error;
+    }
+}
+
 module.exports = {
     followUser,
     unfollowUser,
     getFollowers,
     getFollows,
     getUser,
+    getActivationCode,
+    checkActivationCode
 }
