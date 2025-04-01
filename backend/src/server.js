@@ -3,81 +3,46 @@ const { v4: uuidv4 } = require("uuid");
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const authMiddleware = require('./middleware/authMiddleware');
+const signupAuthMiddleware = require('./middleware/signupAuthMiddleware');
 const {SECRET_KEY} = require("./constants");
 const {pool} = require("./db/dal/pool");
 const pollQueries = require("./db/dal/pollQueries");
 const userQueries = require("./db/dal/userQueries");
-const {getActivationCode, checkActivationCode} = require("./db/dal/userQueries");
+const {getActivationCode, checkActivationCode, checkAndInsertUserWithProfile} = require("./db/dal/userQueries");
 const sendEmail = require("./mail/mailing");
+const {validateEmail, validateUsername, validatePassword} = require("./validation");
 
 const app = express();
 app.use(express.json());
 
-// Function to generate JWT
 function generateToken({id, username}) {
-    //const expirationTime = '15m'; // Token expires in 1 hour
-    //return jwt.sign({ username }, SECRET_KEY, { expiresIn: expirationTime });
     return jwt.sign({ id, username }, SECRET_KEY);//let's make it non-expirale for convenience
-    //always restart to apply changes
-    //that's new
 }
 
 function generateSignUpToken({email}) {
-    //const expirationTime = '15m'; // Token expires in 1 hour
-    //return jwt.sign({ username }, SECRET_KEY, { expiresIn: expirationTime });
     return jwt.sign({ email }, SECRET_KEY);//let's make it non-expirale for convenience
-    //always restart to apply changes
-    //that's new
 }
-
-//deprecated
-app.post("/profile/register", async (req, res, next) => {
-    try {
-        const { username, email, password } = req.body;
-
-        if (!username || !email || !password) {
-            return res.status(400).json({ error: "Missing required fields" });
-        }
-
-        // Перевіряємо, чи вже існує користувач з таким ім'ям або email
-        const existingUser = await pool.query(
-            "SELECT * FROM users WHERE username = $1 OR email = $2",
-            [username, email]
-        );
-
-        if (existingUser.rows.length > 0) {
-            return res.status(400).json({ error: "Username or email already exists" });
-        }
-
-        const passwordHash = await bcrypt.hash(password, 10);
-        const userId = uuidv4();
-
-        const queryString = "INSERT INTO users (id, username, email, password_hash) VALUES ($1, $2, $3, $4)";
-        await pool.query(queryString, [userId, username, email, passwordHash]);
-
-        res.status(201).json({ message: "User registered successfully", user_id: userId });
-    }
-    catch (e) {
-        next(e);
-    }
-});
 
 app.post("/users/register", async (req, res, next) => {
     try {
         const { email } = req.body;
 
-        const result = await getActivationCode(email);
+        if (!await validateEmail(email)) {
+            return res.status(400).send("invalid email");
+        }
 
-        if (parseInt(result?.code) === -1) {
+        const { code, canSend } = await getActivationCode(email);
+
+        if (parseInt(code) === -1) {
             return res.status(201).json({ error: "user registered" });
         }
 
-        if (result?.code) {
-            if (result.cansend) {
-                await sendEmail(email, 'Poll App email verification', 'Welcome to Poll App, please enter this code in Poll App to continue registration: ' + result.code);
+        if (code) {
+            if (canSend) {
+                sendEmail(email, 'Poll App email verification', 'Welcome to Poll App, please enter this code in Poll App to continue registration: ' + code);
             }
 
-            return res.status(200);
+            return res.json({});
         }
         else
             throw "invalid code";
@@ -96,12 +61,43 @@ app.post("/user/register/verify", async (req, res, next) => {
             case 0:
                 return res.status(404).json({ error: "invalid code" });
             case 1:
-                return res.json({ message: "email confirmed", token: (await generateSignUpToken(email)) });
+                return res.json({ message: "email confirmed", token: (await generateSignUpToken({email})) });
             case 2:
                 return res.status(410).json({ error: "code expired" });
             case -1:
                 return res.status(403).json({ error: "too many attempts - request another code" });
         }
+    } catch (e) {
+        next(e);
+    }
+});
+
+app.post("/profile/register", signupAuthMiddleware,async (req, res, next) => {
+    try {
+        const { username, password } = req.body;
+
+        if (!username || !password) {
+            return res.status(400).json({ error: "Missing required fields" });
+        }
+
+        if (!validateUsername(username)) {
+            return res.status(400).send("invalid username");
+        }
+
+        if (!validatePassword(password)) {
+            return res.status(400).send("invalid password");
+        }
+
+        const passwordHash = await bcrypt.hash(password, 10);
+
+        const { code, user_id } = await checkAndInsertUserWithProfile(username, req.user.email, passwordHash);
+
+        if (code === -1 || !user_id) {
+            return res.status(401).json({ error: "Username or email already exists" });
+        }
+
+        const token = generateToken({id: user_id, username: username.toLowerCase()});
+        res.status(201).json({ message: "User registered successfully", userId: user_id, accessToken: token});
     } catch (e) {
         next(e);
     }

@@ -136,13 +136,13 @@ async function getActivationCode(email) {
                          AND NOT EXISTS (SELECT 'EXISTS' AS code FROM users WHERE email = LOWER($1))
                          RETURNING code, true AS canSend
                  )
-            SELECT code, canSend FROM user_exists
+            SELECT code, canSend as "canSend" FROM user_exists
             UNION ALL
-            SELECT code, canSend FROM existing_record
+            SELECT code, canSend as "canSend" FROM existing_record
             UNION ALL
-            SELECT code, canSend FROM updated
+            SELECT code, canSend as "canSend" FROM updated
             UNION ALL
-            SELECT code, canSend FROM inserted;
+            SELECT code, canSend as "canSend" FROM inserted;
         `;
 
         const result = await pool.query(query, [email]);
@@ -207,6 +207,55 @@ async function checkActivationCode(email, code) {
     }
 }
 
+/**
+ * Check username availability, insert user if necessary, and create a user profile.
+ * @param {string} username - The desired username.
+ * @param {string} email - The user's email.
+ * @param {string} passwordHash - The hashed password.
+ * @returns {Promise<{ code: number, user_id: string | null }>}
+ */
+async function checkAndInsertUserWithProfile(username, email, passwordHash) {
+    try {
+        await pool.query('BEGIN');
+
+        const query = `
+            WITH existing_user AS (
+                SELECT id FROM users 
+                WHERE username = $1 
+                AND email = $2
+            ),
+            inserted_user AS (
+                INSERT INTO users (username, email, password_hash) 
+                SELECT $1, $2, $3
+                WHERE NOT EXISTS (SELECT 1 FROM users WHERE username = $1 OR email = $2)
+                RETURNING id
+            ),
+            profile_insert AS (
+                INSERT INTO user_profiles (user_id) 
+                SELECT id FROM inserted_user
+                RETURNING user_id
+            )
+            SELECT 
+                CASE 
+                    WHEN EXISTS (SELECT 1 FROM existing_user) THEN 1
+                    WHEN EXISTS (SELECT 1 FROM inserted_user) THEN 1
+                    ELSE -1
+                END AS code,
+                COALESCE((SELECT id FROM existing_user), (SELECT id FROM inserted_user)) AS user_id;
+        `;
+
+        const result = await pool.query(query, [username.toLowerCase(), email.toLowerCase(), passwordHash]);
+
+        await pool.query('COMMIT');
+
+        return result.rows[0]; // { code: 1 or -1, user_id: UUID or null }
+    } catch (error) {
+        await pool.query('ROLLBACK');
+        console.error("Error checking username and inserting user with profile:", error);
+        throw error;
+    }
+}
+
 module.exports = {
     followUser,
     unfollowUser,
@@ -214,5 +263,6 @@ module.exports = {
     getFollows,
     getUser,
     getActivationCode,
-    checkActivationCode
+    checkActivationCode,
+    checkAndInsertUserWithProfile
 }

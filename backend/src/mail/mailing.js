@@ -9,14 +9,16 @@ const transporter = nodemailer.createTransport({
         user: 'artem.ovechko@icloud.com', // Your custom domain email on iCloud
         pass: MAIL_PASS, // App-specific password
     },
+    socketTimeout: 10000,
+    timeout: 15000,
     tls: {
         rejectUnauthorized: true, // Helps with some SSL issues
     }
 });
 
-async function sendEmail(to, subject, text) {
+const sendMail = async function (to, subject, text) {
     const mailOptions = {
-        from: 'artem@beampie.com',
+        from: 'artem.ovechko@icloud.com',
         to,
         subject,
         text
@@ -28,6 +30,10 @@ async function sendEmail(to, subject, text) {
     } catch (error) {
         console.error('Error sending email:', error);
     }
+}
+
+function sendEmail(to, subject, text) {
+    sendMail(to, subject, text).then(_ => {})
 }
 
 module.exports = sendEmail;

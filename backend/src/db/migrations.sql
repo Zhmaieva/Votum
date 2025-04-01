@@ -62,6 +62,9 @@ CREATE TABLE activation_codes(
 ALTER TABLE activation_codes
     ADD COLUMN attempts_made INT DEFAULT 0;
 
+ALTER TABLE activation_codes
+    ADD CONSTRAINT unique_activation_code_email UNIQUE (email);
+
 /*
  INSERT INTO polls (created_by, question, votes_number, ends_in) VALUES
 -- Favorite color
