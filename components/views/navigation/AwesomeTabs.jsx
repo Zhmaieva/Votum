@@ -25,6 +25,7 @@ import WellcomeView from "../WellcomeView";
 import ProfilePhotoView from "../ProfilePhotoView";
 import AgeView from "../AgeView";
 import LogInView from "../LogInView"
+import ForgotPasswordView from "../ForgotPassword";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();

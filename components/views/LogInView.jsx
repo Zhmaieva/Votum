@@ -35,11 +35,10 @@ const LogInView = ({route }) => {
                             getDataService().setUser(null); // pretend we never set the user, so it will be initialised later in profile view
                             globalEventEmitter.emit('signIn', { });
                         } else {
-                            // if login failed logic here
+                            setModalVisible(true)
                         }
                     }} />
                 </View>
-                <AwesomeButton text='TEMP: error if a user not found' color={Color.BLACK} additionalFunc={()=>setModalVisible(true)} />
             </View>
             <View style={styles.margin15}>
                 <View style={styles.margin15}>
