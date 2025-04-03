@@ -1,7 +1,7 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {getDataService, globalEventEmitter} from "../common";
-import {BASE_URL} from "./constants";
+import {BASE_URL} from "./api-constants";
 import {useNavigation} from "@react-navigation/native";
 
 let tokenValue = null;
