@@ -108,20 +108,23 @@ app.post('/users/sign-in', async (req, res, next) => {
     try {
         const { login, password } = req.body;
 
-        // Check if username and password are provided
-        if (!login || !password) {
+        const errorCode = 401;
+        const errorMessage = { message: 'Invalid credentials' };
+
+        // Check if username and password are valid
+        if (!login || !password || password.length > 32 || login.length > 32) {
             console.log(req.body);
-            return res.status(400).json({ message: 'Login and password are required' });
+            return res.status(errorCode).json(errorMessage);
         }
 
         const existingUser = await getUserByLogin(login);
 
         if (!existingUser) {
-            return res.status(401).json({ message: 'Invalid credentials' });
+            return res.status(errorCode).json(errorMessage);
         }
 
         if (!await bcrypt.compare(password, existingUser.password)) {
-            return res.status(401).json({ message: 'Invalid credentials' });
+            return res.status(errorCode).json(errorMessage);
         }
 
         // If credentials are correct, generate JWT token

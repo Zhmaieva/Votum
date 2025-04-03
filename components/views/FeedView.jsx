@@ -3,7 +3,7 @@ import AwesomeFeed from "../customComponents/AwesomeFeed";
 import AwesomeCard from "../customComponents/AwesomeCard";
 import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import { fetchPolls } from "../../shared/api/apiClient";
-import {fetchMyProfile, isLoggedIn} from "../../shared/api/apiClient";
+import {fetchMyProfile} from "../../shared/api/apiClient";
 
 const FeedView = () => {
     const [refreshing, setRefreshing] = useState(false);

@@ -14,7 +14,7 @@ import UserNameEditView from "../UserNameEditView";
 import BioEditView from "../BioEditView";
 import EmailEditView from "../EmailEditView";
 import {updateUserProfile} from "../../../shared/api/apiClient";
-import {getDataService} from "../../../shared/common";
+import {getDataService, globalEventEmitter} from "../../../shared/common";
 import HeaderRightButton from "../../customComponents/HeaderRightButton";
 import FollowingView from "../FollowingView";
 import RegistrationMethodView from "../RegistrationMethodView";
@@ -22,6 +22,7 @@ import EmailRegisterView from "../EmailRegisterView";
 import VerificationCodeView from "../VerificationCodeView";
 import LogInView from "../LogInView"
 import NamePasswordView from "../NamePassword";
+import {useNavigation} from "@react-navigation/native";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -150,8 +151,18 @@ function SearchStack() {
     );
 }
 
+// Stack Navigator (Includes Auth and Tabs)
+export function AuthNavigator() {
+    return (
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="Auth" component={AuthFlow} />
+            <Stack.Screen name="MainTabs" component={AwesomeTabs} />
+        </Stack.Navigator>
+    );
+}
+
 // 🔹 Main Tab Navigator
-export default function AwesomeTabs() {
+export function AwesomeTabs() {
     return (
         <Tab.Navigator
             id="MainTabNavigator"
@@ -175,7 +186,6 @@ export default function AwesomeTabs() {
             <Tab.Screen name="Voted" component={VotedStack} options={{ headerShown: false, gestureEnabled: true }} />
             <Tab.Screen name="Add" component={AddStack} options={{ headerShown: false, gestureEnabled: true }} />
             <Tab.Screen name="Search" component={SearchStack} options={{ headerShown: false, gestureEnabled: true }} />
-            <Tab.Screen name="x" component={AuthFlow} options={{ headerShown: false, gestureEnabled: true }} />
         </Tab.Navigator>
     );
 }

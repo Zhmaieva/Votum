@@ -2,6 +2,7 @@ import { TextInput, View, StyleSheet, Text } from 'react-native';
 import {useState, useRef, forwardRef} from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../utils/colorUtils';
+import {getDataService} from "../../shared/common";
 
 const AwesomePasswordInput = forwardRef((props, inputRef) => {
     // State variable to hold the password
@@ -17,23 +18,16 @@ const AwesomePasswordInput = forwardRef((props, inputRef) => {
 
     const [validationErrorMessage, setValidationErrorMessage] = useState('');
 
-    // const inputRef = useRef(null);
-
-    const handleFocusInput = () => {
-        if (inputRef.current && password.length<1) {
-            inputRef.current.focus();
-        }
-    };
-
     const validation = function (text) {
         setPassword(text);
-        if ( password?.length < 8 || password?.length > 21) {
+        if ( password?.length < 8 || password?.length > 20) {
             setValidationErrorMessage('Your password must be 8-20 characters');
             //props.onValidChange(false);
+            getDataService().getUser().password = '';
         }
         else {
             setValidationErrorMessage('');
-            //props.onValidChange(true);
+            getDataService().getUser().password = text;
         }
     }
 

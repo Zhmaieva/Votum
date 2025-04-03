@@ -22,6 +22,7 @@ export default function AwesomeEmailInput({ value, bareStyle = false }) {
                 console.error('Error saving email:', error);
             }
         } else {
+            getDataService().getUser().email = '';
             setValidationErrorMessage('Please enter a valid email address');
         }
     };

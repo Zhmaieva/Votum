@@ -1,44 +1,38 @@
 import React, {useEffect, useState} from "react";
-import { NavigationContainer } from '@react-navigation/native';
-import {AppState, StyleSheet} from 'react-native';
-import AwesomeTabs from "./components/views/navigation/AwesomeTabs";
-import StackNav from "./components/views/navigation/StackNav";
-import {login} from "./shared/api/apiClient";
-import AuthStack from "./components/views/navigation/AwesomeTabs";
+import {NavigationContainer, useNavigation} from '@react-navigation/native';
+import {AwesomeTabs, AuthNavigator} from "./components/views/navigation/AwesomeTabs";
+import {globalEventEmitter} from "./shared/common";
+import {isTokenAvailable} from "./shared/api/apiClient";
+import {ActivityIndicator, View} from "react-native";
 
 export default function App() {
 
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
-    /*useEffect(() => {
-        // Automatically check authentication status when the app comes back from the background
-        const subscription = AppState.addEventListener('change', async (nextAppState) => {
-            if (nextAppState === 'active') {
-                // Optionally, you can recheck the authentication status each time the app becomes active
-                checkAuthStatus().then(isLoggedIn => {
-                    setIsAuthenticated(isLoggedIn);
-                });
-            }
-        });
+    isTokenAvailable().then(res => {
+        setIsAuthenticated(res);
+        setIsLoading(false);
+    })
 
-        // Clean up the subscription when the component is unmounted
-        return () => subscription.remove();
-    }, []);*/
+    globalEventEmitter.on('signIn', () => {
+        setIsAuthenticated(true);
+    });
 
-    // This function can check the authentication status, and set the state accordingly
-    useEffect(() => {
-        /*// Check the authentication status (e.g., check for a token or user session)
-        checkAuthStatus().then(isLoggedIn => {
-            setIsAuthenticated(isLoggedIn);  // Update state based on the authentication check
-        });*/
-    }, []);
+    globalEventEmitter.on('signOut', () => {
+        setIsAuthenticated(false);
+    });
 
     return (
+        isLoading ?
+            <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+                <ActivityIndicator size="large" color="#0000ff" />
+            </View> :
         <NavigationContainer>
             {isAuthenticated ? (
                 <AwesomeTabs />  // Show the main app if authenticated
             ) : (
-                <AuthStack />  // Show the login/registration flow if not authenticated
+                <AuthNavigator />  // Show the login/registration flow if not authenticated
             )}
         </NavigationContainer>
     );

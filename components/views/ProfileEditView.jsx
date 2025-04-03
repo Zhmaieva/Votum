@@ -5,8 +5,8 @@ import * as ImagePicker from 'expo-image-picker';
 import AwesomeButton, {Color} from '../customComponents/AwesomeButton'; // Reuse your AwesomeButton component
 import { Ionicons } from '@expo/vector-icons';
 import AwesomeEditButton from "../customComponents/AwesomeEditButton";
-import {fetchMyProfile, fetchUserProfile} from "../../shared/api/apiClient";
-import {getDataService} from "../../shared/common";
+import {fetchMyProfile, signOut} from "../../shared/api/apiClient";
+import {getDataService, globalEventEmitter} from "../../shared/common";
 import {useFocusEffect} from "@react-navigation/native";
 
 const ProfileEditView = ({ route }) => {
@@ -117,6 +117,9 @@ const ProfileEditView = ({ route }) => {
                         text="Log out"
                         color={Color.GREEN}
                         screenName={null}
+                        additionalFunc={async () => {
+                            await signOut();
+                        }}
                     />
                 </View>
             </View>
