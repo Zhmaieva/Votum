@@ -20,9 +20,12 @@ import FollowingView from "../FollowingView";
 import RegistrationMethodView from "../RegistrationMethodView";
 import EmailRegisterView from "../EmailRegisterView";
 import VerificationCodeView from "../VerificationCodeView";
+import LogInView from "../LogInView";
+import UsernameView from "../UsernameView";
+import WellcomeView from "../WellcomeView";
+import ProfilePhotoView from "../ProfilePhotoView";
+import AgeView from "../AgeView";
 import LogInView from "../LogInView"
-import NamePasswordView from "../NamePassword";
-import {useNavigation} from "@react-navigation/native";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -35,7 +38,10 @@ function AuthFlow() {
             <AuthStack.Screen name="Email Register" component={EmailRegisterView} />
             <AuthStack.Screen name="Verification Code" component={VerificationCodeView} />
             <AuthStack.Screen name="Log in" component={LogInView} />
-            <AuthStack.Screen name="Username and password" component={NamePasswordView} />
+            <AuthStack.Screen name="Username" component={UsernameView} />
+            <AuthStack.Screen name="Wellcome" component={WellcomeView} />
+            <AuthStack.Screen name="Profile photo" component={ProfilePhotoView} />
+            <AuthStack.Screen name="Age" component={AgeView} />
         </AuthStack.Navigator>
     );
 }

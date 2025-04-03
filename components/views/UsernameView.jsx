@@ -3,13 +3,12 @@ import {View, StyleSheet, TextInput, Text} from 'react-native';
 import { Colors } from '../../utils/colorUtils';
 import AwesomeEmailInput from "../customComponents/AwesomeEmailInput";
 import AwesomeButton, {Color} from "../customComponents/AwesomeButton";
-import AwesomePasswordInput from "../customComponents/AwesomePasswordInput";
 import AwesomeLink from "../customComponents/AwesomeLink";
 import VerificationCodeView from "./VerificationCodeView";
 import AwesomeUsernameInput from "../customComponents/AwesomeUsernameInput";
 import { checkUsernameAvailability } from "../../shared/api/apiClient";
 
-const NamePasswordView = ({route }) => {
+const UsernameView = ({route }) => {
 
     const { text } = route.params || {};
 
@@ -17,9 +16,8 @@ const NamePasswordView = ({route }) => {
         <View style={styles.container}>
             <View>
                 <AwesomeUsernameInput checkUsernameAvailability={checkUsernameAvailability} />
-                <AwesomePasswordInput />
                 <View style={styles.nextButtonContainer}>
-                    <AwesomeButton text="Create account" color={Color.GREEN} screenName='Username and password' />
+                    <AwesomeButton text="Create account" color={Color.GREEN} screenName='Wellcome' />
                 </View>
             </View>
             <View style={styles.margin15}>
@@ -63,4 +61,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default NamePasswordView;
+export default UsernameView;

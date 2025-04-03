@@ -1,13 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import {View, Text, TouchableOpacity, StyleSheet, Image, Alert, TouchableWithoutFeedback, Modal} from 'react-native';
-import { Colors } from '../../utils/colorUtils'; // assuming Colors is your utility file for color styles
-import * as ImagePicker from 'expo-image-picker';
-import AwesomeButton, {Color} from '../customComponents/AwesomeButton'; // Reuse your AwesomeButton component
-import { Ionicons } from '@expo/vector-icons';
+import React, { useState } from 'react';
+import {View, Text, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, Modal} from 'react-native';
+import { Colors } from '../../utils/colorUtils';
+import AwesomeButton, {Color} from '../customComponents/AwesomeButton';
 import AwesomeEditButton from "../customComponents/AwesomeEditButton";
 import {fetchMyProfile, signOut} from "../../shared/api/apiClient";
-import {getDataService, globalEventEmitter} from "../../shared/common";
+import {getDataService} from "../../shared/common";
 import {useFocusEffect} from "@react-navigation/native";
+import AwesomeProfilePhoto from "../customComponents/AwesomeProfilePhoto";
 
 const ProfileEditView = ({ route }) => {
     const [username, setUsername] = useState('');
@@ -46,36 +45,10 @@ const ProfileEditView = ({ route }) => {
         }
     });
 
-    const handleImagePick = async () => {
-        const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (!permission.granted) {
-            Alert.alert('Permission required', 'We need permission to access your gallery');
-            return;
-        }
-
-        const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            quality: 1,
-        });
-
-        if (!result.canceled) {
-            setProfileImage(result.assets[0].uri);
-        }
-    };
-
     return (
         <View style={styles.container}>
             <View>
-                <View style={styles.profileImageContainer}>
-                    <Image
-                        source={{ uri: profileImage }}
-                        style={styles.profileImage}
-                    />
-                    <TouchableOpacity style={styles.imagePickerButton} onPress={handleImagePick}>
-                        <Ionicons name="camera" size={24} color={Colors.white} />
-                    </TouchableOpacity>
-                </View>
-
+                <AwesomeProfilePhoto profileImage={profileImage} setProfileImage={setProfileImage} />
                 <View style={styles.row}>
                     <View style={styles.headerStyle}>
                         <Text>Username</Text>

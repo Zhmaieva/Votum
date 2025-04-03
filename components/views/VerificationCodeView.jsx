@@ -89,10 +89,10 @@ export default function VerificationCodeView () {
                     </View>
                 </View>
                 <View style={styles.margin40}>
-                    <AwesomeButton text='Next' color={Color.GREEN} screenName='Username and password' />
+                    <AwesomeButton text='Next' color={Color.GREEN} screenName='Username' />
                 </View>
                 <View>
-                    <AwesomeButton text='modal with error' color={Color.BLACK} additionalFunc={()=>setModalVisible(true)}/>
+                    <AwesomeButton text='TEMP: modal with error' color={Color.BLACK} additionalFunc={()=>setModalVisible(true)}/>
                 </View>
             </View>
             <View style={styles.margin15}>

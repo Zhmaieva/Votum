@@ -17,6 +17,7 @@ const EmailRegisterView = ({route }) => {
                 <View style={styles.emailInputContainer}>
                     <AwesomeEmailInput value={text} bareStyle={false}/>
                 </View>
+                <AwesomePasswordInput />
                 <View style={styles.nextButtonContainer}>
                     <AwesomeButton text="Next" color={Color.GREEN} screenName="Verification Code" />
                 </View>
