@@ -21,9 +21,8 @@ const AwesomeBirthPicker = ({ dateOfBirth, setDateOfBirth }) => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.label}>Date of Birth</Text>
             <TouchableOpacity onPress={() => setPickerVisible(true)} style={styles.dateButton}>
-                <Text style={styles.dateText}>{dateOfBirth ? dateOfBirth.toDateString() : 'Select Date'}</Text>
+                <Text style={styles.dateText}>{dateOfBirth ? dateOfBirth.toLocaleDateString() : 'Select your date of birth'}</Text>
             </TouchableOpacity>
             {isPickerVisible && (
                 <Modal transparent={true} animationType="slide">
@@ -49,21 +48,25 @@ const AwesomeBirthPicker = ({ dateOfBirth, setDateOfBirth }) => {
 
 const styles = StyleSheet.create({
     container: {
-        marginBottom: 15
+        width: '100%'
     },
     label: {
-        fontSize: 16,
+        fontSize: 14,
         marginBottom: 5,
     },
     dateButton: {
-        padding: 10,
-        backgroundColor: Colors.green,
+        height: 40,
+        backgroundColor: Colors.white,
         alignItems: 'center',
-        width: '100%'
+        justifyContent: 'center',
+        borderWidth: 1,
+        borderColor: Colors.black,
+        width: '100%',
+        marginBottom: 15
     },
     dateText: {
-        color: Colors.white,
-        fontSize: 16,
+        color: Colors.black,
+        fontSize: 14,
     },
     modalContainer: {
         flex: 1,

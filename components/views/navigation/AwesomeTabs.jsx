@@ -20,7 +20,6 @@ import FollowingView from "../FollowingView";
 import RegistrationMethodView from "../RegistrationMethodView";
 import EmailRegisterView from "../EmailRegisterView";
 import VerificationCodeView from "../VerificationCodeView";
-import LogInView from "../LogInView";
 import UsernameView from "../UsernameView";
 import WellcomeView from "../WellcomeView";
 import ProfilePhotoView from "../ProfilePhotoView";
@@ -42,6 +41,7 @@ function AuthFlow() {
             <AuthStack.Screen name="Wellcome" component={WellcomeView} />
             <AuthStack.Screen name="Profile photo" component={ProfilePhotoView} />
             <AuthStack.Screen name="Age" component={AgeView} />
+            <AuthStack.Screen name="Forgot password" component={ForgotPasswordView} />
         </AuthStack.Navigator>
     );
 }

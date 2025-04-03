@@ -10,11 +10,13 @@ export default function AgeView () {
 
     return (
         <View style={styles.container}>
-            <AwesomeBirthPicker dateOfBirth={dateOfBirth} setDateOfBirth={setDateOfBirth} />
-            <View style={styles.subContainer}>
-                <AwesomeButton text='Save data' color={Color.GREEN}  />
+            <View style={styles.firstSubContainer}>
+                <AwesomeBirthPicker dateOfBirth={dateOfBirth} setDateOfBirth={setDateOfBirth} />
+                <View style={styles.subContainer}>
+                    <AwesomeButton text='Save data' color={Color.GREEN}  />
+                </View>
             </View>
-            <View style={styles.subContainer}>
+            <View style={styles.secondSubContainer}>
                 <AwesomeButton text='Skip' color={Color.BLACK} />
             </View>
         </View>
@@ -26,10 +28,13 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.white,
         padding: 15,
         flex: 1,
-        justifyContent: 'center',
+        justifyContent: 'space-between',
         alignItems: 'center'
     },
-    subContainer: {
+    firstSubContainer: {
+        width: '100%'
+    },
+    secondSubContainer: {
         width: '100%',
         marginBottom: 20
     }

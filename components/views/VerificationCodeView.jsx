@@ -105,7 +105,7 @@ export default function VerificationCodeView () {
                 <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
                     <View style={styles.modalBackground}>
                         <View style={styles.modalContainer}>
-                            <Text style={styles.modalText}>Incorrect verification code, try again</Text>
+                            <Text style={styles.modalText}>Incorrect or expired verification code, try again</Text>
                             <TouchableOpacity onPress={() => setModalVisible(false)}>
                                 <Text style={styles.modalButton}>OK</Text>
                             </TouchableOpacity>
@@ -210,7 +210,6 @@ const styles = StyleSheet.create({
     modalContainer: {
         backgroundColor: 'white',
         padding: 20,
-        //borderRadius: 10,
         alignItems: 'center',
     },
     modalText: {

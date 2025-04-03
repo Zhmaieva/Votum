@@ -88,8 +88,6 @@ const styles = StyleSheet.create({
         marginLeft: 10,
     },
     redFont: {
-        marginTop: 2,
-        marginLeft: 10,
         fontSize: 12,
         color: Colors.red,
     }
