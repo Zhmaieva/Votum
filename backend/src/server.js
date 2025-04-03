@@ -8,7 +8,7 @@ const {SECRET_KEY} = require("./constants");
 const {pool} = require("./db/dal/pool");
 const pollQueries = require("./db/dal/pollQueries");
 const userQueries = require("./db/dal/userQueries");
-const {getActivationCode, checkActivationCode, checkAndInsertUserWithProfile} = require("./db/dal/userQueries");
+const {getActivationCode, checkActivationCode, checkAndInsertUserWithProfile, getUserByLogin} = require("./db/dal/userQueries");
 const sendEmail = require("./mail/mailing");
 const {validateEmail, validateUsername, validatePassword} = require("./validation");
 
@@ -104,7 +104,7 @@ app.post("/profile/register", signupAuthMiddleware,async (req, res, next) => {
 });
 
 // Login endpoint
-app.post('/login', async (req, res, next) => {
+app.post('/users/sign-in', async (req, res, next) => {
     try {
         const { login, password } = req.body;
 
@@ -114,22 +114,18 @@ app.post('/login', async (req, res, next) => {
             return res.status(400).json({ message: 'Login and password are required' });
         }
 
-        // Перевіряємо, чи вже існує користувач з таким ім'ям або email
-        const existingUsers = await pool.query(
-            "SELECT id, password_hash as password FROM users WHERE username = $1 OR email = $1",
-            [login]
-        );
+        const existingUser = await getUserByLogin(login);
 
-        if (existingUsers.rows.length == 0) {
+        if (!existingUser) {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
 
-        if (!await bcrypt.compare(password, existingUsers.rows[0].password)) {
+        if (!await bcrypt.compare(password, existingUser.password)) {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
 
         // If credentials are correct, generate JWT token
-        const token = generateToken({id: existingUsers.rows[0].id, username: login});
+        const token = generateToken({id: existingUser.id, username: login});
         return res.json({ message: 'Login successful', token });
     }
     catch (e) {

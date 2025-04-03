@@ -256,6 +256,27 @@ async function checkAndInsertUserWithProfile(username, email, passwordHash) {
     }
 }
 
+/**
+ * Checks if there is a user in DB with matching credentials
+ * @param usernameOrEmail
+ * @param passwordHash
+ * @returns {Promise<{id, password}>}
+ */
+async function getUserByLogin(usernameOrEmail) {
+    try {
+        // Перевіряємо, чи вже існує користувач з таким ім'ям або email
+        const existingUsers = await pool.query(
+            "SELECT id, password_hash as password FROM users WHERE username = $1 OR email = $1",
+            [usernameOrEmail.toLowerCase()]
+        );
+
+        return existingUsers?.rows[0];
+    } catch (error) {
+        console.error('Error checking credentials:', error);
+        throw error;
+    }
+}
+
 module.exports = {
     followUser,
     unfollowUser,
@@ -264,5 +285,6 @@ module.exports = {
     getUser,
     getActivationCode,
     checkActivationCode,
-    checkAndInsertUserWithProfile
+    checkAndInsertUserWithProfile,
+    getUserByLogin
 }
