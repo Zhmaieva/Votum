@@ -27,7 +27,6 @@ const LogInView = ({route }) => {
                 <AwesomePasswordInput />
                 <View style={styles.margin15}>
                     <AwesomeButton text="Log in" color={Color.GREEN} additionalFunc={async () => {
-                        console.log(`${getDataService().getUser().email} : ${getDataService().getUser().password}`);
                         const result = await signIn(
                             getDataService().getUser().email,
                             getDataService().getUser().password);

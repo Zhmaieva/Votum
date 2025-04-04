@@ -1,15 +1,21 @@
-import React from 'react';
-import {View, StyleSheet, TextInput, Text} from 'react-native';
+import React, {useState} from 'react';
+import {View, StyleSheet, TextInput, Text, Modal, TouchableWithoutFeedback, TouchableOpacity} from 'react-native';
 import { Colors } from '../../utils/colorUtils';
 import AwesomeEmailInput from "../customComponents/AwesomeEmailInput";
 import AwesomeButton, {Color} from "../customComponents/AwesomeButton";
 import AwesomePasswordInput from "../customComponents/AwesomePasswordInput";
-import AwesomeLink from "../customComponents/AwesomeLink";
-import VerificationCodeView from "./VerificationCodeView";
+import {useNavigation} from "@react-navigation/native";
+import {signIn} from "../../shared/api/apiClient";
+import {getDataService, globalEventEmitter} from "../../shared/common";
+import {AwesomeModal} from "../customComponents/AwesomeModal";
 
 const EmailRegisterView = ({route }) => {
 
     const { text } = route.params || {};
+    const [isModalVisible, setModalVisible] = useState(false);
+    const errorText = 'Email is already taken';
+
+    const navigation = useNavigation();
 
     return (
         <View style={styles.container}>
@@ -19,7 +25,21 @@ const EmailRegisterView = ({route }) => {
                 </View>
                 <AwesomePasswordInput />
                 <View style={styles.nextButtonContainer}>
-                    <AwesomeButton text="Next" color={Color.GREEN} screenName="Verification Code" />
+                    <AwesomeButton text="Next" color={Color.GREEN} additionalFunc={async () => {
+                        // const result = await signIn(
+                        //     getDataService().getUser().email,
+                        //     getDataService().getUser().password);
+                        // if (result) {
+                        //     getDataService().setUser(null); // pretend we never set the user, so it will be initialised later in profile view
+                        //     globalEventEmitter.emit('signIn', { });
+                        //     navigation.navigate("Verification Code");
+                        // } else {
+                        //     console.log(result);
+                        //     setModalVisible(true);
+                        // }
+                        console.log('next')
+                        setModalVisible(true);
+                    }} />
                 </View>
             </View>
             <View style={styles.margin15}>
@@ -28,6 +48,7 @@ const EmailRegisterView = ({route }) => {
                 </View>
                 <AwesomeButton text='Log in' color={Color.BLACK} />
             </View>
+            <AwesomeModal visible={isModalVisible} text={errorText} onPress={() => setModalVisible(false)}/>
         </View>
     );
 };
