@@ -1,11 +1,12 @@
 import { Text, StyleSheet, Animated, TouchableWithoutFeedback, ActivityIndicator, View } from 'react-native';
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { Colors } from '../../utils/colorUtils';
 
 export const Color = {
     GREEN: 1,
     BLACK: 2,
+    WHITE: 3,
 };
 
 export default function AwesomeButton({
@@ -24,28 +25,24 @@ export default function AwesomeButton({
     const [loading, setLoading] = useState(false);
     const scaleValue = useState(new Animated.Value(1))[0];
 
-    if (isInChangedTextMode && buttonName !== changedText) {
-        setButtonName(changedText);
-    } else if (!isInChangedTextMode && buttonName !== text) {
-        setButtonName(text);
-    }
+    // 🔁 Keep button text in sync with props
+    useEffect(() => {
+        const newName = isInChangedTextMode ? changedText : text;
+        if (buttonName !== newName) {
+            setButtonName(newName);
+        }
+    }, [isInChangedTextMode, changedText, text, buttonName]);
 
     const onPressHandler = async () => {
         if (isDisabled || loading) return;
 
         setLoading(true);
-
         try {
             if (screenName) {
                 navigation.navigate(screenName, params);
             }
             if (additionalFunc) {
-                await additionalFunc(); // Ensure it awaits the function
-            }
-            if (changedText && buttonName !== changedText) {
-                setButtonName(changedText);
-            } else {
-                setButtonName(text);
+                await additionalFunc();
             }
         } finally {
             setLoading(false);
@@ -71,27 +68,45 @@ export default function AwesomeButton({
         });
     };
 
+    // 🎨 Determine button & text styles based on color state
+    const buttonStyle = useMemo(() => {
+        if (buttonName === changedText) return styles.buttonTransparent;
+        switch (color) {
+            case Color.BLACK:
+                return styles.buttonBlack;
+            case Color.WHITE:
+                return styles.buttonWhite;
+            default:
+                return styles.buttonGreen;
+        }
+    }, [buttonName, changedText, color]);
+
+    const textStyle = useMemo(() => {
+        if (buttonName === changedText) return styles.buttonWhiteText;
+        switch (color) {
+            case Color.BLACK:
+                return styles.buttonBlackText;
+            case Color.WHITE:
+                return styles.buttonWhiteText;
+            default:
+                return styles.buttonGreenText;
+        }
+    }, [buttonName, changedText, color]);
+
     return (
         <TouchableWithoutFeedback onPress={animateButton} disabled={isDisabled || loading}>
             <Animated.View
                 style={[
                     { transform: [{ scale: scaleValue }] },
                     styles.buttonMain,
-                    buttonName === changedText ? styles.buttonTransparent
-                        : color === Color.BLACK ? styles.buttonBlack
-                            : styles.buttonGreen,
+                    buttonStyle,
                     (isDisabled || loading) && styles.buttonDisabled
                 ]}
             >
                 {loading ? (
                     <ActivityIndicator color={color === Color.BLACK ? Colors.black : Colors.white} />
                 ) : (
-                    <Text style={[
-                        styles.buttonMainText,
-                        buttonName === changedText ? styles.buttonTransparentText
-                            : color === Color.BLACK ? styles.buttonBlackText
-                                : styles.buttonGreenText,
-                    ]}>
+                    <Text style={[styles.buttonMainText, textStyle]}>
                         {buttonName}
                     </Text>
                 )}
@@ -110,29 +125,36 @@ const styles = StyleSheet.create({
     buttonGreen: {
         backgroundColor: Colors.green,
         shadowRadius: 0,
-        shadowOffset: {
-            width: 2,
-            height: 2
-        },
+        shadowOffset: { width: 2, height: 2 },
         shadowOpacity: 1,
         shadowColor: Colors.black,
     },
     buttonBlack: {
+        backgroundColor: Colors.black,
         borderColor: Colors.black,
-        backgroundColor: Colors.white,
         borderWidth: 1,
         shadowRadius: 0,
-        shadowOffset: {
-            width: 2,
-            height: 2
-        },
+        shadowOffset: { width: 2, height: 2 },
         shadowOpacity: 1,
         shadowColor: Colors.green,
     },
     buttonTransparent: {
-        backgroundColor: 'transparent',
-        borderWidth: 1,
+        backgroundColor: Colors.white,
         borderColor: Colors.black,
+        borderWidth: 1,
+        shadowRadius: 0,
+        shadowOffset: { width: 2, height: 2 },
+        shadowOpacity: 1,
+        shadowColor: Colors.green,
+    },
+    buttonWhite: {
+        backgroundColor: Colors.white,
+        borderColor: Colors.black,
+        borderWidth: 1,
+        shadowRadius: 0,
+        shadowOffset: { width: 2, height: 2 },
+        shadowOpacity: 1,
+        shadowColor: Colors.green,
     },
     buttonDisabled: {
         opacity: 0.5,
@@ -141,13 +163,13 @@ const styles = StyleSheet.create({
         fontSize: 14,
         textAlign: 'center',
     },
-    buttonTransparentText: {
-        color: Colors.black,
-    },
     buttonBlackText: {
-        color: Colors.black,
+        color: Colors.white,
     },
     buttonGreenText: {
-        color: Colors.white
-    }
+        color: Colors.white,
+    },
+    buttonWhiteText: {
+        color: Colors.black,
+    },
 });

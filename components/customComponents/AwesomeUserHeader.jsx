@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Image } from "react-native";
 import { Colors } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from "./AwesomeButton";
-import {globalEventEmitter} from "../../shared/common";
-import {followProfile, unfollowProfile} from "../../shared/api/apiClient";
+import { globalEventEmitter } from "../../shared/common";
+import { followProfile, unfollowProfile } from "../../shared/api/apiClient";
 
 const formatFollowers = (num) => {
     if (num >= 1_000_000_000) return (num / 1_000_000_000).toFixed(1) + 'B';
@@ -14,16 +14,13 @@ const formatFollowers = (num) => {
 
 const followChangedEventName = "followChanged";
 
-const AwesomeUserHeader = ({ userData, loggedInUserId }) => {
+const AwesomeUserHeader = ({ userData, loggedInUserId, isFollowersPage = false, onRemove }) => {
     const [user, setUser] = useState(userData);
     const [isFollowing, setIsFollowing] = useState(userData?.isFollowing);
 
     function handleFollowChangedEvent(userData) {
-        if (!userData) return; // Ensure errorState is not undefined
-
-        if (user?.userId !== userData.userId)
-            return;
-
+        if (!userData) return;
+        if (user?.userId !== userData.userId) return;
         setIsFollowing(userData.isFollowing);
     }
 
@@ -42,9 +39,14 @@ const AwesomeUserHeader = ({ userData, loggedInUserId }) => {
     const followersText = user.followersNumber === 1 ? "follower" : "followers";
     const formattedFollowers = formatFollowers(user.followersNumber);
 
+    const handleRemove = () => {
+        console.log(`Removing user ${user.userId}User was removed from my followers`);
+        // You can also call API here if needed
+        if (onRemove) onRemove();
+    };
+
     return (
         <View style={[styles.row, styles.userContainer]}>
-
             <View style={[styles.row, styles.firstSubContainer]}>
                 <View style={styles.avatar}>
                     <Image source={{ uri: user.image }} style={styles.avatar} />
@@ -53,14 +55,18 @@ const AwesomeUserHeader = ({ userData, loggedInUserId }) => {
 
             <View style={[styles.row, styles.secondSubContainer]}>
                 <View>
-                    <Text style={[styles.font14, styles.userNameBold, styles.fontFamily]}
-                          numberOfLines={1}>
+                    <Text
+                        style={[styles.font14, styles.userNameBold, styles.fontFamily]}
+                        numberOfLines={1}
+                    >
                         {user.userName}
                     </Text>
                     {isOwnProfile ? (
-                        <Text style={[styles.font14, styles.greyTextStyle, styles.fontFamily]}
-                              numberOfLines={2}
-                              ellipsizeMode="tail">
+                        <Text
+                            style={[styles.font14, styles.greyTextStyle, styles.fontFamily]}
+                            numberOfLines={2}
+                            ellipsizeMode="tail"
+                        >
                             {user.bio}
                         </Text>
                     ) : (
@@ -73,9 +79,15 @@ const AwesomeUserHeader = ({ userData, loggedInUserId }) => {
 
             <View style={styles.thirdSubContainer}>
                 <View style={styles.buttonContainer}>
-                    {isOwnProfile ? (
+                    {isFollowersPage ? (
                         <AwesomeButton
-                            color={Color.BLACK}
+                            color={Color.WHITE}
+                            text="Remove"
+                            additionalFunc={handleRemove}
+                        />
+                    ) : isOwnProfile ? (
+                        <AwesomeButton
+                            color={Color.WHITE}
                             text="Edit"
                             screenName="Edit profile"
                             params={{ user }}
@@ -88,18 +100,18 @@ const AwesomeUserHeader = ({ userData, loggedInUserId }) => {
                                 user.isFollowing = !user.isFollowing;
                                 setIsFollowing(user.isFollowing);
                                 if (user.isFollowing) {
-                                    followProfile(user.userId).then(_ => {})
+                                    followProfile(user.userId).then(() => {});
                                 } else {
-                                    unfollowProfile(user.userId).then(_ => {})
+                                    unfollowProfile(user.userId).then(() => {});
                                 }
-                                globalEventEmitter.emit(followChangedEventName, { ... user });
+                                globalEventEmitter.emit(followChangedEventName, { ...user });
                             }}
                             text="Follow"
-                            changedText="Unfollow" />
+                            changedText="Unfollow"
+                        />
                     )}
                 </View>
             </View>
-
         </View>
     );
 };
@@ -129,22 +141,24 @@ const styles = StyleSheet.create({
     },
     userContainer: {
         width: '100%',
+        paddingRight: 2,
+        paddingBottom: 2,
     },
     firstSubContainer: {
         flex: 1,
         alignItems: "flex-start",
-        marginRight: 5
+        marginRight: 5,
     },
     secondSubContainer: {
         flex: 4,
-        alignItems: "flex-end"
+        alignItems: "flex-end",
     },
     thirdSubContainer: {
         flex: 2,
         justifyContent: "flex-end",
-        alignItems: "flex-end"
+        alignItems: "flex-end",
     },
     buttonContainer: {
-        width: 80
+        width: 80,
     },
 });
