@@ -5,33 +5,62 @@ import {  } from '@expo/vector-icons';
 import React from 'react';
 import AwesomeCodeContainer from '../customComponents/AwesomeCodeContainer';
 import {Colors} from "../../utils/colorUtils";
+import {AwesomeModal} from "../customComponents/AwesomeModal";
+import {signUpStart, signUpVerify} from "../../shared/api/apiClient";
+import {getDataService} from "../../shared/common";
+import {useNavigation} from "@react-navigation/native";
 
 export default function VerificationCodeView () {
+    const[num1Input, setNum1Input] = useState()
     const[num2Input, setNum2Input] = useState()
     const[num3Input, setNum3Input] = useState()
     const[num4Input, setNum4Input] = useState()
     const[num5Input, setNum5Input] = useState()
     const[num6Input, setNum6Input] = useState()
 
-    function onNum1Handler() {
+    const[num1, setNum1] = useState('')
+    const[num2, setNum2] = useState('')
+    const[num3, setNum3] = useState('')
+    const[num4, setNum4] = useState('')
+    const[num5, setNum5] = useState('')
+    const[num6, setNum6] = useState('')
+
+    const[error, setError] = useState('')
+
+    function getValue() {
+        return `${num1}${num2}${num3}${num4}${num5}${num6}`;
+    }
+
+    function onNum1Handler(val) {
+        setNum1(val ?? '');
         num2Input.focus()
     }
 
-    function onNum2Handler() {
+    function onNum2Handler(val) {
+        setNum2(val ?? '');
         num3Input.focus()
     }
 
-    function onNum3Handler() {
+    function onNum3Handler(val) {
+        setNum3(val ?? '');
         num4Input.focus()
     }
 
-    function onNum4Handler() {
+    function onNum4Handler(val) {
+        setNum4(val ?? '');
         num5Input.focus()
     }
 
-    function onNum5Handler() {
+    function onNum5Handler(val) {
+        setNum5(val ?? '');
         num6Input.focus()
     }
+
+    function onNum6Handler(val) {
+        setNum6(val ?? '');
+    }
+
+    const navigation = useNavigation();
 
     const [hidden, setHidden] = useState(false);
 
@@ -62,12 +91,12 @@ export default function VerificationCodeView () {
             <View>
                 <View style={styles.centered}>
                     <View style={[styles.row, styles.equidistantElements, styles.verificationCodeContainer]}>
-                        <AwesomeCodeContainer onTextInput={onNum1Handler}/>
+                        <AwesomeCodeContainer onTextInput={onNum1Handler} refOutlet={setNum1Input}/>
                         <AwesomeCodeContainer onTextInput={onNum2Handler} refOutlet={setNum2Input}/>
                         <AwesomeCodeContainer onTextInput={onNum3Handler} refOutlet={setNum3Input}/>
                         <AwesomeCodeContainer onTextInput={onNum4Handler} refOutlet={setNum4Input}/>
                         <AwesomeCodeContainer onTextInput={onNum5Handler} refOutlet={setNum5Input}/>
-                        <AwesomeCodeContainer refOutlet={setNum6Input}/>
+                        <AwesomeCodeContainer onTextInput={onNum6Handler} refOutlet={setNum6Input}/>
                     </View>
                 </View>
                 <View style={[styles.margin15, styles.centered]}>
@@ -89,10 +118,35 @@ export default function VerificationCodeView () {
                     </View>
                 </View>
                 <View style={styles.margin40}>
-                    <AwesomeButton text='Next' color={Color.GREEN} screenName='Username' />
-                </View>
-                <View>
-                    <AwesomeButton text='TEMP: modal with error' color={Color.BLACK} additionalFunc={()=>setModalVisible(true)}/>
+                    <AwesomeButton text='Next' color={Color.GREEN} additionalFunc={async () => {
+                        const code = getValue();
+                        const email = getDataService()?.getUser()?.email ?? '';
+
+                        const response = await signUpVerify(email, code);
+
+                        if (response.success) {
+                            navigation.navigate('Username');
+                            return;
+                        }
+
+                        if (response.code === 404) {
+                            setError('Incorrect verification code, try again');
+                            setModalVisible(true);
+                            return;
+                        }
+
+                        if (response.code === 410) {
+                            setError('Code expired, request new cod');
+                            setModalVisible(true);
+                            return;
+                        }
+
+                        if (response.code === 403) {
+                            setError('Too many tries, request new code');
+                            setModalVisible(true);
+                            return;
+                        }
+                    }} />
                 </View>
             </View>
             <View style={styles.margin15}>
@@ -101,18 +155,10 @@ export default function VerificationCodeView () {
                 </View>
                 <AwesomeButton text='Log in' color={Color.BLACK} screenName='Log in' />
             </View>
-            <Modal visible={isModalVisible} transparent={true} animationType="fade">
-                <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
-                    <View style={styles.modalBackground}>
-                        <View style={styles.modalContainer}>
-                            <Text style={styles.modalText}>Incorrect or expired verification code, try again</Text>
-                            <TouchableOpacity onPress={() => setModalVisible(false)}>
-                                <Text style={styles.modalButton}>OK</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </TouchableWithoutFeedback>
-            </Modal>
+            <AwesomeModal visible={isModalVisible}
+                          text={error}
+                          onPress={_ => {setModalVisible(false)}}
+                          onBackPress={_ => {setModalVisible(false)}}/>
         </View>
     );
 }
@@ -200,25 +246,5 @@ const styles = StyleSheet.create({
     questionStyle: {
         fontSize: 14,
         color: Colors.black
-    },
-    modalBackground: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0,0,0,0.5)',
-    },
-    modalContainer: {
-        backgroundColor: 'white',
-        padding: 20,
-        alignItems: 'center',
-    },
-    modalText: {
-        fontSize: 16,
-        marginBottom: 10,
-    },
-    modalButton: {
-        color: Colors.green,
-        fontSize: 16,
-        marginTop: 10,
     },
 });

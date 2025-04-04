@@ -9,13 +9,14 @@ import {Colors} from "../../utils/colorUtils";
  * @param {function} onPress
  * @param {string} text
  * @param {string} buttonText
+ * @param {function} onBackPress
  * @returns {JSX.Element}
  * @constructor
  */
-export function AwesomeModal({visible = false, text, buttonText = 'OK', onPress = () => {}, }) {
+export function AwesomeModal({visible = false, text, buttonText = 'OK', onPress = () => {}, onBackPress = () => {} }) {
     return (
         <Modal visible={visible} transparent={true} animationType="fade">
-            <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
+            <TouchableWithoutFeedback onPress={onBackPress}>
                 <View style={styles.modalBackground}>
                     <View style={styles.modalContainer}>
                         <Text style={styles.modalText}>{text}</Text>

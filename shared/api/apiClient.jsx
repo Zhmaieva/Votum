@@ -57,12 +57,18 @@ apiClient.interceptors.response.use(
             if (error.response.status === 401) {
                 await signOut();
             }
+
+            if (error.response.status >= 500) {
+                //TODO: handle server errors globally in App.js
+            }
         } else if (error.request) {
             // The request was made but no response was received
             console.error("No response received from server:", error.request);
+            //TODO: handle server errors globally in App.js
         } else {
             // Something else happened
             console.error("Error:", error.message);
+            //TODO: handle server errors globally in App.js
         }
 
         return Promise.reject(error); // Always reject so the caller can handle it too
@@ -84,6 +90,56 @@ export const signIn = async (userNameOrEmail, password) => {
     } catch (err) {
         console.log('Login failed', err);
         return false;
+    }
+};
+
+/**
+ *
+ * @param email
+ * @returns {Promise<{success: boolean, code: number?}>}
+ */
+export const signUpStart = async (email) => {
+    try {
+        await apiClient.post(`/users/register`, {
+            email: email
+        });
+
+        console.log('registration start successful');
+
+        return { success: true, code: 200 };
+    } catch (err) {
+        if (err.response && err.response.status) {
+            return { success: false, code: err.response.status };
+        }
+        return { success: false };
+    }
+};
+
+/**
+ *
+ * @param {string} email
+ * @param {string} code
+ * @returns {Promise<{success: boolean, code: number?}>}
+ */
+export const signUpVerify = async (email, code) => {
+    try {
+        const response = await apiClient.post(`/user/register/verify`, {
+            email: email,
+            code: code
+        });
+
+        console.log('email verification successful');
+
+        const { token } = response.data;
+        await AsyncStorage.setItem('auth_token', token); // Save temp token in AsyncStorage
+        tokenValue = token;
+
+        return { success: true, code: 200 };
+    } catch (err) {
+        if (err.response && err.response.status) {
+            return { success: false, code: err.response.status };
+        }
+        return { success: false };
     }
 };
 

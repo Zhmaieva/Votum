@@ -15,9 +15,8 @@ function testWithTimeout(regex, string, timeout = 100) {
 
 async function validateEmail(email) {
     let re = /\S+@\S+\.\S+/;
-    let regex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
 
-    if ((await testWithTimeout(re, email)) || (await testWithTimeout(regex, email))) {
+    if ((await testWithTimeout(re, email))) {
         return true;
     } else {
         return false;

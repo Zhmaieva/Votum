@@ -34,12 +34,12 @@ app.post("/users/register", async (req, res, next) => {
         const { code, canSend } = await getActivationCode(email);
 
         if (parseInt(code) === -1) {
-            return res.status(201).json({ error: "user registered" });
+            return res.status(409).json({ error: "user registered" });
         }
 
         if (code) {
             if (canSend) {
-                sendEmail(email, 'Poll App email verification', 'Welcome to Poll App, please enter this code in Poll App to continue registration: ' + code);
+                sendEmail(email, 'Poll App email verification', 'Welcome to Poll App, please enter this code in Poll App to continue registration: ' + code + ' This code is valid for 15 minutes.');
             }
 
             return res.json({});

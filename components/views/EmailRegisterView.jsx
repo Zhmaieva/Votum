@@ -4,41 +4,55 @@ import { Colors } from '../../utils/colorUtils';
 import AwesomeEmailInput from "../customComponents/AwesomeEmailInput";
 import AwesomeButton, {Color} from "../customComponents/AwesomeButton";
 import AwesomePasswordInput from "../customComponents/AwesomePasswordInput";
-import {useNavigation} from "@react-navigation/native";
-import {signIn} from "../../shared/api/apiClient";
+import {useFocusEffect, useNavigation} from "@react-navigation/native";
+import {signIn, signUpStart, signupStart} from "../../shared/api/apiClient";
 import {getDataService, globalEventEmitter} from "../../shared/common";
 import {AwesomeModal} from "../customComponents/AwesomeModal";
 
 const EmailRegisterView = ({route }) => {
 
-    const { text } = route.params || {};
     const [isModalVisible, setModalVisible] = useState(false);
-    const errorText = 'Email is already taken';
+    const [error, setError] = useState('');
+
+    const emailIsAlreadyTakenError = 'Email is already taken';
+    const invalidEmailError = 'Invalid email';
 
     const navigation = useNavigation();
+
+    useFocusEffect(
+        React.useCallback(() => {
+            if (!getDataService()?.getUser())
+                getDataService().setUser({});
+        }, [])
+    );
 
     return (
         <View style={styles.container}>
             <View>
                 <View style={styles.emailInputContainer}>
-                    <AwesomeEmailInput value={text} bareStyle={false}/>
+                    <AwesomeEmailInput bareStyle={false}/>
                 </View>
                 <AwesomePasswordInput />
                 <View style={styles.nextButtonContainer}>
                     <AwesomeButton text="Next" color={Color.GREEN} additionalFunc={async () => {
-                        // const result = await signIn(
-                        //     getDataService().getUser().email,
-                        //     getDataService().getUser().password);
-                        // if (result) {
-                        //     getDataService().setUser(null); // pretend we never set the user, so it will be initialised later in profile view
-                        //     globalEventEmitter.emit('signIn', { });
-                        //     navigation.navigate("Verification Code");
-                        // } else {
-                        //     console.log(result);
-                        //     setModalVisible(true);
-                        // }
-                        console.log('next')
-                        setModalVisible(true);
+                        const email = getDataService()?.getUser()?.email ?? '';
+                        const response = await signUpStart(email);
+
+                        if (response.success) {
+                            navigation.navigate("Verification Code");
+                            return;
+                        }
+
+                        if (response.code === 409) {
+                            setError(emailIsAlreadyTakenError);
+                            setModalVisible(true);
+                            return;
+                        }
+
+                        if (response.code === 400) {
+                            setError(invalidEmailError);
+                            setModalVisible(true);
+                        }
                     }} />
                 </View>
             </View>
@@ -48,7 +62,7 @@ const EmailRegisterView = ({route }) => {
                 </View>
                 <AwesomeButton text='Log in' color={Color.BLACK} />
             </View>
-            <AwesomeModal visible={isModalVisible} text={errorText} onPress={() => setModalVisible(false)}/>
+            <AwesomeModal visible={isModalVisible} text={error} onPress={() => setModalVisible(false)} onBackPress={() => setModalVisible(false)} />
         </View>
     );
 };

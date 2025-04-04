@@ -123,7 +123,7 @@ async function getActivationCode(email) {
                  updated AS (
                      UPDATE activation_codes
                          SET created_at = (NOW() AT TIME ZONE 'UTC'), 
-                             code = LPAD(FLOOR(RANDOM() * 10000)::TEXT, 4, '0'),
+                             code = LPAD(FLOOR(RANDOM() * 10000)::TEXT, 6, '0'),
                              attempts_made = 0
                          WHERE email = LOWER($1)
                              AND created_at <= (NOW() AT TIME ZONE 'UTC') - INTERVAL '15 minutes'
@@ -131,7 +131,7 @@ async function getActivationCode(email) {
                  ),
                  inserted AS (
                      INSERT INTO activation_codes (email, created_at, code)
-                         SELECT LOWER($1), (NOW() AT TIME ZONE 'UTC'), LPAD(FLOOR(RANDOM() * 10000)::TEXT, 4, '0')
+                         SELECT LOWER($1), (NOW() AT TIME ZONE 'UTC'), LPAD(FLOOR(RANDOM() * 10000)::TEXT, 6, '0')
                          WHERE NOT EXISTS (SELECT 1 FROM activation_codes WHERE email = LOWER($1))
                          AND NOT EXISTS (SELECT 'EXISTS' AS code FROM users WHERE email = LOWER($1))
                          RETURNING code, true AS canSend
@@ -172,7 +172,6 @@ async function checkActivationCode(email, code) {
                      WHERE email = LOWER($1)
                          AND created_at >= (NOW() AT TIME ZONE 'UTC') - INTERVAL '15 minutes'
                          AND code <> $2
-                         AND attempts_made < 4
                      RETURNING attempts_made
              ),
              expired_code AS (
@@ -184,10 +183,10 @@ async function checkActivationCode(email, code) {
             SELECT
                 CASE
                     WHEN NOT EXISTS (SELECT 1 FROM activation_codes WHERE email = LOWER($1)) THEN 0
-                    WHEN (SELECT COUNT(*) FROM matched_email WHERE code = $2) > 0 THEN 1
-                    WHEN (SELECT COUNT(*) FROM expired_code) > 0 THEN 2
                     WHEN (SELECT attempts_made FROM updated_attempts LIMIT 1) > 3 THEN -1
-                    WHEN (SELECT COUNT(*) FROM matched_email) > 0 THEN 0
+                    WHEN (SELECT COUNT(*) FROM expired_code) > 0 THEN 2
+                    WHEN (SELECT attempts_made FROM matched_email) > 3 THEN -1
+                    WHEN (SELECT COUNT(*) FROM matched_email WHERE code = $2) > 0 THEN 1
                     ELSE 0
                     END AS result;
 
