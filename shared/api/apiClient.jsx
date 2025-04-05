@@ -131,8 +131,7 @@ export const signUpVerify = async (email, code) => {
         console.log('email verification successful');
 
         const { token } = response.data;
-        await AsyncStorage.setItem('auth_token', token); // Save temp token in AsyncStorage
-        tokenValue = token;
+        await AsyncStorage.setItem('sign_in_auth_token', token); // Save temp token in AsyncStorage
 
         return { success: true, code: 200 };
     } catch (err) {
@@ -143,9 +142,65 @@ export const signUpVerify = async (email, code) => {
     }
 };
 
+/**
+ * Check if there is a user with the username
+ * @param {string} userNameOrEmail
+ * @returns {Promise<boolean>}
+ */
+export const checkUsernameAvailability = async (userNameOrEmail) => {
+    try {
+        await apiClient.get(`/users?username=${userNameOrEmail}`, {
+            headers: {
+                Authorization: `Bearer ${await AsyncStorage.getItem('sign_in_auth_token')}`,
+            },
+        });
+
+        return true;
+    } catch (err) {
+        if (err.response && err.response.status === 409) {
+            return false;
+        }
+        return true;
+    }
+};
+
+
+/**
+ *
+ * @param {string} email
+ * @param {string} code
+ * @returns {Promise<{success: boolean, code: number?}>}
+ */
+export const signUpFinish = async (username, password) => {
+    try {
+        const response = await apiClient.post(`/profile/register`, {
+            username: username,
+            password: password
+        }, {
+            headers: {
+                Authorization: `Bearer ${await AsyncStorage.getItem('sign_in_auth_token')}`,
+            },
+        });
+
+        console.log('registration complete');
+
+        const { token } = response.data;
+        await AsyncStorage.removeItem('sign_in_auth_token'); // Save token in AsyncStorage
+        await AsyncStorage.setItem('auth_token', token); // Save token in AsyncStorage
+        tokenValue = token;
+
+        return { success: true, code: 200 };
+    } catch (err) {
+        console.log(err);
+        if (err.response && err.response.status) {
+            return { success: false, code: err.response.status };
+        }
+        return { success: false };
+    }
+};
+
 export const fetchMyProfile = async () => {
     try {
-        console.log('Fetching profile...');
         const response = await apiClient.get(`/profile`, {
             headers: {
                 Authorization: `Bearer ${await getToken()}`,

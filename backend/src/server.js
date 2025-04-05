@@ -72,6 +72,29 @@ app.post("/user/register/verify", async (req, res, next) => {
     }
 });
 
+// Check username availability endpoint
+app.get('/users', signupAuthMiddleware, async (req, res, next) => {
+    try {
+        const { username } = req.query;
+
+        // Check if username and password are valid
+        if (!username || username.length > 32 || username.length === 0) {
+            return res.status(400).json({message: "invalid username"});
+        }
+
+        const existingUser = await getUserByLogin(username);
+
+        if (existingUser) {
+            return  res.status(409).json({message: "user already exists"});
+        }
+
+        return res.json({ message: 'username available' });
+    }
+    catch (e) {
+        next(e);
+    }
+});
+
 app.post("/profile/register", signupAuthMiddleware,async (req, res, next) => {
     try {
         const { username, password } = req.body;
@@ -93,11 +116,11 @@ app.post("/profile/register", signupAuthMiddleware,async (req, res, next) => {
         const { code, user_id } = await checkAndInsertUserWithProfile(username, req.user.email, passwordHash);
 
         if (code === -1 || !user_id) {
-            return res.status(401).json({ error: "Username or email already exists" });
+            return res.status(409).json({ error: "Username or email already exists" });
         }
 
         const token = generateToken({id: user_id, username: username.toLowerCase()});
-        res.status(201).json({ message: "User registered successfully", userId: user_id, accessToken: token});
+        res.status(201).json({ message: "User registered successfully", userId: user_id, token: token});
     } catch (e) {
         next(e);
     }

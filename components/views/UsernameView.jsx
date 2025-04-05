@@ -1,29 +1,75 @@
 import React, {useState} from 'react';
 import {View, StyleSheet, TextInput, Text, TouchableWithoutFeedback, TouchableOpacity, Modal} from 'react-native';
 import { Colors } from '../../utils/colorUtils';
-import AwesomeEmailInput from "../customComponents/AwesomeEmailInput";
 import AwesomeButton, {Color} from "../customComponents/AwesomeButton";
-import AwesomeLink from "../customComponents/AwesomeLink";
-import VerificationCodeView from "./VerificationCodeView";
 import AwesomeUsernameInput from "../customComponents/AwesomeUsernameInput";
-import { checkUsernameAvailability } from "../../shared/api/apiClient";
+import {checkUsernameAvailability, signUpFinish} from "../../shared/api/apiClient";
+import {AwesomeModal} from "../customComponents/AwesomeModal";
+import {getDataService, globalEventEmitter} from "../../shared/common";
+import {useNavigation} from "@react-navigation/native";
 
-const UsernameView = ({route }) => {
+const UsernameView = ({}) => {
 
-    const { text } = route.params || {};
+    const[error, setError] = useState('');
+
+    const userNameEmptyError = 'Username cannot be empty, try again';
+    const userNameInvalidError = 'Invalid username, try again';
+    const userNameTakenError = 'This username is already taken, try again';
 
     const [isModalVisible, setModalVisible] = useState(false);
-    const [isModal2Visible, setModal2Visible] = useState(false);
+
+    const navigation = useNavigation();
 
     return (
         <View style={styles.container}>
             <View>
                 <AwesomeUsernameInput checkUsernameAvailability={checkUsernameAvailability} />
                 <View style={styles.nextButtonContainer}>
-                    <AwesomeButton text="Create account" color={Color.GREEN} screenName='Wellcome' />
+                    <AwesomeButton text="Create account" color={Color.GREEN} additionalFunc={async () => {
+                        const username = getDataService()?.getUser()?.username;
+                        const password = getDataService()?.getUser()?.password ?? '';
+
+                        if (username === null) {
+                            setError(userNameTakenError);
+                            setModalVisible(true);
+                            return;
+                        }
+
+                        if (!username) {
+                            setError(userNameEmptyError);
+                            setModalVisible(true);
+                            return;
+                        }
+
+                        if (!password) {
+                            navigation.navigate('Email Register')
+                        }
+
+                        const response = await signUpFinish(username, password);
+
+                        console.log(response);
+                        if (response.success) {
+                            globalEventEmitter.emit('signIn', {})
+                            return;
+                        }
+
+                        if (response.code === 401) {
+                            navigation.navigate('Email Register')
+                            return;
+                        }
+
+                        if (response.code === 409) {
+                            setError(userNameTakenError);
+                            setModalVisible(true);
+                            return;
+                        }
+
+                        if (response.code === 400) {
+                            setError(userNameInvalidError);
+                            setModalVisible(true);
+                        }
+                    }}/>
                 </View>
-                <AwesomeButton text='TEMP: error if username is empty' color={Color.BLACK} additionalFunc={()=>setModalVisible(true)} />
-                <AwesomeButton text='TEMP: error if username is taken' color={Color.BLACK} additionalFunc={()=>setModal2Visible(true)} />
             </View>
             <View style={styles.margin15}>
                 <View style={styles.questionContainer}>
@@ -31,30 +77,10 @@ const UsernameView = ({route }) => {
                 </View>
                 <AwesomeButton text='Log in' color={Color.BLACK} screenName='Log in' />
             </View>
-            <Modal visible={isModalVisible} transparent={true} animationType="fade">
-                <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
-                    <View style={styles.modalBackground}>
-                        <View style={styles.modalContainer}>
-                            <Text style={styles.modalText}>Username cannot be empty, try again</Text>
-                            <TouchableOpacity onPress={() => setModalVisible(false)}>
-                                <Text style={styles.modalButton}>OK</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </TouchableWithoutFeedback>
-            </Modal>
-            <Modal visible={isModal2Visible} transparent={true} animationType="fade">
-                <TouchableWithoutFeedback onPress={() => setModal2Visible(false)}>
-                    <View style={styles.modalBackground}>
-                        <View style={styles.modalContainer}>
-                            <Text style={styles.modalText}>This username is already taken, try again</Text>
-                            <TouchableOpacity onPress={() => setModal2Visible(false)}>
-                                <Text style={styles.modalButton}>OK</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </TouchableWithoutFeedback>
-            </Modal>
+            <AwesomeModal visible={isModalVisible}
+                          text={error}
+                          onPress={_ => {setModalVisible(false)}}
+                          onBackPress={_ => {setModalVisible(false)}}/>
         </View>
     );
 };
@@ -87,26 +113,6 @@ const styles = StyleSheet.create({
     },
     margin15: {
         marginBottom: 15
-    },
-    modalBackground: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0,0,0,0.5)',
-    },
-    modalContainer: {
-        backgroundColor: 'white',
-        padding: 20,
-        alignItems: 'center',
-    },
-    modalText: {
-        fontSize: 16,
-        marginBottom: 10,
-    },
-    modalButton: {
-        color: Colors.green,
-        fontSize: 16,
-        marginTop: 10,
     },
 });
 

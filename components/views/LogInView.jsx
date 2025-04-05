@@ -5,12 +5,11 @@ import AwesomeEmailInput from "../customComponents/AwesomeEmailInput";
 import AwesomeButton, {Color} from "../customComponents/AwesomeButton";
 import AwesomePasswordInput from "../customComponents/AwesomePasswordInput";
 import {getDataService, globalEventEmitter} from "../../shared/common";
-import {fetchMyProfile, signIn} from "../../shared/api/apiClient";
+import {signIn} from "../../shared/api/apiClient";
 import {useFocusEffect} from "@react-navigation/native";
+import {AwesomeModal} from "../customComponents/AwesomeModal";
 
-const LogInView = ({route }) => {
-
-    const { text } = route.params || {};
+const LogInView = ({ }) => {
 
     const [isModalVisible, setModalVisible] = useState(false);
 
@@ -31,7 +30,6 @@ const LogInView = ({route }) => {
                             getDataService().getUser().email,
                             getDataService().getUser().password);
                         if (result) {
-                            getDataService().setUser(null); // pretend we never set the user, so it will be initialised later in profile view
                             globalEventEmitter.emit('signIn', { });
                         } else {
                             setModalVisible(true)
@@ -45,18 +43,10 @@ const LogInView = ({route }) => {
                 </View>
                 <AwesomeButton text="Create new account" color={Color.BLACK} />
             </View>
-            <Modal visible={isModalVisible} transparent={true} animationType="fade">
-                <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
-                    <View style={styles.modalBackground}>
-                        <View style={styles.modalContainer}>
-                            <Text style={styles.modalText}>Incorrect username or password, try again</Text>
-                            <TouchableOpacity onPress={() => setModalVisible(false)}>
-                                <Text style={styles.modalButton}>OK</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </TouchableWithoutFeedback>
-            </Modal>
+            <AwesomeModal visible={isModalVisible}
+                          text={"Incorrect username or password, try again"}
+                          onPress={_ => {setModalVisible(false)}}
+                          onBackPress={_ => {setModalVisible(false)}}/>
         </View>
     );
 };
@@ -76,26 +66,6 @@ const styles = StyleSheet.create({
     },
     centeredStyle: {
         alignItems: 'center'
-    },
-    modalBackground: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0,0,0,0.5)',
-    },
-    modalContainer: {
-        backgroundColor: 'white',
-        padding: 20,
-        alignItems: 'center',
-    },
-    modalText: {
-        fontSize: 16,
-        marginBottom: 10,
-    },
-    modalButton: {
-        color: Colors.green,
-        fontSize: 16,
-        marginTop: 10,
     },
 });
 

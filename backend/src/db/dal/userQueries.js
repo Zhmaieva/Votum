@@ -123,7 +123,7 @@ async function getActivationCode(email) {
                  updated AS (
                      UPDATE activation_codes
                          SET created_at = (NOW() AT TIME ZONE 'UTC'), 
-                             code = LPAD(FLOOR(RANDOM() * 10000)::TEXT, 6, '0'),
+                             code = LPAD(FLOOR(RANDOM() * 1000000)::TEXT, 6, '0'),
                              attempts_made = 0
                          WHERE email = LOWER($1)
                              AND created_at <= (NOW() AT TIME ZONE 'UTC') - INTERVAL '15 minutes'
@@ -131,7 +131,7 @@ async function getActivationCode(email) {
                  ),
                  inserted AS (
                      INSERT INTO activation_codes (email, created_at, code)
-                         SELECT LOWER($1), (NOW() AT TIME ZONE 'UTC'), LPAD(FLOOR(RANDOM() * 10000)::TEXT, 6, '0')
+                         SELECT LOWER($1), (NOW() AT TIME ZONE 'UTC'), LPAD(FLOOR(RANDOM() * 1000000)::TEXT, 6, '0')
                          WHERE NOT EXISTS (SELECT 1 FROM activation_codes WHERE email = LOWER($1))
                          AND NOT EXISTS (SELECT 'EXISTS' AS code FROM users WHERE email = LOWER($1))
                          RETURNING code, true AS canSend

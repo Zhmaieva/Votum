@@ -16,6 +16,7 @@ const EmailRegisterView = ({route }) => {
 
     const emailIsAlreadyTakenError = 'Email is already taken';
     const invalidEmailError = 'Invalid email';
+    const invalidPasswordError = 'Invalid password';
 
     const navigation = useNavigation();
 
@@ -35,7 +36,21 @@ const EmailRegisterView = ({route }) => {
                 <AwesomePasswordInput />
                 <View style={styles.nextButtonContainer}>
                     <AwesomeButton text="Next" color={Color.GREEN} additionalFunc={async () => {
-                        const email = getDataService()?.getUser()?.email ?? '';
+                        const email = getDataService()?.getUser()?.email;
+                        const password = getDataService()?.getUser()?.password;
+
+                        if (!email) {
+                            setError(invalidEmailError);
+                            setModalVisible(true);
+                            return;
+                        }
+
+                        if (!password) {
+                            setError(invalidPasswordError);
+                            setModalVisible(true);
+                            return;
+                        }
+
                         const response = await signUpStart(email);
 
                         if (response.success) {

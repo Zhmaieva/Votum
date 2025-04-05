@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { debounce } from 'lodash';
 import { Colors } from '../../utils/colorUtils';
 import { checkUsernameAvailability } from "../../shared/api/apiClient";
+import {getDataService} from "../../shared/common";
 
 const AwesomeUsernameInput = ({ checkUsernameAvailability }) => {
     const [username, setUsername] = useState('');
@@ -11,16 +12,30 @@ const AwesomeUsernameInput = ({ checkUsernameAvailability }) => {
     const charLimit = 15;
 
     useEffect(() => {
-        if (username.length > 0) {
-            debouncedCheck(username);
-        } else {
-            setIsAvailable(null);
-        }
+        debouncedCheck();
     }, [username]);
 
-    const debouncedCheck = debounce(async (text) => {
-        const available = await checkUsernameAvailability(text);
-        setIsAvailable(available);
+    const debouncedCheck = debounce(async () => {
+        const name = username;
+        const available = name ? await checkUsernameAvailability(name) : false;
+
+        if (available) {
+            if (!name) {
+                getDataService().getUser().username = '';
+            } else {
+                setIsAvailable(true);
+                getDataService().getUser().username = name;
+                return;
+            }
+        } else {
+            if (!name) {
+                getDataService().getUser().username = '';
+            } else {
+                getDataService().getUser().username = null;
+            }
+        }
+
+        setIsAvailable(false);
     }, 500);
 
     const handleInputChange = (text) => {

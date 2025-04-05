@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {NavigationContainer, useNavigation} from '@react-navigation/native';
 import {AwesomeTabs, AuthNavigator} from "./components/views/navigation/AwesomeTabs";
-import {globalEventEmitter} from "./shared/common";
+import {getDataService, globalEventEmitter} from "./shared/common";
 import {isTokenAvailable} from "./shared/api/apiClient";
 import {ActivityIndicator, View} from "react-native";
 
@@ -16,6 +16,8 @@ export default function App() {
     })
 
     globalEventEmitter.on('signIn', () => {
+        console.log('signIn');
+        getDataService().setUser(null); // pretend we never set the user, so it will be initialised later in profile view
         setIsAuthenticated(true);
     });
 

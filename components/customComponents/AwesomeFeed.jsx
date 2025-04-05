@@ -11,7 +11,6 @@ const AwesomeFeed = ({ data, onRefresh, refreshing, renderItem }) => {
 
     useEffect(() => {
         if (data.length > 0) {
-            console.log('preloading feed...')
             setPreloadedData(data.slice(0, 5)); // Preload first 5 polls
         }
     }, [data]);
