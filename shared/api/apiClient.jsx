@@ -199,6 +199,27 @@ export const signUpFinish = async (username, password) => {
     }
 };
 
+export const uploadProfileImage = async (image) => {
+    const formData = new FormData();
+    formData.append('file', {
+        uri: image.uri,
+        name: 'profile.jpg',
+        type: image.type || 'image/jpeg',
+    });
+
+    try {
+        await apiClient.post(`/profile/image`, formData, {
+            headers: {
+                Authorization: `Bearer ${await getToken()}`,
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        console.log('upload successful');
+    } catch (err) {
+        console.log(err);
+    }
+};
+
 export const fetchMyProfile = async () => {
     try {
         const response = await apiClient.get(`/profile`, {

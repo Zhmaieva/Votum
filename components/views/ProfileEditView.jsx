@@ -12,34 +12,36 @@ const ProfileEditView = ({ route }) => {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [bioD, setBioD] = useState('');
-    const [profileImage, setProfileImage] = useState('');
+    const [profileImage, setProfileImage] = useState(getDataService().getUser()?.image ?? '');
     const [isModalVisible, setModalVisible] = useState(false);
 
-    const dataService = getDataService();
-
     useFocusEffect(() => {
-        dataService.resetUserChanges();
-
-        const savedEmail = dataService.getUser()?.email;
+        const savedEmail = getDataService().getUser()?.email;
         if (savedEmail) // immediately get last locally saved email
             setEmail(savedEmail);
 
-        const savedUsername = dataService.getUser()?.userName;
+        const savedUsername = getDataService().getUser()?.userName;
         if (savedUsername) // immediately get last locally saved username
             setUsername(savedUsername);
 
-        const savedBio = dataService.getUser()?.bio;
+        const savedBio = getDataService().getUser()?.bio;
         if (savedBio) // immediately get last locally saved bio
             setBioD(savedBio);
 
-        if (!dataService.getUser()) { // fallback to fetching data from server if no local temp data
+        const savedImage = getDataService().getUser()?.image;
+        if (savedImage) // immediately get last locally saved image
+        {
+            setProfileImage(savedImage);
+        }
+
+        if (!getDataService().getUser()) { // fallback to fetching data from server if no local temp data
             fetchMyProfile().then(res => {
                 if (res?.userName) {
                     setUsername(res.userName);
                     setEmail(res.email);
                     setBioD(res.bio);
                     setProfileImage(res.image);
-                    dataService.setUser(res);
+                    getDataService().setUser(res);
                 }
             });
         }

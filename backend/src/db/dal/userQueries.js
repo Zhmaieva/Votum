@@ -276,6 +276,13 @@ async function getUserByLogin(usernameOrEmail) {
     }
 }
 
+async function updateProfileImage(imageUrl, userId) {
+    await pool.query(
+        `UPDATE user_profiles SET image = $1 WHERE user_id = $2`,
+        [imageUrl, userId],
+    );
+}
+
 module.exports = {
     followUser,
     unfollowUser,
@@ -285,5 +292,6 @@ module.exports = {
     getActivationCode,
     checkActivationCode,
     checkAndInsertUserWithProfile,
-    getUserByLogin
+    getUserByLogin,
+    updateProfileImage
 }

@@ -1,24 +1,43 @@
 import React, { useState } from 'react';
 import { View, Image, TouchableOpacity, Alert, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../utils/colorUtils';
+import {uploadProfileImage} from "../../shared/api/apiClient";
+import {AwesomeModal} from "./AwesomeModal";
+import {getDataService} from "../../shared/common";
 
 const AwesomeProfilePhoto = ({ profileImage, setProfileImage }) => {
+    const [isModalVisible, setModalVisible] = useState(false);
+
     const handleImagePick = async () => {
-        const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (!permission.granted) {
-            Alert.alert('Permission required', 'We need permission to access your gallery');
-            return;
-        }
+        const oldImage = profileImage;
 
-        const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.Images,
-            quality: 1,
-        });
+        try {
+            const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+            if (!permission.granted) {
+                Alert.alert('Permission required', 'We need permission to access your gallery');
+                return;
+            }
 
-        if (!result.canceled) {
-            setProfileImage(result.assets[0].uri);
+            const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.Images,
+                quality: 1,
+            });
+
+            if (!result.canceled) {
+                getDataService().getUser().image = result.assets[0].uri;
+                getDataService().commitUserChanges();
+
+                setProfileImage(getDataService().getUser().image);
+
+                await uploadProfileImage(result.assets[0]);
+            }
+        } catch (err) {
+            setProfileImage(oldImage);
+            getDataService().getUser().image = oldImage;
+            getDataService().commitUserChanges();
+
+            setModalVisible(true);
         }
     };
 
@@ -27,6 +46,10 @@ const AwesomeProfilePhoto = ({ profileImage, setProfileImage }) => {
             <TouchableOpacity style={styles.profileImage} onPress={handleImagePick}>
                 <Image source={{ uri: profileImage }} style={styles.profileImage}/>
             </TouchableOpacity>
+            <AwesomeModal visible={isModalVisible}
+                          text={"Image upload failed, try again"}
+                          onPress={_ => {setModalVisible(false)}}
+                          onBackPress={_ => {setModalVisible(false)}}/>
         </View>
     );
 };

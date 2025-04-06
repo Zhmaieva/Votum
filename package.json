@@ -18,6 +18,7 @@
     "axios": "^1.8.2",
     "bcryptjs": "^3.0.2",
     "expo": "~52.0.37",
+    "expo-image-manipulator": "^13.0.6",
     "expo-image-picker": "~16.0.6",
     "expo-status-bar": "~2.0.1",
     "jsonwebtoken": "^9.0.2",

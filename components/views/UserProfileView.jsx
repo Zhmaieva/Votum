@@ -6,6 +6,7 @@ import AwesomeUserHeader from "../customComponents/AwesomeUserHeader";
 import AwesomeSwitcher from "../customComponents/AwesomeSwitcher";
 import AwesomeFeed from "../customComponents/AwesomeFeed";
 import { fetchMyProfile } from "../../shared/api/apiClient";
+import {getDataService} from "../../shared/common";
 
 const pollData = [
     {
