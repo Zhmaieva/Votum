@@ -77,17 +77,22 @@ const AddView = () => {
                                 placeholder={item.label}
                                 value={item.text}
                                 onChangeText={(text) => updateOption(item.id, text)}
-                                maxLength={25}
+                                maxLength={40}
                             />
                             {options.length > 2 && (
                                 <Pressable style={styles.trash} onPress={() => removeOption(item.id)} >
-                                    <Ionicons name='trash-outline' size={18} color={Colors.grey} />
+                                    <Ionicons name='trash-outline' size={24} color={Colors.grey} />
                                 </Pressable>
                             )}
                         </View>
                     )}
                     extraData={options}
                 />
+                {options.length < 4 && (
+                    <View style={[styles.bottomMargin10, styles.addAnswerContainer]}>
+                        <AwesomeButton text='Add answer' color={Color.WHITE} additionalFunc={addOption}/>
+                    </View>
+                )}
                 <View style={[styles.row, styles.test]}>
                     <View style={[styles.row, styles.endsInContainer]}>
                         <Text style={styles.endsInContainer}>Ends in </Text>
@@ -95,15 +100,10 @@ const AddView = () => {
                             <Text>1 h</Text>
                         </View>
                     </View>
-                    {options.length < 4 && (
-                        <TouchableOpacity style={styles.addButton} onPress={addOption}>
-                            <Text style={styles.addButtonText}>+ Add answer</Text>
-                        </TouchableOpacity>
-                    )}
                 </View>
             </View>
             <AwesomeButton
-                color={Color.BLACK}
+                color={Color.GREEN}
                 text="Create poll"
                 //screenName="LikedView"
                 additionalFunc={onPressHandler}
@@ -152,19 +152,18 @@ const styles = StyleSheet.create({
     },
     inputAnswer: {
         borderWidth: 1,
-        borderColor: Colors.grey,
+        borderColor: Colors.black,
         height: 40,
         borderRadius: 0,
         flex: 1,
         fontWeight: '400',
-        fontSize: 16,
-        color: Colors.grey,
+        fontSize: 14,
+        color: Colors.black,
         paddingLeft: 5
     },
     optionContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
         marginBottom: 10,
     },
     optionLabel: {
@@ -195,34 +194,23 @@ const styles = StyleSheet.create({
     },
     votingFrame: {
         borderWidth: 1,
-        borderColor: Colors.grey,
+        borderColor: Colors.black,
         backgroundColor: Colors.white,
         shadowOffset: { width: 3, height: 3 },
         shadowOpacity: 1,
         shadowRadius: 0,
         shadowColor: Colors.green,
-        padding: 14,
-        marginBottom: 20
+        paddingTop: 14,
+        paddingLeft: 14,
+        paddingBottom: 14,
+        marginBottom: 20,
     },
     cardContainer: {
         borderColor: Colors.grey,
         backgroundColor: Colors.white,
-        shadowOpacity: 1,
-        shadowRadius: 0,
-        shadowColor: Colors.green,
         padding: 20,
         height: '100%',
         justifyContent: 'center',
-    },
-    addButton: {
-        alignItems: 'flex-end',
-        width: 140,
-        color: Colors.grey,
-        height: 40,
-        justifyContent: "center"
-    },
-    addButtonText: {
-        color: Colors.grey
     },
     timer: {
         height: 40,
@@ -236,15 +224,17 @@ const styles = StyleSheet.create({
     endsInContainer: {
         alignItems: 'center',
         justifyContent: 'center',
-        //backgroundColor: Colors.grey,
     },
     test: {
         justifyContent: 'space-between',
         height: 40
     },
     trash: {
-        marginRight: -3,
-        marginLeft: 2
+        width: 35,
+        paddingTop: 5,
+        paddingRight: 6,
+        height: '100%',
+        alignItems: 'flex-end',
     },
     createPollButton: {
         height: 40,
@@ -292,6 +282,9 @@ const styles = StyleSheet.create({
     alignment: {
         justifyContent: "space-between",
         width: POLL_WIDTH,
+    },
+    addAnswerContainer: {
+        width: '89%'
     }
 });
 

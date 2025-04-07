@@ -119,7 +119,7 @@ const AwesomeVote = ({
                         </TouchableOpacity>
                     )}
                 </View>
-                {!selected && !pollExpired ? (
+                {!selected && !pollExpired && !createdByUser ? (
                     options.map((option) => (
                         <TouchableOpacity key={option} style={styles.button} onPress={() => handleVote(option)}>
                             <Text style={[styles.buttonText, styles.fontFamilyStyle]} numberOfLines={2} ellipsizeMode="tail">{option}</Text>
@@ -154,7 +154,7 @@ const AwesomeVote = ({
                                     <Text style={[styles.buttonText, styles.fontFamilyStyle, {
                                         color: Colors.black,
                                         fontWeight: selected === option ? "700" : "400"
-                                        }]}>{results[option] || 0}%</Text>
+                                    }]}>{results[option] || 0}%</Text>
                                 </View>
                             </View>
                         );

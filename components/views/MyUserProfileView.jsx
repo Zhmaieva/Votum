@@ -110,11 +110,17 @@ const MyUserProfileView = () => {
                         refreshing={false}
                         renderItem={(item) => (
                             <AwesomeVote
-                                totalVotes={item.totalVotes}
-                                timeLeft={item.timeLeft}
-                                question={item.question}
-                                options={item.options}
-                                results={item.results}
+                                key={item?.id ?? item}
+                                id={item?.id ?? item}
+                                question={item?.question}
+                                options={item?.options}
+                                results={item?.results}
+                                timeLeft={item?.timeLeft}
+                                totalVotes={item?.totalVotes}
+                                isLiked={item?.isLiked ?? false}
+                                //onVote={(option) => handleVote(item?.id, option)}
+                                createdByUser={item.createdByUser}
+                                //onDeletePoll={() => handleDeletePoll(item.id)}
                             />
                         )}
                     />

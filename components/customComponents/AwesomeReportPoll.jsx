@@ -39,8 +39,8 @@ const ReportPoll = ({ onReport }) => {
 
             <Modal visible={modalVisible} animationType="fade" transparent={true}>
                 <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
-                    <View style={styles.modalContainer}>
-                        <View style={styles.modalContent}>
+                    <View style={styles.modalBackground}>
+                        <View style={styles.modalContainer}>
                             <Text style={styles.modalTitle}>Report this Poll</Text>
 
                             {/* The dropdown button */}
@@ -86,23 +86,23 @@ const ReportPoll = ({ onReport }) => {
                     </View>
                 </TouchableWithoutFeedback>
             </Modal>
+
         </View>
     );
 };
 
 const styles = StyleSheet.create({
     modalContainer: {
-        flex: 1,
         justifyContent: "center",
         alignItems: "center",
         backgroundColor: Colors.white,
+        margin: 20,
+        padding: 15,
     },
     modalContent: {
         backgroundColor: Colors.white,
-        width: "100%",
-        height: 'auto',
-        padding: 10,
-        justifyContent: "center",
+        padding: 20,
+        alignItems: 'center'
     },
     modalTitle: {
         fontSize: 18,
@@ -165,6 +165,12 @@ const styles = StyleSheet.create({
     alignment: {
         justifyContent: 'space-between',
         marginTop: 20
+    },
+    modalBackground: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0,0,0,0.5)',
     },
 });
 

@@ -1,24 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import AwesomeFeed from "../customComponents/AwesomeFeed";
 import AwesomeCard from "../customComponents/AwesomeCard";
-import { View, StyleSheet, ActivityIndicator } from 'react-native';
-import { fetchPolls } from "../../shared/api/apiClient";
-import {fetchMyProfile} from "../../shared/api/apiClient";
+import { View, StyleSheet, ActivityIndicator, Text } from 'react-native';
+import { fetchPolls, fetchMyProfile } from "../../shared/api/apiClient";
 
 const FeedView = () => {
     const [refreshing, setRefreshing] = useState(false);
-    const [polls, setPolls] = useState([]);
-    const [loggedInUserId, setLoggedInUserId] = useState(null); // Store the user ID
+    const [polls, setPolls] = useState(null); // default to null for loading state
+    const [loggedInUserId, setLoggedInUserId] = useState(null);
 
     useEffect(() => {
-        // Fetch user's profile to get their ID
         fetchMyProfile().then(res => {
             if (res?.userId) {
                 setLoggedInUserId(res.userId);
             }
         });
 
-        // Fetch polls data
         fetchPolls().then(res => setPolls(res));
     }, []);
 
@@ -30,7 +27,19 @@ const FeedView = () => {
         });
     };
 
-    if (!polls) return <ActivityIndicator size="large" color="#0000ff" />; // Show a loader while fetching
+    if (polls === null) {
+        return <ActivityIndicator size="large" color="#0000ff" />;
+    }
+
+    if (!polls.length) {
+        return (
+            <View style={styles.emptyContainer}>
+                <Text style={styles.emptyText}>
+                    No new polls, try later or create one.
+                </Text>
+            </View>
+        );
+    }
 
     return (
         <AwesomeFeed
@@ -53,21 +62,27 @@ const FeedView = () => {
     );
 };
 
-const calculateTimeDifference = function(dateString) {
-    // Get the current date and the given date
+const calculateTimeDifference = (dateString) => {
     const now = new Date();
     const targetDate = new Date(dateString);
-
-    // Calculate the time difference in milliseconds
-    const timeDifference = targetDate - now;
-
-    return timeDifference;
-    }
+    return targetDate - now;
+};
 
 const styles = StyleSheet.create({
     container: {
-        padding: 15
-    }
+        padding: 15,
+    },
+    emptyContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+    },
+    emptyText: {
+        fontSize: 16,
+        color: '#555',
+        textAlign: 'center',
+    },
 });
 
 export default FeedView;

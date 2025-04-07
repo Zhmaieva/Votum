@@ -7,6 +7,7 @@ import {fetchMyProfile, signOut} from "../../shared/api/apiClient";
 import {getDataService} from "../../shared/common";
 import {useFocusEffect} from "@react-navigation/native";
 import AwesomeProfilePhoto from "../customComponents/AwesomeProfilePhoto";
+import AwesomeCategory from "../customComponents/AwesomeCategory";
 
 const ProfileEditView = ({ route }) => {
     const [username, setUsername] = useState('');
@@ -88,7 +89,9 @@ const ProfileEditView = ({ route }) => {
                         />
                     </View>
                 </View>
-
+                <View style={styles.test}>
+                    <AwesomeCategory tagName='politics' />
+                </View>
                 <View style={styles.marginTest}>
                     <AwesomeButton
                         text="Log out"
@@ -193,6 +196,9 @@ const styles = StyleSheet.create({
         fontSize: 16,
         marginTop: 10,
     },
+    test: {
+        width: 100
+    }
 });
 
 export default ProfileEditView;

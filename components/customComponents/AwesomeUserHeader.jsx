@@ -78,11 +78,7 @@ const AwesomeUserHeader = ({ userData, loggedInUserId, isFollowersPage = false, 
             <View style={styles.thirdSubContainer}>
                 <View style={styles.buttonContainer}>
                     {isFollowersPage ? (
-                        <AwesomeButton
-                            color={Color.WHITE}
-                            text="Remove"
-                            additionalFunc={handleRemove}
-                        />
+                        <View/>
                     ) : isOwnProfile ? (
                         <AwesomeButton
                             color={Color.WHITE}
