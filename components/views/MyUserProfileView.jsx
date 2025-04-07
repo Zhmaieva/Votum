@@ -8,6 +8,7 @@ import AwesomeFeed from "../customComponents/AwesomeFeed";
 import { fetchMyProfile } from "../../shared/api/apiClient";
 import {useFocusEffect} from "@react-navigation/native";
 import { useNavigation } from '@react-navigation/native';
+import {getDataService} from "../../shared/common";
 
 const pollData = [
     {
@@ -54,16 +55,15 @@ const MyUserProfileView = () => {
 
     const [user, setUser] = useState(null);
 
-    if (!user)
-        fetchMyProfile().then(res => {
-            setUser(res);
-        })
-
     useFocusEffect(
         React.useCallback(() => {
-            fetchMyProfile().then(res => {
-                setUser(res);
-            });
+            if (getDataService().getUser()) {
+                setUser(getDataService().getUser());
+            } else {
+                fetchMyProfile().then(res => {
+                    setUser(res);
+                });
+            }
         }, [])
     );
 

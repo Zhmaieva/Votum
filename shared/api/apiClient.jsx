@@ -214,7 +214,6 @@ export const uploadProfileImage = async (image) => {
                 'Content-Type': 'multipart/form-data',
             },
         });
-        console.log('upload successful');
     } catch (err) {
         console.log(err);
     }
@@ -234,8 +233,6 @@ export const fetchMyProfile = async () => {
             throw new Error("User profile not found");
         }
 
-        console.log('Fetched user profile:', JSON.stringify(userProfile));
-
         // Ensure the bio field is present
         return {
             ...userProfile,
@@ -254,8 +251,6 @@ export const fetchPolls = async () => {
                 Authorization: `Bearer ${await getToken()}`,
             },
         });
-        console.log('fetch polls response, total: ' + response.data.length);
-        console.log('response: ' + JSON.stringify(response.data));
         return response?.data;
     } catch (err) {
         console.log('Fetch failed', err);

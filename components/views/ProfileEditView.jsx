@@ -16,6 +16,8 @@ const ProfileEditView = ({ route }) => {
     const [isModalVisible, setModalVisible] = useState(false);
 
     useFocusEffect(() => {
+        getDataService().resetUserChanges();
+
         const savedEmail = getDataService().getUser()?.email;
         if (savedEmail) // immediately get last locally saved email
             setEmail(savedEmail);
