@@ -79,12 +79,35 @@ app.get('/users', signupAuthMiddleware, async (req, res, next) => {
     try {
         const { username } = req.query;
 
-        // Check if username and password are valid
+        // Check if username is valid
         if (!username || username.length > 32 || username.length === 0) {
             return res.status(400).json({message: "invalid username"});
         }
 
         const existingUser = await getUserByLogin(username);
+
+        if (existingUser) {
+            return  res.status(409).json({message: "user already exists"});
+        }
+
+        return res.json({ message: 'username available' });
+    }
+    catch (e) {
+        next(e);
+    }
+});
+
+// Check registered username availability endpoint
+app.get('/users/registered', authMiddleware, async (req, res, next) => {
+    try {
+        const { username } = req.query;
+
+        // Check if username is valid
+        if (!username || username.length > 32 || username.length === 0) {
+            return res.status(400).json({message: "invalid username"});
+        }
+
+        const existingUser = await getUserByLogin(username, req.user.id);
 
         if (existingUser) {
             return  res.status(409).json({message: "user already exists"});
@@ -180,9 +203,11 @@ app.put('/profile', authMiddleware, async (req, res) => {
     try {
         const { username, bio, email } = req.body;
 
+        const usernameLower = username.toLowerCase();
+
         const updateUsersSql = `UPDATE users
          SET
-             userName = COALESCE(NULLIF($1, NULL), userName),
+             username = COALESCE(NULLIF($1, NULL), username),
              email = COALESCE(NULLIF($2, NULL), email)
          WHERE id = $3;`
 
@@ -193,7 +218,7 @@ app.put('/profile', authMiddleware, async (req, res) => {
 
         try {
             await Promise.all([
-                pool.query(updateUsersSql, [username, email, req.user.id]),
+                pool.query(updateUsersSql, [usernameLower, email, req.user.id]),
                 pool.query(updateProfilesSql, [bio, req.user.id])
             ]);
         }
@@ -292,7 +317,7 @@ app.post('/polls/like', authMiddleware, async (req, res, next) => {
 
         await pollQueries.likePoll(pollId, req.user.id);
 
-        return res.json({ isLiked: true });
+        return res.json({ success: true });
     }
     catch (e) {
         next(e);
@@ -301,11 +326,11 @@ app.post('/polls/like', authMiddleware, async (req, res, next) => {
 
 app.delete('/polls/like', authMiddleware, async (req, res, next) => {
     try {
-        const { pollId } = req.body;
+        const { pollId } = req.query;
 
         await pollQueries.unlikePoll(pollId, req.user.id);
 
-        return res.json({ isLiked: false });
+        return res.json({ success: true });
     }
     catch (e) {
         next(e);

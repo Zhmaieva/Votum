@@ -75,10 +75,10 @@ apiClient.interceptors.response.use(
     }
 );
 
-export const signIn = async (userNameOrEmail, password) => {
+export const signIn = async (usernameOrEmail, password) => {
     try {
         const response = await apiClient.post(`/users/sign-in`, {
-            login: userNameOrEmail,
+            login: usernameOrEmail,
             password: password,
         });
         const { token } = response.data;
@@ -144,14 +144,36 @@ export const signUpVerify = async (email, code) => {
 
 /**
  * Check if there is a user with the username
- * @param {string} userNameOrEmail
+ * @param {string} usernameOrEmail
  * @returns {Promise<boolean>}
  */
-export const checkUsernameAvailability = async (userNameOrEmail) => {
+export const checkUsernameAvailability = async (usernameOrEmail) => {
     try {
-        await apiClient.get(`/users?username=${userNameOrEmail}`, {
+        await apiClient.get(`/users?username=${usernameOrEmail}`, {
             headers: {
                 Authorization: `Bearer ${await AsyncStorage.getItem('sign_in_auth_token')}`,
+            },
+        });
+
+        return true;
+    } catch (err) {
+        if (err.response && err.response.status === 409) {
+            return false;
+        }
+        return true;
+    }
+};
+
+/**
+ * Check if there is a user with the username (for registered users only)
+ * @param {string} username
+ * @returns {Promise<boolean>}
+ */
+export const checkRegisteredUsernameAvailability = async (username) => {
+    try {
+        await apiClient.get(`/users/registered?username=${username}`, {
+            headers: {
+                Authorization: `Bearer ${await AsyncStorage.getItem('auth_token')}`,
             },
         });
 
@@ -268,6 +290,21 @@ export const likePoll = async (id) => {
             },
         });
         console.log('like polls response: ' + JSON.stringify(response.data));
+        return response?.data;
+    } catch (err) {
+        console.log('Like failed', err);
+    }
+};
+
+export const unlikePoll = async (id) => {
+    try {
+        console.log(`liking poll ${id}`);
+        const response = await apiClient.delete(`/polls/like?pollId=${id}`,{
+            headers: {
+                Authorization: `Bearer ${await getToken()}`,
+            },
+        });
+        console.log('unlike polls response: ' + JSON.stringify(response.data));
         return response?.data;
     } catch (err) {
         console.log('Like failed', err);

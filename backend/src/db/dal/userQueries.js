@@ -37,7 +37,7 @@ async function getFollowers(userId) {
     const query = `
     SELECT
       u.id as "userId",
-      u.username AS "userName",
+      u.username AS "username",
       up.image,
       up.followers_number AS "followersNumber",
       up.bio
@@ -60,7 +60,7 @@ async function getFollows(userId) {
     const query = `
     SELECT
       u.id as "userId",
-      u.username AS "userName",
+      u.username AS "username",
       up.image,
       up.followers_number AS "followersNumber",
       up.bio,
@@ -85,7 +85,7 @@ async function getUser(userId) {
     const query = `
     SELECT
       u.id as "userId",
-      u.username AS "userName",
+      u.username AS "username",
       u.email,
       up.image,
       up.followers_number AS "followersNumber",
@@ -256,25 +256,38 @@ async function checkAndInsertUserWithProfile(username, email, passwordHash) {
 }
 
 /**
- * Checks if there is a user in DB with matching credentials
- * @param usernameOrEmail
- * @param passwordHash
+ * Checks if there is a user in DB with matching credentials,
+ * optionally excluding a specific user by ID.
+ *
+ * @param {string} usernameOrEmail
+ * @param {string} [userId] - Optional user ID to exclude from the query
  * @returns {Promise<{id, password}>}
  */
-async function getUserByLogin(usernameOrEmail) {
+async function getUserByLogin(usernameOrEmail, userId) {
     try {
-        // Перевіряємо, чи вже існує користувач з таким ім'ям або email
-        const existingUsers = await pool.query(
-            "SELECT id, password_hash as password FROM users WHERE username = $1 OR email = $1",
-            [usernameOrEmail.toLowerCase()]
-        );
+        const baseQuery = `
+            SELECT id, password_hash as password 
+            FROM users 
+            WHERE (username = $1 OR email = $1)
+        `;
 
+        const values = [usernameOrEmail.toLowerCase()];
+
+        // If userId is provided, exclude it from the results
+        let query = baseQuery;
+        if (userId) {
+            query += ` AND id != $2`;
+            values.push(userId);
+        }
+
+        const existingUsers = await pool.query(query, values);
         return existingUsers?.rows[0];
     } catch (error) {
         console.error('Error checking credentials:', error);
         throw error;
     }
 }
+
 
 async function updateProfileImage(imageUrl, userId) {
     await pool.query(

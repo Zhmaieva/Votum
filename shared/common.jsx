@@ -30,8 +30,8 @@ class DataService {
     oldUser = null;
 
     error = {
-        userNameTaken: false,
-        userNameEmpty: false
+        usernameTaken: false,
+        usernameEmpty: false
     };
 
     setUser(value) {
@@ -45,20 +45,20 @@ class DataService {
 
     setUserNameTakenError() {
         this.resetErrors();
-        this.error.userNameTaken = true;
+        this.error.usernameTaken = true;
         globalEventEmitter.emit('errorChanged', { ...this.error }); // Ensure the object is passed
     }
 
     setUserNameEmptyError() {
         this.resetErrors();
-        this.error.userNameEmpty = true;
+        this.error.usernameEmpty = true;
         globalEventEmitter.emit('errorChanged', { ...this.error }); // Ensure the object is passed
     }
 
     resetErrors() {
         this.error = {
-            userNameTaken: false,
-            userNameEmpty: false
+            usernameTaken: false,
+            usernameEmpty: false
         };
     }
 
@@ -73,7 +73,7 @@ class DataService {
     }
 
     validateUsername() {
-        if (!this.user?.userName?.trim()) {
+        if (!this.user?.username?.trim()) {
             this.setUserNameEmptyError();
             return false;
         }

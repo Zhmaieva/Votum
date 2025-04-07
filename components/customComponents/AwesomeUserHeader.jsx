@@ -54,10 +54,10 @@ const AwesomeUserHeader = ({ userData, loggedInUserId, isFollowersPage = false, 
             <View style={[styles.row, styles.secondSubContainer]}>
                 <View>
                     <Text
-                        style={[styles.font14, styles.userNameBold, styles.fontFamily]}
+                        style={[styles.font14, styles.usernameBold, styles.fontFamily]}
                         numberOfLines={1}
                     >
-                        {user.userName}
+                        {user.username}
                     </Text>
                     {isOwnProfile ? (
                         <Text
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
     font14: {
         fontSize: 14,
     },
-    userNameBold: {
+    usernameBold: {
         fontWeight: "bold",
     },
     fontFamily: {

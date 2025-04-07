@@ -22,7 +22,7 @@ const ProfileEditView = ({ route }) => {
         if (savedEmail) // immediately get last locally saved email
             setEmail(savedEmail);
 
-        const savedUsername = getDataService().getUser()?.userName;
+        const savedUsername = getDataService().getUser()?.username;
         if (savedUsername) // immediately get last locally saved username
             setUsername(savedUsername);
 
@@ -38,8 +38,8 @@ const ProfileEditView = ({ route }) => {
 
         if (!getDataService().getUser()) { // fallback to fetching data from server if no local temp data
             fetchMyProfile().then(res => {
-                if (res?.userName) {
-                    setUsername(res.userName);
+                if (res?.username) {
+                    setUsername(res.username);
                     setEmail(res.email);
                     setBioD(res.bio);
                     setProfileImage(res.image);

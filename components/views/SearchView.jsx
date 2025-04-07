@@ -14,7 +14,7 @@ const pollData = [
         timeLeft: "10m 30s",
         totalVotes: 1457,
         image: { uri: 'https://drive.google.com/drive/u/0/folders/1Fa3yEk8tJjCG1QlM3eh3Xsgm-7cc8XWh/son.jpg' },
-        userName: 'Yuliia Zhmaieva',
+        username: 'Yuliia Zhmaieva',
         followersNumber: 370,
     },
     {
@@ -25,7 +25,7 @@ const pollData = [
         timeLeft: "1m 15s",
         totalVotes: 2,
         image: { uri: 'https://example.com/avatar.jpg' },
-        userName: 'Emil Ovechko',
+        username: 'Emil Ovechko',
         followersNumber: 3411,
     },
     {
@@ -36,7 +36,7 @@ const pollData = [
         timeLeft: "10m 30s",
         totalVotes: 1457,
         image: { uri: 'https://example.com/avatar.jpg' },
-        userName: 'Artem Ovechko',
+        username: 'Artem Ovechko',
         followersNumber: 39810,
     },
     {
@@ -47,7 +47,7 @@ const pollData = [
         timeLeft: "5h 0s",
         totalVotes: 209543,
         image: { uri: 'https://example.com/avatar.jpg' },
-        userName: 'Shrek',
+        username: 'Shrek',
         followersNumber: 3,
     },
 ];

@@ -12,7 +12,7 @@ const pollData = [
         results: { Red: 20, Blue: 50, Green: 15, Yellow: 15 },
         timeLeft: "10m 30s",
         totalVotes: 1457,
-        userName: "Yuliia Zhmaieva",
+        username: "Yuliia Zhmaieva",
         followersNumber: 13,
         image: "require('../../assets/images/emil.jpg')"
     },
@@ -23,7 +23,7 @@ const pollData = [
         results: { "NY": 20, "London": 50, "Gdansk": 15, "Kherson": 15 },
         timeLeft: "1m 15s",
         totalVotes: 2,
-        userName: "Yuliia Zhmaieva",
+        username: "Yuliia Zhmaieva",
         followersNumber: 13,
         image: "require('../../assets/images/emil.jpg')"
     },

@@ -18,7 +18,11 @@ const fetchPolls = async (userId) => {
                    CASE
                        WHEN uf.user_follower_id IS NOT NULL THEN TRUE
                        ELSE FALSE
-                       END AS is_following
+                       END AS is_following,
+                   CASE 
+                       WHEN p.created_by = $1 THEN up.bio
+                       ELSE ''
+                       END AS user_bio
             FROM polls p
                      JOIN users u ON p.created_by = u.id
                      JOIN user_profiles up ON u.id = up.user_id
@@ -49,10 +53,11 @@ const fetchPolls = async (userId) => {
                 isLiked: row.is_liked,
                 user: {
                     userId: row.user_id,
-                    userName: row.username,
+                    username: row.username,
                     image: row.image,
                     followersNumber: row.followers_number,
                     isFollowing: row.is_following,
+                    bio: row.user_bio
                 }
             };
         });

@@ -3,13 +3,27 @@ import { View, TextInput, StyleSheet, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { debounce } from 'lodash';
 import { Colors } from '../../utils/colorUtils';
-import { checkUsernameAvailability } from "../../shared/api/apiClient";
-import {getDataService} from "../../shared/common";
+import {checkRegisteredUsernameAvailability, checkUsernameAvailability} from "../../shared/api/apiClient";
+import {getDataService, globalEventEmitter} from "../../shared/common";
+import {useFocusEffect} from "@react-navigation/native";
+import {AwesomeModal} from "./AwesomeModal";
 
-const AwesomeUsernameInput = ({ checkUsernameAvailability }) => {
-    const [username, setUsername] = useState('');
+const AwesomeUsernameInput = ({ route }) => {
+    const { text } = route.params || {};
+
+    const [username, setUsername] = useState(text);
     const [isAvailable, setIsAvailable] = useState(null);
     const charLimit = 15;
+
+    const [isModalVisible, setModalVisible] = useState(getDataService().error.usernameTaken);
+    const [modalMessage, setModalMessage] = useState('');
+
+    useFocusEffect(
+        React.useCallback(() => {
+            if (text)
+                setUsername(text);
+        }, [])
+    );
 
     useEffect(() => {
         debouncedCheck();
@@ -17,7 +31,10 @@ const AwesomeUsernameInput = ({ checkUsernameAvailability }) => {
 
     const debouncedCheck = debounce(async () => {
         const name = username;
-        const available = name ? await checkUsernameAvailability(name) : false;
+        console.log('debounce' + JSON.stringify(getDataService()?.getUser()));
+        const available = name ? (getDataService()?.getUser()?.userId
+            ? await checkRegisteredUsernameAvailability(name)
+            : await checkUsernameAvailability(name)) : false;
 
         if (available) {
             if (!name) {
@@ -43,6 +60,28 @@ const AwesomeUsernameInput = ({ checkUsernameAvailability }) => {
         setUsername(cleanedText);
     };
 
+    useEffect(() => {
+        function handleErrorChange(errorState) {
+            if (!errorState) return; // Ensure errorState is not undefined
+
+            console.log('effect uname edit', errorState);
+
+            if (errorState.usernameEmpty) {
+                setModalMessage('Username cannot be empty.');
+                setModalVisible(true);
+            } else if (errorState.usernameTaken) {
+                setModalMessage('This username is already taken.');
+                setModalVisible(true);
+            }
+        }
+
+        globalEventEmitter.on('errorChanged', handleErrorChange);
+
+        return () => {
+            globalEventEmitter.off('errorChanged', handleErrorChange);
+        };
+    }, []);
+
     return (
         <View style={styles.container}>
             <View style={styles.inputSubContainer}>
@@ -66,6 +105,10 @@ const AwesomeUsernameInput = ({ checkUsernameAvailability }) => {
                 </View>
             </View>
             <Text style={styles.counter}>{username.length}/{charLimit}</Text>
+            <AwesomeModal visible={isModalVisible}
+                          text={modalMessage}
+                          onPress={_ => {setModalVisible(false)}}
+                          onBackPress={_ => {setModalVisible(false)}}/>
         </View>
     );
 };

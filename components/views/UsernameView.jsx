@@ -3,7 +3,7 @@ import {View, StyleSheet, TextInput, Text, TouchableWithoutFeedback, TouchableOp
 import { Colors } from '../../utils/colorUtils';
 import AwesomeButton, {Color} from "../customComponents/AwesomeButton";
 import AwesomeUsernameInput from "../customComponents/AwesomeUsernameInput";
-import {checkUsernameAvailability, signUpFinish} from "../../shared/api/apiClient";
+import {signUpFinish} from "../../shared/api/apiClient";
 import {AwesomeModal} from "../customComponents/AwesomeModal";
 import {getDataService, globalEventEmitter} from "../../shared/common";
 import {useNavigation} from "@react-navigation/native";
@@ -12,9 +12,9 @@ const UsernameView = ({}) => {
 
     const[error, setError] = useState('');
 
-    const userNameEmptyError = 'Username cannot be empty, try again';
-    const userNameInvalidError = 'Invalid username, try again';
-    const userNameTakenError = 'This username is already taken, try again';
+    const usernameEmptyError = 'Username cannot be empty, try again';
+    const usernameInvalidError = 'Invalid username, try again';
+    const usernameTakenError = 'This username is already taken, try again';
 
     const [isModalVisible, setModalVisible] = useState(false);
 
@@ -23,20 +23,20 @@ const UsernameView = ({}) => {
     return (
         <View style={styles.container}>
             <View>
-                <AwesomeUsernameInput checkUsernameAvailability={checkUsernameAvailability} />
+                <AwesomeUsernameInput/>
                 <View style={styles.nextButtonContainer}>
                     <AwesomeButton text="Create account" color={Color.GREEN} additionalFunc={async () => {
                         const username = getDataService()?.getUser()?.username;
                         const password = getDataService()?.getUser()?.password ?? '';
 
                         if (username === null) {
-                            setError(userNameTakenError);
+                            setError(usernameTakenError);
                             setModalVisible(true);
                             return;
                         }
 
                         if (!username) {
-                            setError(userNameEmptyError);
+                            setError(usernameEmptyError);
                             setModalVisible(true);
                             return;
                         }
@@ -59,13 +59,13 @@ const UsernameView = ({}) => {
                         }
 
                         if (response.code === 409) {
-                            setError(userNameTakenError);
+                            setError(usernameTakenError);
                             setModalVisible(true);
                             return;
                         }
 
                         if (response.code === 400) {
-                            setError(userNameInvalidError);
+                            setError(usernameInvalidError);
                             setModalVisible(true);
                         }
                     }}/>

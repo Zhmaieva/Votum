@@ -2,7 +2,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import { View, StyleSheet, Animated, Text } from 'react-native';
 import { Colors } from '../../utils/colorUtils';
 import AwesomeUserHeader from "../customComponents/AwesomeUserHeader";
-import {fetchFollows, fetchMyProfile} from "../../shared/api/apiClient";
+import {fetchFollowers, fetchFollows, fetchMyProfile} from "../../shared/api/apiClient";
 import {useFocusEffect} from "@react-navigation/native";
 
 const FollowersView = () => {
@@ -14,7 +14,7 @@ const FollowersView = () => {
     const fetchData = async () => {
         const res = await fetchMyProfile();
         setUser(res);
-        const followsData = await fetchFollows(res.userId);
+        const followsData = await fetchFollowers(res.userId);
         setFollows(followsData?.users || []);
     };
 

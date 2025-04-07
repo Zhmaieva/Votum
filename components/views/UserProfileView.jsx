@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
     font14: {
         fontSize: 14,
     },
-    userNameBold: {
+    usernameBold: {
         fontWeight: "bold"
     },
     fontFamily: {

@@ -10,7 +10,6 @@ import SearchView from '../SearchView';
 import AddView from "../AddView";
 import FeedView from "../FeedView";
 import ProfileEditView from "../ProfileEditView";
-import UserNameEditView from "../UserNameEditView";
 import BioEditView from "../BioEditView";
 import EmailEditView from "../EmailEditView";
 import {updateUserProfile} from "../../../shared/api/apiClient";
@@ -27,6 +26,7 @@ import AgeView from "../AgeView";
 import LogInView from "../LogInView"
 import ForgotPasswordView from "../ForgotPassword";
 import FollowersView from "../FollowersView";
+import AwesomeUsernameInput from "../../customComponents/AwesomeUsernameInput";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -56,6 +56,11 @@ function UserStack() {
     const handleUpdateProfile = async (field, value, setIsLoading, navigation) => {
         setIsLoading(true);
         try {
+            if (value === null) {
+                getDataService().setUserNameTakenError();
+                return;
+            }
+
             if (!value?.trim()) {
                 getDataService().setUserNameEmptyError();
                 return;
@@ -65,6 +70,7 @@ function UserStack() {
 
             // Update the user's profile with the dynamic field and value
             await updateUserProfile(updatedData);
+            console.log('saving to DS' + JSON.stringify(getDataService().getUser()));
             getDataService().commitUserChanges();
             getDataService().resetErrors();
             navigation.goBack();
@@ -81,13 +87,13 @@ function UserStack() {
             <Stack.Screen name="Following" component={FollowingView} options={{ headerShown: true, gestureEnabled: true }} />
             <Stack.Screen name="Followers" component={FollowersView} options={{ headerShown: true, gestureEnabled: true }} />
             <Stack.Screen name="Edit username"
-                          component={UserNameEditView}
+                          component={AwesomeUsernameInput}
                           options={({ navigation }) => ({
                               headerShown: true,
                               gestureEnabled: true,
                               headerRight: () => (
                                   <HeaderRightButton
-                                      onPress={() => handleUpdateProfile('username', getDataService().getUser()?.userName, setIsLoading, navigation)}
+                                      onPress={() => handleUpdateProfile('username', getDataService().getUser()?.username, setIsLoading, navigation)}
                                       isLoading={isLoading}
                                   />
                               ),
