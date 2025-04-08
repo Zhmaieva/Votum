@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Animated, Modal, TouchableWithoutFeedback } from "react-native";
+import {
+    View,
+    Text,
+    TouchableOpacity,
+    StyleSheet,
+    Animated,
+    Modal,
+    TouchableWithoutFeedback,
+    Pressable
+} from "react-native";
 import { Colors } from '../../utils/colorUtils';
 import { Ionicons } from '@expo/vector-icons';
 import ReportPoll from "./AwesomeReportPoll";
@@ -114,9 +123,9 @@ const AwesomeVote = ({
                         <AwesomeLikeButton pollId={id} isLikedParam={isLiked}/>
                     </View>
                     {createdByUser && (
-                        <TouchableOpacity style={styles.deleteButton} onPress={onDeletePoll}>
+                        <Pressable style={styles.iconContainer} onPress={onDeletePoll}>
                             <Ionicons name="trash-outline" size={26} color={Colors.black} />
-                        </TouchableOpacity>
+                        </Pressable>
                     )}
                 </View>
                 {!selected && !pollExpired && !createdByUser ? (
@@ -247,10 +256,6 @@ const styles = StyleSheet.create({
     },
     iconContainer: {
         marginLeft: 8
-    },
-    deleteButton: {
-        marginLeft: 12,
-        padding: 5
     },
     modalContainer: {
         flex: 1,

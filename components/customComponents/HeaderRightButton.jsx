@@ -2,12 +2,12 @@ import React from 'react';
 import {TouchableOpacity, Text, ActivityIndicator, StyleSheet} from 'react-native';
 import { Colors } from '../../utils/colorUtils';
 
-const HeaderRightButton = ({ onPress, isLoading }) => {
+const HeaderRightButton = ({ onPress, isLoading, disabled = false }) => {
     return (
         <TouchableOpacity
             onPress={onPress}
             style={{ paddingRight: 15 }}
-            disabled={isLoading}
+            disabled={isLoading || disabled}
         >
             {isLoading ? (
                 <ActivityIndicator size="small" color={Colors.green} />

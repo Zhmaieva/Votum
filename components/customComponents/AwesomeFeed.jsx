@@ -4,15 +4,17 @@ const { height, width } = Dimensions.get('window');
 const POLL_HEIGHT = height * 0.82; // 90% of the screen height
 const NEXT_POLL_OFFSET = height * 0.18; // 10% of the next poll visible
 import { Colors } from '../../utils/colorUtils';
+import {globalEventEmitter} from "../../shared/common";
 
 const AwesomeFeed = ({ data, onRefresh, refreshing, renderItem }) => {
     const scrollY = useRef(new Animated.Value(0)).current;
-    const [preloadedData, setPreloadedData] = useState([]);
+    const [preloadedData, setPreloadedData] = useState(data);
 
     useEffect(() => {
-        if (data.length > 0) {
-            setPreloadedData(data.slice(0, 5)); // Preload first 5 polls
-        }
+        setPreloadedData(data.slice());
+        // if (data.length > 0) {
+        //     setPreloadedData(data.slice(0, 5)); // Preload first 5 polls
+        // }
     }, [data]);
 
     const loadMorePolls = () => {
@@ -21,6 +23,10 @@ const AwesomeFeed = ({ data, onRefresh, refreshing, renderItem }) => {
             ...data.slice(prevData.length, prevData.length + 5),
         ]);
     };
+
+    globalEventEmitter.on('deletePoll', ({pollId}) => {
+        setPreloadedData(data.filter((poll) => poll.id !== pollId).slice());
+    })
 
     return (
         <SafeAreaView style={styles.container}>

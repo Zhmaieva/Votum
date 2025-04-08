@@ -1,5 +1,5 @@
 import {Text, View, Pressable, StyleSheet, TouchableWithoutFeedback, TouchableOpacity, Modal} from 'react-native';
-import { useState } from 'react';
+import {useRef, useState} from 'react';
 import AwesomeButton, { Color } from '../customComponents/AwesomeButton';
 import {  } from '@expo/vector-icons';
 import React from 'react';
@@ -8,9 +8,11 @@ import {Colors} from "../../utils/colorUtils";
 import {AwesomeModal} from "../customComponents/AwesomeModal";
 import {signUpStart, signUpVerify} from "../../shared/api/apiClient";
 import {getDataService} from "../../shared/common";
-import {useNavigation} from "@react-navigation/native";
+import {useFocusEffect, useNavigation} from "@react-navigation/native";
 
 export default function VerificationCodeView () {
+    const retryInterval = 61;
+
     const[num1Input, setNum1Input] = useState()
     const[num2Input, setNum2Input] = useState()
     const[num3Input, setNum3Input] = useState()
@@ -64,25 +66,43 @@ export default function VerificationCodeView () {
 
     const [hidden, setHidden] = useState(false);
 
-    const [seconds, setSeconds] = useState(21);
+    const [seconds, setSeconds] = useState(retryInterval);
 
     const [isModalVisible, setModalVisible] = useState(false);
 
+    const [canResend, setCanResend] = useState(true);
 
-    function onResendHandler () {
+    function onResendHandler (justResetTimer = false) {
+        if (!canResend) {
+            return;
+        }
+        setCanResend(false);
+
+        if (!justResetTimer) {
+            const email = getDataService()?.getUser()?.email;
+            signUpStart(email).then(() => {})
+        }
+
         setResendColor(styles.greyFont)
         setHidden(true)
         const interval = setInterval(() => {
             setSeconds(seconds => {
                 if (seconds <= 1) {//when timer ends
                     clearInterval(interval)
+                    setCanResend(true);
                     setResendColor(styles.redFont)
-                    return 21
+                    return retryInterval
                 }
                 return seconds - 1;
             });
         }, 1000);
     }
+
+    useFocusEffect(
+        React.useCallback(() => {
+            onResendHandler(true);
+        }, [])
+    );
 
     const [resendColor, setResendColor] = useState(styles.redFont)
 
@@ -111,8 +131,8 @@ export default function VerificationCodeView () {
                         </View>
                     </View>
                     <View style={styles.timerContainer}>
-                        {hidden && seconds>-1 && seconds<21
-                            ? <Text style={styles.timerText}>in {seconds} second(s)</Text>
+                        {hidden && seconds>-1 && seconds < retryInterval
+                            ? <Text style={styles.timerText}>in {seconds} second{seconds > 1 ? 's' : ''}</Text>
                             : <Text> </Text>
                         }
                     </View>

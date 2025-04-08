@@ -21,7 +21,7 @@ const AwesomePasswordInput = forwardRef((props, inputRef) => {
 
     const validation = function (text) {
         setPassword(text);
-        if ( password?.length < 8 || password?.length > 20) {
+        if (password?.length < 8 || password?.length > 20) {
             setValidationErrorMessage('Your password must be 8-20 characters');
             getDataService().getUser().password = '';
         }

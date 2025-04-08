@@ -337,6 +337,18 @@ app.delete('/polls/like', authMiddleware, async (req, res, next) => {
     }
 });
 
+app.delete('/polls', authMiddleware, async (req, res, next) => {
+    try {
+        const { pollId } = req.query;
+
+        await pollQueries.deletePoll(pollId, req.user.id);
+
+        return res.json({ success: true });
+    }
+    catch (e) {
+        next(e);
+    }
+});
 
 // Catch-all handler for undefined routes
 app.use(async (req, res) => {

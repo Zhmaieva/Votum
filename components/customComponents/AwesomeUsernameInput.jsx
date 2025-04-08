@@ -31,7 +31,6 @@ const AwesomeUsernameInput = ({ route }) => {
 
     const debouncedCheck = debounce(async () => {
         const name = username;
-        console.log('debounce' + JSON.stringify(getDataService()?.getUser()));
         const available = name ? (getDataService()?.getUser()?.userId
             ? await checkRegisteredUsernameAvailability(name)
             : await checkUsernameAvailability(name)) : false;
@@ -40,9 +39,7 @@ const AwesomeUsernameInput = ({ route }) => {
             if (!name) {
                 getDataService().getUser().username = '';
             } else {
-                setIsAvailable(true);
                 getDataService().getUser().username = name;
-                return;
             }
         } else {
             if (!name) {
@@ -52,19 +49,20 @@ const AwesomeUsernameInput = ({ route }) => {
             }
         }
 
-        setIsAvailable(false);
+        setIsAvailable(available);
     }, 500);
 
     const handleInputChange = (text) => {
-        const cleanedText = text.replace(/[^A-Za-z0-9!@#$%^&*()_+\-=\[\]{};:'",.<>?/`~|\\]/g, '');
-        setUsername(cleanedText);
+        const cleanedText = text.replace(/[^A-Za-z0-9._\-!@#$%^&*()+=\[\]{};:'",<>?/`~|\\]/g, '');
+        const collapsed = cleanedText
+            .replace(/[^A-Za-z0-9._-]/g, '')
+            .replace(/[-_.]{2,}/g, match => match[0]);
+        setUsername(collapsed);
     };
 
     useEffect(() => {
         function handleErrorChange(errorState) {
             if (!errorState) return; // Ensure errorState is not undefined
-
-            console.log('effect uname edit', errorState);
 
             if (errorState.usernameEmpty) {
                 setModalMessage('Username cannot be empty.');

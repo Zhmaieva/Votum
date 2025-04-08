@@ -311,6 +311,21 @@ export const unlikePoll = async (id) => {
     }
 };
 
+export const deletePoll = async (id) => {
+    try {
+        console.log(`deleting poll ${id}`);
+        const response = await apiClient.delete(`/polls?pollId=${id}`,{
+            headers: {
+                Authorization: `Bearer ${await getToken()}`,
+            },
+        });
+        console.log('delete poll response: ' + JSON.stringify(response.data));
+        return response?.data;
+    } catch (err) {
+        console.log('delete failed', err);
+    }
+};
+
 export const followProfile = async (id) => {
     try {
         console.log(`following profile ${id}`);

@@ -28,7 +28,7 @@ const fetchPolls = async (userId) => {
                      JOIN user_profiles up ON u.id = up.user_id
                      LEFT JOIN poll_likes pl ON p.id = pl.poll_id AND pl.user_id = $1
                      LEFT JOIN user_follows uf ON u.id = uf.user_follow_id AND uf.user_follower_id = $1
-            WHERE p.ends_in > NOW();
+            WHERE p.ends_in > NOW() AND p.is_deleted = false;
         `;
 
         const optionsQuery = `
@@ -108,6 +108,19 @@ async function unlikePoll(pollId, userId) {
     }
 }
 
+async function deletePoll(pollId, userId) {
+    const query = `
+        UPDATE polls SET is_deleted = true
+        WHERE id = $1 and created_by = $2
+    `;
+
+    try {
+        await pool.query(query, [pollId, userId]);
+    } catch (err) {
+        console.error('Error deleting poll:', err);
+    }
+}
+
 const generateRandomResults = (options) => {
     let remainingPercentage = 100;
     const results = {};
@@ -126,5 +139,6 @@ const generateRandomResults = (options) => {
 module.exports = {
     fetchPolls,
     likePoll,
-    unlikePoll
+    unlikePoll,
+    deletePoll
 };

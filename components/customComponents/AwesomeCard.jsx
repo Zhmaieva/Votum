@@ -3,12 +3,22 @@ import {StyleSheet, View} from "react-native";
 import AwesomeUserHeader from "./AwesomeUserHeader";
 import AwesomeVote from "./AwesomeVote";
 import {Colors} from "../../utils/colorUtils";
+import {globalEventEmitter} from "../../shared/common";
+import awesomeFeed from "./AwesomeFeed";
+import {deletePoll} from "../../shared/api/apiClient";
 
 const AwesomeCard = ({ item, handleVote, loggedInUserId }) => {  // Pass loggedInUserId as a prop
 
+    const [isDeleted, setIsDeleted] = React.useState(false);
+
     const handleDeletePoll = (pollId) => {
-        setPolls((prevPolls) => prevPolls.filter((poll) => poll.id !== pollId));
-        console.log(`Poll ${pollId} deleted!`);
+        if (isDeleted) {
+            return;
+        }
+        setIsDeleted(true);
+        deletePoll(pollId).then(() => {});
+
+        globalEventEmitter.emit("deletePoll", { pollId });
     };
 
     return (
@@ -29,7 +39,7 @@ const AwesomeCard = ({ item, handleVote, loggedInUserId }) => {  // Pass loggedI
                 totalVotes={item?.totalVotes}
                 isLiked={item?.isLiked ?? false}
                 onVote={(option) => handleVote(item?.id, option)}
-                createdByUser={item.createdByUser}
+                createdByUser={item.user.userId === loggedInUserId}
                 onDeletePoll={() => handleDeletePoll(item.id)}
             />
         </View>

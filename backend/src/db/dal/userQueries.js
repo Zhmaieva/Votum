@@ -113,36 +113,55 @@ async function getActivationCode(email) {
     try {
         const query = `
             WITH user_exists AS (
-                SELECT '-1'  AS code, false AS canSend FROM users WHERE email = LOWER($1) LIMIT 1
+                SELECT '-1' AS code, false AS "canSend"
+                FROM users
+                WHERE email = LOWER($1)
+                LIMIT 1
             ),
                  existing_record AS (
-                     SELECT code, false AS canSend FROM activation_codes
-                     WHERE LOWER(email) = LOWER($1)
+                     SELECT
+                         code,
+                         CASE
+                             WHEN sent_on <= (NOW() AT TIME ZONE 'UTC') - INTERVAL '1 minute' THEN true
+                             ELSE false
+                             END AS "canSend",
+                         email
+                     FROM activation_codes
+                     WHERE email = LOWER($1)
                        AND created_at >= (NOW() AT TIME ZONE 'UTC') - INTERVAL '15 minutes'
+                 ),
+                 update_sent_on AS (
+                     UPDATE activation_codes
+                         SET sent_on = (NOW() AT TIME ZONE 'UTC')
+                         FROM existing_record
+                         WHERE LOWER(activation_codes.email) = LOWER(existing_record.email)
+                             AND existing_record."canSend" = true
+                         RETURNING activation_codes.code, true AS "canSend"
                  ),
                  updated AS (
                      UPDATE activation_codes
-                         SET created_at = (NOW() AT TIME ZONE 'UTC'), 
+                         SET created_at = (NOW() AT TIME ZONE 'UTC'),
                              code = LPAD(FLOOR(RANDOM() * 1000000)::TEXT, 6, '0'),
-                             attempts_made = 0
+                             attempts_made = 0,
+                             sent_on = (NOW() AT TIME ZONE 'UTC')
                          WHERE email = LOWER($1)
                              AND created_at <= (NOW() AT TIME ZONE 'UTC') - INTERVAL '15 minutes'
-                         RETURNING code, true AS canSend
+                         RETURNING code, true AS "canSend"
                  ),
                  inserted AS (
-                     INSERT INTO activation_codes (email, created_at, code)
-                         SELECT LOWER($1), (NOW() AT TIME ZONE 'UTC'), LPAD(FLOOR(RANDOM() * 1000000)::TEXT, 6, '0')
+                     INSERT INTO activation_codes (email, created_at, code, sent_on)
+                         SELECT LOWER($1), (NOW() AT TIME ZONE 'UTC'), LPAD(FLOOR(RANDOM() * 1000000)::TEXT, 6, '0'), (NOW() AT TIME ZONE 'UTC')
                          WHERE NOT EXISTS (SELECT 1 FROM activation_codes WHERE email = LOWER($1))
-                         AND NOT EXISTS (SELECT 'EXISTS' AS code FROM users WHERE email = LOWER($1))
-                         RETURNING code, true AS canSend
+                           AND NOT EXISTS (SELECT 1 FROM users WHERE email = LOWER($1))
+                         RETURNING code, true AS "canSend"
                  )
-            SELECT code, canSend as "canSend" FROM user_exists
+            SELECT code, "canSend" FROM user_exists
             UNION ALL
-            SELECT code, canSend as "canSend" FROM existing_record
+            SELECT code, "canSend" FROM update_sent_on
             UNION ALL
-            SELECT code, canSend as "canSend" FROM updated
+            SELECT code, "canSend" FROM updated
             UNION ALL
-            SELECT code, canSend as "canSend" FROM inserted;
+            SELECT code, "canSend" FROM inserted;
         `;
 
         const result = await pool.query(query, [email]);

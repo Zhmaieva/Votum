@@ -65,6 +65,13 @@ ALTER TABLE activation_codes
 ALTER TABLE activation_codes
     ADD CONSTRAINT unique_activation_code_email UNIQUE (email);
 
+--Tue Apr 8 12:00
+ALTER TABLE activation_codes
+    ADD COLUMN sent_on TIMESTAMPTZ NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC');
+
+ALTER TABLE polls
+    ADD COLUMN is_deleted BOOLEAN NOT NULL DEFAULT false;
+
 /*
  INSERT INTO polls (created_by, question, votes_number, ends_in) VALUES
 -- Favorite color
