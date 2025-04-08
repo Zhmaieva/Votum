@@ -36,7 +36,7 @@ const FeedView = () => {
         return (
             <View style={styles.emptyContainer}>
                 <Text style={styles.emptyText}>
-                    No new polls, try later or create one.
+                    Something went wrong, check your network connection.
                 </Text>
             </View>
         );

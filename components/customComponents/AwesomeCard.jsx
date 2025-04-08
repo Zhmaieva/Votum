@@ -26,7 +26,8 @@ const AwesomeCard = ({ item, handleVote, loggedInUserId }) => {  // Pass loggedI
             <View style={styles.margin15}>
                 <AwesomeUserHeader
                     userData={item.user}
-                    loggedInUserId={loggedInUserId} // Pass it down
+                    loggedInUserId={loggedInUserId}
+                    isInsideCard={true}
                 />
             </View>
             <AwesomeVote

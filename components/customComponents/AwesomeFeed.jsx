@@ -1,38 +1,76 @@
 import React, { useRef, useEffect, useState } from 'react';
-import {View, Animated, Dimensions, StyleSheet, RefreshControl, SafeAreaView} from 'react-native';
+import {
+    View,
+    Animated,
+    Dimensions,
+    StyleSheet,
+    RefreshControl,
+    SafeAreaView,
+    Text,
+} from 'react-native';
 const { height, width } = Dimensions.get('window');
-const POLL_HEIGHT = height * 0.82; // 90% of the screen height
-const NEXT_POLL_OFFSET = height * 0.18; // 10% of the next poll visible
+const POLL_HEIGHT = height * 0.82;
+const NEXT_POLL_OFFSET = height * 0.18;
 import { Colors } from '../../utils/colorUtils';
-import {globalEventEmitter} from "../../shared/common";
+import { globalEventEmitter } from "../../shared/common";
+import AwesomeLink from "./AwesomeLink";
 
 const AwesomeFeed = ({ data, onRefresh, refreshing, renderItem }) => {
     const scrollY = useRef(new Animated.Value(0)).current;
-    const [preloadedData, setPreloadedData] = useState(data);
+    const [preloadedData, setPreloadedData] = useState([]);
 
     useEffect(() => {
-        setPreloadedData(data.slice());
-        // if (data.length > 0) {
-        //     setPreloadedData(data.slice(0, 5)); // Preload first 5 polls
-        // }
+        if (data.length === 0) {
+            // If no data, show the "no more polls" item
+            setPreloadedData([{ id: 'no-more-polls', type: 'placeholder' }]);
+        } else {
+            setPreloadedData(data.slice());
+        }
     }, [data]);
 
     const loadMorePolls = () => {
-        setPreloadedData((prevData) => [
-            ...prevData,
-            ...data.slice(prevData.length, prevData.length + 5),
-        ]);
+        const nextBatch = data.slice(preloadedData.length, preloadedData.length + 5);
+        if (nextBatch.length === 0) {
+            if (!preloadedData.find(item => item?.type === 'placeholder')) {
+                setPreloadedData(prevData => [
+                    ...prevData,
+                    { id: 'no-more-polls', type: 'placeholder' }
+                ]);
+            }
+        } else {
+            setPreloadedData(prevData => [
+                ...prevData,
+                ...nextBatch
+            ]);
+        }
     };
 
-    globalEventEmitter.on('deletePoll', ({pollId}) => {
-        setPreloadedData(data.filter((poll) => poll.id !== pollId).slice());
-    })
+    globalEventEmitter.on('deletePoll', ({ pollId }) => {
+        const newData = data.filter((poll) => poll.id !== pollId);
+        if (newData.length === 0) {
+            setPreloadedData([{ id: 'no-more-polls', type: 'placeholder' }]);
+        } else {
+            setPreloadedData(newData.slice());
+        }
+    });
+
+    const renderWithPlaceholder = (item) => {
+        if (item?.type === 'placeholder') {
+            return (
+                <View style={[styles.placeholderContainer, styles.row]}>
+                    <Text style={styles.placeholderText}>No new polls, try later or</Text>
+                    <AwesomeLink text="create one." screenName='Add'/>
+                </View>
+            );
+        }
+        return renderItem(item);
+    };
 
     return (
         <SafeAreaView style={styles.container}>
             <Animated.FlatList
                 data={preloadedData}
-                keyExtractor={(item) => item?.id ?? item}
+                keyExtractor={(item) => item?.id ?? String(Math.random())}
                 pagingEnabled
                 scrollEventThrottle={16}
                 showsVerticalScrollIndicator={false}
@@ -40,10 +78,10 @@ const AwesomeFeed = ({ data, onRefresh, refreshing, renderItem }) => {
                 snapToOffsets={preloadedData.map((_, index) => index * (POLL_HEIGHT - NEXT_POLL_OFFSET))}
                 decelerationRate="fast"
                 refreshControl={
-                    <RefreshControl refreshing={refreshing ?? false} onRefresh={onRefresh ?? (() => {})} tintColor="#888" />
+                    <RefreshControl refreshing={refreshing ?? false} onRefresh={onRefresh ?? (() => { })} tintColor="#888" />
                 }
                 renderItem={({ item }) => (
-                    <View style={styles.pollContainer}>{renderItem(item)}</View>
+                    <View style={styles.pollContainer}>{renderWithPlaceholder(item)}</View>
                 )}
                 onEndReached={loadMorePolls}
                 onEndReachedThreshold={0.5}
@@ -65,9 +103,23 @@ const styles = StyleSheet.create({
         height: POLL_HEIGHT,
         backgroundColor: Colors.white,
         borderRadius: 0,
-        marginBottom: -NEXT_POLL_OFFSET, // Partially show the next poll
+        marginBottom: -NEXT_POLL_OFFSET,
         justifyContent: 'flex-start',
     },
+    placeholderContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 40
+    },
+    placeholderText: {
+        fontSize: 16,
+        color: Colors.grey,
+        textAlign: 'center',
+    },
+    row: {
+        flexDirection: 'row'
+    }
 });
 
 export default AwesomeFeed;

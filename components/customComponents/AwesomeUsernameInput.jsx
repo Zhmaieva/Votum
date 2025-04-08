@@ -156,8 +156,6 @@ const styles = StyleSheet.create({
         marginRight: 10,
         justifyContent: 'center',
         alignItems: 'center',
-        height: 36,
-        width: 36,
     },
     counter: {
         fontSize: 12,

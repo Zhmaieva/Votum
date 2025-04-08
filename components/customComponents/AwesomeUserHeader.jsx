@@ -14,7 +14,7 @@ const formatFollowers = (num) => {
 
 const followChangedEventName = "followChanged";
 
-const AwesomeUserHeader = ({ userData, loggedInUserId, isFollowersPage = false, onRemove }) => {
+const AwesomeUserHeader = ({ userData, loggedInUserId, isFollowersPage = false, onRemove, isInsideCard = false, isProfilePage = false }) => {
     const [user, setUser] = useState(userData);
     const [isFollowing, setIsFollowing] = useState(userData?.isFollowing);
 
@@ -59,7 +59,9 @@ const AwesomeUserHeader = ({ userData, loggedInUserId, isFollowersPage = false, 
                     >
                         {user.username}
                     </Text>
-                    {isOwnProfile ? (
+
+
+                    {isOwnProfile && isProfilePage ? (
                         <Text
                             style={[styles.font14, styles.greyTextStyle, styles.fontFamily]}
                             numberOfLines={2}
@@ -72,20 +74,27 @@ const AwesomeUserHeader = ({ userData, loggedInUserId, isFollowersPage = false, 
                             {formattedFollowers} {followersText}
                         </Text>
                     )}
+
+
+
                 </View>
             </View>
 
             <View style={styles.thirdSubContainer}>
                 <View style={styles.buttonContainer}>
                     {isFollowersPage ? (
-                        <View/>
+                        <View />
                     ) : isOwnProfile ? (
-                        <AwesomeButton
-                            color={Color.WHITE}
-                            text="Edit"
-                            screenName="Edit profile"
-                            params={{ user }}
-                        />
+                        isInsideCard ? (
+                            <View /> // 👈 hide Edit if it's my profile in a card
+                        ) : (
+                            <AwesomeButton
+                                color={Color.WHITE}
+                                text="Edit"
+                                screenName="Edit profile"
+                                params={{ user }}
+                            />
+                        )
                     ) : (
                         <AwesomeButton
                             color={Color.BLACK}

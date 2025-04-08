@@ -14,6 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import ReportPoll from "./AwesomeReportPoll";
 import { onShare } from "../../shared/common";
 import AwesomeLikeButton from "./AwesomeLikeButton";
+import { AwesomeModal } from './AwesomeModal'
 
 const formatFollowers = (num) => {
     if (num >= 1_000_000_000) return (num / 1_000_000_000).toFixed(1) + 'B';
@@ -63,12 +64,14 @@ const AwesomeVote = ({
     const [pollExpired, setPollExpired] = useState(timeLeft <= 0);
 
     useEffect(() => {
-        Animated.timing(animation, {
-            toValue: selected || pollExpired ? 1 : 0,
-            duration: 600,
-            useNativeDriver: false,
-        }).start();
-    }, [selected, pollExpired]);
+        if (selected || pollExpired || createdByUser) {
+            Animated.timing(animation, {
+                toValue: 1,
+                duration: 600,
+                useNativeDriver: false,
+            }).start();
+        }
+    }, [selected, pollExpired, createdByUser]);
 
     const handleVote = (option) => {
         setSelected(option);
@@ -105,27 +108,36 @@ const AwesomeVote = ({
             </View>
             <View style={styles.votingFrame}>
                 <View style={[styles.controlSignsContainer, styles.row]}>
-                    {!createdByUser && (
-                        <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.iconContainer}>
-                            {isReportVisible && (
-                                <ReportPoll
-                                    pollId={1}
-                                    onReportSubmit={(reason) => setIsReportVisible(false)}
-                                    onCancel={() => setIsReportVisible(false)}
-                                />
-                            )}
-                        </TouchableOpacity>
-                    )}
-                    <TouchableOpacity style={styles.iconContainer} onPress={onShare}>
-                        <Ionicons name="share-outline" size={26} color={Colors.black} />
-                    </TouchableOpacity>
-                    <View style={styles.iconContainer}>
-                        <AwesomeLikeButton pollId={id} isLikedParam={isLiked}/>
-                    </View>
-                    {createdByUser && (
-                        <Pressable style={styles.iconContainer} onPress={onDeletePoll}>
-                            <Ionicons name="trash-outline" size={26} color={Colors.black} />
-                        </Pressable>
+                    {createdByUser ? (
+                        <>
+                            <Pressable style={styles.iconContainer} onPress={()=>setModalVisible(true)}>
+                                <Ionicons name="trash-outline" size={26} color={Colors.black} />
+                            </Pressable>
+                            <TouchableOpacity style={styles.iconContainer} onPress={onShare}>
+                                <Ionicons name="share-outline" size={26} color={Colors.black} />
+                            </TouchableOpacity>
+                            <View style={styles.iconContainer}>
+                                <AwesomeLikeButton pollId={id} isLikedParam={isLiked} />
+                            </View>
+                        </>
+                    ) : (
+                        <>
+                            <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.iconContainer}>
+                                {isReportVisible && (
+                                    <ReportPoll
+                                        pollId={1}
+                                        onReportSubmit={(reason) => setIsReportVisible(false)}
+                                        onCancel={() => setIsReportVisible(false)}
+                                    />
+                                )}
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.iconContainer} onPress={onShare}>
+                                <Ionicons name="share-outline" size={26} color={Colors.black} />
+                            </TouchableOpacity>
+                            <View style={styles.iconContainer}>
+                                <AwesomeLikeButton pollId={id} isLikedParam={isLiked} />
+                            </View>
+                        </>
                     )}
                 </View>
                 {!selected && !pollExpired && !createdByUser ? (
@@ -153,7 +165,7 @@ const AwesomeVote = ({
                                     <View style={styles.answerStyle}>
                                         <Text style={[styles.answerTextStyle, {
                                             color: Colors.black,
-                                            fontWeight: selected === option ? "700" : "400"
+                                            fontWeight: selected === option ? "600" : "400"
                                         }]}>
                                             {option}
                                         </Text>
@@ -162,7 +174,7 @@ const AwesomeVote = ({
                                 <View style={styles.resultsNumberContainer}>
                                     <Text style={[styles.buttonText, styles.fontFamilyStyle, {
                                         color: Colors.black,
-                                        fontWeight: selected === option ? "700" : "400"
+                                        fontWeight: selected === option ? "600" : "400"
                                     }]}>{results[option] || 0}%</Text>
                                 </View>
                             </View>
@@ -174,22 +186,18 @@ const AwesomeVote = ({
                     <Text style={[styles.greyTextStyle, styles.fontFamilyStyle]}>{formatFollowers(totalVotes)} voted</Text>
                 </View>
             </View>
-            <Modal animationType="fade" transparent={true} visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
-                <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
-                    <View style={styles.modalContainer}>
-                        <View style={styles.modalContent}>
-                            <Text>test</Text>
-                            {isReportVisible && (
-                                <ReportPoll
-                                    pollId={1}
-                                    onReportSubmit={(reason) => setIsReportVisible(false)}
-                                    onCancel={() => setIsReportVisible(false)}
-                                />
-                            )}
-                        </View>
-                    </View>
-                </TouchableWithoutFeedback>
-            </Modal>
+            <AwesomeModal
+                visible={modalVisible}
+                text="Are you sure you want to delete this poll?"
+                buttonText="Yes, delete"
+                onPress={() => {
+                    if (onDeletePoll) {
+                        onDeletePoll();
+                    }
+                    setModalVisible(false);
+                }}
+                onBackPress={() => setModalVisible(false)}
+            />
         </View>
     );
 };
@@ -218,7 +226,7 @@ const styles = StyleSheet.create({
     button: {
         backgroundColor: Colors.white,
         height: 40,
-        marginBottom: 12,
+        marginBottom: 13,
         borderWidth: 1,
         borderColor: Colors.black,
         flexDirection: "row",
@@ -267,13 +275,12 @@ const styles = StyleSheet.create({
         width: 300,
         padding: 20,
         backgroundColor: Colors.white,
-        borderRadius: 10,
+        //borderRadius: 10,
         alignItems: 'center'
     },
     resultBar: {
         height: 40,
-        //width: '100%',
-        marginBottom: 12,
+        marginBottom: 13,
     },
     buttonContainer: {
         flexDirection: "row",
@@ -290,7 +297,8 @@ const styles = StyleSheet.create({
     },
     qTextStyle: {
         fontSize: 18,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        color: Colors.black,
     },
     answerStyle: {
         position: 'absolute',
@@ -311,6 +319,5 @@ const styles = StyleSheet.create({
         width: '100%',
         paddingRight: 20,
         marginBottom: 5
-        //backgroundColor: Colors.yellow
     }
 });

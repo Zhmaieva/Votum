@@ -78,7 +78,7 @@ const MyUserProfileView = () => {
             <SafeAreaView style={styles.safeArea}>
                 <View style={styles.contentWrapper}>
                     <View style={styles.bottomMargin20}>
-                        <AwesomeUserHeader userData={user} loggedInUserId={user?.userId}/>
+                        <AwesomeUserHeader userData={user} loggedInUserId={user?.userId} isProfilePage={true}/>
                     </View>
                     <View style={[styles.followersContainer, styles.row]}>
                         <View style={styles.followersLeftSubContainer}>
