@@ -13,11 +13,11 @@ export default function AgeView () {
             <View style={styles.firstSubContainer}>
                 <AwesomeBirthPicker dateOfBirth={dateOfBirth} setDateOfBirth={setDateOfBirth} />
                 <View style={styles.subContainer}>
-                    <AwesomeButton text='Save data' color={Color.GREEN}  />
+                    <AwesomeButton text='Save data' color={Color.GREEN} screenName='Categories' />
                 </View>
             </View>
             <View style={styles.secondSubContainer}>
-                <AwesomeButton text='Skip' color={Color.BLACK} />
+                <AwesomeButton text='Skip' color={Color.BLACK} screenName='Categories' />
             </View>
         </View>
     );

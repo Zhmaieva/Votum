@@ -3,6 +3,7 @@ import AwesomeFeed from "../customComponents/AwesomeFeed";
 import AwesomeCard from "../customComponents/AwesomeCard";
 import { View, StyleSheet, ActivityIndicator, Text } from 'react-native';
 import { fetchPolls, fetchMyProfile } from "../../shared/api/apiClient";
+import { Colors } from '../../utils/colorUtils';
 
 const FeedView = () => {
     const [refreshing, setRefreshing] = useState(false);
@@ -77,6 +78,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         padding: 20,
+        backgroundColor: Colors.white
     },
     emptyText: {
         fontSize: 16,

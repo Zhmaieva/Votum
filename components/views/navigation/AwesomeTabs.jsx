@@ -201,9 +201,7 @@ export function AwesomeTabs() {
             <Tab.Screen name="Feed" component={FeedStack} options={{ headerShown: false, gestureEnabled: true }} />
             <Tab.Screen name="Voted" component={VotedStack} options={{ headerShown: false, gestureEnabled: true }} />
             <Tab.Screen name="Add" component={AddStack} options={{ headerShown: false, gestureEnabled: true }} />
-            {/*<Tab.Screen name="Search" component={SearchStack} options={{ headerShown: false, gestureEnabled: true }} />
-            */}
-            <Tab.Screen name="Categories" component={CategoriesView} options={{ headerShown: false, gestureEnabled: true }} />
+            <Tab.Screen name="Search" component={SearchStack} options={{ headerShown: false, gestureEnabled: true }} />
         </Tab.Navigator>
     );
 }

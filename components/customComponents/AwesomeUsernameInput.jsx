@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, StyleSheet, Text } from 'react-native';
+import { View, TextInput, StyleSheet, Text, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { debounce } from 'lodash';
 import { Colors } from '../../utils/colorUtils';
-import {checkRegisteredUsernameAvailability, checkUsernameAvailability} from "../../shared/api/apiClient";
-import {getDataService, globalEventEmitter} from "../../shared/common";
-import {useFocusEffect} from "@react-navigation/native";
-import {AwesomeModal} from "./AwesomeModal";
+import { checkRegisteredUsernameAvailability, checkUsernameAvailability } from "../../shared/api/apiClient";
+import { getDataService, globalEventEmitter } from "../../shared/common";
+import { useFocusEffect } from "@react-navigation/native";
+import { AwesomeModal } from "./AwesomeModal";
 
 const AwesomeUsernameInput = ({ route }) => {
     const { text } = route.params || {};
 
     const [username, setUsername] = useState(text);
     const [isAvailable, setIsAvailable] = useState(null);
+    const [isChecking, setIsChecking] = useState(false);
     const charLimit = 15;
 
     const [isModalVisible, setModalVisible] = useState(getDataService().error.usernameTaken);
@@ -20,26 +21,41 @@ const AwesomeUsernameInput = ({ route }) => {
 
     useFocusEffect(
         React.useCallback(() => {
-            if (text)
-                setUsername(text);
+            const user = getDataService().getUser();
+            const actualUsername = user?.username || '';
+
+            setUsername(actualUsername);
+            setIsAvailable(null);
+            setModalVisible(false);
+            setModalMessage('');
+
+            setTimeout(() => {
+                debouncedCheck(actualUsername);
+            }, 0);
         }, [])
     );
 
     useEffect(() => {
-        debouncedCheck();
+        debouncedCheck(username);
     }, [username]);
 
-    const debouncedCheck = debounce(async () => {
-        const name = username;
-        const available = name ? (getDataService()?.getUser()?.userId
-            ? await checkRegisteredUsernameAvailability(name)
-            : await checkUsernameAvailability(name)) : false;
+    const debouncedCheck = debounce(async (name) => {
+        setIsChecking(true);
+
+        const available = name
+            ? (getDataService()?.getUser()?.userId
+                ? await checkRegisteredUsernameAvailability(name)
+                : await checkUsernameAvailability(name))
+            : false;
 
         if (available) {
             if (!name) {
                 getDataService().getUser().username = '';
             } else {
+                setIsAvailable(true);
                 getDataService().getUser().username = name;
+                setIsChecking(false);
+                return;
             }
         } else {
             if (!name) {
@@ -49,20 +65,20 @@ const AwesomeUsernameInput = ({ route }) => {
             }
         }
 
-        setIsAvailable(available);
+        setIsAvailable(false);
+        setIsChecking(false); // End loading spinner
     }, 500);
 
     const handleInputChange = (text) => {
-        const cleanedText = text.replace(/[^A-Za-z0-9._\-!@#$%^&*()+=\[\]{};:'",<>?/`~|\\]/g, '');
-        const collapsed = cleanedText
-            .replace(/[^A-Za-z0-9._-]/g, '')
-            .replace(/[-_.]{2,}/g, match => match[0]);
-        setUsername(collapsed);
+        const cleanedText = text
+            .toLowerCase()
+            .replace(/[^a-z0-9._]/g, '');
+        setUsername(cleanedText);
     };
 
     useEffect(() => {
         function handleErrorChange(errorState) {
-            if (!errorState) return; // Ensure errorState is not undefined
+            if (!errorState) return;
 
             if (errorState.usernameEmpty) {
                 setModalMessage('Username cannot be empty.');
@@ -93,36 +109,42 @@ const AwesomeUsernameInput = ({ route }) => {
                     autoCapitalize="none"
                 />
                 <View style={styles.icon}>
-                    {isAvailable !== null && (
+                    {isChecking ? (
+                        <ActivityIndicator size="small" color={Colors.grey} />
+                    ) : isAvailable !== null && (
                         <Ionicons
                             name={isAvailable ? "checkmark" : "close"}
-                            size={20}
+                            size={16}
                             color={isAvailable ? Colors.green : Colors.red}
                         />
                     )}
                 </View>
             </View>
             <Text style={styles.counter}>{username.length}/{charLimit}</Text>
-            <AwesomeModal visible={isModalVisible}
-                          text={modalMessage}
-                          onPress={_ => {setModalVisible(false)}}
-                          onBackPress={_ => {setModalVisible(false)}}/>
+            <AwesomeModal
+                visible={isModalVisible}
+                text={modalMessage}
+                onPress={() => setModalVisible(false)}
+                onBackPress={() => setModalVisible(false)}
+            />
         </View>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
-        alignItems: 'flex-end'
+        alignItems: 'flex-end',
+        backgroundColor: Colors.white
     },
     inputSubContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        borderWidth: 1,
-        borderColor: Colors.black,
+        borderBottomWidth: 1,
+        borderBottomColor: Colors.lightGrey,
         height: 40,
         position: 'relative',
-        marginBottom: 3
+        marginBottom: 3,
+        backgroundColor: Colors.white
     },
     input: {
         flex: 1,
@@ -131,14 +153,17 @@ const styles = StyleSheet.create({
     },
     icon: {
         marginLeft: 10,
-        backgroundColor: Colors.red,
+        marginRight: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
         height: 36,
-        width: 36
+        width: 36,
     },
     counter: {
         fontSize: 12,
         color: Colors.grey,
-        height: 20
+        height: 20,
+        marginRight: 10,
     },
 });
 

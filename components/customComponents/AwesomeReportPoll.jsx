@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { View, Text, Modal, TouchableOpacity, FlatList, StyleSheet, Alert, TouchableWithoutFeedback } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "../../utils/colorUtils";
+import { BottomSheet } from 'react-native-btr';
 
 const REPORT_REASONS = [
     "Hate Speech",
@@ -20,7 +21,16 @@ const ReportPoll = ({ onReport }) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [dropdownVisible, setDropdownVisible] = useState(false);
     const [selectedReason, setSelectedReason] = useState(null);
+    const [sortBottomData, setSortBottomData] = useState({visible:false, eventData:null});
 
+    const setSelectedSortOption = (option) =>  {
+        setSelectedSortOption1(option)
+        setSortBottomData({visible:!sortBottomData.visible, eventData: null});
+    }
+
+    const toggleBottomNavigationView = () => {
+        setSortBottomData({visible:!sortBottomData.visible, eventData: null});
+    };
     const handleReport = () => {
         if (!selectedReason) {
             Alert.alert("Please select a reason");
@@ -33,60 +43,18 @@ const ReportPoll = ({ onReport }) => {
 
     return (
         <View>
-            <TouchableOpacity onPress={() => setModalVisible(true)}>
+            <TouchableOpacity onPress={toggleBottomNavigationView}>
                 <Ionicons name="warning-outline" size={26} color={Colors.black} />
             </TouchableOpacity>
+            <BottomSheet visible={sortBottomData.visible} onBackButtonPress={toggleBottomNavigationView} onBackdropPress={toggleBottomNavigationView}>
+                <View style={styles.bottomNavigationView}>
+                    <View style={styles.subBottomNavigation}>
+                        <View style={styles.test}>
 
-            <Modal visible={modalVisible} animationType="fade" transparent={true}>
-                <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
-                    <View style={styles.modalBackground}>
-                        <View style={styles.modalContainer}>
-                            <Text style={styles.modalTitle}>Report this Poll</Text>
-
-                            {/* The dropdown button */}
-                            <TouchableOpacity
-                                style={styles.dropdownButton}
-                                onPress={() => setDropdownVisible(!dropdownVisible)}
-                            >
-                                <Text style={styles.dropdownText}>
-                                    {selectedReason || "Select a Reason"}
-                                </Text>
-                            </TouchableOpacity>
-
-                            {/* Dropdown list */}
-                            {dropdownVisible && (
-                                <FlatList
-                                    data={REPORT_REASONS}
-                                    keyExtractor={(item) => item}
-                                    renderItem={({ item }) => (
-                                        <TouchableOpacity
-                                            style={[
-                                                styles.reasonButton,
-                                                selectedReason === item && styles.selectedButton
-                                            ]}
-                                            onPress={() => {
-                                                setSelectedReason(item);
-                                                setDropdownVisible(false); // Close dropdown after selection
-                                            }}
-                                        >
-                                            <Text style={styles.reasonText}>{item}</Text>
-                                        </TouchableOpacity>
-                                    )}
-                                />
-                            )}
-                            <View style={[styles.row, styles.alignment]}>
-                                <TouchableOpacity style={styles.cancelButton} onPress={() => setModalVisible(false)}>
-                                    <Text style={styles.cancelText}>Cancel</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity style={styles.submitButton} onPress={handleReport}>
-                                    <Text style={styles.submitText}>Submit</Text>
-                                </TouchableOpacity>
-                            </View>
                         </View>
                     </View>
-                </TouchableWithoutFeedback>
-            </Modal>
-
+                </View>
+            </BottomSheet>
         </View>
     );
 };
@@ -171,6 +139,23 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'rgba(0,0,0,0.5)',
+    },
+    test: {
+        backgroundColor: Colors.yellow,
+        height: 50,
+        width: 50
+    },
+    bottomNavigationView: {
+        backgroundColor: '#F2F3EE',
+        width: '100%',
+        height: 210,
+    },
+    subBottomNavigation: {
+        width: '100%',
+        flex: 1,
+        paddingTop: 20,
+        paddingRight: 10,
+        paddingLeft: 10,
     },
 });
 

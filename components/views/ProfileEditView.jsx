@@ -89,9 +89,6 @@ const ProfileEditView = ({ route }) => {
                         />
                     </View>
                 </View>
-                <View style={styles.test}>
-                    <AwesomeCategory tagName='politics' />
-                </View>
                 <View style={styles.marginTest}>
                     <AwesomeButton
                         text="Log out"
