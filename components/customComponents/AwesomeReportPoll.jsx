@@ -26,7 +26,6 @@ const REPORT_REASONS = [
 
 const ReportPoll = ({ onReport }) => {
     const bottomSheetModalRef = useRef(null);
-    const snapPoints = useMemo(() => ["40%"], []);
     const [selectedReason, setSelectedReason] = useState(null);
     const { dismiss, dismissAll } = useBottomSheetModal();
 
