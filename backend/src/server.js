@@ -8,11 +8,12 @@ const {SECRET_KEY} = require("./constants");
 const {pool} = require("./db/dal/pool");
 const pollQueries = require("./db/dal/pollQueries");
 const userQueries = require("./db/dal/userQueries");
-const {getActivationCode, checkActivationCode, checkAndInsertUserWithProfile, getUserByLogin, updateProfileImage} = require("./db/dal/userQueries");
+const {getActivationCode, checkActivationCode, checkAndInsertUserWithProfile, getUserByLogin, updateProfileImage,
+    refreshUserFollows, refreshUserFollowers
+} = require("./db/dal/userQueries");
 const sendEmail = require("./mail/mailing");
 const {validateEmail, validateUsername, validatePassword} = require("./validation");
 const {uploadMiddleware} = require("./middleware/fileUploadMiddleware");
-const {uploadImage} = require("./aws/s3");
 const {updateUserImage} = require("./services/userService");
 
 const app = express();
@@ -235,19 +236,6 @@ app.put('/profile', authMiddleware, async (req, res) => {
     }
 });
 
-app.post('/profile/followers', authMiddleware, async (req, res, next) => {
-    try {
-        const { userId } = req.body;
-
-        await userQueries.followUser(req.user.id, userId);
-
-        return res.json({ message: 'User followed successfully' });
-    }
-    catch (e) {
-        next(e);
-    }
-});
-
 app.post('/profile/image', authMiddleware, uploadMiddleware.single('file'), async (req, res, next) => {
     try {
         const file = req.file;
@@ -260,13 +248,33 @@ app.post('/profile/image', authMiddleware, uploadMiddleware.single('file'), asyn
     catch (e) {
         next(e);
     }
-})
+});
+
+
+app.post('/profile/followers', authMiddleware, async (req, res, next) => {
+    try {
+        const { userId } = req.body;
+
+        await userQueries.followUser(req.user.id, userId);
+
+        refreshUserFollows(req.user.id).then(_ => {});
+        refreshUserFollowers(userId).then(_ => {});
+
+        return res.json({ message: 'User followed successfully' });
+    }
+    catch (e) {
+        next(e);
+    }
+});
 
 app.delete('/profile/followers', authMiddleware, async (req, res, next) => {
     try {
         const { userId } = req.query;
 
         await userQueries.unfollowUser(req.user.id, userId);
+
+        refreshUserFollows(req.user.id).then(_ => {});
+        refreshUserFollowers(userId).then(_ => {});
 
         return res.json({ message: 'User unfollowed successfully' });
     }

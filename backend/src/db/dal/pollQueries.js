@@ -55,7 +55,7 @@ const fetchPolls = async (userId) => {
                     userId: row.user_id,
                     username: row.username,
                     image: row.image,
-                    followersNumber: row.followers_number,
+                    followersNumber: row.followers_number < 0 ? 0 : row.followers_number,
                     isFollowing: row.is_following,
                     bio: row.user_bio
                 }

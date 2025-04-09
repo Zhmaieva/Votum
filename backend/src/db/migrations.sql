@@ -72,6 +72,10 @@ ALTER TABLE activation_codes
 ALTER TABLE polls
     ADD COLUMN is_deleted BOOLEAN NOT NULL DEFAULT false;
 
+--Wed Apr 9 22:00
+ALTER TABLE user_profiles
+    ADD COLUMN following_number INT DEFAULT 0;
+
 /*
  INSERT INTO polls (created_by, question, votes_number, ends_in) VALUES
 -- Favorite color

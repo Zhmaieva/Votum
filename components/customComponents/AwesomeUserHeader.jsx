@@ -20,16 +20,17 @@ const AwesomeUserHeader = ({ userData, loggedInUserId, isFollowersPage = false, 
 
     function handleFollowChangedEvent(userData) {
         if (!userData) return;
-        if (user?.userId !== userData.userId) return;
-        setIsFollowing(userData.isFollowing);
+        if (user?.userId !== userData?.userId) return;
+        setIsFollowing(userData?.isFollowing);
+        setUser(userData);
     }
 
     globalEventEmitter.on(followChangedEventName, handleFollowChangedEvent);
 
-    if (userData && userData !== user) {
+    useEffect(() => {
         setUser(userData);
         setIsFollowing(userData?.isFollowing);
-    }
+    }, [userData]);
 
     if (!user) return <Text>Loading...</Text>;
 

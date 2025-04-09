@@ -1,12 +1,11 @@
-import React, {useEffect, useState} from "react";
-import {NavigationContainer, useNavigation} from '@react-navigation/native';
+import React, {useState} from "react";
+import {NavigationContainer} from '@react-navigation/native';
 import {AwesomeTabs, AuthNavigator} from "./components/views/navigation/AwesomeTabs";
 import {getDataService, globalEventEmitter} from "./shared/common";
 import {isTokenAvailable} from "./shared/api/apiClient";
 import {ActivityIndicator, View} from "react-native";
 import 'react-native-gesture-handler';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { AntDesign } from '@expo/vector-icons';
 import {BottomSheetModalProvider} from "@gorhom/bottom-sheet";
 
 export default function App() {

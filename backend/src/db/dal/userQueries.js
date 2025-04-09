@@ -2,9 +2,24 @@ const {pool} = require("./pool");
 
 async function followUser(userFollowerId, userFollowId) {
     const query = `
-    INSERT INTO user_follows (user_follower_id, user_follow_id)
-    VALUES ($1, $2)
-    ON CONFLICT (user_follower_id, user_follow_id) DO NOTHING;
+        WITH inserted AS (
+            INSERT INTO user_follows (user_follower_id, user_follow_id)
+                VALUES ($1, $2)
+                ON CONFLICT (user_follower_id, user_follow_id) DO NOTHING
+                RETURNING 1
+        ),
+             update_followers AS (
+                 UPDATE user_profiles
+                     SET followers_number = followers_number + 1
+                     WHERE user_id = $2
+                         AND EXISTS (SELECT 1 FROM inserted)
+                     RETURNING 1
+             )
+        UPDATE user_profiles
+        SET following_number = following_number + 1
+        WHERE user_id = $1
+          AND EXISTS (SELECT 1 FROM inserted);
+
   `;
 
     try {
@@ -17,8 +32,22 @@ async function followUser(userFollowerId, userFollowId) {
 
 async function unfollowUser(userFollowerId, userFollowId) {
     const query = `
-    DELETE FROM user_follows 
-    WHERE user_follower_id = $1 AND user_follow_id = $2;
+        WITH deleted AS (
+            DELETE FROM user_follows
+                WHERE user_follower_id = $1 AND user_follow_id = $2
+                RETURNING 1
+        ),
+             update_followers AS (
+                 UPDATE user_profiles
+                     SET followers_number = GREATEST(followers_number - 1, 0)
+                     WHERE user_id = $2
+                         AND EXISTS (SELECT 1 FROM deleted)
+                     RETURNING 1
+             )
+        UPDATE user_profiles
+        SET following_number = GREATEST(following_number - 1, 0)
+        WHERE user_id = $1
+          AND EXISTS (SELECT 1 FROM deleted);
   `;
 
     try {
@@ -39,7 +68,7 @@ async function getFollowers(userId) {
       u.id as "userId",
       u.username AS "username",
       up.image,
-      up.followers_number AS "followersNumber",
+      GREATEST(up.followers_number, 0) AS "followersNumber",
       up.bio
     FROM users u
     JOIN user_profiles up ON u.id = up.user_id
@@ -88,7 +117,8 @@ async function getUser(userId) {
       u.username AS "username",
       u.email,
       up.image,
-      up.followers_number AS "followersNumber",
+      GREATEST(up.followers_number, 0) AS "followersNumber",
+      GREATEST(up.following_number, 0) AS "followingNumber",
       up.bio
     FROM users u
     JOIN user_profiles up ON u.id = up.user_id
@@ -328,6 +358,32 @@ async function updateProfileImage(imageUrl, userId) {
     return result.rows[0]?.previous_image;
 }
 
+async function refreshUserFollows(userId) {
+    const result = await pool.query(
+        `
+        UPDATE user_profiles
+        SET following_number = (
+            SELECT count(user_follow_id) from user_follows where user_follower_id = $1
+            )
+        WHERE user_id = $1;
+        `,
+        [userId]
+    );
+}
+
+async function refreshUserFollowers(userId) {
+    const result = await pool.query(
+        `
+        UPDATE user_profiles
+        SET followers_number = (
+            SELECT count(user_follower_id) from user_follows where user_follow_id = $1
+            )
+        WHERE user_id = $1;
+        `,
+        [userId]
+    );
+}
+
 module.exports = {
     followUser,
     unfollowUser,
@@ -338,5 +394,7 @@ module.exports = {
     checkActivationCode,
     checkAndInsertUserWithProfile,
     getUserByLogin,
-    updateProfileImage
+    updateProfileImage,
+    refreshUserFollows,
+    refreshUserFollowers
 }

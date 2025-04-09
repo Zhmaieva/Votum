@@ -87,12 +87,12 @@ const MyUserProfileView = () => {
                         </View>
                         <Pressable style={styles.followersCenterSubContainer}
                                    onPress={()=>onPressHandler('Followers')}>
-                            <Text style={styles.followersText}>15K</Text>
+                            <Text style={styles.followersText}>{user?.followersNumber ?? 0}</Text>
                             <Text style={styles.followersText}>followers</Text>
                         </Pressable>
                         <Pressable style={styles.followersRightSubContainer}
                                    onPress={()=>onPressHandler('Following')}>
-                            <Text style={styles.followersText}>103</Text>
+                            <Text style={styles.followersText}>{user?.followingNumber ?? 0}</Text>
                             <Text style={styles.followersText}>following</Text>
                         </Pressable>
                     </View>

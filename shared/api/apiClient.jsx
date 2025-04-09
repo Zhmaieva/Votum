@@ -243,6 +243,7 @@ export const uploadProfileImage = async (image) => {
 
 export const fetchMyProfile = async () => {
     try {
+        console.log('fetching my profile');
         const response = await apiClient.get(`/profile`, {
             headers: {
                 Authorization: `Bearer ${await getToken()}`,
@@ -351,7 +352,7 @@ export const unfollowProfile = async (id) => {
                 Authorization: `Bearer ${await getToken()}`,
             },
         });
-        console.log('following profile response: ' + JSON.stringify(response.data));
+        console.log('unfollowing profile response: ' + JSON.stringify(response.data));
         return response?.data;
     } catch (err) {
         console.log('follow failed', err);
