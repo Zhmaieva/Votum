@@ -13,6 +13,7 @@ const sendEmail = require("./mail/mailing");
 const {validateEmail, validateUsername, validatePassword} = require("./validation");
 const {uploadMiddleware} = require("./middleware/fileUploadMiddleware");
 const {uploadImage} = require("./aws/s3");
+const {updateUserImage} = require("./services/userService");
 
 const app = express();
 app.use(express.json());
@@ -252,14 +253,9 @@ app.post('/profile/image', authMiddleware, uploadMiddleware.single('file'), asyn
         const file = req.file;
         if (!file) return res.status(400).json({ error: 'invalid file' });
 
-        const uploadResult = await uploadImage(file);
-        if (!uploadResult.url) {
-            return res.status(500).json({ error: 'upload failed' });
-        }
+        updateUserImage(file, req.user.id).then(_ => {});
 
-        await updateProfileImage(uploadResult.url, req.user.id);
-
-        return res.status(200).json({ message: 'profile updated successfully' });
+        return res.status(200);
     }
     catch (e) {
         next(e);

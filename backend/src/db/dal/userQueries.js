@@ -307,12 +307,25 @@ async function getUserByLogin(usernameOrEmail, userId) {
     }
 }
 
-
+/**
+ * Update profile image
+ * @param imageUrl
+ * @param userId
+ * @returns {Promise<string>}
+ */
 async function updateProfileImage(imageUrl, userId) {
-    await pool.query(
-        `UPDATE user_profiles SET image = $1 WHERE user_id = $2`,
-        [imageUrl, userId],
+    const result = await pool.query(
+        `WITH updated AS (
+            SELECT image FROM user_profiles WHERE user_id = $1
+        )
+         UPDATE user_profiles
+         SET image = $2
+         WHERE user_id = $1
+         RETURNING (SELECT image FROM updated) AS previous_image`,
+        [userId, imageUrl]
     );
+
+    return result.rows[0]?.previous_image;
 }
 
 module.exports = {

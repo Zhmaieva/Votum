@@ -1,6 +1,8 @@
-const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
+const { S3Client, PutObjectCommand, DeleteObjectCommand} = require("@aws-sdk/client-s3");
 const { v4: uuidv4 } = require("uuid");
 const sharp = require("sharp");
+
+const bucketName = 'storage.beampie.com';
 
 // Configure AWS S3
 const s3 = new S3Client({
@@ -15,15 +17,13 @@ const s3 = new S3Client({
  * @returns {Promise<Buffer<ArrayBufferLike>>}
  */
 const compressImage = async (buffer) => {
-    let quality = 80;
+    let quality = 20;
     let output = buffer;
 
-    while (output.length > 5 * 1024 * 1024 && quality > 10) {
-        output = await sharp(buffer)
-            .jpeg({ quality }) // or .png({ compressionLevel: 9 }) depending on type
-            .toBuffer();
-        quality -= 10;
-    }
+    output = await sharp(buffer)
+        .rotate()
+        .jpeg({ quality }) // or .png({ compressionLevel: 9 }) depending on type
+        .toBuffer();
 
     return output;
 };
@@ -31,19 +31,20 @@ const compressImage = async (buffer) => {
 /**
  * Compresses and uploads image to S3
  * @param file
+ * @param userId
  * @returns {Promise<{url: string?}>}
  */
-async function uploadImage(file) {
+async function uploadImage(file, userId) {
     try {
-        //const buffer = await compressImage(file.buffer);
+        const buffer = await compressImage(file.buffer);
 
         const ext = file.mimetype === 'image/png' ? 'png' : 'jpg';
-        const fileName = `vote/profiles/${uuidv4()}.${ext}`;
+        const fileName = `vote/profiles/${userId}___${uuidv4()}.${ext}`;
 
         const uploadParams = {
-            Bucket: 'storage.beampie.com',
+            Bucket: bucketName,
             Key: fileName,
-            Body: file.buffer,
+            Body: buffer,
             ContentType: file.mimetype,
             ACL: 'public-read',
         };
@@ -52,6 +53,7 @@ async function uploadImage(file) {
         await s3.send(command);
 
         const resultUrl = `https://${uploadParams.Bucket}/${uploadParams.Key}`;
+        console.log(`Image ${resultUrl} uploaded successfully.`);
 
         return { url: resultUrl }
     } catch (e) {
@@ -60,6 +62,34 @@ async function uploadImage(file) {
     }
 }
 
+/**
+ * Deletes an image from S3 given its URL.
+ * @param {string} imageUrl - The URL of the image to be deleted.
+ * @returns {Promise<boolean>} - Returns true if the deletion was successful, otherwise false.
+ */
+async function deleteImage(imageUrl) {
+    try {
+        // Extract the bucket name and key from the URL
+        const urlParts = imageUrl.split('/');
+        const fileName = urlParts[urlParts.length - 1];
+
+        const deleteParams = {
+            Bucket: bucketName,
+            Key: `vote/profiles/${fileName}`,
+        };
+
+        const command = new DeleteObjectCommand(deleteParams);
+        await s3.send(command);
+
+        console.log(`Image ${imageUrl} deleted successfully.`);
+        return true;  // Return true to indicate success
+    } catch (e) {
+        console.error(`Error deleting image: ${imageUrl}`, e);
+        return false;  // Return false in case of an error
+    }
+}
+
 module.exports = {
     uploadImage,
+    deleteImage
 }
