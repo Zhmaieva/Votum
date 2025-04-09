@@ -65,6 +65,7 @@ class DataService {
     resetUserChanges() {
         if (this.user && this.oldUser) {
             this.user = { ...this.oldUser };
+            this.resetErrors();
         }
     }
 

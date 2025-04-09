@@ -16,7 +16,6 @@ export default function App() {
     })
 
     globalEventEmitter.on('signIn', () => {
-        console.log('signIn');
         getDataService().setUser(null); // pretend we never set the user, so it will be initialised later in profile view
         setIsAuthenticated(true);
     });

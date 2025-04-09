@@ -9,7 +9,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { AwesomeModal } from "./AwesomeModal";
 
 const AwesomeUsernameInput = ({ route }) => {
-    const { text } = route.params || {};
+    const { text } = route?.params || {};
 
     const [username, setUsername] = useState(text);
     const [isAvailable, setIsAvailable] = useState(null);
@@ -120,7 +120,7 @@ const AwesomeUsernameInput = ({ route }) => {
                     )}
                 </View>
             </View>
-            <Text style={styles.counter}>{username.length}/{charLimit}</Text>
+            <Text style={styles.counter}>{username?.length ?? 0}/{charLimit}</Text>
             <AwesomeModal
                 visible={isModalVisible}
                 text={modalMessage}
