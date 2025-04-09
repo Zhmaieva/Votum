@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
     button: {
         backgroundColor: Colors.white,
         height: 40,
-        marginBottom: 13,
+        marginBottom: 11,
         borderWidth: 1,
         borderColor: Colors.black,
         flexDirection: "row",
@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         color: Colors.black,
-        fontSize: 14,
+        fontSize: 16,
         marginLeft: 10
     },
     countStyle: {
@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
     },
     resultBar: {
         height: 40,
-        marginBottom: 13,
+        marginBottom: 11,
     },
     buttonContainer: {
         flexDirection: "row",
@@ -308,7 +308,7 @@ const styles = StyleSheet.create({
     },
     answerTextStyle: {
         color: Colors.black,
-        fontSize: 14,
+        fontSize: 16,
         marginLeft: 10
     },
     rightPartBar: {

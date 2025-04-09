@@ -1,33 +1,36 @@
-import React, { useRef, useCallback, useState, useMemo } from "react";
+import React, { useRef, useState } from "react";
 import {
     View,
     Text,
     TouchableOpacity,
     FlatList,
-    Alert,
-    StyleSheet,
+    StyleSheet
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import {BottomSheetModal, BottomSheetView, useBottomSheetModal} from "@gorhom/bottom-sheet";
+import {
+    BottomSheetModal,
+    BottomSheetView,
+    useBottomSheetModal
+} from "@gorhom/bottom-sheet";
 import { Colors } from "../../utils/colorUtils";
+import { AwesomeModal } from "./AwesomeModal";
 
 const REPORT_REASONS = [
-    "Hate Speech",
     "Violence or Threats",
     "Harassment",
-    "False Information",
     "Explicit Content",
     "Spam",
     "Privacy Violation",
     "Illegal Activities",
-    "Copyright Infringement",
-    "Other"
+    "Copyright Infringement"
 ];
 
 const ReportPoll = ({ onReport }) => {
     const bottomSheetModalRef = useRef(null);
     const [selectedReason, setSelectedReason] = useState(null);
-    const { dismiss, dismissAll } = useBottomSheetModal();
+    const [modalVisible, setModalVisible] = useState(false);
+    const [errorVisible, setErrorVisible] = useState(false);
+    const { dismissAll } = useBottomSheetModal();
 
     const openSheet = () => {
         bottomSheetModalRef.current?.present();
@@ -39,12 +42,12 @@ const ReportPoll = ({ onReport }) => {
 
     const handleReport = () => {
         if (!selectedReason) {
-            Alert.alert("Please select a reason.");
+            setErrorVisible(true);
             return;
         }
         closeSheet();
         onReport?.(selectedReason);
-        Alert.alert("Report Submitted", "Thank you for your feedback.");
+        setModalVisible(true);
     };
 
     const renderReason = ({ item }) => (
@@ -66,7 +69,16 @@ const ReportPoll = ({ onReport }) => {
             </TouchableOpacity>
 
             <BottomSheetModal
-                ref={bottomSheetModalRef}>
+                ref={bottomSheetModalRef}
+                backgroundStyle={{
+                    backgroundColor: Colors.white,
+                    borderTopWidth: 1,
+                    borderColor: Colors.black,
+                    borderRadius: 0
+                }}
+                enablePanDownToClose={true}
+                enableDismissOnClose={true}
+            >
                 <BottomSheetView style={styles.contentContainer}>
                     <Text style={styles.modalTitle}>Report this poll</Text>
                     <FlatList
@@ -75,69 +87,91 @@ const ReportPoll = ({ onReport }) => {
                         renderItem={renderReason}
                     />
                     <View style={styles.row}>
-                        <TouchableOpacity onPress={handleReport} style={styles.submitButton}>
-                            <Text style={styles.submitText}>Submit</Text>
-                        </TouchableOpacity>
                         <TouchableOpacity onPress={closeSheet} style={styles.cancelButton}>
                             <Text style={styles.cancelText}>Cancel</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={handleReport} style={styles.submitButton}>
+                            <Text style={styles.submitText}>Submit</Text>
                         </TouchableOpacity>
                     </View>
                 </BottomSheetView>
             </BottomSheetModal>
+
+            {/* Error modal */}
+            <AwesomeModal
+                visible={errorVisible}
+                text="Please select a reason to report the poll."
+                buttonText="OK"
+                onPress={() => setErrorVisible(false)}
+                onBackPress={() => setErrorVisible(false)}
+            />
+
+            {/* Success modal */}
+            <AwesomeModal
+                visible={modalVisible}
+                text="Report Submitted. Thank you for your feedback."
+                buttonText="OK"
+                onPress={() => setModalVisible(false)}
+                onBackPress={() => setModalVisible(false)}
+            />
         </>
     );
 };
 
 const styles = StyleSheet.create({
     contentContainer: {
-        flex: 1,
-        alignItems: 'center',
+        flex: 1
     },
     modalTitle: {
-        fontSize: 18,
+        fontSize: 20,
         fontWeight: "bold",
         marginBottom: 10,
-        fontFamily: 'arial',
-        color: Colors.grey
+        color: Colors.black,
+        marginLeft: 9
     },
     reasonButton: {
         padding: 10,
     },
     selectedButton: {
-        backgroundColor: Colors.lightGrey,
-        borderRadius: 5,
+        backgroundColor: Colors.green
     },
     reasonText: {
-        fontSize: 16,
-        color: Colors.grey,
+        fontSize: 14,
+        color: Colors.black,
     },
     row: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 20
+        justifyContent: 'space-evenly',
+        marginTop: 20,
+        marginBottom: 20
     },
     submitButton: {
         backgroundColor: Colors.green,
         padding: 10,
         alignItems: "center",
-        width: '48%',
-        borderRadius: 6,
+        width: '47%',
+        shadowRadius: 0,
+        shadowOffset: { width: 2, height: 2 },
+        shadowOpacity: 1,
+        shadowColor: Colors.black,
     },
     cancelButton: {
-        width: '48%',
+        width: '47%',
         padding: 10,
         borderWidth: 1,
-        borderColor: Colors.grey,
+        backgroundColor: Colors.white,
+        borderColor: Colors.black,
         alignItems: "center",
-        borderRadius: 6,
+        shadowRadius: 0,
+        shadowOffset: { width: 2, height: 2 },
+        shadowOpacity: 1,
+        shadowColor: Colors.green,
     },
     submitText: {
-        color: Colors.white,
-        fontWeight: "bold",
+        color: Colors.white
     },
     cancelText: {
-        color: Colors.grey,
-        fontWeight: "bold",
+        color: Colors.black
     },
 });
 
