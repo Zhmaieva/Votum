@@ -1,4 +1,4 @@
-import React, { useRef, useState, useMemo } from "react";
+import React, { useRef, useCallback, useState, useMemo } from "react";
 import {
     View,
     Text,
@@ -8,7 +8,7 @@ import {
     StyleSheet,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { BottomSheetModal, BottomSheetModalProvider } from "@gorhom/bottom-sheet";
+import {BottomSheetModal, BottomSheetView, useBottomSheetModal} from "@gorhom/bottom-sheet";
 import { Colors } from "../../utils/colorUtils";
 
 const REPORT_REASONS = [
@@ -28,18 +28,14 @@ const ReportPoll = ({ onReport }) => {
     const bottomSheetModalRef = useRef(null);
     const snapPoints = useMemo(() => ["40%"], []);
     const [selectedReason, setSelectedReason] = useState(null);
+    const { dismiss, dismissAll } = useBottomSheetModal();
 
     const openSheet = () => {
-        console.log('Tapped!');
-        try {
-            console.log(bottomSheetModalRef.current)
-        } catch(e) {
-            console.error(e);
-        }
+        bottomSheetModalRef.current?.present();
     };
 
     const closeSheet = () => {
-        bottomSheetModalRef.current?.dismiss();
+        dismissAll();
     };
 
     const handleReport = () => {
@@ -71,29 +67,23 @@ const ReportPoll = ({ onReport }) => {
             </TouchableOpacity>
 
             <BottomSheetModal
-                ref={bottomSheetModalRef}
-                index={0}
-                snapPoints={snapPoints}
-                backgroundStyle={{ backgroundColor: '#fff' }}
-                enablePanDownToClose={true}
-            >
-                <Text style={styles.modalTitle}>Report this poll</Text>
-                {/*<View style={styles.contentContainer}>*/}
-                {/*    /!*<Text style={styles.modalTitle}>Report this poll</Text>*/}
-                {/*    <FlatList*/}
-                {/*        data={REPORT_REASONS}*/}
-                {/*        keyExtractor={(item) => item}*/}
-                {/*        renderItem={renderReason}*/}
-                {/*    />*/}
-                {/*    <View style={styles.row}>*/}
-                {/*        <TouchableOpacity onPress={handleReport} style={styles.submitButton}>*/}
-                {/*            <Text style={styles.submitText}>Submit</Text>*/}
-                {/*        </TouchableOpacity>*/}
-                {/*        <TouchableOpacity onPress={closeSheet} style={styles.cancelButton}>*/}
-                {/*            <Text style={styles.cancelText}>Cancel</Text>*/}
-                {/*        </TouchableOpacity>*/}
-                {/*    </View>*!/*/}
-                {/*</View>*/}
+                ref={bottomSheetModalRef}>
+                <BottomSheetView style={styles.contentContainer}>
+                    <Text style={styles.modalTitle}>Report this poll</Text>
+                    <FlatList
+                        data={REPORT_REASONS}
+                        keyExtractor={(item) => item}
+                        renderItem={renderReason}
+                    />
+                    <View style={styles.row}>
+                        <TouchableOpacity onPress={handleReport} style={styles.submitButton}>
+                            <Text style={styles.submitText}>Submit</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={closeSheet} style={styles.cancelButton}>
+                            <Text style={styles.cancelText}>Cancel</Text>
+                        </TouchableOpacity>
+                    </View>
+                </BottomSheetView>
             </BottomSheetModal>
         </>
     );
@@ -102,9 +92,7 @@ const ReportPoll = ({ onReport }) => {
 const styles = StyleSheet.create({
     contentContainer: {
         flex: 1,
-        padding: 20,
-        height: 200,
-        backgroundColor: Colors.yellow
+        alignItems: 'center',
     },
     modalTitle: {
         fontSize: 18,
