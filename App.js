@@ -4,6 +4,10 @@ import {AwesomeTabs, AuthNavigator} from "./components/views/navigation/AwesomeT
 import {getDataService, globalEventEmitter} from "./shared/common";
 import {isTokenAvailable} from "./shared/api/apiClient";
 import {ActivityIndicator, View} from "react-native";
+import 'react-native-gesture-handler';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { AntDesign } from '@expo/vector-icons';
+import {BottomSheetModalProvider} from "@gorhom/bottom-sheet";
 
 export default function App() {
 
@@ -25,16 +29,18 @@ export default function App() {
     });
 
     return (
-        isLoading ?
-            <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-                <ActivityIndicator size="large" color="#0000ff" />
-            </View> :
-        <NavigationContainer>
-            {isAuthenticated ? (
-                <AwesomeTabs />  // Show the main app if authenticated
-            ) : (
-                <AuthNavigator />  // Show the login/registration flow if not authenticated
-            )}
-        </NavigationContainer>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+            <BottomSheetModalProvider>
+                {isLoading ? (
+                    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+                        <ActivityIndicator size="large" color="#0000ff" />
+                    </View>
+                ) : (
+                    <NavigationContainer>
+                        {isAuthenticated ? <AwesomeTabs /> : <AuthNavigator />}
+                    </NavigationContainer>
+                )}
+            </BottomSheetModalProvider>
+        </GestureHandlerRootView>
     );
 }

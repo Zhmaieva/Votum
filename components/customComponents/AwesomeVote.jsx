@@ -114,7 +114,7 @@ const AwesomeVote = ({
                                 <Ionicons name="trash-outline" size={26} color={Colors.black} />
                             </Pressable>
                             <TouchableOpacity style={styles.iconContainer} onPress={onShare}>
-                                <Ionicons name="share-outline" size={26} color={Colors.black} />
+                                <Ionicons name="share-outline" size={28} color={Colors.black} />
                             </TouchableOpacity>
                             <View style={styles.iconContainer}>
                                 <AwesomeLikeButton pollId={id} isLikedParam={isLiked} />
@@ -132,7 +132,7 @@ const AwesomeVote = ({
                                 )}
                             </TouchableOpacity>
                             <TouchableOpacity style={styles.iconContainer} onPress={onShare}>
-                                <Ionicons name="share-outline" size={26} color={Colors.black} />
+                                <Ionicons name="share-outline" size={28} color={Colors.black} />
                             </TouchableOpacity>
                             <View style={styles.iconContainer}>
                                 <AwesomeLikeButton pollId={id} isLikedParam={isLiked} />
@@ -318,6 +318,6 @@ const styles = StyleSheet.create({
     questionContainer: {
         width: '100%',
         paddingRight: 20,
-        marginBottom: 5
+        marginBottom: 10
     }
 });
