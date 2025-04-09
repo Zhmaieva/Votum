@@ -28,7 +28,7 @@ export default function AwesomeLikeButton({pollId, isLikedParam}) {
             <Pressable onPress={onPressHandler}>
                 <Ionicons
                     name={isLiked ? 'heart-sharp' : 'heart-outline'}
-                    size={26}
+                    size={28}
                     color={isLiked ? Colors.green : Colors.black}
                 />
             </Pressable>

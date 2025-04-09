@@ -1,8 +1,15 @@
-import React, { useState } from "react";
-import { View, Text, Modal, TouchableOpacity, FlatList, StyleSheet, Alert, TouchableWithoutFeedback } from "react-native";
+import React, { useRef, useCallback, useState, useMemo } from "react";
+import {
+    View,
+    Text,
+    TouchableOpacity,
+    FlatList,
+    Alert,
+    StyleSheet,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import {BottomSheetModal, BottomSheetView, useBottomSheetModal} from "@gorhom/bottom-sheet";
 import { Colors } from "../../utils/colorUtils";
-import { BottomSheet } from 'react-native-btr';
 
 const REPORT_REASONS = [
     "Hate Speech",
@@ -18,59 +25,73 @@ const REPORT_REASONS = [
 ];
 
 const ReportPoll = ({ onReport }) => {
-    const [modalVisible, setModalVisible] = useState(false);
-    const [dropdownVisible, setDropdownVisible] = useState(false);
+    const bottomSheetModalRef = useRef(null);
     const [selectedReason, setSelectedReason] = useState(null);
-    const [sortBottomData, setSortBottomData] = useState({visible:false, eventData:null});
+    const { dismiss, dismissAll } = useBottomSheetModal();
 
-    const setSelectedSortOption = (option) =>  {
-        setSelectedSortOption1(option)
-        setSortBottomData({visible:!sortBottomData.visible, eventData: null});
-    }
-
-    const toggleBottomNavigationView = () => {
-        setSortBottomData({visible:!sortBottomData.visible, eventData: null});
+    const openSheet = () => {
+        bottomSheetModalRef.current?.present();
     };
+
+    const closeSheet = () => {
+        dismissAll();
+    };
+
     const handleReport = () => {
         if (!selectedReason) {
-            Alert.alert("Please select a reason");
+            Alert.alert("Please select a reason.");
             return;
         }
-        setModalVisible(false);
-        onReport(selectedReason);
+        closeSheet();
+        onReport?.(selectedReason);
         Alert.alert("Report Submitted", "Thank you for your feedback.");
     };
 
-    return (
-        <View>
-            <TouchableOpacity onPress={toggleBottomNavigationView}>
-                <Ionicons name="warning-outline" size={26} color={Colors.black} />
-            </TouchableOpacity>
-            <BottomSheet visible={sortBottomData.visible} onBackButtonPress={toggleBottomNavigationView} onBackdropPress={toggleBottomNavigationView}>
-                <View style={styles.bottomNavigationView}>
-                    <View style={styles.subBottomNavigation}>
-                        <View style={styles.test}>
+    const renderReason = ({ item }) => (
+        <TouchableOpacity
+            onPress={() => setSelectedReason(item)}
+            style={[
+                styles.reasonButton,
+                selectedReason === item && styles.selectedButton
+            ]}
+        >
+            <Text style={styles.reasonText}>{item}</Text>
+        </TouchableOpacity>
+    );
 
-                        </View>
+    return (
+        <>
+            <TouchableOpacity onPress={openSheet}>
+                <Ionicons name="warning-outline" size={28} color={Colors.black} />
+            </TouchableOpacity>
+
+            <BottomSheetModal
+                ref={bottomSheetModalRef}>
+                <BottomSheetView style={styles.contentContainer}>
+                    <Text style={styles.modalTitle}>Report this poll</Text>
+                    <FlatList
+                        data={REPORT_REASONS}
+                        keyExtractor={(item) => item}
+                        renderItem={renderReason}
+                    />
+                    <View style={styles.row}>
+                        <TouchableOpacity onPress={handleReport} style={styles.submitButton}>
+                            <Text style={styles.submitText}>Submit</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={closeSheet} style={styles.cancelButton}>
+                            <Text style={styles.cancelText}>Cancel</Text>
+                        </TouchableOpacity>
                     </View>
-                </View>
-            </BottomSheet>
-        </View>
+                </BottomSheetView>
+            </BottomSheetModal>
+        </>
     );
 };
 
 const styles = StyleSheet.create({
-    modalContainer: {
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: Colors.white,
-        margin: 20,
-        padding: 15,
-    },
-    modalContent: {
-        backgroundColor: Colors.white,
-        padding: 20,
-        alignItems: 'center'
+    contentContainer: {
+        flex: 1,
+        alignItems: 'center',
     },
     modalTitle: {
         fontSize: 18,
@@ -79,83 +100,44 @@ const styles = StyleSheet.create({
         fontFamily: 'arial',
         color: Colors.grey
     },
-    dropdownButton: {
-        padding: 10,
-        backgroundColor: Colors.white,
-        marginBottom: 10,
-        borderWidth: 1,
-        borderColor: '#888',
-    },
-    dropdownText: {
-        fontSize: 16,
-        color: Colors.grey,
-        fontFamily: 'arial',
-        //fontWeight: 'bold'
-    },
     reasonButton: {
         padding: 10,
-        //borderBottomWidth: 1,
-        //borderBottomColor: '#fff',
     },
     selectedButton: {
-        borderColor: '#888',
-        borderWidth: 1,
+        backgroundColor: Colors.lightGrey,
+        borderRadius: 5,
     },
     reasonText: {
         fontSize: 16,
         color: Colors.grey,
     },
+    row: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 20
+    },
     submitButton: {
         backgroundColor: Colors.green,
         padding: 10,
         alignItems: "center",
-        marginTop: 10,
-        width: '49%'
+        width: '48%',
+        borderRadius: 6,
+    },
+    cancelButton: {
+        width: '48%',
+        padding: 10,
+        borderWidth: 1,
+        borderColor: Colors.grey,
+        alignItems: "center",
+        borderRadius: 6,
     },
     submitText: {
         color: Colors.white,
         fontWeight: "bold",
     },
-    cancelButton: {
-        width: '49%',
-        borderBottomWidth: 1,
-        borderColor: '#888',
-        //marginTop: 10,
-        alignItems: "center",
-        justifyContent: 'center'
-    },
     cancelText: {
         color: Colors.grey,
-    },
-    row: {
-        flexDirection: 'row'
-    },
-    alignment: {
-        justifyContent: 'space-between',
-        marginTop: 20
-    },
-    modalBackground: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0,0,0,0.5)',
-    },
-    test: {
-        backgroundColor: Colors.yellow,
-        height: 50,
-        width: 50
-    },
-    bottomNavigationView: {
-        backgroundColor: '#F2F3EE',
-        width: '100%',
-        height: 210,
-    },
-    subBottomNavigation: {
-        width: '100%',
-        flex: 1,
-        paddingTop: 20,
-        paddingRight: 10,
-        paddingLeft: 10,
+        fontWeight: "bold",
     },
 });
 
