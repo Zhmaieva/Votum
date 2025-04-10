@@ -186,9 +186,11 @@ app.post('/users/sign-in', async (req, res, next) => {
     }
 });
 
-app.get('/profile', authMiddleware, async (req, res) => {
+app.get('/profile?:id?', authMiddleware, async (req, res) => {
     try {
-        const user = await userQueries.getUser(req.user.id);
+        const userId = req.params.id;
+
+        const user = await userQueries.getUser(userId ?? req.user.id);
 
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
