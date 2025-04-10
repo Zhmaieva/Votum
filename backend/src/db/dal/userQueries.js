@@ -1,4 +1,5 @@
 const {pool} = require("./pool");
+const {deleteImage} = require("../../aws/s3");
 
 async function followUser(userFollowerId, userFollowId) {
     const query = `
@@ -263,8 +264,9 @@ async function checkActivationCode(email, code) {
  * @returns {Promise<{ code: number, user_id: string | null }>}
  */
 async function checkAndInsertUserWithProfile(username, email, passwordHash) {
+    const client = await pool.connect();
     try {
-        await pool.query('BEGIN');
+        await client.query('BEGIN');
 
         const query = `
             WITH existing_user AS (
@@ -292,15 +294,17 @@ async function checkAndInsertUserWithProfile(username, email, passwordHash) {
                 COALESCE((SELECT id FROM existing_user), (SELECT id FROM inserted_user)) AS user_id;
         `;
 
-        const result = await pool.query(query, [username.toLowerCase(), email.toLowerCase(), passwordHash]);
+        const result = await client.query(query, [username.toLowerCase(), email.toLowerCase(), passwordHash]);
 
-        await pool.query('COMMIT');
+        await client.query('COMMIT');
 
         return result.rows[0]; // { code: 1 or -1, user_id: UUID or null }
     } catch (error) {
         await pool.query('ROLLBACK');
         console.error("Error checking username and inserting user with profile:", error);
         throw error;
+    } finally {
+        client.release();
     }
 }
 
@@ -384,17 +388,71 @@ async function refreshUserFollowers(userId) {
     );
 }
 
+/**
+ * Delete user and associated data from the database
+ * @param userId
+ * @returns {Promise<void>}
+ */
+async function deleteUser(userId) {
+    const client = await pool.connect();
+
+    try {
+        const imageResul = await client.query(`
+            SELECT image FROM user_profiles WHERE user_id = $1
+        `, [userId]);
+        const userImageUrl = imageResul.rows[0].image;
+
+        const deleteImageRequest = deleteImage(userImageUrl);
+
+        await client.query('BEGIN');
+
+        await client.query(
+            `DELETE FROM user_follows WHERE user_follower_id = $1 OR user_follow_id = $1`,
+            [userId]
+        );
+
+        await client.query(
+            `DELETE FROM polls WHERE created_by = $1`,
+            [userId]
+        );
+
+        await client.query(
+            `DELETE FROM user_profiles WHERE user_id = $1`,
+            [userId]
+        );
+
+        await client.query(
+            `DELETE FROM users WHERE id = $1 RETURNING id`,
+            [userId]
+        );
+
+        const deleteImageResult = await deleteImageRequest;
+
+        if (deleteImageResult)
+            await client.query('COMMIT');
+        else
+            throw "Image deletion failed";
+    } catch (error) {
+        console.error('Error deleting user:', error);
+        await client.query('ROLLBACK');
+        throw error;
+    } finally {
+        client.release();
+    }
+}
+
 module.exports = {
+    checkActivationCode,
+    checkAndInsertUserWithProfile,
+    deleteUser,
     followUser,
-    unfollowUser,
+    getActivationCode,
     getFollowers,
     getFollows,
     getUser,
-    getActivationCode,
-    checkActivationCode,
-    checkAndInsertUserWithProfile,
     getUserByLogin,
-    updateProfileImage,
     refreshUserFollows,
-    refreshUserFollowers
+    refreshUserFollowers,
+    unfollowUser,
+    updateProfileImage,
 }

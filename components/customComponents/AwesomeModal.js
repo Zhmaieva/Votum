@@ -14,7 +14,16 @@ import {Colors} from "../../utils/colorUtils";
  * @returns {JSX.Element}
  * @constructor
  */
-export function AwesomeModal({visible = false, text, subtext, buttonText = 'OK', onPress = () => {}, onBackPress = () => {} }) {
+export function AwesomeModal(
+    {
+        visible = false,
+        text, subtext,
+        buttonText = 'OK',
+        onBackPress = () => {},
+        secondaryText = null,
+        onPress = null,
+        onSecondaryPress = null,
+    }) {
     return (
         <Modal visible={visible} transparent={true} animationType="fade">
             <TouchableWithoutFeedback onPress={onBackPress}>
@@ -24,9 +33,22 @@ export function AwesomeModal({visible = false, text, subtext, buttonText = 'OK',
                             <Text style={styles.modalText}>{text}</Text>
                             <Text style={styles.modalSubText}>{subtext}</Text>
                         </View>
-                        <TouchableOpacity onPress={onPress}>
-                            <Text style={styles.modalButton}>{buttonText}</Text>
-                        </TouchableOpacity>
+                        {
+                            !secondaryText ? (
+                                <TouchableOpacity onPress={onPress ?? onBackPress}>
+                                    <Text style={styles.modalButton}>{buttonText}</Text>
+                                </TouchableOpacity>
+                            ) : (
+                                <View style={styles.rowSecondaryButton}>
+                                    <TouchableOpacity onPress={onSecondaryPress ? onSecondaryPress : onBackPress}>
+                                        <Text style={styles.modalButton}>{secondaryText}</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity onPress={onPress ?? onBackPress}>
+                                        <Text style={styles.modalButton}>{buttonText}</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            )
+                        }
                     </View>
                 </View>
             </TouchableWithoutFeedback>
@@ -65,5 +87,11 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap',
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    rowSecondaryButton: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        width: '100%',
+        marginBottom: 15,
     },
 });

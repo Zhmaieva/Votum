@@ -76,6 +76,15 @@ ALTER TABLE polls
 ALTER TABLE user_profiles
     ADD COLUMN following_number INT DEFAULT 0;
 
+--Thu Apr 10 14:00
+ALTER TABLE poll_answer_options
+    DROP CONSTRAINT poll_answer_options_poll_id_fkey;
+
+ALTER TABLE poll_answer_options
+    ADD CONSTRAINT poll_answer_options_poll_id_fkey
+        FOREIGN KEY (poll_id) REFERENCES polls(id) ON DELETE CASCADE;
+
+
 /*
  INSERT INTO polls (created_by, question, votes_number, ends_in) VALUES
 -- Favorite color

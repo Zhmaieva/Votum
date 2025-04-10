@@ -354,6 +354,17 @@ app.delete('/polls', authMiddleware, async (req, res, next) => {
     }
 });
 
+app.delete('/users', authMiddleware, async (req, res, next) => {
+    try {
+        await userQueries.deleteUser(req.user.id);
+
+        return res.json({ success: true });
+    }
+    catch (e) {
+        next(e);
+    }
+});
+
 // Catch-all handler for undefined routes
 app.use(async (req, res) => {
     res.status(404).json({ message: 'Route not found' });

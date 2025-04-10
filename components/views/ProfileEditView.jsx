@@ -3,18 +3,20 @@ import {View, Text, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, Moda
 import { Colors } from '../../utils/colorUtils';
 import AwesomeButton, {Color} from '../customComponents/AwesomeButton';
 import AwesomeEditButton from "../customComponents/AwesomeEditButton";
-import {fetchMyProfile, signOut} from "../../shared/api/apiClient";
+import {deleteUserProfile, fetchMyProfile, signOut} from "../../shared/api/apiClient";
 import {getDataService} from "../../shared/common";
 import {useFocusEffect} from "@react-navigation/native";
 import AwesomeProfilePhoto from "../customComponents/AwesomeProfilePhoto";
 import AwesomeCategory from "../customComponents/AwesomeCategory";
+import {AwesomeModal} from "../customComponents/AwesomeModal";
 
 const ProfileEditView = ({ route }) => {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [bioD, setBioD] = useState('');
     const [profileImage, setProfileImage] = useState(getDataService().getUser()?.image ?? '');
-    const [isModalVisible, setModalVisible] = useState(false);
+    const [isDeleteModalVisible, setDeleteModalVisible] = useState(false);
+    const [isErrorModalVisible, setErrorModalVisible] = useState(false);
 
     useFocusEffect(() => {
         getDataService().resetUserChanges();
@@ -105,26 +107,34 @@ const ProfileEditView = ({ route }) => {
                 text="Delete profile"
                 color={Color.BLACK}
                 screenName={null}
-                additionalFunc={()=>setModalVisible(true)}
+                additionalFunc={()=>setDeleteModalVisible(true)}
             />
 
-            <Modal visible={isModalVisible} transparent={true} animationType="fade">
-                <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
-                    <View style={styles.modalBackground}>
-                        <View style={styles.modalContainer}>
-                            <Text style={styles.modalText}>Are you sure you want to delete your profile? This action is irreversible and will permanently remove all your data.</Text>
-                            <View style={styles.row}>
-                                <TouchableOpacity onPress={() => setModalVisible(false)}>
-                                    <Text style={styles.modalButton}>Cancel</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress={() => setModalVisible(false)}>
-                                    <Text style={styles.modalButton}>Delete my profile</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </View>
-                </TouchableWithoutFeedback>
-            </Modal>
+            <AwesomeModal
+                visible={isDeleteModalVisible}
+                text="DELETE PROFILE"
+                subtext="Are you sure you want to delete your profile? This action is irreversible and will permanently remove all your data."
+                buttonText="Delete my pofile"
+                secondaryText="Cancel"
+                onPress={async () => {
+                    setDeleteModalVisible(false);
+                    const result = await deleteUserProfile();
+                    if (result) {
+                        await signOut();
+                        return;
+                    }
+
+                    setErrorModalVisible(true);
+                }}
+                onBackPress={() => setDeleteModalVisible(false)}
+            />
+
+            <AwesomeModal
+                visible={isErrorModalVisible}
+                text="Oops"
+                subtext="There was an error while trying to delete your profile, try again later."
+                onBackPress={() => setErrorModalVisible(false)}
+            />
         </View>
     );
 };
@@ -170,28 +180,6 @@ const styles = StyleSheet.create({
     headerStyle: {
         width: '26%',
         justifyContent: "center"
-    },
-    modalBackground: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0,0,0,0.5)',
-    },
-    modalContainer: {
-        backgroundColor: 'white',
-        padding: 20,
-        //borderRadius: 10,
-        alignItems: 'center',
-        width: '70%'
-    },
-    modalText: {
-        fontSize: 16,
-        marginBottom: 10,
-    },
-    modalButton: {
-        color: Colors.green,
-        fontSize: 16,
-        marginTop: 10,
     },
     test: {
         width: 100

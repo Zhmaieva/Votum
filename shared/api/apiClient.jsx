@@ -421,3 +421,20 @@ export const updateUserProfile = async (updatedData) => {
         throw error;
     }
 };
+
+export const deleteUserProfile = async () => {
+    try {
+        console.log(`deleting user`);
+        const response = await apiClient.delete(`/user`, {
+            headers: {
+                Authorization: `Bearer ${await getToken()}`,
+            },
+        });
+        console.info('delete user response: ' + JSON.stringify(response.data));
+
+        return true;
+    } catch (error) {
+        console.error(error);
+        return false;
+    }
+};
