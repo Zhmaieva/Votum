@@ -28,6 +28,7 @@ import ForgotPasswordView from "../ForgotPassword";
 import FollowersView from "../FollowersView";
 import AwesomeUsernameInput from "../../customComponents/AwesomeUsernameInput";
 import CategoriesView from "../CategoriesView";
+import SomebodysProfileView from "../SomebodysProfileView"
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -136,6 +137,7 @@ function FeedStack() {
         <Stack.Navigator id="Test2">
             <Stack.Screen name="FeedMain" component={FeedView} options={{ headerShown: false, gestureEnabled: true }} />
             <Stack.Screen name="SearchView" component={SearchView} options={{ headerShown: false, gestureEnabled: true }} />
+            <Stack.Screen name="Somebodys Profile" component={SomebodysProfileView} options={{ headerShown: false, gestureEnabled: true }} />
         </Stack.Navigator>
     );
 }
@@ -163,6 +165,7 @@ function SearchStack() {
     return (
         <Stack.Navigator id="Test5">
             <Stack.Screen name="SearchMain" component={SearchView} options={{ headerShown: false, gestureEnabled: true }} />
+            <Stack.Screen name="Somebodys Profile" component={SomebodysProfileView} options={{ headerShown: false, gestureEnabled: true }} />
         </Stack.Navigator>
     );
 }

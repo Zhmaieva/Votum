@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, Image } from "react-native";
+import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { Colors } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from "./AwesomeButton";
 import { globalEventEmitter } from "../../shared/common";
 import { followProfile, unfollowProfile } from "../../shared/api/apiClient";
+import { useNavigation } from "@react-navigation/native";
+import { AwesomeModal } from "./AwesomeModal"; // make sure path is correct
 
 const formatFollowers = (num) => {
     if (num >= 1_000_000_000) return (num / 1_000_000_000).toFixed(1) + 'B';
@@ -14,9 +16,19 @@ const formatFollowers = (num) => {
 
 const followChangedEventName = "followChanged";
 
-const AwesomeUserHeader = ({ userData, loggedInUserId, isFollowersPage = false, onRemove, isInsideCard = false, isProfilePage = false }) => {
+const AwesomeUserHeader = ({
+                               userData,
+                               loggedInUserId,
+                               isFollowersPage = false,
+                               onRemove,
+                               isInsideCard = false,
+                               isProfilePage = false
+                           }) => {
+    const navigation = useNavigation();
     const [user, setUser] = useState(userData);
     const [isFollowing, setIsFollowing] = useState(userData?.isFollowing);
+    const [isBlocked, setIsBlocked] = useState(false);
+    const [showBlockModal, setShowBlockModal] = useState(false);
 
     function handleFollowChangedEvent(userData) {
         if (!userData) return;
@@ -38,13 +50,20 @@ const AwesomeUserHeader = ({ userData, loggedInUserId, isFollowersPage = false, 
     const followersText = user.followersNumber === 1 ? "follower" : "followers";
     const formattedFollowers = formatFollowers(user.followersNumber);
 
-    const handleRemove = () => {
-        console.log(`Removing user ${user.userId}User was removed from my followers`);
-        // You can also call API here if needed
-        if (onRemove) onRemove();
+    const handleBlockPress = () => {
+        if (isBlocked) {
+            setIsBlocked(false);
+        } else {
+            setShowBlockModal(true);
+        }
     };
 
-    return (
+    const handleBlockConfirm = () => {
+        setIsBlocked(true);
+        setShowBlockModal(false);
+    };
+
+    const content = (
         <View style={[styles.row, styles.userContainer]}>
             <View style={[styles.row, styles.firstSubContainer]}>
                 <View style={styles.avatar}>
@@ -54,20 +73,12 @@ const AwesomeUserHeader = ({ userData, loggedInUserId, isFollowersPage = false, 
 
             <View style={[styles.row, styles.secondSubContainer]}>
                 <View>
-                    <Text
-                        style={[styles.font14, styles.usernameBold, styles.fontFamily]}
-                        numberOfLines={1}
-                    >
+                    <Text style={[styles.font14, styles.usernameBold, styles.fontFamily]} numberOfLines={1}>
                         {user.username}
                     </Text>
 
-
                     {isOwnProfile && isProfilePage ? (
-                        <Text
-                            style={[styles.font14, styles.greyTextStyle, styles.fontFamily]}
-                            numberOfLines={2}
-                            ellipsizeMode="tail"
-                        >
+                        <Text style={[styles.font14, styles.greyTextStyle, styles.fontFamily]} numberOfLines={2} ellipsizeMode="tail">
                             {user.bio}
                         </Text>
                     ) : (
@@ -75,9 +86,6 @@ const AwesomeUserHeader = ({ userData, loggedInUserId, isFollowersPage = false, 
                             {formattedFollowers} {followersText}
                         </Text>
                     )}
-
-
-
                 </View>
             </View>
 
@@ -87,7 +95,7 @@ const AwesomeUserHeader = ({ userData, loggedInUserId, isFollowersPage = false, 
                         <View />
                     ) : isOwnProfile ? (
                         isInsideCard ? (
-                            <View /> // 👈 hide Edit if it's my profile in a card
+                            <View />
                         ) : (
                             <AwesomeButton
                                 color={Color.WHITE}
@@ -96,6 +104,12 @@ const AwesomeUserHeader = ({ userData, loggedInUserId, isFollowersPage = false, 
                                 params={{ user }}
                             />
                         )
+                    ) : isProfilePage ? (
+                        <AwesomeButton
+                            color={Color.BLACK}
+                            text={isBlocked ? "Unblock" : "Block"}
+                            additionalFunc={handleBlockPress}
+                        />
                     ) : (
                         <AwesomeButton
                             color={Color.BLACK}
@@ -104,9 +118,9 @@ const AwesomeUserHeader = ({ userData, loggedInUserId, isFollowersPage = false, 
                                 user.isFollowing = !user.isFollowing;
                                 setIsFollowing(user.isFollowing);
                                 if (user.isFollowing) {
-                                    followProfile(user.userId).then(() => {});
+                                    followProfile(user.userId);
                                 } else {
-                                    unfollowProfile(user.userId).then(() => {});
+                                    unfollowProfile(user.userId);
                                 }
                                 globalEventEmitter.emit(followChangedEventName, { ...user });
                             }}
@@ -117,6 +131,26 @@ const AwesomeUserHeader = ({ userData, loggedInUserId, isFollowersPage = false, 
                 </View>
             </View>
         </View>
+    );
+
+    return (
+        <>
+            {isInsideCard ? (
+                <TouchableOpacity onPress={() => navigation.navigate("Somebodys Profile", { userId: user.userId })}>
+                    {content}
+                </TouchableOpacity>
+            ) : (
+                content
+            )}
+
+            <AwesomeModal
+                visible={showBlockModal}
+                text="Are you sure you want to block this user?"
+                onPress={handleBlockConfirm}
+                onBackPress={() => setShowBlockModal(false)}
+                buttonText="OK"
+            />
+        </>
     );
 };
 
