@@ -390,7 +390,11 @@ export const fetchFollows = async (userId) => {
 export const fetchUserProfile = async (userId) => {
     try {
         console.log(`Fetching profile for user ${userId}...`);
-        const response = await apiClient.get(`/users/${userId}`);
+        const response = await apiClient.get(`/profile/${userId}`, {
+            headers: {
+                Authorization: `Bearer ${await getToken()}`,
+            },
+        });
         return response?.data;
     } catch (err) {
         console.error("Failed to fetch user profile", err);

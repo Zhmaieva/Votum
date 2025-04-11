@@ -7,9 +7,11 @@ import AwesomeSwitcher from "../customComponents/AwesomeSwitcher";
 import AwesomeFeed from "../customComponents/AwesomeFeed";
 import { fetchUserProfile } from "../../shared/api/apiClient";
 import { getDataService } from "../../shared/common";
-import { useRoute } from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 
-const SomebodysProfileView = () => {
+const SomebodysProfileView = ({route}) => {
+
+    const {userId} = route.params;
 
     const [selectedOption, setSelectedOption] = useState("active");
     const [modalVisible, setModalVisible] = useState(false);
@@ -19,14 +21,13 @@ const SomebodysProfileView = () => {
     const pollData = [ /* active polls */ ];
     const closedPollData = [ /* expired polls */ ];
 
-    useEffect(() => {
-        // Simulate fetching the logged in user and a target profile user
-        const myId = getDataService().getUser()?.userId ?? "myUserId123";
-        const targetUserId = "someOtherUser456";
+    const navigation = useNavigation();
 
+    useEffect(() => {
+        const myId = getDataService().getUser()?.userId;
         setLoggedInUserId(myId);
 
-        fetchUserProfile(targetUserId).then(setUser);
+        fetchUserProfile(userId).then(setUser);
     }, []);
 
     if (!user) return null;

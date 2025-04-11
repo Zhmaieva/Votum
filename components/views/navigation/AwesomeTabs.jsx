@@ -138,6 +138,8 @@ function FeedStack() {
             <Stack.Screen name="FeedMain" component={FeedView} options={{ headerShown: false, gestureEnabled: true }} />
             <Stack.Screen name="SearchView" component={SearchView} options={{ headerShown: false, gestureEnabled: true }} />
             <Stack.Screen name="Somebodys Profile" component={SomebodysProfileView} options={{ headerShown: false, gestureEnabled: true }} />
+            <Stack.Screen name="Profile" component={MyUserProfileView} options={{ headerShown: false, gestureEnabled: true }} />
+
         </Stack.Navigator>
     );
 }

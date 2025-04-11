@@ -136,7 +136,12 @@ const AwesomeUserHeader = ({
     return (
         <>
             {isInsideCard ? (
-                <TouchableOpacity onPress={() => navigation.navigate("Somebodys Profile", { userId: user.userId })}>
+                <TouchableOpacity onPress={() => {
+                    if (isOwnProfile)
+                        navigation.navigate("Profile");
+                    else
+                        navigation.navigate("Somebodys Profile", { userId: user.userId });
+                }}>
                     {content}
                 </TouchableOpacity>
             ) : (

@@ -186,7 +186,7 @@ app.post('/users/sign-in', async (req, res, next) => {
     }
 });
 
-app.get('/profile?:id?', authMiddleware, async (req, res) => {
+app.get('/profile/:id?', authMiddleware, async (req, res) => {
     try {
         const userId = req.params.id;
 
