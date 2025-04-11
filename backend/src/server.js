@@ -317,6 +317,29 @@ app.get('/polls', authMiddleware, async (
     res.json(result);
 });
 
+const durationMap = {
+    '1h': '1 hour',
+    '1d': '1 day',
+    '1w': '1 week',
+    '1m': '1 month',
+};
+
+app.post('/polls', authMiddleware, async (req, res, next) => {
+    try {
+        const { question, options, duration } = req.body;
+
+        if (!durationMap[duration]) return req.status(400).json({ message: 'Invalid duration' });
+        if (options.length < 2 || options.length > 4) return req.status(400).json({ message: '2 to 4 options required' });
+
+        await pollQueries.createPoll(req.user.id, question, options, durationMap[duration]);
+
+        return res.json({ success: true });
+    }
+    catch (e) {
+        next(e);
+    }
+});
+
 app.post('/polls/like', authMiddleware, async (req, res, next) => {
     try {
         const { pollId } = req.body;

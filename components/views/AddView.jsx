@@ -4,6 +4,7 @@ import {Colors} from "../../utils/colorUtils";
 import {Ionicons} from "@expo/vector-icons";
 import AwesomeVote from "../customComponents/AwesomeVote";
 import AwesomeButton, {Color} from "../customComponents/AwesomeButton";
+import {createPoll, durationMap} from "../../shared/api/apiClient";
 const { height, width } = Dimensions.get('window');
 const POLL_WIDTH = width * 0.9;
 
@@ -114,9 +115,9 @@ const AddView = () => {
                         <View style={styles.finalPollContainer}>
                             <AwesomeVote
                                 totalVotes='0'
-                                question='Pizza with pineapple?'
-                                options={["Love it, eat it", "God, please no!"]}
-                                timeLeft='1 day'
+                                question={question}
+                                options={options.map(x => x.text)}
+                                timeLeft={durationMap['1d']}
                             />
                         </View>
                         <View style={[styles.row, styles.alignment]}>
@@ -130,7 +131,10 @@ const AddView = () => {
                                     color={Color.BLACK}
                                     text="Publish"
                                     //screenName='LikedView'
-                                    additionalFunc={() => setModalVisible(false)}
+                                    additionalFunc={async () => {
+                                        await createPoll(question, options.map(x => x.text), "1d");
+                                        setModalVisible(false);
+                                    }}
                                 />
                             </View>
                         </View>

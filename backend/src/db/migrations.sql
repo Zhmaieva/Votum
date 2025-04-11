@@ -84,6 +84,8 @@ ALTER TABLE poll_answer_options
     ADD CONSTRAINT poll_answer_options_poll_id_fkey
         FOREIGN KEY (poll_id) REFERENCES polls(id) ON DELETE CASCADE;
 
+ALTER TABLE poll_answer_options
+    ADD COLUMN option_order INT NOT NULL DEFAULT 0;
 
 /*
  INSERT INTO polls (created_by, question, votes_number, ends_in) VALUES

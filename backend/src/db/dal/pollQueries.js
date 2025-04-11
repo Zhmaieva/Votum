@@ -136,9 +136,55 @@ const generateRandomResults = (options) => {
     return results;
 };
 
+/**
+ * Creates a new poll with 2 to 4 answer options.
+ * @param {UUID} createdBy - The user creating the poll
+ * @param {string} question - The poll question
+ * @param {string[]} options - Array of 2 to 4 answer texts
+ * @param {string} duration - Time until expiration
+ * @returns {Promise<{ pollId: string }>}
+ */
+async function createPoll(createdBy, question, options, duration) {
+    const client = await pool.connect();
+
+    try {
+        await client.query('BEGIN');
+
+        const pollInserResult = await client.query(
+            `
+            INSERT INTO polls (created_by, question, ends_in)
+            VALUES ($1, $2, (SELECT NOW() + INTERVAL '${duration}'))
+            RETURNING id`,
+            [createdBy, question]
+        );
+
+        const pollId = pollInserResult.rows[0].id;
+
+        const queries = [];
+        for (let i = 0; i < options.length; i++) {
+            queries.push(client.query(
+                `
+                INSERT INTO poll_answer_options (poll_id, text, option_order)
+                VALUES ($1, $2, $3)`,
+                [pollId, options[i], i]
+            ));
+        }
+        await Promise.all(queries);
+
+        await client.query('COMMIT');
+        return { pollId };
+    } catch (err) {
+        await client.query('ROLLBACK');
+        throw err;
+    } finally {
+        client.release();
+    }
+}
+
 module.exports = {
+    createPoll,
+    deletePoll,
     fetchPolls,
     likePoll,
     unlikePoll,
-    deletePoll
 };

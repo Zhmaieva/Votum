@@ -312,6 +312,39 @@ export const unlikePoll = async (id) => {
     }
 };
 
+export const durationMap = {
+    '1h': '1 hour',
+    '1d': '1 day',
+    '1w': '1 week',
+    '1m': '1 month',
+};
+
+/**
+ * Creates a new poll with 2 to 4 answer options.
+ * @param {string} question - The poll question
+ * @param {string[]} options - Array of 2 to 4 answer texts
+ * @param {'1h' | '1d' | '1w' | '1m'} duration - Time until expiration
+ * @returns {Promise<{ pollId: string }>}
+ */
+export const createPoll = async (question, options, duration) => {
+    try {
+        console.log(`creating poll`);
+        const response = await apiClient.post(`/polls`,{
+            question,
+            options,
+            duration
+        }, {
+            headers: {
+                Authorization: `Bearer ${await getToken()}`,
+            },
+        });
+        console.log('create poll response: ' + JSON.stringify(response.data));
+        return response?.data;
+    } catch (err) {
+        console.log('create failed', err);
+    }
+};
+
 export const deletePoll = async (id) => {
     try {
         console.log(`deleting poll ${id}`);
