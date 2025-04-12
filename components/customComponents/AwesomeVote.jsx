@@ -73,10 +73,10 @@ const AwesomeVote = ({
         }
     }, [selected, pollExpired, createdByUser]);
 
-    const handleVote = (option) => {
-        setSelected(option);
+    const handleVote = (optionId) => {
+        setSelected(optionId);
         if (onVote) {
-            onVote(option);
+            onVote(optionId);
         }
     };
 
@@ -142,40 +142,40 @@ const AwesomeVote = ({
                 </View>
                 {!selected && !pollExpired && !createdByUser ? (
                     options.map((option) => (
-                        <TouchableOpacity key={option} style={styles.button} onPress={() => handleVote(option)}>
-                            <Text style={[styles.buttonText, styles.fontFamilyStyle]} numberOfLines={2} ellipsizeMode="tail">{option}</Text>
+                        <TouchableOpacity key={option.id} style={styles.button} onPress={() => handleVote(option.id)}>
+                            <Text style={[styles.buttonText, styles.fontFamilyStyle]} numberOfLines={2} ellipsizeMode="tail">{option.text}</Text>
                         </TouchableOpacity>
                     ))
                 ) : (
                     options.map((option) => {
                         const animatedWidth = animation.interpolate({
                             inputRange: [0, 1],
-                            outputRange: ["0%", `${results[option] || 0}%`],
+                            outputRange: ["0%", `${results[option.id] || 0}%`],
                         });
 
                         return (
-                            <View key={option} style={styles.buttonContainer}>
+                            <View key={option.id} style={styles.buttonContainer}>
                                 <View style={styles.resultBarContainer}>
                                     <Animated.View
                                         style={[styles.resultBar, {
                                             width: animatedWidth,
-                                            backgroundColor: selected === option ? Colors.green : '#d5d6d5',
+                                            backgroundColor: selected === option.id ? Colors.green : '#d5d6d5',
                                         }]}
                                     />
                                     <View style={styles.answerStyle}>
                                         <Text style={[styles.answerTextStyle, {
                                             color: Colors.black,
-                                            fontWeight: selected === option ? "600" : "400"
+                                            fontWeight: selected === option.id ? "600" : "400"
                                         }]}>
-                                            {option}
+                                            {option.text}
                                         </Text>
                                     </View>
                                 </View>
                                 <View style={styles.resultsNumberContainer}>
                                     <Text style={[styles.buttonText, styles.fontFamilyStyle, {
                                         color: Colors.black,
-                                        fontWeight: selected === option ? "600" : "400"
-                                    }]}>{results[option] || 0}%</Text>
+                                        fontWeight: selected === option.id ? "600" : "400"
+                                    }]}>{results[option.id] || 0}%</Text>
                                 </View>
                             </View>
                         );

@@ -345,6 +345,33 @@ export const createPoll = async (question, options, duration) => {
     }
 };
 
+/**
+ * Votes on a poll option.
+ * @param {string} optionId - The ID of the selected poll answer option.
+ * @returns {Promise<{ success: boolean, error?: string }>}
+ */
+export const voteOnPoll = async (optionId) => {
+    try {
+        const response = await apiClient.post(`/polls/options`, {
+            optionId
+        }, {
+            headers: {
+                Authorization: `Bearer ${await getToken()}`,
+            },
+        });
+
+        console.log('vote on poll response:', response.data);
+        return { success: true };
+    } catch (err) {
+        console.error('vote failed:', err.response?.data || err.message);
+        return {
+            success: false,
+            error: err.response?.data?.error || err.message,
+        };
+    }
+};
+
+
 export const deletePoll = async (id) => {
     try {
         console.log(`deleting poll ${id}`);

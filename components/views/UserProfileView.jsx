@@ -8,22 +8,6 @@ import AwesomeFeed from "../customComponents/AwesomeFeed";
 import { fetchMyProfile } from "../../shared/api/apiClient";
 
 const pollData = [
-    {
-        id: 1,
-        question: "What is your favorite color?",
-        options: ["Red", "Blue"],
-        results: { "Red": 20, "Blue": 80 },
-        timeLeft: "10m 30s",
-        totalVotes: 1457
-    },
-    {
-        id: 2,
-        question: "What is your favorite city?",
-        options: ["NY", "London", "Gdansk", "Kherson"],
-        results: { "NY": 20, "London": 50, "Gdansk": 15, "Kherson": 15 },
-        timeLeft: "1m 15s",
-        totalVotes: 2
-    }
 ];
 
 const closedPollData = [

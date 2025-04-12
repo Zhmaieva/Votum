@@ -39,7 +39,7 @@ const AwesomeCard = ({ item, handleVote, loggedInUserId }) => {  // Pass loggedI
                 timeLeft={item?.timeLeft}
                 totalVotes={item?.totalVotes}
                 isLiked={item?.isLiked ?? false}
-                onVote={(option) => handleVote(item?.id, option)}
+                onVote={(optionId) => handleVote(item?.id, optionId)}
                 createdByUser={item.user.userId === loggedInUserId}
                 onDeletePoll={() => handleDeletePoll(item.id)}
             />

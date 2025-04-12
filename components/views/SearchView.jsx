@@ -6,50 +6,6 @@ import AwesomeFeed from "../customComponents/AwesomeFeed";
 import AwesomeSearch from "../customComponents/AwesomeSearch";
 
 const pollData = [
-    {
-        id: 1,
-        question: "What is your favorite color?",
-        options: ["Red", "Blue"],
-        results: { Red: 20, Blue: 50, Green: 15, Yellow: 15 },
-        timeLeft: "10m 30s",
-        totalVotes: 1457,
-        image: { uri: 'https://drive.google.com/drive/u/0/folders/1Fa3yEk8tJjCG1QlM3eh3Xsgm-7cc8XWh/son.jpg' },
-        username: 'Yuliia Zhmaieva',
-        followersNumber: 370,
-    },
-    {
-        id: 2,
-        question: "What is your favorite city?",
-        options: ["NY", "London", "Gdansk", "Kherson"],
-        results: { Red: 20, Blue: 50, Green: 15, Yellow: 15 },
-        timeLeft: "1m 15s",
-        totalVotes: 2,
-        image: { uri: 'https://example.com/avatar.jpg' },
-        username: 'Emil Ovechko',
-        followersNumber: 3411,
-    },
-    {
-        id: 3,
-        question: "What is your favorite singer?",
-        options: ["Weeknd", "Lady Gaga"],
-        results: { Red: 20, Blue: 50, Green: 15, Yellow: 15 },
-        timeLeft: "10m 30s",
-        totalVotes: 1457,
-        image: { uri: 'https://example.com/avatar.jpg' },
-        username: 'Artem Ovechko',
-        followersNumber: 39810,
-    },
-    {
-        id: 4,
-        question: "What is your favorite animal?",
-        options: ["Lion", "Dog", "Cat", "Chicken"],
-        results: { Red: 80, Blue: 10, Green: 3, Yellow: 7 },
-        timeLeft: "5h 0s",
-        totalVotes: 209543,
-        image: { uri: 'https://example.com/avatar.jpg' },
-        username: 'Shrek',
-        followersNumber: 3,
-    },
 ];
 
 const SearchView = () => {

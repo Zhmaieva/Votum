@@ -32,7 +32,7 @@ const fetchPolls = async (userId) => {
         `;
 
         const optionsQuery = `
-            SELECT pao.poll_id, pao.text 
+            SELECT id, pao.poll_id, pao.text 
             FROM poll_answer_options pao;
         `;
 
@@ -65,7 +65,7 @@ const fetchPolls = async (userId) => {
         const optionsMap = {};
         optionsResult.rows.forEach(row => {
             if (!optionsMap[row.poll_id]) optionsMap[row.poll_id] = [];
-            optionsMap[row.poll_id].push(row.text);
+            optionsMap[row.poll_id].push({ id: row.id, text: row.text});
         });
 
         Object.keys(pollsMap).forEach(pollId => {
@@ -126,10 +126,10 @@ const generateRandomResults = (options) => {
     const results = {};
     for (let i = 0; i < options.length; i++) {
         if (i === options.length - 1) {
-            results[options[i]] = remainingPercentage;
+            results[options[i].id] = remainingPercentage;
         } else {
             const randomValue = Math.floor(Math.random() * (remainingPercentage - (options.length - i - 1))) + 1;
-            results[options[i]] = randomValue;
+            results[options[i].id] = randomValue;
             remainingPercentage -= randomValue;
         }
     }
@@ -181,10 +181,36 @@ async function createPoll(createdBy, question, options, duration) {
     }
 }
 
+/**
+ * Vote on poll
+ * @param userId
+ * @param optionId
+ * @returns {Promise<{success: boolean}|{success: boolean, error}>}
+ */
+async function voteOnPoll({ userId, optionId }) {
+    const query = `
+        INSERT INTO poll_votes (user_id, poll_id, option_id)
+        SELECT $1, pao.poll_id, pao.id
+        FROM poll_answer_options pao
+        JOIN polls p ON p.id = pao.poll_id
+        WHERE pao.id = $2 AND p.ends_in > NOW()
+        ON CONFLICT (user_id, poll_id) DO NOTHING
+    `;
+
+    try {
+        await pool.query(query, [userId, optionId]);
+        return { success: true };
+    } catch (err) {
+        console.error('Vote failed:', err.message);
+        return { success: false, error: err.message };
+    }
+}
+
 module.exports = {
     createPoll,
     deletePoll,
     fetchPolls,
     likePoll,
     unlikePoll,
+    voteOnPoll,
 };

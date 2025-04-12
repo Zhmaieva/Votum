@@ -340,6 +340,22 @@ app.post('/polls', authMiddleware, async (req, res, next) => {
     }
 });
 
+app.post('/polls/options', authMiddleware, async (req, res, next) => {
+    try {
+        const { optionId } = req.body;
+
+        const result = await pollQueries.voteOnPoll({userId: req.user.id, optionId});
+
+        if (result.success)
+            return res.json({ success: true });
+        else
+            return res.status(500).json({ success: false });
+    }
+    catch (e) {
+        next(e);
+    }
+});
+
 app.post('/polls/like', authMiddleware, async (req, res, next) => {
     try {
         const { pollId } = req.body;

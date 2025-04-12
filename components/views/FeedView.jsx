@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import AwesomeFeed from "../customComponents/AwesomeFeed";
 import AwesomeCard from "../customComponents/AwesomeCard";
 import { View, StyleSheet, ActivityIndicator, Text } from 'react-native';
-import { fetchPolls, fetchMyProfile } from "../../shared/api/apiClient";
+import {fetchPolls, fetchMyProfile, voteOnPoll} from "../../shared/api/apiClient";
 import { Colors } from '../../utils/colorUtils';
 
 const FeedView = () => {
@@ -17,7 +17,10 @@ const FeedView = () => {
             }
         });
 
-        fetchPolls().then(res => setPolls(res));
+        fetchPolls().then(res => {
+            console.info(JSON.stringify(res));
+            setPolls(res)
+        });
     }, []);
 
     const onRefresh = () => {
@@ -53,7 +56,15 @@ const FeedView = () => {
                     <View style={styles.container}>
                         <AwesomeCard
                             item={item}
-                            handleVote={() => {}}
+                            handleVote={async (itemId, optionId) => {
+                                const result = await voteOnPoll(optionId);
+
+                                if (result.success) {
+                                    console.log('Voted successfully!');
+                                } else {
+                                    console.error('Vote failed:', result.error);
+                                }
+                            }}
                             loggedInUserId={loggedInUserId}
                         />
                     </View>

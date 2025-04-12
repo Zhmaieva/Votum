@@ -11,41 +11,10 @@ import { useNavigation } from '@react-navigation/native';
 import {getDataService} from "../../shared/common";
 
 const pollData = [
-    {
-        id: 1,
-        question: "What is your favorite color?",
-        options: ["Red", "Blue"],
-        results: { "Red": 20, "Blue": 80 },
-        timeLeft: "10m 30s",
-        totalVotes: 1457
-    },
-    {
-        id: 2,
-        question: "What is your favorite city?",
-        options: ["NY", "London", "Gdansk", "Kherson"],
-        results: { "NY": 20, "London": 50, "Gdansk": 15, "Kherson": 15 },
-        timeLeft: "1m 15s",
-        totalVotes: 2
-    }
+
 ];
 
 const closedPollData = [
-    {
-        id: 3,
-        question: "What is your favorite singer?",
-        options: ["Weeknd", "Lady Gaga"],
-        results: { "Weeknd": 50, "Lady Gaga": 50 },
-        timeLeft: "Expired",
-        totalVotes: 1457
-    },
-    {
-        id: 4,
-        question: "What is your favorite animal?",
-        options: ["Lion", "Dog", "Cat", "Chicken"],
-        results: { "Lion": 80, "Dog": 10, "Cat": 3, "Chicken": 7 },
-        timeLeft: "Expired",
-        totalVotes: 209543
-    }
 ];
 
 const MyUserProfileView = () => {

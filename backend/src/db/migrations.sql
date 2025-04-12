@@ -87,6 +87,38 @@ ALTER TABLE poll_answer_options
 ALTER TABLE poll_answer_options
     ADD COLUMN option_order INT NOT NULL DEFAULT 0;
 
+--Sat Apr 12 13:00
+CREATE TABLE poll_votes (
+    user_id UUID NOT NULL,
+    poll_id UUID NOT NULL,
+    option_id UUID NOT NULL REFERENCES poll_answer_options(id),
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+
+    PRIMARY KEY (user_id, poll_id),
+
+    FOREIGN KEY (poll_id) REFERENCES polls(id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+ALTER TABLE poll_answer_options
+    ADD COLUMN votes_count INTEGER DEFAULT 0 NOT NULL;
+
+CREATE OR REPLACE FUNCTION increment_votes_count()
+    RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE poll_answer_options
+    SET votes_count = votes_count + 1
+    WHERE id = NEW.option_id;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_increment_votes_count
+    AFTER INSERT ON poll_votes
+    FOR EACH ROW EXECUTE FUNCTION increment_votes_count();
+
+
 /*
  INSERT INTO polls (created_by, question, votes_number, ends_in) VALUES
 -- Favorite color

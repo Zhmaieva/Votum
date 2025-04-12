@@ -42,17 +42,6 @@ const AddView = () => {
         setModalVisible(true);
     };
 
-    const pollData = [
-        {
-            id: 1,
-            question: "What is your favorite color?",
-            options: ["Red", "Blue"],
-            results: { Red: 60, Blue: 40 },
-            timeLeft: "10m 30s",
-            totalVotes: 1457
-        }
-    ];
-
     return (
         <View style={styles.cardContainer}>
             <View style={[styles.row, styles.bottomMargin10]}>
