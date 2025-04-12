@@ -9,7 +9,7 @@ const {pool} = require("./db/dal/pool");
 const pollQueries = require("./db/dal/pollQueries");
 const userQueries = require("./db/dal/userQueries");
 const {getActivationCode, checkActivationCode, checkAndInsertUserWithProfile, getUserByLogin, updateProfileImage,
-    refreshUserFollows, refreshUserFollowers
+    refreshUserFollows, refreshUserFollowers, getUser
 } = require("./db/dal/userQueries");
 const sendEmail = require("./mail/mailing");
 const {validateEmail, validateUsername, validatePassword} = require("./validation");
@@ -381,6 +381,16 @@ app.delete('/polls', authMiddleware, async (req, res, next) => {
 
 app.delete('/users', authMiddleware, async (req, res, next) => {
     try {
+        const { password } = req.query;
+
+        const existingUser = await getUser(req.user.id);
+
+        if (!existingUser)
+            return res.json({ success: true });
+
+        if (!await bcrypt.compare(password, existingUser?.password))
+            return res.status(403).json({ message: 'Invalid password' });
+
         await userQueries.deleteUser(req.user.id);
 
         return res.json({ success: true });

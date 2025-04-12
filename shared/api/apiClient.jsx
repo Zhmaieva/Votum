@@ -459,10 +459,10 @@ export const updateUserProfile = async (updatedData) => {
     }
 };
 
-export const deleteUserProfile = async () => {
+export const deleteUserProfile = async (password) => {
     try {
         console.log(`deleting user`);
-        const response = await apiClient.delete(`/user`, {
+        const response = await apiClient.delete(`/user?password=${password}`, {
             headers: {
                 Authorization: `Bearer ${await getToken()}`,
             },
