@@ -35,9 +35,7 @@ const AwesomeCard = ({ item, handleVote, loggedInUserId }) => {  // Pass loggedI
                 id={item?.id ?? item}
                 question={item?.question}
                 options={item?.options}
-                results={item?.results}
                 timeLeft={item?.timeLeft}
-                totalVotes={item?.totalVotes}
                 isLiked={item?.isLiked ?? false}
                 onVote={(optionId) => handleVote(item?.id, optionId)}
                 createdByUser={item.user.userId === loggedInUserId}

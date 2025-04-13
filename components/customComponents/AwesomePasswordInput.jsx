@@ -3,7 +3,6 @@ import React, {useState, useRef, forwardRef} from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../utils/colorUtils';
 import {getDataService} from "../../shared/common";
-import {useFocusEffect} from "@react-navigation/native";
 
 const AwesomePasswordInput = forwardRef((props, inputRef) => {
     // State variable to hold the password

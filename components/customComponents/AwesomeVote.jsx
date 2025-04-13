@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect, useRef} from "react";
 import {
     View,
     Text,
@@ -15,8 +15,10 @@ import ReportPoll from "./AwesomeReportPoll";
 import { onShare } from "../../shared/common";
 import AwesomeLikeButton from "./AwesomeLikeButton";
 import { AwesomeModal } from './AwesomeModal'
+import {useFocusEffect} from "@react-navigation/native";
 
 const formatFollowers = (num) => {
+
     if (num >= 1_000_000_000) return (num / 1_000_000_000).toFixed(1) + 'B';
     if (num >= 1_000_000) return (num / 1_000_000).toFixed(1) + 'M';
     if (num >= 1_000) return (num / 1_000).toFixed(1) + 'K';
@@ -48,23 +50,25 @@ const AwesomeVote = ({
                          id = "",
                          question = "No question provided",
                          options = [],
-                         results = {},
                          timeLeft = 0,
-                         totalVotes = 0,
                          onVote,
                          isLiked = false,
                          createdByUser = false,
                          onDeletePoll
                      }) => {
-    const [selected, setSelected] = useState(null);
-    const [animation] = useState(new Animated.Value(0));
+    const [optionsData, setOptionsData] = useState(options);
+    const [selected, setSelected] = useState(options?.filter(x => x.voted)[0]?.id ?? null);
+    const [animation, setAnimation] = useState(new Animated.Value(0));
     const [modalVisible, setModalVisible] = useState(false);
     const [isReportVisible, setIsReportVisible] = useState(true);
     const [remainingTime, setRemainingTime] = useState(timeLeft);
     const [pollExpired, setPollExpired] = useState(timeLeft <= 0);
+    const percentMap = useRef(null);
+    const prevPercentMap = useRef(null);
 
     useEffect(() => {
         if (selected || pollExpired || createdByUser) {
+            console.log('effect animation')
             Animated.timing(animation, {
                 toValue: 1,
                 duration: 600,
@@ -73,7 +77,76 @@ const AwesomeVote = ({
         }
     }, [selected, pollExpired, createdByUser]);
 
+    useEffect(() => {
+        let optionsMapped = [];
+        setOptionsData(prevOptions =>
+        {
+            optionsMapped = prevOptions.map(o => {
+                const updated = options.find(u => u.id === o.id);
+                return updated ? { ...o, votesCount: updated.votesCount } : o;
+            });
+            return optionsMapped;
+        }
+        );
+
+        const totalVotes = optionsMapped.reduce((sum, o) => sum + (o.votesCount || 0), 0);
+
+        // Calculate raw percentages
+        let percentages = optionsMapped.map((o) => ({
+            id: o.id,
+            percent: totalVotes ? (o.votesCount || 0) / totalVotes * 100 : 0
+        }));
+
+        // Round each, track total, and find the index of the max
+        let roundedTotal = 0;
+        let maxIndex = 0;
+
+        percentages = percentages.map((p, i) => {
+            const rounded = Math.round(p.percent);
+            if (p.percent > percentages[maxIndex].percent) maxIndex = i;
+            roundedTotal += rounded;
+            return { ...p, rounded };
+        });
+
+        // Fix rounding error by adjusting the highest
+        const roundingError = 100 - roundedTotal;
+        if (percentages[maxIndex]?.rounded > 0)
+            percentages[maxIndex].rounded += roundingError;
+
+        // Create a map for quick lookup by id
+        prevPercentMap.current = percentMap.current;
+        percentMap.current = new Map(percentages.map(p => [p.id, p.rounded]));
+
+        const hasChange =
+            !percentMap.current ||
+            options.some((opt) => {
+                const prev = prevPercentMap.current?.get(opt.id);
+                const curr = percentMap.current.get(opt.id);
+                return prev !== curr;
+            });
+
+        if (!hasChange)
+            return;
+
+        if (prevPercentMap.current)
+            animation.setValue(0);
+
+        Animated.timing(animation, {
+            toValue: 1,
+            duration: 600,
+            useNativeDriver: false,
+        }).start();
+    }, [options]);
+
     const handleVote = (optionId) => {
+        setOptionsData(optionsData.map(opt =>
+            opt.id === optionId ? {
+                ...opt,
+                votesCount: opt.votesCount + 1,
+                voted: true,
+            } : opt
+        ));
+
         setSelected(optionId);
         if (onVote) {
             onVote(optionId);
@@ -141,16 +214,26 @@ const AwesomeVote = ({
                     )}
                 </View>
                 {!selected && !pollExpired && !createdByUser ? (
-                    options.map((option) => (
+                    optionsData?.map((option) => (
                         <TouchableOpacity key={option.id} style={styles.button} onPress={() => handleVote(option.id)}>
                             <Text style={[styles.buttonText, styles.fontFamilyStyle]} numberOfLines={2} ellipsizeMode="tail">{option.text}</Text>
                         </TouchableOpacity>
                     ))
                 ) : (
-                    options.map((option) => {
+                    optionsData?.map((option) => {
+                        let percent = percentMap.current?.get(option.id) || 1;
+                        let prevPercent = prevPercentMap.current?.get(option.id) || 1;
+
+                        if (percent < 1) {
+                            percent = 1;
+                        }
+
+                        if (prevPercent < 1) {
+                            prevPercent = 1;
+                        }
                         const animatedWidth = animation.interpolate({
-                            inputRange: [0, 1],
-                            outputRange: ["0%", `${results[option.id] || 0}%`],
+                            inputRange: [0.01, 1],
+                            outputRange: [`${prevPercent}%`, `${percent}%`],
                         });
 
                         return (
@@ -175,7 +258,7 @@ const AwesomeVote = ({
                                     <Text style={[styles.buttonText, styles.fontFamilyStyle, {
                                         color: Colors.black,
                                         fontWeight: selected === option.id ? "600" : "400"
-                                    }]}>{results[option.id] || 0}%</Text>
+                                    }]}>{percentMap.current?.get(option.id) || 0}%</Text>
                                 </View>
                             </View>
                         );
@@ -183,7 +266,7 @@ const AwesomeVote = ({
                 )}
                 <View style={[styles.countStyle, styles.row]}>
                     <Text style={[styles.greyTextStyle, styles.fontFamilyStyle]}>{pollExpired ? "Expired" : `Ends in ${formatTimeLeft(remainingTime)}`}</Text>
-                    <Text style={[styles.greyTextStyle, styles.fontFamilyStyle]}>{formatFollowers(totalVotes)} voted</Text>
+                    <Text style={[styles.greyTextStyle, styles.fontFamilyStyle]}>{formatFollowers(optionsData?.reduce((sum, option) => sum + option.votesCount, 0))} voted</Text>
                 </View>
             </View>
             <AwesomeModal

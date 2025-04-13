@@ -14,10 +14,14 @@ const NEXT_POLL_OFFSET = height * 0.18;
 import { Colors } from '../../utils/colorUtils';
 import { globalEventEmitter } from "../../shared/common";
 import AwesomeLink from "./AwesomeLink";
+import {useFocusEffect} from "@react-navigation/native";
+import {getPollOptions} from "../../shared/api/apiClient";
 
 const AwesomeFeed = ({ data, onRefresh, refreshing, renderItem }) => {
     const scrollY = useRef(new Animated.Value(0)).current;
-    const [preloadedData, setPreloadedData] = useState([]);
+    const [preloadedData, setPreloadedData] = useState(data);
+
+    const timeoutRef = useRef(setTimeout(() => {}, 100));
 
     useEffect(() => {
         if (data.length === 0) {
@@ -66,6 +70,50 @@ const AwesomeFeed = ({ data, onRefresh, refreshing, renderItem }) => {
         return renderItem(item);
     };
 
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const lastIndexRef = useRef(-1);
+
+    const handleSnapChange = React.useCallback(async (index) => {
+        await onSnapChange(index);
+    }, [preloadedData]);
+
+    const onSnapChange = async (index) => {
+        if (lastIndexRef.current !== index) {
+            const snappedItem = preloadedData[index];
+            if (snappedItem && snappedItem.id) {
+                lastIndexRef.current = index;
+                setCurrentIndex(index);
+
+                clearTimeout(timeoutRef.current);
+                timeoutRef.current = setTimeout(() => updatePoll(lastIndexRef.current),3000 + Math.random() * 10000);
+            }
+        }
+    };
+
+    const updatePoll = async (index) => {
+        console.log('loading poll', preloadedData[index].question);
+        const pollOptions = await getPollOptions(preloadedData[index].id);
+        if (pollOptions) {
+            setPreloadedData(prevData => {
+                const updatedData = [...prevData]; // Create a copy of the data
+                updatedData[index] = {
+                    ...updatedData[index],
+                    options: pollOptions, // Update the specific poll's options
+                };
+                return updatedData; // Return the updated data
+            });
+        }
+
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = setTimeout(() => updatePoll(lastIndexRef.current),3000 + Math.random() * 10000);
+    }
+
+    useFocusEffect(React.useCallback(() => {
+        lastIndexRef.current = -1;
+        setCurrentIndex(-1);
+        onSnapChange(0);
+    }, []));
+
     return (
         <SafeAreaView style={styles.container}>
             <Animated.FlatList
@@ -85,10 +133,16 @@ const AwesomeFeed = ({ data, onRefresh, refreshing, renderItem }) => {
                 )}
                 onEndReached={loadMorePolls}
                 onEndReachedThreshold={0.5}
-                onScroll={Animated.event(
-                    [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-                    { useNativeDriver: false }
-                )}
+                onScroll={({nativeEvent}) => {
+                    const offsetY = nativeEvent.contentOffset.y;
+                    const index = Math.round(offsetY / (POLL_HEIGHT - NEXT_POLL_OFFSET));
+                    handleSnapChange(index);
+
+                    Animated.event(
+                        [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+                        { useNativeDriver: false }
+                    )
+                }}
             />
         </SafeAreaView>
     );

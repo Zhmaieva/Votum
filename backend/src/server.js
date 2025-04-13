@@ -356,6 +356,22 @@ app.post('/polls/options', authMiddleware, async (req, res, next) => {
     }
 });
 
+app.get('/polls/:id?/options', authMiddleware, async (req, res, next) => {
+    try {
+        const pollId = req.params.id;
+
+        const result = await pollQueries.getPollOptions(pollId);
+
+        if (result)
+            return res.json(result);
+        else
+            return res.status(404).json({message: 'poll not found'});
+    }
+    catch (e) {
+        next(e);
+    }
+});
+
 app.post('/polls/like', authMiddleware, async (req, res, next) => {
     try {
         const { pollId } = req.body;

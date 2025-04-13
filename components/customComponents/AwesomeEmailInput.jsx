@@ -2,7 +2,6 @@ import { Text, TextInput, StyleSheet, View } from 'react-native';
 import React, { useState } from 'react';
 import { Colors } from '../../utils/colorUtils';
 import { getDataService } from "../../shared/common";
-import {useFocusEffect} from "@react-navigation/native";
 
 export default function AwesomeEmailInput({ value, bareStyle = false }) {
     const [email, setEmail] = useState(value);

@@ -103,7 +103,6 @@ const AddView = () => {
                     <View style={styles.modalContainer}>
                         <View style={styles.finalPollContainer}>
                             <AwesomeVote
-                                totalVotes='0'
                                 question={question}
                                 options={options.map(x => x.text)}
                                 timeLeft={durationMap['1d']}

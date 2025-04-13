@@ -118,6 +118,9 @@ CREATE TRIGGER trigger_increment_votes_count
     AFTER INSERT ON poll_votes
     FOR EACH ROW EXECUTE FUNCTION increment_votes_count();
 
+--Sat Apr 12 11:10 PM
+ALTER TABLE polls
+    DROP COLUMN votes_number;
 
 /*
  INSERT INTO polls (created_by, question, votes_number, ends_in) VALUES

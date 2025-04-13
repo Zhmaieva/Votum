@@ -18,7 +18,6 @@ const FeedView = () => {
         });
 
         fetchPolls().then(res => {
-            console.info(JSON.stringify(res));
             setPolls(res)
         });
     }, []);

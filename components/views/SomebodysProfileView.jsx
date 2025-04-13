@@ -34,6 +34,7 @@ const SomebodysProfileView = ({route}) => {
 
     return (
         <View style={styles.container}>
+
             <SafeAreaView style={styles.safeArea}>
                 <View style={styles.contentWrapper}>
                     <AwesomeUserHeader
@@ -71,11 +72,9 @@ const SomebodysProfileView = ({route}) => {
                         refreshing={false}
                         renderItem={(item) => (
                             <AwesomeVote
-                                totalVotes={item.totalVotes}
                                 timeLeft={item.timeLeft}
                                 question={item.question}
                                 options={item.options}
-                                results={item.results}
                             />
                         )}
                     />

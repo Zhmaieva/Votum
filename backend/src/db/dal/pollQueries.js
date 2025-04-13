@@ -5,7 +5,6 @@ const fetchPolls = async (userId) => {
         const pollsQuery = `
             SELECT p.id,
                    p.question,
-                   p.votes_number,
                    p.ends_in,
                    u.username,
                    up.user_id,
@@ -31,15 +30,27 @@ const fetchPolls = async (userId) => {
             WHERE p.ends_in > NOW() AND p.is_deleted = false;
         `;
 
+        const pollsResult = await pool.query(pollsQuery, [userId]);
+        const pollIds = pollsResult.rows.map(row => row.id);
+
         const optionsQuery = `
-            SELECT id, pao.poll_id, pao.text 
-            FROM poll_answer_options pao;
+            SELECT
+                pao.id,
+                pao.poll_id,
+                pao.text,
+                pao.votes_count as "votesCount",
+                CASE
+                    WHEN pv.user_id IS NOT NULL THEN true
+                    ELSE false
+                    END AS voted
+            FROM poll_answer_options pao
+                     LEFT JOIN poll_votes pv
+                               ON pv.option_id = pao.id AND pv.user_id = $1
+            WHERE pao.poll_id = ANY($2)
+            ORDER BY pao.option_order;
         `;
 
-        const [pollsResult, optionsResult] = await Promise.all([
-            pool.query(pollsQuery, [userId]),
-            pool.query(optionsQuery)
-        ]);
+        const optionsResult = await pool.query(optionsQuery, [userId, pollIds]);
 
         const pollsMap = {};
         pollsResult.rows.forEach(row => {
@@ -47,9 +58,7 @@ const fetchPolls = async (userId) => {
                 id: row.id,
                 question: row.question,
                 options: [],
-                results: {},
                 endsIn: row.ends_in,
-                totalVotes: row.votes_number,
                 isLiked: row.is_liked,
                 user: {
                     userId: row.user_id,
@@ -64,20 +73,43 @@ const fetchPolls = async (userId) => {
 
         const optionsMap = {};
         optionsResult.rows.forEach(row => {
-            if (!optionsMap[row.poll_id]) optionsMap[row.poll_id] = [];
-            optionsMap[row.poll_id].push({ id: row.id, text: row.text});
+            if (!optionsMap[row.poll_id])
+                optionsMap[row.poll_id] = [];
+
+            optionsMap[row.poll_id].push({ id: row.id, text: row.text, voted: row.voted, votesCount: row.votesCount });
         });
 
         Object.keys(pollsMap).forEach(pollId => {
             const poll = pollsMap[pollId];
             poll.options = optionsMap[pollId] || [];
-            poll.results = generateRandomResults(poll.options);
         });
 
         return Object.values(pollsMap);
     } catch (err) {
         console.error('Error fetching polls:', err);
         return [];
+    }
+};
+
+/**
+ * Fetches options for a single poll, sorted by option_order ascending.
+ * @param {string} pollId - ID of the poll
+ * @returns {Promise<{ text: string, votesCount: number }[] | null>}
+ */
+const getPollOptions = async (pollId) => {
+    try {
+        const query = `
+            SELECT id, text, votes_count AS "votesCount"
+            FROM poll_answer_options
+            WHERE poll_id = $1
+            ORDER BY option_order
+        `;
+
+        const result = await pool.query(query, [pollId]);
+        return result.rows;
+    } catch (err) {
+        console.error('Error fetching poll options:', err);
+        return null;
     }
 };
 
@@ -120,21 +152,6 @@ async function deletePoll(pollId, userId) {
         console.error('Error deleting poll:', err);
     }
 }
-
-const generateRandomResults = (options) => {
-    let remainingPercentage = 100;
-    const results = {};
-    for (let i = 0; i < options.length; i++) {
-        if (i === options.length - 1) {
-            results[options[i].id] = remainingPercentage;
-        } else {
-            const randomValue = Math.floor(Math.random() * (remainingPercentage - (options.length - i - 1))) + 1;
-            results[options[i].id] = randomValue;
-            remainingPercentage -= randomValue;
-        }
-    }
-    return results;
-};
 
 /**
  * Creates a new poll with 2 to 4 answer options.
@@ -210,6 +227,7 @@ module.exports = {
     createPoll,
     deletePoll,
     fetchPolls,
+    getPollOptions,
     likePoll,
     unlikePoll,
     voteOnPoll,

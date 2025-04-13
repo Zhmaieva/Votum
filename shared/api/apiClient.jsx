@@ -47,12 +47,12 @@ const apiClient = axios.create({
 apiClient.interceptors.response.use(
     (response) => response, // Return the response if successful
     async (error) => {
-        console.error("API Error:", error);
+        console.log("API Error:", error);
 
         if (error.response) {
             // The request was made and the server responded with a status code outside 2xx
-            console.error("Response Data:", error.response.data);
-            console.error("Status Code:", error.response.status);
+            console.log("Response Data:", error.response.data);
+            console.log("Status Code:", error.response.status);
 
             if (error.response.status === 401) {
                 await signOut();
@@ -63,11 +63,11 @@ apiClient.interceptors.response.use(
             }
         } else if (error.request) {
             // The request was made but no response was received
-            console.error("No response received from server:", error.request);
+            console.log("No response received from server:", error.request);
             //TODO: handle server errors globally in App.js
         } else {
             // Something else happened
-            console.error("Error:", error.message);
+            console.log("Error:", error.message);
             //TODO: handle server errors globally in App.js
         }
 
@@ -363,11 +363,31 @@ export const voteOnPoll = async (optionId) => {
         console.log('vote on poll response:', response.data);
         return { success: true };
     } catch (err) {
-        console.error('vote failed:', err.response?.data || err.message);
+        console.log('vote failed:', err.response?.data || err.message);
         return {
             success: false,
             error: err.response?.data?.error || err.message,
         };
+    }
+};
+
+/**
+ * Fetches poll options for a specific poll
+ * @param {string} pollId - The ID of the poll
+ * @returns {Promise<{ text: string, votesCount: number }[] | null>}
+ */
+export const getPollOptions = async (pollId) => {
+    try {
+        console.log(`refreshing poll options ${pollId}`);
+        const response = await apiClient.get(`/polls/${pollId}/options`, {
+            headers: {
+                Authorization: `Bearer ${await getToken()}`,
+            },
+        });
+        return response?.data ?? null;
+    } catch (err) {
+        console.log('Failed to fetch poll options:', err);
+        return null;
     }
 };
 
@@ -457,7 +477,7 @@ export const fetchUserProfile = async (userId) => {
         });
         return response?.data;
     } catch (err) {
-        console.error("Failed to fetch user profile", err);
+        console.log("Failed to fetch user profile", err);
     }
 };
 
@@ -481,7 +501,7 @@ export const updateUserProfile = async (updatedData) => {
                 break;
             }
         }
-        console.error(error);
+        console.log(error);
         throw error;
     }
 };
@@ -498,7 +518,7 @@ export const deleteUserProfile = async (password) => {
 
         return true;
     } catch (error) {
-        console.error(error);
+        console.log(error);
         return false;
     }
 };
