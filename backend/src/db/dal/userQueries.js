@@ -8,19 +8,18 @@ async function followUser(userFollowerId, userFollowId) {
                 VALUES ($1, $2)
                 ON CONFLICT (user_follower_id, user_follow_id) DO NOTHING
                 RETURNING 1
-        ),
-             update_followers AS (
-                 UPDATE user_profiles
-                     SET followers_number = followers_number + 1
-                     WHERE user_id = $2
-                         AND EXISTS (SELECT 1 FROM inserted)
-                     RETURNING 1
-             )
-        UPDATE user_profiles
-        SET following_number = following_number + 1
-        WHERE user_id = $1
-          AND EXISTS (SELECT 1 FROM inserted);
-
+        )
+--              update_followers AS (
+--                  UPDATE user_profiles
+--                      SET followers_number = followers_number + 1
+--                      WHERE user_id = $2
+--                          AND EXISTS (SELECT 1 FROM inserted)
+--                      RETURNING 1
+--              )
+--         UPDATE user_profiles
+--         SET following_number = following_number + 1
+--         WHERE user_id = $1
+--           AND EXISTS (SELECT 1 FROM inserted);
   `;
 
     try {

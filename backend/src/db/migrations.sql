@@ -122,6 +122,52 @@ CREATE TRIGGER trigger_increment_votes_count
 ALTER TABLE polls
     DROP COLUMN votes_number;
 
+--Mon Apr 14 9:42 PM
+
+DELETE FROM user_follows;
+UPDATE user_profiles SET followers_number = 0;
+UPDATE user_profiles SET following_number = 0;
+
+CREATE OR REPLACE FUNCTION increment_followers_follows_count()
+    RETURNS TRIGGER AS $$
+BEGIN
+        UPDATE user_profiles
+        SET followers_number = followers_number + 1
+        WHERE user_id = NEW.user_follow_id;
+
+        UPDATE user_profiles
+        SET following_number = following_number + 1
+        WHERE user_id = NEW.user_follower_id;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_increment_followers_follows_count
+    AFTER INSERT ON user_follows
+    FOR EACH ROW EXECUTE FUNCTION increment_followers_follows_count();
+
+CREATE OR REPLACE FUNCTION decrement_followers_follows_count()
+    RETURNS TRIGGER AS $$
+BEGIN
+    -- Decrease followers count for the user being unfollowed
+    UPDATE user_profiles
+    SET followers_number = GREATEST(0, followers_number - 1)
+    WHERE user_id = OLD.user_follow_id;
+
+    -- Decrease following count for the user who unfollowed
+    UPDATE user_profiles
+    SET following_number = GREATEST(0, following_number - 1)
+    WHERE user_id = OLD.user_follower_id;
+
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_decrement_followers_follows_count
+    AFTER DELETE ON user_follows
+    FOR EACH ROW EXECUTE FUNCTION decrement_followers_follows_count();
+
 /*
  INSERT INTO polls (created_by, question, votes_number, ends_in) VALUES
 -- Favorite color
