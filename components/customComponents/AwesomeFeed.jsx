@@ -121,7 +121,6 @@ const AwesomeFeed = ({ data, onRefresh, refreshing, renderItem, isUserProfileVie
     })
 
     const updatePoll = async (index) => {
-        console.log(JSON.stringify(preloadedData[index]));
         if (preloadedData[index].options.some(x => x.voted) || preloadedData[index].user?.userId === getDataService().getUser()?.userId) {
             const pollOptions = await getPollOptions(preloadedData[index].id);
             if (pollOptions) {

@@ -131,10 +131,8 @@ const AwesomeVote = ({
             });
 
         if (!hasChange) {
-            console.log('options has no changes');
             return;
         }
-        console.log('options reloading');
 
         if (prevPercentMap.current)
             animation.setValue(0);
