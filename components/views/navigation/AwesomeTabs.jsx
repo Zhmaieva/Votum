@@ -29,6 +29,7 @@ import FollowersView from "../FollowersView";
 import AwesomeUsernameInput from "../../customComponents/AwesomeUsernameInput";
 import CategoriesView from "../CategoriesView";
 import SomebodysProfileView from "../SomebodysProfileView"
+import PreviewPollView from "../PreviewPollView";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -158,6 +159,7 @@ function AddStack() {
     return (
         <Stack.Navigator id="Test4">
             <Stack.Screen name="AddMain" component={AddView} options={{ headerShown: false, gestureEnabled: true }} />
+            <Stack.Screen name="Preview Poll" component={PreviewPollView} options={{ headerShown: false, gestureEnabled: true }} />
         </Stack.Navigator>
     );
 }

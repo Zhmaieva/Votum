@@ -1,12 +1,23 @@
 import React, { useState } from 'react';
-import { View, TextInput, Dimensions, Button, Text, StyleSheet, Modal, FlatList, TouchableOpacity, Pressable, TouchableWithoutFeedback } from 'react-native';
-import {Colors} from "../../utils/colorUtils";
-import {Ionicons} from "@expo/vector-icons";
-import AwesomeVote from "../customComponents/AwesomeVote";
-import AwesomeButton, {Color} from "../customComponents/AwesomeButton";
-import {createPoll, durationMap} from "../../shared/api/apiClient";
-const { height, width } = Dimensions.get('window');
+import {
+    View, TextInput, Dimensions, Text, StyleSheet,
+    FlatList, TouchableOpacity, Pressable, SafeAreaView
+} from 'react-native';
+import { Colors } from "../../utils/colorUtils";
+import { Ionicons } from "@expo/vector-icons";
+import AwesomeButton, { Color } from "../customComponents/AwesomeButton";
+import { AwesomeModal } from "../customComponents/AwesomeModal";
+import { useNavigation } from '@react-navigation/native';
+import AwesomeSegmentedControls from "../customComponents/AwesomeSegmentedControls";
+
+const { width } = Dimensions.get('window');
 const POLL_WIDTH = width * 0.9;
+
+const DURATION_OPTIONS = [
+    { label: '1 hour', value: '1h' },
+    { label: '1 day', value: '1d' },
+    { label: '1 month', value: '1m' }
+];
 
 const AddView = () => {
     const [question, setQuestion] = useState('');
@@ -14,154 +25,191 @@ const AddView = () => {
         { id: '1', text: '', label: 'Answer 1' },
         { id: '2', text: '', label: 'Answer 2' }
     ]);
+    const [selectedDuration, setSelectedDuration] = useState('1h');
+    const [durationDropdownOpen, setDurationDropdownOpen] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+    const navigation = useNavigation();
 
     const addOption = () => {
         if (options.length < 4) {
             const newOptionNumber = options.length + 1;
-            setOptions([...options, { id: String(Date.now()), text: '', label: `Answer ${newOptionNumber}` }]);
+            setOptions([...options, {
+                id: String(Date.now()),
+                text: '',
+                label: `Answer ${newOptionNumber}`
+            }]);
         }
     };
 
     const removeOption = (id) => {
         if (options.length > 2) {
-            const updatedOptions = options.filter(option => option.id !== id).map((option, index) => ({
-                ...option,
-                label: `Answer ${index + 1}`
-            }));
-            setOptions(updatedOptions);
+            const updated = options
+                .filter(option => option.id !== id)
+                .map((o, i) => ({ ...o, label: `Answer ${i + 1}` }));
+            setOptions(updated);
         }
     };
 
     const updateOption = (id, text) => {
-        setOptions(options.map(option => option.id === id ? { ...option, text } : option));
+        setOptions(options.map(o => o.id === id ? { ...o, text } : o));
     };
 
-    const [modalVisible, setModalVisible] = useState(false);
+    const filteredOptions = options.filter(o => o.text.trim());
 
-    const onPressHandler = () => {
-        setModalVisible(true);
+    const handleCreatePoll = () => {
+        const isQuestionValid = question.trim().length > 0;
+        const validAnswers = filteredOptions.length >= 2;
+
+        if (!isQuestionValid || !validAnswers) {
+            setShowModal(true);
+            return;
+        }
+
+        navigation.navigate('Preview Poll', {
+            question,
+            options: filteredOptions,
+            selectedDuration
+        });
     };
+
+    const [focusedField, setFocusedField] = useState(null);
+
+    const getFocusedLength = () => {
+        if (focusedField === 'question') return question.length;
+        const option = options.find(o => o.id === focusedField);
+        return option?.text.length || 0;
+    };
+
+    const [selectedOption, setSelectedOption] = useState('1h');
 
     return (
-        <View style={styles.cardContainer}>
-            <View style={[styles.row, styles.bottomMargin10]}>
-                <View>
+        <SafeAreaView style={styles.safeArea}>
+            <View style={styles.container}>
+                <View style={[styles.row, styles.bottomMargin10]}>
                     <Text style={[styles.qTextStyle, styles.fontFamily]}>Q: </Text>
+                    <TextInput
+                        style={[styles.inputQuestion, styles.fontFamily]}
+                        placeholder="Question"
+                        placeholderTextColor='#ababab'
+                        value={question}
+                        onChangeText={setQuestion}
+                        maxLength={40}
+                        onFocus={() => setFocusedField('question')}
+                    />
                 </View>
-                <TextInput
-                    style={[styles.inputQuestion, styles.fontFamily]}
-                    placeholder="Question"
-                    value={question}
-                    onChangeText={setQuestion}
-                    maxLength={40}
-                />
-            </View>
-            <View style={styles.votingFrame}>
-                <FlatList
-                    data={options}
-                    keyExtractor={(item) => item.id}
-                    renderItem={({ item }) => (
-                        <View style={styles.optionContainer}>
+                <View style={styles.votingFrame}>
+                    {options.map(item => (
+                        <View style={styles.inputWrapper} key={item.id}>
                             <TextInput
-                                style={[styles.inputAnswer, styles.fontFamily]}
+                                style={[styles.inputWithIcon, styles.fontFamily]}
                                 placeholder={item.label}
                                 value={item.text}
                                 onChangeText={(text) => updateOption(item.id, text)}
                                 maxLength={40}
+                                onFocus={() => setFocusedField(item.id)}
                             />
                             {options.length > 2 && (
-                                <Pressable style={styles.trash} onPress={() => removeOption(item.id)} >
-                                    <Ionicons name='trash-outline' size={24} color={Colors.grey} />
+                                <Pressable style={styles.iconOverlay} onPress={() => removeOption(item.id)}>
+                                    <Ionicons name='trash-outline' size={20} color='#ababab' />
                                 </Pressable>
                             )}
                         </View>
+                    ))}
+
+                    {options.length < 4 && (
+                        <View style={styles.addAnswerContainer}>
+                            <AwesomeButton text='Add answer' color={Color.WHITE} additionalFunc={addOption} />
+                        </View>
                     )}
-                    extraData={options}
-                />
-                {options.length < 4 && (
-                    <View style={[styles.bottomMargin10, styles.addAnswerContainer]}>
-                        <AwesomeButton text='Add answer' color={Color.WHITE} additionalFunc={addOption}/>
-                    </View>
-                )}
-                <View style={[styles.row, styles.test]}>
-                    <View style={[styles.row, styles.endsInContainer]}>
-                        <Text style={styles.endsInContainer}>Ends in </Text>
-                        <View style={[styles.timer]}>
-                            <Text>1 h</Text>
-                        </View>
-                    </View>
-                </View>
-            </View>
-            <AwesomeButton
-                color={Color.GREEN}
-                text="Create poll"
-                //screenName="LikedView"
-                additionalFunc={onPressHandler}
-            />
-            <Modal visible={modalVisible} transparent={true} animationType="fade">
-                <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
-                    <View style={styles.modalContainer}>
-                        <View style={styles.finalPollContainer}>
-                            <AwesomeVote
-                                question={question}
-                                options={options.map(x => x.text)}
-                                timeLeft={durationMap['1d']}
-                            />
-                        </View>
-                        <View style={[styles.row, styles.alignment]}>
-                            <View style={styles.editButtonContainer}>
-                                <TouchableOpacity style={[styles.editButton]} onPress={() => setModalVisible(false)}>
-                                    <Text style={styles.editButtonText}>Edit</Text>
-                                </TouchableOpacity>
-                            </View>
-                            <View style={styles.confirmButton}>
-                                <AwesomeButton
-                                    color={Color.BLACK}
-                                    text="Publish"
-                                    //screenName='LikedView'
-                                    additionalFunc={async () => {
-                                        await createPoll(question, options.map(x => x.text), "1d");
-                                        setModalVisible(false);
-                                    }}
+                    <View style={[styles.row, styles.endsInRow]}>
+                        <View style={[styles.row, styles.endsInRow]}>
+                            <Text>Ends in </Text>
+                            <View style={styles.segmentedControlsContainer}>
+                                <AwesomeSegmentedControls
+                                    leftOption='1h'
+                                    centerOption='1d'
+                                    rightOption='1w'
+                                    lastOption='1m'
+                                    onDisplayModeChangedHandler={setSelectedOption}
                                 />
                             </View>
                         </View>
+                        {focusedField && (
+                            <Text style={styles.charCounter}>
+                                {getFocusedLength()}/40
+                            </Text>
+                        )}
                     </View>
-                </TouchableWithoutFeedback>
-            </Modal>
-        </View>
+                    {durationDropdownOpen && (
+                        <View style={styles.dropdown}>
+                            {DURATION_OPTIONS.map(option => (
+                                <TouchableOpacity
+                                    key={option.value}
+                                    style={styles.dropdownOption}
+                                    onPress={() => {
+                                        setSelectedDuration(option.value);
+                                        setDurationDropdownOpen(false);
+                                    }}>
+                                    <Text>{option.label}</Text>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+                    )}
+                </View>
+            </View>
+            <View style={styles.container}>
+                <AwesomeButton
+                    color={Color.GREEN}
+                    text="Create poll"
+                    additionalFunc={handleCreatePoll}
+                />
+            </View>
+
+            <AwesomeModal
+                visible={showModal}
+                text="Please fill in the question and at least two answers"
+                buttonText="OK"
+                onBackPress={() => setShowModal(false)}
+            />
+        </SafeAreaView>
     );
 };
 
 const styles = StyleSheet.create({
+    safeArea: {
+        backgroundColor: Colors.white,
+        flex: 1,
+        justifyContent: 'space-between',
+    },
+    container: {
+        padding: 20,
+    },
     inputQuestion: {
-        borderColor: Colors.white,
-        borderRadius: 0,
         flex: 1,
         fontWeight: '500',
         fontSize: 18,
-        color: Colors.grey,
+        color: Colors.black,
     },
-    inputAnswer: {
+    inputWrapper: {
+        position: 'relative',
+        width: '100%',
+        marginBottom: 10
+    },
+    inputWithIcon: {
         borderWidth: 1,
         borderColor: Colors.black,
         height: 40,
-        borderRadius: 0,
-        flex: 1,
-        fontWeight: '400',
+        paddingLeft: 10,
+        paddingRight: 35,
         fontSize: 14,
-        color: Colors.black,
-        paddingLeft: 5
+        textAlignVertical: 'center',
+        borderRadius: 0
     },
-    optionContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 10,
-    },
-    optionLabel: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        marginRight: 10,
+    iconOverlay: {
+        position: 'absolute',
+        right: 8,
+        top: 8,
+        padding: 4
     },
     qTextStyle: {
         color: Colors.green,
@@ -169,7 +217,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold'
     },
     row: {
-        flexDirection: 'row',
+        flexDirection: 'row'
     },
     bottomMargin10: {
         marginBottom: 10
@@ -177,106 +225,45 @@ const styles = StyleSheet.create({
     fontFamily: {
         fontFamily: 'arial'
     },
-    title: {
-        fontWeight: '500',
-        fontSize: 18
-    },
-    blackTextStyle: {
-        color: Colors.grey
-    },
     votingFrame: {
         borderWidth: 1,
         borderColor: Colors.black,
         backgroundColor: Colors.white,
-        shadowOffset: { width: 3, height: 3 },
-        shadowOpacity: 1,
-        shadowRadius: 0,
-        shadowColor: Colors.green,
-        paddingTop: 14,
-        paddingLeft: 14,
-        paddingBottom: 14,
+        padding: 14,
         marginBottom: 20,
     },
-    cardContainer: {
-        borderColor: Colors.grey,
-        backgroundColor: Colors.white,
-        padding: 20,
-        height: '100%',
-        justifyContent: 'center',
-    },
     timer: {
-        height: 40,
-        width: 50,
-        justifyContent: "center",
-        alignItems: 'center',
+        marginLeft: 6,
         borderWidth: 1,
         borderColor: Colors.grey,
-        marginLeft: 2
+        paddingHorizontal: 10,
+        paddingVertical: 6
     },
-    endsInContainer: {
+    endsInRow: {
         alignItems: 'center',
-        justifyContent: 'center',
+        marginTop: 10,
+        justifyContent: 'space-between'
     },
-    test: {
-        justifyContent: 'space-between',
-        height: 40
-    },
-    trash: {
-        width: 35,
-        paddingTop: 5,
-        paddingRight: 6,
-        height: '100%',
-        alignItems: 'flex-end',
-    },
-    createPollButton: {
-        height: 40,
-        backgroundColor: Colors.green,
-        width: '100%',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    createPollButtonText: {
-        color: Colors.white,
-        fontFamily: 'arial',
-        fontWeight: '500',
-    },
-    modalContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: Colors.white
-    },
-    finalPollContainer: {
-        width: POLL_WIDTH,
-        marginBottom: 20
-    },
-    confirmButton: {
-        width: '49%',
-    },
-    editButtonContainer: {
-        width: '49%',
-        alignItems: 'center',
-    },
-    editButton: {
-        height: 40,
+    dropdown: {
         backgroundColor: Colors.white,
-        width: '86%',
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderBottomWidth: 1,
-        borderColor: Colors.grey
+        borderColor: Colors.black,
+        borderWidth: 1,
+        marginTop: 5
     },
-    editButtonText: {
-        color: Colors.grey,
-        fontWeight: 'bold',
-        fontFamily: 'rial'
-    },
-    alignment: {
-        justifyContent: "space-between",
-        width: POLL_WIDTH,
+    dropdownOption: {
+        padding: 10
     },
     addAnswerContainer: {
-        width: '89%'
+        width: '100%'
+    },
+    charCounter: {
+        color: Colors.grey,
+        fontSize: 12,
+        alignSelf: 'flex-end',
+        paddingBottom: 2
+    },
+    segmentedControlsContainer: {
+
     }
 });
 

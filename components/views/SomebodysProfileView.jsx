@@ -37,12 +37,13 @@ const SomebodysProfileView = ({route}) => {
 
             <SafeAreaView style={styles.safeArea}>
                 <View style={styles.contentWrapper}>
-                    <AwesomeUserHeader
-                        userData={user}
-                        loggedInUserId={loggedInUserId}
-                        isProfilePage={true}
-                    />
-
+                    <View style={styles.bottomMargin20}>
+                        <AwesomeUserHeader
+                            userData={user}
+                            loggedInUserId={loggedInUserId}
+                            isProfilePage={true}
+                        />
+                    </View>
                     <View style={[styles.followersContainer, styles.row]}>
                         <View style={styles.followersLeftSubContainer}>
                             <Text style={styles.followersText}>21</Text>
@@ -57,7 +58,6 @@ const SomebodysProfileView = ({route}) => {
                             <Text style={styles.followersText}>following</Text>
                         </View>
                     </View>
-
                     <View style={styles.bottomMargin20}>
                         <AwesomeSwitcher
                             leftOption="active"
@@ -65,11 +65,11 @@ const SomebodysProfileView = ({route}) => {
                             onDisplayModeChangedHandler={setSelectedOption}
                         />
                     </View>
-
                     <AwesomeFeed
                         data={selectedOption === "active" ? pollData : closedPollData}
                         onRefresh={() => {}}
                         refreshing={false}
+                        isUserProfileView={true}
                         renderItem={(item) => (
                             <AwesomeVote
                                 timeLeft={item.timeLeft}
@@ -80,7 +80,6 @@ const SomebodysProfileView = ({route}) => {
                     />
                 </View>
             </SafeAreaView>
-
             <Modal
                 animationType="fade"
                 transparent={true}

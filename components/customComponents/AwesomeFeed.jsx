@@ -6,7 +6,7 @@ import {
     StyleSheet,
     RefreshControl,
     SafeAreaView,
-    Text,
+    Text
 } from 'react-native';
 const { height, width } = Dimensions.get('window');
 const POLL_HEIGHT = height * 0.82;
@@ -17,7 +17,7 @@ import AwesomeLink from "./AwesomeLink";
 import {useFocusEffect} from "@react-navigation/native";
 import {getPollOptions} from "../../shared/api/apiClient";
 
-const AwesomeFeed = ({ data, onRefresh, refreshing, renderItem }) => {
+const AwesomeFeed = ({ data, onRefresh, refreshing, renderItem, isUserProfileView = false }) => {
     const scrollY = useRef(new Animated.Value(0)).current;
     const [preloadedData, setPreloadedData] = useState(data);
 
@@ -60,6 +60,16 @@ const AwesomeFeed = ({ data, onRefresh, refreshing, renderItem }) => {
 
     const renderWithPlaceholder = (item) => {
         if (item?.type === 'placeholder') {
+            if (isUserProfileView) {
+                return (
+                    <View style={[styles.placeholderContainer]}>
+                        <Text style={styles.placeholderText}>
+                            This user hasn't created any polls yet
+                        </Text>
+                    </View>
+                );
+            }
+
             return (
                 <View style={[styles.placeholderContainer, styles.row]}>
                     <Text style={styles.placeholderText}>No new polls, try later or</Text>
@@ -67,6 +77,7 @@ const AwesomeFeed = ({ data, onRefresh, refreshing, renderItem }) => {
                 </View>
             );
         }
+
         return renderItem(item);
     };
 
@@ -164,7 +175,8 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 40
+        marginBottom: 80,
+        backgroundColor: Colors.white,
     },
     placeholderText: {
         fontSize: 16,

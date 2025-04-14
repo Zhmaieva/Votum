@@ -54,7 +54,7 @@ const AwesomeVote = ({
                          onVote,
                          isLiked = false,
                          createdByUser = false,
-                         onDeletePoll
+                         onDeletePoll,
                      }) => {
     const [optionsData, setOptionsData] = useState(options);
     const [selected, setSelected] = useState(options?.filter(x => x.voted)[0]?.id ?? null);
@@ -242,7 +242,7 @@ const AwesomeVote = ({
                                     <Animated.View
                                         style={[styles.resultBar, {
                                             width: animatedWidth,
-                                            backgroundColor: selected === option.id ? Colors.green : '#d5d6d5',
+                                            backgroundColor: selected === option.id ? Colors.green : Colors.lightGrey,
                                         }]}
                                     />
                                     <View style={styles.answerStyle}>
@@ -299,12 +299,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: Colors.black,
         backgroundColor: Colors.white,
-        /*shadowOffset: { width: 2, height: 2 },
-        shadowOpacity: 1,
-        shadowRadius: 0,
-        shadowColor: Colors.green,*/
         padding: 14,
-        //marginRight: 3
     },
     button: {
         backgroundColor: Colors.white,
@@ -346,7 +341,7 @@ const styles = StyleSheet.create({
         marginBottom: 10
     },
     iconContainer: {
-        marginLeft: 8
+        marginLeft: 10
     },
     modalContainer: {
         flex: 1,
