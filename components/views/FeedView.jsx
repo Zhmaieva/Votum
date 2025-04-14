@@ -56,13 +56,6 @@ const FeedView = () => {
                         <AwesomeCard
                             item={item}
                             handleVote={async (itemId, optionId) => {
-                                const result = await voteOnPoll(optionId);
-
-                                if (result.success) {
-                                    console.log('Voted successfully!');
-                                } else {
-                                    console.error('Vote failed:', result.error);
-                                }
                             }}
                             loggedInUserId={loggedInUserId}
                         />

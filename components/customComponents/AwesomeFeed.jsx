@@ -12,16 +12,23 @@ const { height, width } = Dimensions.get('window');
 const POLL_HEIGHT = height * 0.82;
 const NEXT_POLL_OFFSET = height * 0.18;
 import { Colors } from '../../utils/colorUtils';
-import { globalEventEmitter } from "../../shared/common";
+import {getDataService, globalEventEmitter} from "../../shared/common";
 import AwesomeLink from "./AwesomeLink";
 import {useFocusEffect} from "@react-navigation/native";
-import {getPollOptions} from "../../shared/api/apiClient";
+import {fetchMyProfile, getPollOptions} from "../../shared/api/apiClient";
 
 const AwesomeFeed = ({ data, onRefresh, refreshing, renderItem, isUserProfileView = false }) => {
     const scrollY = useRef(new Animated.Value(0)).current;
     const [preloadedData, setPreloadedData] = useState(data);
 
     const timeoutRef = useRef(setTimeout(() => {}, 100));
+
+    useEffect(() => {
+        if (!getDataService().getUser())
+            fetchMyProfile().then(res => {
+                getDataService().setUser(res);
+            });
+    },[])
 
     useEffect(() => {
         if (data.length === 0) {
@@ -101,18 +108,32 @@ const AwesomeFeed = ({ data, onRefresh, refreshing, renderItem, isUserProfileVie
         }
     };
 
+    globalEventEmitter.on('vote', ({ pollId, options }) => {
+        setPreloadedData(prevData => {
+            const updatedData = [...prevData];
+            const poll = updatedData.find(x => x.id === pollId);
+            if (poll) {
+                poll.options = options;
+                return updatedData;
+            }
+            return prevData;
+        });
+    })
+
     const updatePoll = async (index) => {
-        console.log('loading poll', preloadedData[index].question);
-        const pollOptions = await getPollOptions(preloadedData[index].id);
-        if (pollOptions) {
-            setPreloadedData(prevData => {
-                const updatedData = [...prevData]; // Create a copy of the data
-                updatedData[index] = {
-                    ...updatedData[index],
-                    options: pollOptions, // Update the specific poll's options
-                };
-                return updatedData; // Return the updated data
-            });
+        console.log(JSON.stringify(preloadedData[index]));
+        if (preloadedData[index].options.some(x => x.voted) || preloadedData[index].user?.userId === getDataService().getUser()?.userId) {
+            const pollOptions = await getPollOptions(preloadedData[index].id);
+            if (pollOptions) {
+                setPreloadedData(prevData => {
+                    const updatedData = [...prevData]; // Create a copy of the data
+                    updatedData[index] = {
+                        ...updatedData[index],
+                        options: pollOptions, // Update the specific poll's options
+                    };
+                    return updatedData; // Return the updated data
+                });
+            }
         }
 
         clearTimeout(timeoutRef.current);

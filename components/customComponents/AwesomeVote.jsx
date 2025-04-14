@@ -12,10 +12,11 @@ import {
 import { Colors } from '../../utils/colorUtils';
 import { Ionicons } from '@expo/vector-icons';
 import ReportPoll from "./AwesomeReportPoll";
-import { onShare } from "../../shared/common";
+import {globalEventEmitter, onShare} from "../../shared/common";
 import AwesomeLikeButton from "./AwesomeLikeButton";
 import { AwesomeModal } from './AwesomeModal'
 import {useFocusEffect} from "@react-navigation/native";
+import {voteOnPoll} from "../../shared/api/apiClient";
 
 const formatFollowers = (num) => {
 
@@ -78,15 +79,19 @@ const AwesomeVote = ({
     }, [selected, pollExpired, createdByUser]);
 
     useEffect(() => {
+        refreshOptions(options);
+    }, [options]);
+
+    const refreshOptions = (newOptions) => {
         let optionsMapped = [];
         setOptionsData(prevOptions =>
-        {
-            optionsMapped = prevOptions.map(o => {
-                const updated = options.find(u => u.id === o.id);
-                return updated ? { ...o, votesCount: updated.votesCount } : o;
-            });
-            return optionsMapped;
-        }
+            {
+                optionsMapped = prevOptions.map(o => {
+                    const updated = newOptions.find(u => u.id === o.id);
+                    return updated ? { ...o, votesCount: updated.votesCount } : o;
+                });
+                return optionsMapped;
+            }
         );
 
         const totalVotes = optionsMapped.reduce((sum, o) => sum + (o.votesCount || 0), 0);
@@ -119,14 +124,17 @@ const AwesomeVote = ({
 
         const hasChange =
             !percentMap.current ||
-            options.some((opt) => {
+            newOptions.some((opt) => {
                 const prev = prevPercentMap.current?.get(opt.id);
                 const curr = percentMap.current.get(opt.id);
                 return prev !== curr;
             });
 
-        if (!hasChange)
+        if (!hasChange) {
+            console.log('options has no changes');
             return;
+        }
+        console.log('options reloading');
 
         if (prevPercentMap.current)
             animation.setValue(0);
@@ -136,18 +144,32 @@ const AwesomeVote = ({
             duration: 600,
             useNativeDriver: false,
         }).start();
-    }, [options]);
+    }
 
-    const handleVote = (optionId) => {
-        setOptionsData(optionsData.map(opt =>
+    const handleVote = async (optionId) => {
+        const newOptions = optionsData.map(opt =>
             opt.id === optionId ? {
                 ...opt,
                 votesCount: opt.votesCount + 1,
                 voted: true,
-            } : opt
-        ));
+            } : opt);
+
+        refreshOptions(newOptions);
 
         setSelected(optionId);
+
+        const result = await voteOnPoll(optionId);
+
+        if (result.success) {
+            console.log('Voted successfully!');
+        } else {
+            console.error('Vote failed:', result.error);
+        }
+
+        setTimeout(() => {
+            globalEventEmitter.emit('vote', { pollId: id, options: newOptions});
+        },500);
+
         if (onVote) {
             onVote(optionId);
         }
