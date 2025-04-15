@@ -17,7 +17,15 @@ import AwesomeLink from "./AwesomeLink";
 import {useFocusEffect} from "@react-navigation/native";
 import {fetchMyProfile, getPollOptions} from "../../shared/api/apiClient";
 
-const AwesomeFeed = ({ data, onRefresh, refreshing, renderItem, isUserProfileView = false }) => {
+const AwesomeFeed = ({
+                         data,
+                         onRefresh,
+                         refreshing,
+                         renderItem,
+                         isUserProfileView = false,
+                         isLikedPollsView = false,
+                         isSearchView = false
+}) => {
     const scrollY = useRef(new Animated.Value(0)).current;
     const [preloadedData, setPreloadedData] = useState(data);
 
@@ -69,7 +77,7 @@ const AwesomeFeed = ({ data, onRefresh, refreshing, renderItem, isUserProfileVie
         if (item?.type === 'placeholder') {
             if (isUserProfileView) {
                 return (
-                    <View style={[styles.placeholderContainer]}>
+                    <View style={styles.placeholderContainerUserProfile}>
                         <Text style={styles.placeholderText}>
                             This user hasn't created any polls yet
                         </Text>
@@ -77,10 +85,32 @@ const AwesomeFeed = ({ data, onRefresh, refreshing, renderItem, isUserProfileVie
                 );
             }
 
+            if (isLikedPollsView) {
+                return (
+                    <View style={styles.placeholderContainerLikes}>
+                        <Text style={styles.placeholderText}>
+                            You haven't liked any polls yet. Go spread some love
+                        </Text>
+                    </View>
+                );
+            }
+
+            if (isSearchView) {
+                return (
+                    <View style={styles.placeholderContainerSearch}>
+                        <Text style={styles.placeholderText}>
+                            Start your search
+                        </Text>
+                    </View>
+                );
+            }
+
             return (
                 <View style={[styles.placeholderContainer, styles.row]}>
-                    <Text style={styles.placeholderText}>No new polls, try later or</Text>
-                    <AwesomeLink text="create one." screenName='Add'/>
+                    <Text style={styles.placeholderText}>
+                        No new polls, try later or{' '}
+                    </Text>
+                    <AwesomeLink text="create one." screenName='Add' />
                 </View>
             );
         }
@@ -195,7 +225,30 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 80,
+        //marginBottom: 40,
+        backgroundColor: Colors.white,
+    },
+    placeholderContainerUserProfile: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingBottom: 100,
+        backgroundColor: Colors.white,
+    },
+    placeholderContainerSearch: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: Colors.white,
+        paddingBottom: 50
+    },
+    placeholderContainerLikes: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingLeft: 20,
+        paddingRight: 20,
+        paddingTop: 60,
         backgroundColor: Colors.white,
     },
     placeholderText: {

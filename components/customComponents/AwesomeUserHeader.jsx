@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { Colors } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from "./AwesomeButton";
-import { globalEventEmitter } from "../../shared/common";
+import {getDataService, globalEventEmitter} from "../../shared/common";
 import { followProfile, unfollowProfile } from "../../shared/api/apiClient";
 import { useNavigation } from "@react-navigation/native";
-import { AwesomeModal } from "./AwesomeModal"; // make sure path is correct
+import { AwesomeModal } from "./AwesomeModal";
 
 const formatFollowers = (num) => {
     if (num >= 1_000_000_000) return (num / 1_000_000_000).toFixed(1) + 'B';
@@ -65,7 +65,7 @@ const AwesomeUserHeader = ({
 
     const content = (
         <View style={[styles.row, styles.userContainer]}>
-            <View style={[styles.row, styles.firstSubContainer]}>
+            <View style={[styles.row, styles.firstSubContainer, {marginRight: 10}]}>
                 <View style={styles.avatar}>
                     <Image source={{ uri: user.image }} style={styles.avatar} />
                 </View>
@@ -98,7 +98,7 @@ const AwesomeUserHeader = ({
                             <View />
                         ) : (
                             <AwesomeButton
-                                color={Color.WHITE}
+                                color={Color.BLACK}
                                 text="Edit"
                                 screenName="Edit profile"
                                 params={{ user }}
@@ -169,9 +169,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
     },
     avatar: {
-        height: 46,
-        width: 46,
-        marginRight: 8,
+        height: 50,
+        width: 50,
     },
     font14: {
         fontSize: 14,

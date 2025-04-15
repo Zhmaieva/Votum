@@ -68,9 +68,10 @@ const AddView = () => {
         navigation.navigate('Preview Poll', {
             question,
             options: filteredOptions,
-            selectedDuration
+            selectedDuration: selectedOption
         });
     };
+
 
     const [focusedField, setFocusedField] = useState(null);
 
@@ -104,6 +105,7 @@ const AddView = () => {
                                 style={[styles.inputWithIcon, styles.fontFamily]}
                                 placeholder={item.label}
                                 value={item.text}
+                                placeholderTextColor='#ababab'
                                 onChangeText={(text) => updateOption(item.id, text)}
                                 maxLength={40}
                                 onFocus={() => setFocusedField(item.id)}
@@ -126,10 +128,7 @@ const AddView = () => {
                             <Text>Ends in </Text>
                             <View style={styles.segmentedControlsContainer}>
                                 <AwesomeSegmentedControls
-                                    leftOption='1h'
-                                    centerOption='1d'
-                                    rightOption='1w'
-                                    lastOption='1m'
+                                    options={["1h", "1d", "1w", "1m"]}
                                     onDisplayModeChangedHandler={setSelectedOption}
                                 />
                             </View>
@@ -159,7 +158,7 @@ const AddView = () => {
             </View>
             <View style={styles.container}>
                 <AwesomeButton
-                    color={Color.GREEN}
+                    color={Color.BLACK}
                     text="Create poll"
                     additionalFunc={handleCreatePoll}
                 />
@@ -186,7 +185,7 @@ const styles = StyleSheet.create({
     },
     inputQuestion: {
         flex: 1,
-        fontWeight: '500',
+        //fontWeight: '500',
         fontSize: 18,
         color: Colors.black,
     },

@@ -1,11 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import { Colors } from '../../utils/colorUtils';
 
-const AwesomeSegmentedControls = ({ leftOption, centerOption, rightOption, lastOption, onDisplayModeChangedHandler }) => {
-    const [selected, setSelected] = useState(leftOption);
+const AwesomeSegmentedControls = ({ options = [], onDisplayModeChangedHandler }) => {
+    const defaultOption = options.includes("1d") ? "1d" : options[0];
+    const [selected, setSelected] = useState(defaultOption);
 
-    const onPressHandler = (option) => {
+    useEffect(() => {
+        if (defaultOption) {
+            onDisplayModeChangedHandler(defaultOption);
+        }
+    }, [defaultOption]);
+
+    const handlePress = (option) => {
         setSelected(option);
         onDisplayModeChangedHandler(option);
     };
@@ -13,26 +20,17 @@ const AwesomeSegmentedControls = ({ leftOption, centerOption, rightOption, lastO
     return (
         <View style={styles.container}>
             <View style={styles.switcher}>
-                <Pressable style={[styles.tab, selected === leftOption && styles.activeTab]} onPress={() => onPressHandler(leftOption)}>
-                    <Text style={[styles.text, selected === leftOption && styles.activeText]}>
-                        {leftOption}
-                    </Text>
-                </Pressable>
-                <Pressable style={[styles.tab, selected === centerOption && styles.activeTab]} onPress={() => onPressHandler(centerOption)}>
-                    <Text style={[styles.text, selected === centerOption && styles.activeText]}>
-                        {centerOption}
-                    </Text>
-                </Pressable>
-                <Pressable style={[styles.tab, selected === rightOption && styles.activeTab]} onPress={() => onPressHandler(rightOption)}>
-                    <Text style={[styles.text, selected === rightOption && styles.activeText]}>
-                        {rightOption}
-                    </Text>
-                </Pressable>
-                <Pressable style={[styles.tab, selected === lastOption && styles.activeTab]} onPress={() => onPressHandler(lastOption)}>
-                    <Text style={[styles.text, selected === lastOption && styles.activeText]}>
-                        {lastOption}
-                    </Text>
-                </Pressable>
+                {options.map((option) => (
+                    <Pressable
+                        key={option}
+                        style={[styles.tab, selected === option && styles.activeTab]}
+                        onPress={() => handlePress(option)}
+                    >
+                        <Text style={[styles.text, selected === option && styles.activeText]}>
+                            {option}
+                        </Text>
+                    </Pressable>
+                ))}
             </View>
         </View>
     );
@@ -51,21 +49,23 @@ const styles = StyleSheet.create({
     },
     tab: {
         height: 40,
-        width: 40,
+        minWidth: 40,
+        paddingHorizontal: 10,
         justifyContent: 'center',
         alignItems: "center",
-        borderColor: Colors.black
+        borderColor: Colors.black,
     },
     text: {
         fontSize: 14,
         color: Colors.grey,
     },
     activeTab: {
-        backgroundColor: Colors.black
+        borderColor: Colors.black,
+        borderWidth: 1,
     },
     activeText: {
-        color: Colors.white,
-        fontWeight: "bold",
+        color: Colors.black,
+        fontWeight: '600'
     },
 });
 

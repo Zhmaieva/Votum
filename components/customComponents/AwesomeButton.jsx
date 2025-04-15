@@ -127,7 +127,9 @@ const styles = StyleSheet.create({
         shadowRadius: 0,
         shadowOffset: { width: 2, height: 2 },
         shadowOpacity: 1,
-        shadowColor: Colors.black,
+        borderWidth: 1,
+        borderColor: Colors.black,
+        shadowColor: Colors.green,
     },
     buttonBlack: {
         backgroundColor: Colors.black,
@@ -162,6 +164,7 @@ const styles = StyleSheet.create({
     buttonMainText: {
         fontSize: 14,
         textAlign: 'center',
+        fontWeight: '600',
     },
     buttonBlackText: {
         color: Colors.white,

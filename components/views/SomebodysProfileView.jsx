@@ -5,14 +5,13 @@ import AwesomeVote from "../customComponents/AwesomeVote";
 import AwesomeUserHeader from "../customComponents/AwesomeUserHeader";
 import AwesomeSwitcher from "../customComponents/AwesomeSwitcher";
 import AwesomeFeed from "../customComponents/AwesomeFeed";
+import AwesomeLoadingHeader from "../customComponents/AwesomeLoadingHeader";
 import { fetchUserProfile } from "../../shared/api/apiClient";
 import { getDataService } from "../../shared/common";
-import {useNavigation, useRoute} from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
-const SomebodysProfileView = ({route}) => {
-
-    const {userId} = route.params;
-
+const SomebodysProfileView = ({ route }) => {
+    const { userId } = route.params;
     const [selectedOption, setSelectedOption] = useState("active");
     const [modalVisible, setModalVisible] = useState(false);
     const [user, setUser] = useState(null);
@@ -26,23 +25,25 @@ const SomebodysProfileView = ({route}) => {
     useEffect(() => {
         const myId = getDataService().getUser()?.userId;
         setLoggedInUserId(myId);
-
         fetchUserProfile(userId).then(setUser);
     }, []);
 
-    if (!user) return null;
+    const selectedPollData = selectedOption === "active" ? pollData : closedPollData;
 
     return (
         <View style={styles.container}>
-
             <SafeAreaView style={styles.safeArea}>
                 <View style={styles.contentWrapper}>
                     <View style={styles.bottomMargin20}>
-                        <AwesomeUserHeader
-                            userData={user}
-                            loggedInUserId={loggedInUserId}
-                            isProfilePage={true}
-                        />
+                        {user === null ? (
+                            <AwesomeLoadingHeader />
+                        ) : (
+                            <AwesomeUserHeader
+                                userData={user}
+                                loggedInUserId={loggedInUserId}
+                                isProfilePage={true}
+                            />
+                        )}
                     </View>
                     <View style={[styles.followersContainer, styles.row]}>
                         <View style={styles.followersLeftSubContainer}>

@@ -2,12 +2,12 @@ import React from 'react';
 import { View, TextInput, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { Colors } from '../../utils/colorUtils';
 
-const SearchBar = ({ searchQuery, setSearchQuery }) => {
+const AwesomeSearch = ({ searchQuery, setSearchQuery }) => {
     return (
         <View style={styles.searchContainer}>
             <TextInput
                 style={styles.searchInput}
-                placeholder="Search polls..."
+                placeholder="Search polls"
                 placeholderTextColor={Colors.grey}
                 value={searchQuery}
                 onChangeText={setSearchQuery}
@@ -29,11 +29,14 @@ const styles = StyleSheet.create({
         flex: 1,
         borderColor: Colors.grey,
         borderWidth: 1,
-        borderRadius: 5,
         height: 40,
         paddingHorizontal: 10,
         backgroundColor: Colors.white,
         color: Colors.black,
+        shadowRadius: 0,
+        shadowOffset: { width: 2, height: 2 },
+        shadowOpacity: 1,
+        shadowColor: Colors.green,
     },
     searchButton: {
         height: 40,
@@ -42,7 +45,10 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.black,
         justifyContent: 'center',
         alignItems: 'center',
-        borderRadius: 5,
+        shadowRadius: 0,
+        shadowOffset: { width: 2, height: 2 },
+        shadowOpacity: 1,
+        shadowColor: Colors.green,
     },
     searchButtonText: {
         color: Colors.white,
@@ -50,4 +56,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default SearchBar;
+export default AwesomeSearch;

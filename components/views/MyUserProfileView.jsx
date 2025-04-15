@@ -1,27 +1,22 @@
-import React, {useEffect, useState} from "react";
-import {View, Text, StyleSheet, SafeAreaView, ScrollView, Modal, Pressable} from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, Modal, Pressable } from "react-native";
 import { Colors } from '../../utils/colorUtils';
 import AwesomeVote from "../customComponents/AwesomeVote";
 import AwesomeUserHeader from "../customComponents/AwesomeUserHeader";
 import AwesomeSwitcher from "../customComponents/AwesomeSwitcher";
 import AwesomeFeed from "../customComponents/AwesomeFeed";
+import AwesomeLoadingPoll from "../customComponents/AwesomeLoadingPoll";
+import AwesomeLoadingHeader from "../customComponents/AwesomeLoadingHeader";
 import { fetchMyProfile } from "../../shared/api/apiClient";
-import {useFocusEffect} from "@react-navigation/native";
-import { useNavigation } from '@react-navigation/native';
-import {getDataService} from "../../shared/common";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { getDataService } from "../../shared/common";
 
-const pollData = [
-
-];
-
-const closedPollData = [
-];
+const pollData = [];
+const closedPollData = [];
 
 const MyUserProfileView = () => {
     const [selectedOption, setSelectedOption] = useState("active");
-
     const [modalVisible, setModalVisible] = useState(false);
-
     const [user, setUser] = useState(null);
 
     useFocusEffect(
@@ -39,28 +34,38 @@ const MyUserProfileView = () => {
     const navigation = useNavigation();
 
     const onPressHandler = (screenName) => {
-        navigation.navigate(screenName)
-    }
+        navigation.navigate(screenName);
+    };
+
+    const selectedPollData = selectedOption === "active" ? pollData : closedPollData;
 
     return (
         <View style={styles.container}>
             <SafeAreaView style={styles.safeArea}>
                 <View style={styles.contentWrapper}>
                     <View style={styles.bottomMargin20}>
-                        <AwesomeUserHeader userData={user} loggedInUserId={user?.userId} isProfilePage={true}/>
+                        {user === null ? (
+                            <AwesomeLoadingHeader />
+                        ) : (
+                            <AwesomeUserHeader userData={user} loggedInUserId={user?.userId} isProfilePage={true} />
+                        )}
                     </View>
                     <View style={[styles.followersContainer, styles.row]}>
                         <View style={styles.followersLeftSubContainer}>
                             <Text style={styles.followersText}>213</Text>
                             <Text style={styles.followersText}>polls</Text>
                         </View>
-                        <Pressable style={styles.followersCenterSubContainer}
-                                   onPress={()=>onPressHandler('Followers')}>
+                        <Pressable
+                            style={styles.followersCenterSubContainer}
+                            onPress={() => onPressHandler('Followers')}
+                        >
                             <Text style={styles.followersText}>{user?.followersNumber ?? 0}</Text>
                             <Text style={styles.followersText}>followers</Text>
                         </Pressable>
-                        <Pressable style={styles.followersRightSubContainer}
-                                   onPress={()=>onPressHandler('Following')}>
+                        <Pressable
+                            style={styles.followersRightSubContainer}
+                            onPress={() => onPressHandler('Following')}
+                        >
                             <Text style={styles.followersText}>{user?.followingNumber ?? 0}</Text>
                             <Text style={styles.followersText}>following</Text>
                         </Pressable>
@@ -73,24 +78,32 @@ const MyUserProfileView = () => {
                             onDisplayModeChangedHandler={setSelectedOption}
                         />
                     </View>
-                    <AwesomeFeed
-                        data={selectedOption === "active" ? pollData : closedPollData}
-                        onRefresh={() => {}}
-                        refreshing={false}
-                        renderItem={(item) => (
-                            <AwesomeVote
-                                key={item?.id ?? item}
-                                id={item?.id ?? item}
-                                question={item?.question}
-                                options={item?.options}
-                                timeLeft={item?.timeLeft}
-                                isLiked={item?.isLiked ?? false}
-                                //onVote={(option) => handleVote(item?.id, option)}
-                                createdByUser={item.createdByUser}
-                                //onDeletePoll={() => handleDeletePoll(item.id)}
-                            />
-                        )}
-                    />
+
+                    {user === null ? (
+                        <View style={styles.container}>
+                            {[1, 2, 3].map((_, idx) => (
+                                <AwesomeLoadingPoll key={idx} />
+                            ))}
+                        </View>
+                    ) : (
+                        <AwesomeFeed
+                            data={selectedPollData}
+                            onRefresh={() => {}}
+                            refreshing={false}
+                            isUserProfileView={true}
+                            renderItem={(item) => (
+                                <AwesomeVote
+                                    key={item?.id ?? item}
+                                    id={item?.id ?? item}
+                                    question={item?.question}
+                                    options={item?.options}
+                                    timeLeft={item?.timeLeft}
+                                    isLiked={item?.isLiked ?? false}
+                                    createdByUser={item.createdByUser}
+                                />
+                            )}
+                        />
+                    )}
                 </View>
             </SafeAreaView>
             <Modal
@@ -98,9 +111,9 @@ const MyUserProfileView = () => {
                 transparent={true}
                 visible={modalVisible}
                 onRequestClose={() => {
-                    //Alert.alert('Modal has been closed.');
                     setModalVisible(!modalVisible);
-                }}>
+                }}
+            >
                 <Text>TEST TEST</Text>
             </Modal>
         </View>
@@ -170,32 +183,21 @@ const styles = StyleSheet.create({
         fontSize: 14
     },
     followersContainer: {
-        //borderTopWidth: 1,
         borderBottomWidth: 1,
         borderColor: '#888',
         justifyContent: 'space-between',
-        //paddingTop: 5,
         paddingBottom: 5,
-        //height: 50,
-        //marginBottom:  20
     },
     followersLeftSubContainer: {
-        //borderRightWidth: 1,
         width: '23%',
-        //borderColor: Colors.grey,
         alignItems: 'center',
-        //backgroundColor: Colors.green
     },
     followersCenterSubContainer: {
-        //borderRightWidth: 1,
         width: '23%',
-        //borderColor: Colors.grey,
         alignItems: 'center'
     },
     followersRightSubContainer: {
-        //borderRightWidth: 1,
         width: '23%',
-        //borderColor: Colors.grey,
         alignItems: 'center'
     },
     followersText: {

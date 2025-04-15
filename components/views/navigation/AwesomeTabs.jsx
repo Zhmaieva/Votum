@@ -194,7 +194,7 @@ export function AwesomeTabs() {
                     let iconName;
                     if (route.name === 'User') iconName = focused ? 'flame' : 'flame-outline';
                     if (route.name === 'Feed') iconName = focused ? 'leaf' : 'leaf-outline';
-                    if (route.name === 'Voted') iconName = focused ? 'heart' : 'heart-outline';
+                    if (route.name === 'Liked') iconName = focused ? 'heart' : 'heart-outline';
                     if (route.name === 'Search') iconName = focused ? 'search' : 'search-outline';
                     if (route.name === 'Add') iconName = focused ? 'add-circle' : 'add-circle-outline';
 
@@ -206,7 +206,7 @@ export function AwesomeTabs() {
         >
             <Tab.Screen name="User" component={UserStack} options={{ headerShown: false, gestureEnabled: true }} />
             <Tab.Screen name="Feed" component={FeedStack} options={{ headerShown: false, gestureEnabled: true }} />
-            <Tab.Screen name="Voted" component={VotedStack} options={{ headerShown: false, gestureEnabled: true }} />
+            <Tab.Screen name="Liked" component={VotedStack} options={{ headerShown: false, gestureEnabled: true }} />
             <Tab.Screen name="Add" component={AddStack} options={{ headerShown: false, gestureEnabled: true }} />
             <Tab.Screen name="Search" component={SearchStack} options={{ headerShown: false, gestureEnabled: true }} />
         </Tab.Navigator>

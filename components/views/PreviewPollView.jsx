@@ -65,7 +65,7 @@ const PreviewPollView = () => {
             <View style={styles.container}>
                 <View style={styles.margin10}>
                     <AwesomeButton
-                        color={Color.GREEN}
+                        color={Color.BLACK}
                         text="Publish"
                         additionalFunc={async () => {
                             await createPoll(question, options.map(o => o.text), selectedDuration);
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
     questionText: {
         fontSize: 18,
         color: Colors.black,
-        fontWeight: '500',
+        fontWeight: 'bold',
     },
     pollBox: {
         borderWidth: 1,

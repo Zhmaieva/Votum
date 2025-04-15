@@ -35,7 +35,7 @@ const LikedView = () => {
     };
 
     return (
-        <AwesomeFeed data={polls} onRefresh={onRefresh} renderItem={(item) => {
+        <AwesomeFeed data={polls} isLikedPollsView={true} onRefresh={onRefresh} renderItem={(item) => {
             return (
                 <View style={styles.container}>
                     <AwesomeCard item={item} handleVote={handleVote} />

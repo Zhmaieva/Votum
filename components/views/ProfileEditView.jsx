@@ -94,7 +94,7 @@ const ProfileEditView = ({ route }) => {
                 <View style={styles.marginTest}>
                     <AwesomeButton
                         text="Log out"
-                        color={Color.GREEN}
+                        color={Color.BLACK}
                         screenName={null}
                         additionalFunc={async () => {
                             await signOut();
@@ -105,7 +105,7 @@ const ProfileEditView = ({ route }) => {
 
             <AwesomeButton
                 text="Delete profile"
-                color={Color.BLACK}
+                color={Color.WHITE}
                 screenName={null}
                 additionalFunc={()=>setDeleteModalVisible(true)}
             />
