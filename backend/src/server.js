@@ -19,6 +19,11 @@ const {updateUserImage} = require("./services/userService");
 const app = express();
 app.use(express.json());
 
+// Grab the port from CLI args
+const args = process.argv;
+const portIndex = args.indexOf('-p');
+const port = (portIndex !== -1 && args[portIndex + 1]) ? parseInt(args[portIndex + 1], 10) : 3000;
+
 function generateToken({id, username}) {
     return jwt.sign({ id, username }, SECRET_KEY);//let's make it non-expirale for convenience
 }
@@ -443,6 +448,6 @@ app.use(async (err, req, res, next) => {
     res.status(500).json({ message: 'Something went wrong, please try again later.' });
 });
 
-app.listen(3000, () => {
-    console.log("Server is running on port 3000");
+app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
 });
