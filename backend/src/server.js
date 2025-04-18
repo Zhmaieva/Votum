@@ -16,6 +16,7 @@ const sendEmail = require("./mail/mailing");
 const {validateEmail, validateUsername, validatePassword} = require("./validation");
 const {uploadMiddleware} = require("./middleware/fileUploadMiddleware");
 const {updateUserImage} = require("./services/userService");
+const {getPollById} = require("./db/dal/pollQueries");
 
 const app = express();
 app.use(express.json());
@@ -372,6 +373,42 @@ app.get('/polls/:id?/options', authMiddleware, async (req, res, next) => {
             return res.json(result);
         else
             return res.status(404).json({message: 'poll not found'});
+    }
+    catch (e) {
+        next(e);
+    }
+});
+
+app.get('/polls/:id?/links', authMiddleware, async (req, res, next) => {
+    try {
+        const pollId = req.params.id;
+
+        return res.status(200).json({ link: `https://api-voteapp.beampie.com/polls/share/${pollId}` });
+    } catch (e) {
+        next(e);
+    }
+});
+
+app.get('/polls/share/:id', async (req, res) => {
+    try {
+        const pollId = req.params.id;
+        const poll = await getPollById(pollId);
+
+        if (!poll) return res.status(404).send('Poll not found');
+
+        const html = `
+          <html>
+            <head>
+              <meta property="og:title" content="${poll.question}" />
+              <meta property="og:description" content="${poll.options.map(o => o.text).join(' | ')}" />
+              <meta property="og:image" content="${poll.user.image}" />
+              <meta property="og:url" content="https://www.jlofans.com/" />
+              <!-- <meta http-equiv="refresh" content="0; url=yourapp://profile/" /> -->
+            </head>
+            <body>Redirecting...</body>
+          </html>
+        `;
+        res.send(html);
     }
     catch (e) {
         next(e);

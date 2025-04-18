@@ -1,13 +1,15 @@
 import {Alert, Share} from "react-native";
 import mitt from 'mitt';
+import {getPollShareLink} from "./api/apiClient";
 
 export const globalEventEmitter = new mitt();
 
-export const onShare = async () => {
+export const onShare = async (pollId) => {
     try {
+        const link = await getPollShareLink(pollId);
+
         const result = await Share.share({
-            message:
-                'here is a link',
+            message: link,
         });
         if (result.action === Share.sharedAction) {
             if (result.activityType) {

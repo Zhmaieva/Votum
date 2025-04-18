@@ -91,6 +91,68 @@ const fetchPolls = async (userId) => {
     }
 };
 
+const getPollById = async (pollId) => {
+    try {
+        const pollQuery = `
+            SELECT p.id,
+                   p.question,
+                   p.ends_in,
+                   u.username,
+                   up.user_id,
+                   up.image,
+                   up.followers_number
+            FROM polls p
+                     JOIN users u ON p.created_by = u.id
+                     JOIN user_profiles up ON u.id = up.user_id
+            WHERE p.id = $1 AND p.ends_in > NOW() AND p.is_deleted = false;
+        `;
+
+        const pollResult = await pool.query(pollQuery, [pollId]);
+
+        if (pollResult.rows.length === 0) return null;
+
+        const pollRow = pollResult.rows[0];
+
+        const optionsQuery = `
+            SELECT
+                pao.id,
+                pao.poll_id,
+                pao.text,
+                pao.votes_count as "votesCount"
+            FROM poll_answer_options pao
+            WHERE pao.poll_id = $1
+            ORDER BY pao.option_order;
+        `;
+
+        const optionsResult = await pool.query(optionsQuery, [pollId]);
+
+        const options = optionsResult.rows.map(row => ({
+            id: row.id,
+            text: row.text,
+            voted: row.voted,
+            votesCount: row.votesCount
+        }));
+
+        return {
+            id: pollRow.id,
+            question: pollRow.question,
+            endsIn: pollRow.ends_in,
+            options,
+            user: {
+                userId: pollRow.user_id,
+                username: pollRow.username,
+                image: pollRow.image,
+                followersNumber: pollRow.followers_number < 0 ? 0 : pollRow.followers_number,
+                bio: pollRow.user_bio
+            }
+        };
+    } catch (err) {
+        console.error('Error fetching poll by ID:', err);
+        return null;
+    }
+};
+
+
 /**
  * Fetches options for a single poll, sorted by option_order ascending.
  * @param {string} pollId - ID of the poll
@@ -227,6 +289,7 @@ module.exports = {
     createPoll,
     deletePoll,
     fetchPolls,
+    getPollById,
     getPollOptions,
     likePoll,
     unlikePoll,

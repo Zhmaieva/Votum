@@ -280,6 +280,23 @@ export const fetchPolls = async () => {
     }
 };
 
+export const getPollShareLink = async (pollId) => {
+    try {
+        const response = await apiClient.get(`/polls/${pollId}/links`, {
+            headers: {
+                Authorization: `Bearer ${await getToken()}`,
+            },
+        });
+
+        const { link } = response?.data || {};
+        console.log('Poll share link:', link);
+        return link;
+    } catch (err) {
+        console.log('Failed to fetch poll share link:', err.response?.data || err.message);
+        return null;
+    }
+};
+
 export const likePoll = async (id) => {
     try {
         console.log(`liking poll ${id}`);

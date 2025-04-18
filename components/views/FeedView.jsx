@@ -34,7 +34,7 @@ const FeedView = () => {
         return <ActivityIndicator size="large" color="#0000ff" />;
     }
 
-    if (!polls.length) {
+    if (!polls?.length) {
         return (
             <View style={styles.emptyContainer}>
                 <Text style={styles.emptyText}>

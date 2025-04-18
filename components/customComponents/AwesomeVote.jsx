@@ -206,7 +206,7 @@ const AwesomeVote = ({
                             <Pressable style={styles.iconContainer} onPress={()=>setModalVisible(true)}>
                                 <Ionicons name="trash-outline" size={26} color={Colors.black} />
                             </Pressable>
-                            <TouchableOpacity style={styles.iconContainer} onPress={onShare}>
+                            <TouchableOpacity style={styles.iconContainer} onPress={() => onShare(id)}>
                                 <Ionicons name="share-outline" size={28} color={Colors.black} />
                             </TouchableOpacity>
                             <View style={styles.iconContainer}>
@@ -224,7 +224,7 @@ const AwesomeVote = ({
                                     />
                                 )}
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.iconContainer} onPress={onShare}>
+                            <TouchableOpacity style={styles.iconContainer} onPress={() => onShare(id)}>
                                 <Ionicons name="share-outline" size={28} color={Colors.black} />
                             </TouchableOpacity>
                             <View style={styles.iconContainer}>
