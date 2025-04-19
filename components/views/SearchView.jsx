@@ -80,30 +80,6 @@ const styles = StyleSheet.create({
         padding: 20,
         height: "100%",
     },
-    searchContainer: {
-        marginTop: 4,
-        marginBottom: 20,
-        width: '100%'
-    },
-    searchStyle: {
-        borderColor: Colors.grey,
-        borderWidth: 1,
-        height: 40,
-        flexGrow: 1,
-        backgroundColor: Colors.white,
-    },
-    searchButtonStyle: {
-        height: 40,
-        width: 64,
-        marginLeft: 5,
-        backgroundColor: Colors.black,
-        justifyContent: 'center',
-        alignItems: "center",
-    },
-    searchButtonTextStyle: {
-        color: Colors.white,
-        fontFamily: 'arial'
-    },
     alignStyle: {
         justifyContent: 'space-between'
     },

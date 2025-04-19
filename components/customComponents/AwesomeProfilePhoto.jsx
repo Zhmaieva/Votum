@@ -58,12 +58,12 @@ const styles = StyleSheet.create({
     profileImageContainer: {
         alignItems: 'center',
         marginBottom: 20,
+        width: '100%'
     },
     profileImage: {
-        width: 140,
-        height: 140,
-        backgroundColor: Colors.green,
-        /*borderColor: Colors.green,
+        width: '100%',
+        height: 300,
+        /*borderColor: Colors.white,
         backgroundColor: Colors.white,
         borderWidth: 1,
         shadowRadius: 0,
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
             height: 2
         },
         shadowOpacity: 1,
-        shadowColor: Colors.green,*/
+        shadowColor: Colors.grey,*/
     },
 });
 

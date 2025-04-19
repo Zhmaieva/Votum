@@ -192,11 +192,11 @@ export function AwesomeTabs() {
             screenOptions={({ route }) => ({
                 tabBarIcon: ({ focused, color, size }) => {
                     let iconName;
-                    if (route.name === 'User') iconName = focused ? 'flame' : 'flame-outline';
+                    if (route.name === 'My profile') iconName = focused ? 'flame' : 'flame-outline';
                     if (route.name === 'Feed') iconName = focused ? 'leaf' : 'leaf-outline';
                     if (route.name === 'Liked') iconName = focused ? 'heart' : 'heart-outline';
                     if (route.name === 'Search') iconName = focused ? 'search' : 'search-outline';
-                    if (route.name === 'Add') iconName = focused ? 'add-circle' : 'add-circle-outline';
+                    if (route.name === 'Add Poll') iconName = focused ? 'add-circle' : 'add-circle-outline';
 
                     return <Ionicons name={iconName} size={size} color={color} />;
                 },
@@ -204,11 +204,11 @@ export function AwesomeTabs() {
                 tabBarInactiveTintColor: Colors.black,
             })}
         >
-            <Tab.Screen name="User" component={UserStack} options={{ headerShown: false, gestureEnabled: true }} />
             <Tab.Screen name="Feed" component={FeedStack} options={{ headerShown: false, gestureEnabled: true }} />
-            <Tab.Screen name="Liked" component={VotedStack} options={{ headerShown: false, gestureEnabled: true }} />
-            <Tab.Screen name="Add" component={AddStack} options={{ headerShown: false, gestureEnabled: true }} />
             <Tab.Screen name="Search" component={SearchStack} options={{ headerShown: false, gestureEnabled: true }} />
+            <Tab.Screen name="Add Poll" component={AddStack} options={{ headerShown: false, gestureEnabled: true }} />
+            <Tab.Screen name="Liked" component={VotedStack} options={{ headerShown: false, gestureEnabled: true }} />
+            <Tab.Screen name="My profile" component={UserStack} options={{ headerShown: false, gestureEnabled: true }} />
         </Tab.Navigator>
     );
 }

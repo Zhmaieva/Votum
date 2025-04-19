@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
     },
     searchInput: {
         flex: 1,
-        borderColor: Colors.grey,
+        borderColor: Colors.black,
         borderWidth: 1,
         height: 40,
         paddingHorizontal: 10,

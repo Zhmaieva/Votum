@@ -217,7 +217,6 @@ const styles = StyleSheet.create({
     pollContainer: {
         height: POLL_HEIGHT,
         backgroundColor: Colors.white,
-        borderRadius: 0,
         marginBottom: -NEXT_POLL_OFFSET,
         justifyContent: 'flex-start',
     },
@@ -225,7 +224,6 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        //marginBottom: 40,
         backgroundColor: Colors.white,
     },
     placeholderContainerUserProfile: {

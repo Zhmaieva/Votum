@@ -13,18 +13,18 @@ const AwesomeSwitcher = ({ leftOption, rightOption, onDisplayModeChangedHandler 
     return (
         <View style={styles.container}>
             <View style={styles.switcher}>
-                <View
-                    style={[
-                        styles.indicator,
-                        { left: selected === leftOption ? 0 : "50%" },
-                    ]}
-                />
-                <Pressable style={styles.tab} onPress={() => onPressHandler(leftOption)}>
+                <Pressable
+                    style={[styles.tab, selected === leftOption && styles.activeTabLeft]}
+                    onPress={() => onPressHandler(leftOption)}
+                >
                     <Text style={[styles.text, selected === leftOption && styles.activeText]}>
                         {leftOption}
                     </Text>
                 </Pressable>
-                <Pressable style={styles.tab} onPress={() => onPressHandler(rightOption)}>
+                <Pressable
+                    style={[styles.tab, selected === rightOption && styles.activeTabRight]}
+                    onPress={() => onPressHandler(rightOption)}
+                >
                     <Text style={[styles.text, selected === rightOption && styles.activeText]}>
                         {rightOption}
                     </Text>
@@ -42,31 +42,42 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         width: "100%",
         position: "relative",
-        borderColor: Colors.grey,
+        //borderColor: Colors.black,
         overflow: "hidden",
     },
     tab: {
+        height: 40,
         flex: 1,
-        paddingVertical: 14,
+        justifyContent: 'center',
         alignItems: "center",
-        zIndex: 1,
     },
     text: {
         fontSize: 14,
         color: Colors.grey,
     },
-    activeText: {
-        color: Colors.black,
-        fontWeight: "bold",
-    },
-    indicator: {
-        position: "absolute",
-        width: "50%",
-        height: "100%",
+    activeTabLeft: {
         backgroundColor: Colors.white,
         borderBottomWidth: 1,
         borderColor: Colors.black,
-        transition: "left 0.3s ease",
+        shadowRadius: 0,
+        shadowOffset: { width: -1, height: 2 },
+        shadowOpacity: 1,
+        shadowColor: Colors.green,
+        marginBottom: 3
+    },
+    activeTabRight: {
+        backgroundColor: Colors.white,
+        borderBottomWidth: 1,
+        borderColor: Colors.black,
+        shadowRadius: 0,
+        shadowOffset: { width: 1, height: 2 },
+        shadowOpacity: 1,
+        shadowColor: Colors.green,
+        marginBottom: 3
+    },
+    activeText: {
+        color: Colors.black,
+        fontWeight: '600'
     },
 });
 

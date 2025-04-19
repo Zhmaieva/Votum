@@ -152,8 +152,8 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     profileImage: {
-        width: 120,
-        height: 120,
+        width: 80,
+        height: 80,
         marginBottom: 10,
     },
     imagePickerButton: {

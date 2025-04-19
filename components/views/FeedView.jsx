@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import AwesomeFeed from "../customComponents/AwesomeFeed";
 import AwesomeCard from "../customComponents/AwesomeCard";
-import { View, StyleSheet, ActivityIndicator, Text } from 'react-native';
+import {View, StyleSheet, ActivityIndicator, Text, SafeAreaView} from 'react-native';
 import {fetchPolls, fetchMyProfile, voteOnPoll} from "../../shared/api/apiClient";
 import { Colors } from '../../utils/colorUtils';
+import AwesomeSwitcher from "../customComponents/AwesomeSwitcher";
 
 const FeedView = () => {
+    const [selectedOption, setSelectedOption] = useState("my feed");
     const [refreshing, setRefreshing] = useState(false);
     const [polls, setPolls] = useState(null); // default to null for loading state
     const [loggedInUserId, setLoggedInUserId] = useState(null);
+
+    const pollData = [];
+    const trendingPollData = [];
 
     useEffect(() => {
         fetchMyProfile().then(res => {
@@ -21,6 +26,8 @@ const FeedView = () => {
             setPolls(res)
         });
     }, []);
+
+    const selectedPollData = selectedOption === "my feed" ? pollData : trendingPollData;
 
     const onRefresh = () => {
         setRefreshing(true);
@@ -45,24 +52,33 @@ const FeedView = () => {
     }
 
     return (
-        <AwesomeFeed
-            data={polls}
-            onRefresh={onRefresh}
-            refreshing={refreshing}
-            renderItem={(item) => {
-                item.timeLeft = calculateTimeDifference(item.endsIn);
-                return (
-                    <View style={styles.container}>
-                        <AwesomeCard
-                            item={item}
-                            handleVote={async (itemId, optionId) => {
-                            }}
-                            loggedInUserId={loggedInUserId}
-                        />
-                    </View>
-                )
-            }}
-        />
+        <SafeAreaView style={styles.safeArea}>
+            <View style={styles.switcherContainer}>
+                <AwesomeSwitcher
+                    leftOption='MY FEED'
+                    rightOption='TOP 3 TODAY'
+                    onDisplayModeChangedHandler={setSelectedOption}
+                />
+            </View>
+            <AwesomeFeed
+                data={polls}
+                onRefresh={onRefresh}
+                refreshing={refreshing}
+                renderItem={(item) => {
+                    item.timeLeft = calculateTimeDifference(item.endsIn);
+                    return (
+                        <View style={styles.container}>
+                            <AwesomeCard
+                                item={item}
+                                handleVote={async (itemId, optionId) => {
+                                }}
+                                loggedInUserId={loggedInUserId}
+                            />
+                        </View>
+                    )
+                }}
+            />
+        </SafeAreaView>
     );
 };
 
@@ -73,21 +89,37 @@ const calculateTimeDifference = (dateString) => {
 };
 
 const styles = StyleSheet.create({
+    safeArea: {
+        backgroundColor: Colors.white,
+        flex: 1
+    },
     container: {
-        padding: 15,
+        paddingLeft: 15,
+        paddingRight: 15,
+    },
+    switcherContainer: {
+        marginTop: 2,
+        marginBottom: 15,
+        marginLeft: 15,
+        marginRight: 15
     },
     emptyContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
         padding: 20,
-        backgroundColor: Colors.white
+        backgroundColor: Colors.white,
     },
     emptyText: {
         fontSize: 16,
         color: '#555',
         textAlign: 'center',
     },
+    line: {
+        marginTop: 15,
+        borderBottomWidth: 1,
+        borderColor: Colors.lightGrey
+    }
 });
 
 export default FeedView;
