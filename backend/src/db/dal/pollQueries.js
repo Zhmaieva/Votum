@@ -1,6 +1,5 @@
 const {pool} = require("./pool");
 const {customAlphabet} = require("nanoid");
-const {customAlphabet} = require("nanoid");
 
 const alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const customNanoid = customAlphabet(alphabet, 6); // 6-char all caps
