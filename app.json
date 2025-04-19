@@ -21,6 +21,10 @@
         "backgroundColor": "#ffffff"
       }
     },
+    "expo": {
+      "scheme": "voteapp",
+      "deepLinking": true
+    },
     "web": {
       "favicon": "./assets/favicon.png"
     }

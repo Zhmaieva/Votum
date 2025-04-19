@@ -1,4 +1,5 @@
 import React, {useState} from "react";
+import * as Linking from 'expo-linking';
 import {NavigationContainer} from '@react-navigation/native';
 import {AwesomeTabs, AuthNavigator} from "./components/views/navigation/AwesomeTabs";
 import {getDataService, globalEventEmitter} from "./shared/common";
@@ -25,6 +26,13 @@ export default function App() {
 
     globalEventEmitter.on('signOut', () => {
         setIsAuthenticated(false);
+    });
+
+    // Handle the case when the app is opened from a link (cold start)
+    Linking.getInitialURL().then((url) => {
+        if (url) {
+            console.info('Linking to ', url);
+        }
     });
 
     return (
