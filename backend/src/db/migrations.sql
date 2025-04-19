@@ -168,6 +168,32 @@ CREATE TRIGGER trigger_decrement_followers_follows_count
     AFTER DELETE ON user_follows
     FOR EACH ROW EXECUTE FUNCTION decrement_followers_follows_count();
 
+-- Sat Apr 19 12:20 PM
+ALTER TABLE polls
+    ADD COLUMN readable_id VARCHAR(32) NOT NULL DEFAULT '';
+
+CREATE INDEX idx_polls_readable_id ON polls(readable_id);
+
+UPDATE polls
+SET readable_id = sub.readable_id
+FROM (
+         SELECT id,
+                string_agg(
+                        (ARRAY[
+                            chr(trunc(48 + random() * 10)::int), -- 0–9
+                            chr(trunc(65 + random() * 26)::int), -- A–Z
+                            chr(trunc(97 + random() * 26)::int)  -- a–z
+                            ])[floor(random() * 3 + 1)::int],
+                        ''
+                ) AS readable_id
+         FROM polls,
+              generate_series(1, 8) AS g(n)  -- generate 8 characters per poll
+         WHERE readable_id = ''
+         GROUP BY id
+     ) AS sub
+WHERE polls.id = sub.id;
+
+
 /*
  INSERT INTO polls (created_by, question, votes_number, ends_in) VALUES
 -- Favorite color

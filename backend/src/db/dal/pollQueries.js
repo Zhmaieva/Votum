@@ -1,4 +1,9 @@
 const {pool} = require("./pool");
+const {customAlphabet} = require("nanoid");
+const {customAlphabet} = require("nanoid");
+
+const alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const customNanoid = customAlphabet(alphabet, 6); // 6-char all caps
 
 const fetchPolls = async (userId) => {
     try {
@@ -91,12 +96,13 @@ const fetchPolls = async (userId) => {
     }
 };
 
-const getPollById = async (pollId) => {
+const getPollById = async (pollId, readable = false) => {
     try {
         const pollQuery = `
             SELECT p.id,
                    p.question,
                    p.ends_in,
+                   p.readable_id,
                    u.username,
                    up.user_id,
                    up.image,
@@ -104,7 +110,7 @@ const getPollById = async (pollId) => {
             FROM polls p
                      JOIN users u ON p.created_by = u.id
                      JOIN user_profiles up ON u.id = up.user_id
-            WHERE p.id = $1 AND p.ends_in > NOW() AND p.is_deleted = false;
+            WHERE ${ readable ? 'p.readable_id = $1' : 'p.id = $1' } AND p.ends_in > NOW() AND p.is_deleted = false;
         `;
 
         const pollResult = await pool.query(pollQuery, [pollId]);
@@ -124,7 +130,7 @@ const getPollById = async (pollId) => {
             ORDER BY pao.option_order;
         `;
 
-        const optionsResult = await pool.query(optionsQuery, [pollId]);
+        const optionsResult = await pool.query(optionsQuery, [pollRow?.id ?? '']);
 
         const options = optionsResult.rows.map(row => ({
             id: row.id,
@@ -137,6 +143,7 @@ const getPollById = async (pollId) => {
             id: pollRow.id,
             question: pollRow.question,
             endsIn: pollRow.ends_in,
+            readableId: pollRow.readable_id,
             options,
             user: {
                 userId: pollRow.user_id,
@@ -229,12 +236,14 @@ async function createPoll(createdBy, question, options, duration) {
     try {
         await client.query('BEGIN');
 
+        const readableId = customNanoid(8);
+
         const pollInserResult = await client.query(
             `
-            INSERT INTO polls (created_by, question, ends_in)
+            INSERT INTO polls (created_by, question, ends_in, readable_id)
             VALUES ($1, $2, (SELECT NOW() + INTERVAL '${duration}'))
             RETURNING id`,
-            [createdBy, question]
+            [createdBy, question, readableId]
         );
 
         const pollId = pollInserResult.rows[0].id;

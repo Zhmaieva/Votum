@@ -34,6 +34,10 @@ function generateSignUpToken({email}) {
     return jwt.sign({ email }, SECRET_KEY);//let's make it non-expirale for convenience
 }
 
+app.post("/login", async (req, res) => {
+
+})
+
 app.post("/users/register", async (req, res, next) => {
     try {
         const { email } = req.body;
@@ -382,8 +386,9 @@ app.get('/polls/:id?/options', authMiddleware, async (req, res, next) => {
 app.get('/polls/:id?/links', authMiddleware, async (req, res, next) => {
     try {
         const pollId = req.params.id;
+        const poll = await getPollById(pollId);
 
-        return res.status(200).json({ link: `https://api-voteapp.beampie.com/polls/share/${pollId}` });
+        return res.status(200).json({ link: `https://api-voteapp.beampie.com/polls/share/${poll?.readableId ?? ''}` });
     } catch (e) {
         next(e);
     }
@@ -392,7 +397,7 @@ app.get('/polls/:id?/links', authMiddleware, async (req, res, next) => {
 app.get('/polls/share/:id', async (req, res) => {
     try {
         const pollId = req.params.id;
-        const poll = await getPollById(pollId);
+        const poll = await getPollById(pollId, true);
 
         if (!poll) return res.status(404).send('Poll not found');
 
@@ -402,7 +407,7 @@ app.get('/polls/share/:id', async (req, res) => {
               <meta property="og:title" content="${poll.question}" />
               <meta property="og:description" content="${poll.options.map(o => o.text).join(' | ')}" />
               <meta property="og:image" content="${poll.user.image}" />
-              <meta property="og:url" content="https://www.jlofans.com/" />
+              <meta property="og:url" content="https://api-voteapp.beampie.com/polls/${pollId}" />
               <!-- <meta http-equiv="refresh" content="0; url=yourapp://profile/" /> -->
             </head>
             <body>Redirecting...</body>
