@@ -2,6 +2,7 @@ import { Text, StyleSheet, Animated, TouchableWithoutFeedback, ActivityIndicator
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { Colors } from '../../utils/colorUtils';
+import { Ionicons } from '@expo/vector-icons';
 
 export const Color = {
     GREEN: 1,
@@ -17,7 +18,8 @@ export default function AwesomeButton({
                                           additionalFunc,
                                           changedText,
                                           isInChangedTextMode = false,
-                                          disabled = false
+                                          disabled = false,
+                                          settingButton = false
                                       }) {
     const navigation = useNavigation();
     const [buttonName, setButtonName] = useState(text);
@@ -25,7 +27,6 @@ export default function AwesomeButton({
     const [loading, setLoading] = useState(false);
     const scaleValue = useState(new Animated.Value(1))[0];
 
-    // 🔁 Keep button text in sync with props
     useEffect(() => {
         const newName = isInChangedTextMode ? changedText : text;
         if (buttonName !== newName) {
@@ -68,7 +69,6 @@ export default function AwesomeButton({
         });
     };
 
-    // 🎨 Determine button & text styles based on color state
     const buttonStyle = useMemo(() => {
         if (buttonName === changedText) return styles.buttonTransparent;
         switch (color) {
@@ -96,19 +96,21 @@ export default function AwesomeButton({
     return (
         <TouchableWithoutFeedback onPress={animateButton} disabled={isDisabled || loading}>
             <Animated.View
-                style={[
-                    { transform: [{ scale: scaleValue }] },
-                    styles.buttonMain,
-                    buttonStyle,
-                    (isDisabled || loading) && styles.buttonDisabled
-                ]}
+                style={[{
+                    transform: [{ scale: scaleValue }],
+                }, styles.buttonMain, buttonStyle, (isDisabled || loading) && styles.buttonDisabled]}
             >
                 {loading ? (
                     <ActivityIndicator color={color === Color.BLACK ? Colors.black : Colors.white} />
                 ) : (
-                    <Text style={[styles.buttonMainText, textStyle]}>
-                        {buttonName}
-                    </Text>
+                    <View style={[styles.contentWrapper, settingButton && styles.settingWrapper]}>
+                        <Text style={[styles.buttonMainText, textStyle, settingButton && styles.leftAlignedText]}>
+                            {buttonName}
+                        </Text>
+                        {settingButton && (
+                            <Ionicons name="chevron-forward" size={15} color={Colors.black} style={styles.arrowIcon} />
+                        )}
+                    </View>
                 )}
             </Animated.View>
         </TouchableWithoutFeedback>
@@ -121,6 +123,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         height: 40,
         minWidth: 80,
+        paddingHorizontal: 10
     },
     buttonGreen: {
         backgroundColor: Colors.green,
@@ -164,7 +167,11 @@ const styles = StyleSheet.create({
     buttonMainText: {
         fontSize: 14,
         textAlign: 'center',
-        fontWeight: '600',
+        fontWeight: '500',
+        width: '100%'
+    },
+    leftAlignedText: {
+        textAlign: 'left',
     },
     buttonBlackText: {
         color: Colors.white,
@@ -175,4 +182,17 @@ const styles = StyleSheet.create({
     buttonWhiteText: {
         color: Colors.black,
     },
+    contentWrapper: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%'
+    },
+    settingWrapper: {
+        justifyContent: 'space-between',
+        paddingHorizontal: 5,
+    },
+    arrowIcon: {
+        marginLeft: -5,
+    }
 });

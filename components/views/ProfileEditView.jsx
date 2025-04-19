@@ -1,5 +1,14 @@
 import React, { useState } from 'react';
-import {View, Text, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, Modal} from 'react-native';
+import {
+    View,
+    Text,
+    TouchableOpacity,
+    StyleSheet,
+    TouchableWithoutFeedback,
+    Modal,
+    ScrollView,
+    SafeAreaView
+} from 'react-native';
 import { Colors } from '../../utils/colorUtils';
 import AwesomeButton, {Color} from '../customComponents/AwesomeButton';
 import AwesomeEditButton from "../customComponents/AwesomeEditButton";
@@ -53,62 +62,44 @@ const ProfileEditView = ({ route }) => {
     });
 
     return (
-        <View style={styles.container}>
-            <View>
+        <SafeAreaView style={styles.container}>
+            <ScrollView style={[styles.padding2, styles.subContainer]}>
                 <AwesomeProfilePhoto profileImage={profileImage} setProfileImage={setProfileImage} />
-                <View style={styles.row}>
-                    <View style={styles.headerStyle}>
-                        <Text>Username</Text>
-                    </View>
-                    <View style={styles.inputContainer}>
-                        <AwesomeEditButton
-                            screenName="Edit username"
-                            text={username}
-                        />
-                    </View>
+                <Text style={[styles.sectionName, styles.marginTop15]}>Profile Info</Text>
+                <View style={styles.margin15}>
+                    <AwesomeButton text='Username' color={Color.WHITE} screenName='Edit username' settingButton={true}/>
                 </View>
+                <View style={styles.margin15}>
+                    <AwesomeButton text='Bio' color={Color.WHITE} screenName='Edit bio' settingButton={true}/>
+                </View>
+                <View style={styles.margin15}>
+                    <AwesomeButton text='Email' color={Color.WHITE} screenName='Edit email' settingButton={true}/>
+                </View>
+                <Text style={[styles.sectionName, styles.marginTop15]}>Personal Details</Text>
+                <View style={styles.margin15}>
+                    <AwesomeButton text='Birth Date' color={Color.WHITE} settingButton={true}/>
+                </View>
+                <View style={styles.margin15}>
+                    <AwesomeButton text='Gender' color={Color.WHITE} settingButton={true}/>
+                </View>
+                <Text style={[styles.sectionName, styles.marginTop15]}>Privacy & Security</Text>
+                <View style={styles.margin15}>
+                    <AwesomeButton text='Change Password' color={Color.WHITE} settingButton={true}/>
+                </View>
+                <View style={styles.margin25}>
+                    <AwesomeButton text='Notifications' color={Color.WHITE} settingButton={true}/>
+                </View>
+                <View style={styles.margin15}>
+                    <AwesomeButton text='Delete Profile' color={Color.BLACK} additionalFunc={()=>setDeleteModalVisible(true)}/>
+                </View>
+            </ScrollView>
 
-                <View style={styles.row}>
-                    <View style={styles.headerStyle}>
-                        <Text>Bio</Text>
-                    </View>
-                    <View style={styles.inputContainer}>
-                        <AwesomeEditButton
-                            screenName="Edit bio"
-                            text={bioD}
-                        />
-                    </View>
-                </View>
-
-                <View style={styles.row}>
-                    <View style={styles.headerStyle}>
-                        <Text>Email</Text>
-                    </View>
-                    <View style={styles.inputContainer}>
-                        <AwesomeEditButton
-                            screenName="Edit email"
-                            text={email}
-                        />
-                    </View>
-                </View>
-                <View style={styles.marginTest}>
-                    <AwesomeButton
-                        text="Log out"
-                        color={Color.BLACK}
-                        screenName={null}
-                        additionalFunc={async () => {
-                            await signOut();
-                        }}
-                    />
-                </View>
-            </View>
-
-            <AwesomeButton
+            {/*<AwesomeButton
                 text="Delete profile"
                 color={Color.WHITE}
                 screenName={null}
                 additionalFunc={()=>setDeleteModalVisible(true)}
-            />
+            />*/}
 
             <AwesomeModal
                 visible={isDeleteModalVisible}
@@ -136,41 +127,17 @@ const ProfileEditView = ({ route }) => {
                 subtext="There was an error while trying to delete your profile, try again later."
                 onBackPress={() => setErrorModalVisible(false)}
             />
-        </View>
+        </SafeAreaView>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 20,
         backgroundColor: Colors.white,
-        justifyContent: 'space-between'
     },
-    profileImageContainer: {
-        alignItems: 'center',
-        marginBottom: 20,
-    },
-    profileImage: {
-        width: 80,
-        height: 80,
-        marginBottom: 10,
-    },
-    imagePickerButton: {
-        position: 'absolute',
-        bottom: 0,
-        right: 0,
-        backgroundColor: Colors.green,
-        padding: 5,
-    },
-    input: {
-        height: 40,
-        borderColor: '#999',
-        borderBottomWidth: 1,
-        paddingHorizontal: 10
-    },
-    inputContainer: {
-        width: '74%',
+    subContainer: {
+        padding: 15
     },
     row: {
         flexDirection: 'row',
@@ -178,12 +145,19 @@ const styles = StyleSheet.create({
         width: '100%',
         marginBottom: 15,
     },
-    headerStyle: {
-        width: '26%',
-        justifyContent: "center"
+    margin15: {
+        marginBottom: 12
     },
-    test: {
-        width: 100
+    sectionName: {
+        fontWeight: 'bold',
+        fontSize: 16,
+        marginBottom: 10
+    },
+    marginTop15: {
+        marginTop: 15
+    },
+    margin25: {
+        marginBottom: 25
     }
 });
 

@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
     },
     container: {
-        padding: 20,
+        padding: 15,
     },
     inputQuestion: {
         flex: 1,
