@@ -262,7 +262,7 @@ async function createPoll(createdBy, question, options, duration) {
         const pollInserResult = await client.query(
             `
             INSERT INTO polls (created_by, question, ends_in, readable_id)
-            VALUES ($1, $2, (SELECT NOW() + INTERVAL '${duration}'))
+            VALUES ($1, $2, (SELECT NOW() + INTERVAL '${duration}'), $3)
             RETURNING id`,
             [createdBy, question, readableId]
         );

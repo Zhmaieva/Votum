@@ -384,7 +384,7 @@ export const voteOnPoll = async (optionId) => {
  */
 export const getPollOptions = async (pollId) => {
     try {
-        console.log(`nreshing poll options ${pollId}`);
+        console.log(`refreshing poll options ${pollId}`);
         const response = await apiClient.get(`/polls/${pollId}/options`, {
             headers: {
                 Authorization: `Bearer ${await getToken()}`,
