@@ -407,9 +407,9 @@ app.get('/polls/share/:id', async (req, res) => {
               <meta property="og:title" content="${poll.question}" />
               <meta property="og:description" content="${poll.options.map(o => o.text).join(' | ')}" />
               <meta property="og:image" content="${poll.user.image}" />
-              <meta http-equiv="refresh" content="0; url=voteapp://poll/${poll.readableId}" /> 
+              <meta http-equiv="refresh" content="2; url=voteapp://poll/${poll.readableId}" /> 
             </head>
-            <body>Redirecting...</body>
+            <body>Welcome to Voteapp</body>
           </html>
         `;
         res.send(html);
