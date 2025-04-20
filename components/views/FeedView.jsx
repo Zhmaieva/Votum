@@ -6,9 +6,8 @@ import {fetchPolls, fetchMyProfile, voteOnPoll} from "../../shared/api/apiClient
 import { Colors } from '../../utils/colorUtils';
 import AwesomeSwitcher from "../customComponents/AwesomeSwitcher";
 
-const FeedView = () => {
-    const [selectedOption, setSelectedOption] = useState("my feed");
 const FeedView = ({ route }) => {
+    const [selectedOption, setSelectedOption] = useState("my feed");
     const [refreshing, setRefreshing] = useState(false);
     const [polls, setPolls] = useState(null); // default to null for loading state
     const [loggedInUserId, setLoggedInUserId] = useState(null);

@@ -2,19 +2,8 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {getDataService, globalEventEmitter} from "../common";
 import {BASE_URL} from "./api-constants";
-import {useNavigation} from "@react-navigation/native";
 
 let tokenValue = null;
-// const hardcodedCredentials = {
-//     login: 'zhmaievayuliia@google.com',
-//     password: 'securepassword',
-// };
-
-// for Artem
-// const hardcodedCredentials = {
-//     login: 'testuser',
-//     password: 'securepassword123',
-// };
 
 const getToken = async function() {
     return tokenValue ?? await AsyncStorage.getItem('auth_token');
@@ -266,10 +255,10 @@ export const fetchMyProfile = async () => {
     }
 };
 
-export const fetchPolls = async () => {
+export const fetchPolls = async (postId) => {
     try {
         console.log('fetching polls...');
-        const response = await apiClient.get(`/polls`, {
+        const response = await apiClient.get(`/polls?featuredId=${postId ?? ''}`, {
             headers: {
                 Authorization: `Bearer ${await getToken()}`,
             },
@@ -395,7 +384,7 @@ export const voteOnPoll = async (optionId) => {
  */
 export const getPollOptions = async (pollId) => {
     try {
-        console.log(`refreshing poll options ${pollId}`);
+        console.log(`nreshing poll options ${pollId}`);
         const response = await apiClient.get(`/polls/${pollId}/options`, {
             headers: {
                 Authorization: `Bearer ${await getToken()}`,
