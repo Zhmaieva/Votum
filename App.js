@@ -1,6 +1,6 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import * as Linking from 'expo-linking';
-import {NavigationContainer} from '@react-navigation/native';
+import {NavigationContainer, useNavigationContainerRef} from '@react-navigation/native';
 import {AwesomeTabs, AuthNavigator} from "./components/views/navigation/AwesomeTabs";
 import {getDataService, globalEventEmitter} from "./shared/common";
 import {isTokenAvailable} from "./shared/api/apiClient";
@@ -13,11 +13,46 @@ export default function App() {
 
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const navigationRef = useNavigationContainerRef();
 
-    isTokenAvailable().then(res => {
-        setIsAuthenticated(res);
-        setIsLoading(false);
-    })
+    const handleUrl = ({ url }) => {
+        if (!url) return;
+
+        console.info('Received deep link:', url);
+        const { path } = Linking.parse(url);
+        const match = path?.match(/^poll\/(.+)$/);
+        if (match && isAuthenticated) {
+            const readableId = match[1];
+            navigationRef.navigate('Feed', {
+                screen: 'FeedMain',
+                params: { postId: readableId }
+            });
+        }
+    };
+
+    useEffect(() => {
+        const subscription = Linking.addEventListener('url', handleUrl);
+
+        return () => {
+            subscription.remove();
+        };
+    }, []);
+
+    useEffect(() => {
+        const init = async () => {
+            const tokenAvailable = await isTokenAvailable();
+            setIsAuthenticated(tokenAvailable);
+            setIsLoading(false);
+
+            if (!tokenAvailable)
+                return;
+
+            const url = await Linking.getInitialURL();
+            if (url) handleUrl({ url });
+        };
+
+        init().then(_ => {});
+    }, []);
 
     globalEventEmitter.on('signIn', () => {
         getDataService().setUser(null); // pretend we never set the user, so it will be initialised later in profile view
@@ -28,13 +63,6 @@ export default function App() {
         setIsAuthenticated(false);
     });
 
-    // Handle the case when the app is opened from a link (cold start)
-    Linking.getInitialURL().then((url) => {
-        if (url) {
-            console.info('Linking to ', url);
-        }
-    });
-
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <BottomSheetModalProvider>
@@ -43,7 +71,7 @@ export default function App() {
                         <ActivityIndicator size="large" color="#0000ff" />
                     </View>
                 ) : (
-                    <NavigationContainer>
+                    <NavigationContainer ref={navigationRef}>
                         {isAuthenticated ? <AwesomeTabs /> : <AuthNavigator />}
                     </NavigationContainer>
                 )}

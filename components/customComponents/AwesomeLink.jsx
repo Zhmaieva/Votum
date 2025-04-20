@@ -1,5 +1,4 @@
 import {Text, StyleSheet, Pressable} from 'react-native';
-import { navigationRef } from './NavigationRefContainer.js';
 import { useNavigation } from '@react-navigation/native';
 import { Colors } from '../../utils/colorUtils';
 

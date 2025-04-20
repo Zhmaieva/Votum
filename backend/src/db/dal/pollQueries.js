@@ -4,37 +4,55 @@ const {customAlphabet} = require("nanoid");
 const alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const customNanoid = customAlphabet(alphabet, 6); // 6-char all caps
 
-const fetchPolls = async (userId) => {
+const fetchPolls = async (userId, featuredId) => {
     try {
         const pollsQuery = `
-            SELECT p.id,
-                   p.question,
-                   p.ends_in,
-                   u.username,
-                   up.user_id,
-                   up.image,
-                   up.followers_number,
-                   CASE
-                       WHEN pl.user_id IS NOT NULL THEN TRUE
-                       ELSE FALSE
-                       END AS is_liked,
-                   CASE
-                       WHEN uf.user_follower_id IS NOT NULL THEN TRUE
-                       ELSE FALSE
-                       END AS is_following,
-                   CASE 
-                       WHEN p.created_by = $1 THEN up.bio
-                       ELSE ''
-                       END AS user_bio
-            FROM polls p
-                     JOIN users u ON p.created_by = u.id
-                     JOIN user_profiles up ON u.id = up.user_id
-                     LEFT JOIN poll_likes pl ON p.id = pl.poll_id AND pl.user_id = $1
-                     LEFT JOIN user_follows uf ON u.id = uf.user_follow_id AND uf.user_follower_id = $1
-            WHERE p.ends_in > NOW() AND p.is_deleted = false;
+            SELECT * FROM (
+                              -- Step 1: Featured poll (if provided)
+                              SELECT p.id,
+                                     p.question,
+                                     p.ends_in,
+                                     u.username,
+                                     up.user_id,
+                                     up.image,
+                                     up.followers_number,
+                                     CASE WHEN pl.user_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_liked,
+                                     CASE WHEN uf.user_follower_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_following,
+                                     CASE WHEN p.created_by = $1 THEN up.bio ELSE '' END AS user_bio,
+                                     0 AS sort_order
+                              FROM polls p
+                                       JOIN users u ON p.created_by = u.id
+                                       JOIN user_profiles up ON u.id = up.user_id
+                                       LEFT JOIN poll_likes pl ON p.id = pl.poll_id AND pl.user_id = $1
+                                       LEFT JOIN user_follows uf ON u.id = uf.user_follow_id AND uf.user_follower_id = $1
+                              WHERE p.id = $2
+
+                              UNION ALL
+
+                              -- Step 2: All other polls, excluding featured
+                              SELECT p.id,
+                                     p.question,
+                                     p.ends_in,
+                                     u.username,
+                                     up.user_id,
+                                     up.image,
+                                     up.followers_number,
+                                     CASE WHEN pl.user_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_liked,
+                                     CASE WHEN uf.user_follower_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_following,
+                                     CASE WHEN p.created_by = $1 THEN up.bio ELSE '' END AS user_bio,
+                                     1 AS sort_order
+                              FROM polls p
+                                       JOIN users u ON p.created_by = u.id
+                                       JOIN user_profiles up ON u.id = up.user_id
+                                       LEFT JOIN poll_likes pl ON p.id = pl.poll_id AND pl.user_id = $1
+                                       LEFT JOIN user_follows uf ON u.id = uf.user_follow_id AND uf.user_follower_id = $1
+                              WHERE p.ends_in > NOW() AND p.is_deleted = false
+                                AND ($2 IS NULL OR p.id <> $2)
+                          ) all_polls
+            ORDER BY sort_order;
         `;
 
-        const pollsResult = await pool.query(pollsQuery, [userId]);
+        const pollsResult = await pool.query(pollsQuery, [userId, featuredId]);
         const pollIds = pollsResult.rows.map(row => row.id);
 
         const optionsQuery = `

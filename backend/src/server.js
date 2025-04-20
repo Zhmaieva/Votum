@@ -322,9 +322,9 @@ app.get('/profile/follows', authMiddleware, async (req, res, next) => {
     }
 });
 
-app.get('/polls', authMiddleware, async (
-    req, res) => {
-    const result = await pollQueries.fetchPolls(req.user.id);
+app.get('/polls', authMiddleware, async (req, res) => {
+    const { featuredId } = req.query;
+    const result = await pollQueries.fetchPolls(req.user.id, featuredId);
     res.json(result);
 });
 

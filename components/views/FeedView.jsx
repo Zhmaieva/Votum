@@ -8,12 +8,15 @@ import AwesomeSwitcher from "../customComponents/AwesomeSwitcher";
 
 const FeedView = () => {
     const [selectedOption, setSelectedOption] = useState("my feed");
+const FeedView = ({ route }) => {
     const [refreshing, setRefreshing] = useState(false);
     const [polls, setPolls] = useState(null); // default to null for loading state
     const [loggedInUserId, setLoggedInUserId] = useState(null);
 
     const pollData = [];
     const trendingPollData = [];
+
+    const postId = route?.params?.postId;
 
     useEffect(() => {
         fetchMyProfile().then(res => {
@@ -22,7 +25,7 @@ const FeedView = () => {
             }
         });
 
-        fetchPolls().then(res => {
+        fetchPolls(postId).then(res => {
             setPolls(res)
         });
     }, []);
