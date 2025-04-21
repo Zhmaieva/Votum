@@ -5,6 +5,7 @@ import {View, StyleSheet, ActivityIndicator, Text, SafeAreaView} from 'react-nat
 import {fetchPolls, fetchMyProfile, voteOnPoll} from "../../shared/api/apiClient";
 import { Colors } from '../../utils/colorUtils';
 import AwesomeSwitcher from "../customComponents/AwesomeSwitcher";
+import {globalEventEmitter} from "../../shared/common";
 
 const FeedView = ({ route }) => {
     const [selectedOption, setSelectedOption] = useState("my feed");
@@ -15,7 +16,11 @@ const FeedView = ({ route }) => {
     const pollData = [];
     const trendingPollData = [];
 
-    const postId = route?.params?.postId;
+    globalEventEmitter.on('sharedPoll', ({ pollId }) => {
+        fetchPolls(pollId).then(res => {
+            setPolls(res);
+        });
+    })
 
     useEffect(() => {
         fetchMyProfile().then(res => {
@@ -24,8 +29,8 @@ const FeedView = ({ route }) => {
             }
         });
 
-        fetchPolls(postId).then(res => {
-            setPolls(res)
+        fetchPolls().then(res => {
+            setPolls(res);
         });
     }, []);
 

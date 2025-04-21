@@ -20,13 +20,9 @@ export default function App() {
 
         console.info('Received deep link:', url);
         const { path } = Linking.parse(url);
-        const match = path?.match(/^poll\/(.+)$/);
-        if (match && isAuthenticated) {
-            const readableId = match[1];
-            navigationRef.navigate('Feed', {
-                screen: 'FeedMain',
-                params: { postId: readableId }
-            });
+        if (path) {
+            navigationRef.navigate('Feed', {});
+            globalEventEmitter.emit('sharedPoll', { pollId: path });
         }
     };
 

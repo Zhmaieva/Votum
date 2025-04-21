@@ -29,7 +29,12 @@ const AwesomeFeed = ({
     const scrollY = useRef(new Animated.Value(0)).current;
     const [preloadedData, setPreloadedData] = useState(data);
 
+    const flatListRef = useRef(null);
     const timeoutRef = useRef(setTimeout(() => {}, 100));
+
+    globalEventEmitter.on('sharedPoll', () => {
+        flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
+    });
 
     useEffect(() => {
         if (!getDataService().getUser())
@@ -179,6 +184,7 @@ const AwesomeFeed = ({
         <SafeAreaView style={styles.container}>
             <Animated.FlatList
                 data={preloadedData}
+                ref={flatListRef}
                 keyExtractor={(item) => item?.id ?? String(Math.random())}
                 pagingEnabled
                 scrollEventThrottle={16}
