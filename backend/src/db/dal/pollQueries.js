@@ -29,7 +29,7 @@ const fetchPolls = async (userId, featuredId) => {
                                        JOIN user_profiles up ON u.id = up.user_id
                                        LEFT JOIN poll_likes pl ON p.id = pl.poll_id AND pl.user_id = $1
                                        LEFT JOIN user_follows uf ON u.id = uf.user_follow_id AND uf.user_follower_id = $1
-                            WHERE ($2::uuid IS NOT NULL AND p.id = $2)
+                            WHERE ($2 IS NOT NULL AND p.readable_id = $2)
 
                               UNION ALL
 
@@ -51,7 +51,7 @@ const fetchPolls = async (userId, featuredId) => {
                                        LEFT JOIN poll_likes pl ON p.id = pl.poll_id AND pl.user_id = $1
                                        LEFT JOIN user_follows uf ON u.id = uf.user_follow_id AND uf.user_follower_id = $1
                               WHERE p.ends_in > NOW() AND p.is_deleted = false
-                                AND ($2::uuid IS NULL OR p.id <> $2)
+                                AND ($2 IS NULL OR p.readable_id <> $2)
                           ) all_polls
             ORDER BY sort_order;
         `;
