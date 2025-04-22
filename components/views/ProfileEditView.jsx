@@ -63,17 +63,17 @@ const ProfileEditView = ({ route }) => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <ScrollView style={[styles.padding2, styles.subContainer]}>
+            <ScrollView style={styles.subContainer}>
                 <AwesomeProfilePhoto profileImage={profileImage} setProfileImage={setProfileImage} />
                 <Text style={[styles.sectionName, styles.marginTop15]}>Profile Info</Text>
                 <View style={styles.margin15}>
-                    <AwesomeButton text='Username' color={Color.WHITE} screenName='Edit username' settingButton={true}/>
+                    <AwesomeButton text={`Username: ${username || '—'}`} color={Color.WHITE} screenName='Edit username' settingButton={true} />
                 </View>
                 <View style={styles.margin15}>
-                    <AwesomeButton text='Bio' color={Color.WHITE} screenName='Edit bio' settingButton={true}/>
+                    <AwesomeButton text={`Bio: ${bioD || '—'}`} color={Color.WHITE} screenName='Edit bio' settingButton={true} />
                 </View>
                 <View style={styles.margin15}>
-                    <AwesomeButton text='Email' color={Color.WHITE} screenName='Edit email' settingButton={true}/>
+                    <AwesomeButton text={`Email: ${email || '—'}`} color={Color.WHITE} screenName='Password' settingButton={true} />
                 </View>
                 <Text style={[styles.sectionName, styles.marginTop15]}>Personal Details</Text>
                 <View style={styles.margin15}>

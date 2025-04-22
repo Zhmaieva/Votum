@@ -53,8 +53,13 @@ const styles = StyleSheet.create({
         paddingLeft: 10
     },
     bareStyleInput: {
-        borderBottomWidth: 1,
-        borderBottomColor: Colors.lightGrey,
+        borderWidth: 1,
+        borderColor: Colors.black,
+        backgroundColor: Colors.white,
+        shadowRadius: 0,
+        shadowOffset: { width: 2, height: 2 },
+        shadowOpacity: 1,
+        shadowColor: Colors.green,
     },
     defaultInput: {
         borderWidth: 1,
@@ -63,6 +68,6 @@ const styles = StyleSheet.create({
     wrongEmail: {
         fontSize: 12,
         color: Colors.red,
-        marginBottom: 3
+        marginTop: 3
     }
 });

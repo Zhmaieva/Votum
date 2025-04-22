@@ -1,23 +1,32 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import {View, StyleSheet, SafeAreaView, Text} from 'react-native';
 import { Colors } from '../../utils/colorUtils';
-import AwesomeEmailInput from "../customComponents/AwesomeEmailInput"; // Reuse your AwesomeButton component
+import AwesomeEmailInput from "../customComponents/AwesomeEmailInput";
+import AwesomeButton, {Color} from "../customComponents/AwesomeButton"; // Reuse your AwesomeButton component
 
 const EmailEditView = ({route }) => {
 
     const { text } = route.params || {};
 
     return (
-        <View style={styles.container}>
-            <AwesomeEmailInput value={text} bareStyle={true}/>
-        </View>
+        <SafeAreaView style={styles.safeArea}>
+            <View style={styles.container}>
+                <Text style={[styles.margin10, { fontWeight: 'bold' }]}>Enter new email</Text>
+                <View style={styles.margin10}>
+                    <AwesomeEmailInput value={text} bareStyle={true}/>
+                </View>
+                <AwesomeButton text='Send verification code' color={Color.BLACK} screenName='Verification Code' />
+            </View>
+        </SafeAreaView>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
+        padding: 15
+    },
+    safeArea: {
         flex: 1,
-        padding: 0,
         backgroundColor: Colors.white,
     },
     input: {
@@ -27,6 +36,9 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         //borderTopWidth: 1,
         paddingHorizontal: 10
+    },
+    margin10: {
+        marginBottom: 10
     }
 });
 

@@ -68,8 +68,13 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: Colors.black,
         height: 40,
+        paddingEnd: 4,
+        shadowRadius: 0,
+        shadowOffset: { width: 2, height: 2 },
+        shadowOpacity: 1,
+        shadowColor: Colors.green,
         backgroundColor: Colors.white,
-        paddingEnd: 4
+        marginBottom: 3
     },
     input: {
         flex: 1,
@@ -85,6 +90,7 @@ const styles = StyleSheet.create({
     },
     icon: {
         marginLeft: 10,
+        marginRight: 2
     },
     redFont: {
         fontSize: 12,

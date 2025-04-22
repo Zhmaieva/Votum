@@ -1,58 +1,89 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet } from 'react-native';
+import { View, Text, TextInput, StyleSheet, SafeAreaView } from 'react-native';
 import { Colors } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from "../customComponents/AwesomeButton";
-import {getDataService} from "../../shared/common";
+import { getDataService } from "../../shared/common";
+import { updateUserProfile } from "../../shared/api/apiClient";
 
 const BioEditView = ({ navigation, route }) => {
     const { text } = route.params || {};
-
-    const [bio, setBio] = useState(text || '');
+    const [bio, setBio] = useState(text ?? getDataService().getUser()?.bio ?? '');
     const charLimit = 30;
+    const [loading, setLoading] = useState(false);
 
-    const handleCheckBio = async (text) => {
+    const handleCheckBio = (text) => {
         setBio(text);
+    };
+
+    const handleSave = async () => {
+        if (!bio.trim()) return;
+
         try {
-            getDataService().getUser().bio = text;
+            setLoading(true);
+            await updateUserProfile({ bio });
+            getDataService().getUser().bio = bio;
+            getDataService().commitUserChanges();
+            navigation.goBack();
         } catch (error) {
             console.error('Error saving bio:', error);
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <View style={styles.container}>
-            <TextInput
-                style={styles.input}
-                value={bio}
-                onChangeText={(text) => handleCheckBio(text)}
-                placeholder="New bio"
-                maxLength={charLimit}
-            />
-            <Text style={styles.counter}>{bio.length}/{charLimit}</Text>
-        </View>
+        <SafeAreaView style={styles.safeArea}>
+            <View style={styles.container}>
+                <Text style={[styles.margin10, { fontWeight: 'bold' }]}>Bio</Text>
+                <TextInput
+                    style={styles.input}
+                    value={bio}
+                    onChangeText={handleCheckBio}
+                    placeholder="New bio"
+                    maxLength={charLimit}
+                />
+                <Text style={styles.counter}>{bio.length}/{charLimit}</Text>
+                <AwesomeButton
+                    text='Save bio'
+                    color={Color.BLACK}
+                    additionalFunc={handleSave}
+                    disabled={loading}
+                />
+            </View>
+        </SafeAreaView>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
+    safeArea: {
         flex: 1,
-        padding: 0,
         backgroundColor: Colors.white,
+    },
+    container: {
+        padding: 15
     },
     input: {
         height: 40,
         width: '100%',
-        borderColor: Colors.lightGrey,
-        borderBottomWidth: 1,
+        borderColor: Colors.black,
+        borderWidth: 1,
+        backgroundColor: Colors.white,
         paddingHorizontal: 10,
+        shadowRadius: 0,
+        shadowOffset: { width: 2, height: 2 },
+        shadowOpacity: 1,
+        shadowColor: Colors.green,
     },
     counter: {
         marginTop: 5,
-        fontSize: 14,
-        color: Colors.black,
+        fontSize: 12,
+        color: Colors.grey,
         textAlign: 'right',
-        paddingRight: 10,
+        marginBottom: 10
     },
+    margin10: {
+        marginBottom: 10
+    }
 });
 
 export default BioEditView;

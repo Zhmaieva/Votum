@@ -139,12 +139,17 @@ const styles = StyleSheet.create({
     inputSubContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        borderBottomWidth: 1,
-        borderBottomColor: Colors.lightGrey,
+        borderWidth: 1,
+        borderColor: Colors.black,
         height: 40,
         position: 'relative',
-        marginBottom: 3,
-        backgroundColor: Colors.white
+        marginBottom: 5,
+        backgroundColor: Colors.white,
+        //paddingHorizontal: 10,
+        shadowRadius: 0,
+        shadowOffset: { width: 2, height: 2 },
+        shadowOpacity: 1,
+        shadowColor: Colors.green,
     },
     input: {
         flex: 1,
@@ -153,15 +158,14 @@ const styles = StyleSheet.create({
     },
     icon: {
         marginLeft: 10,
-        marginRight: 10,
+        marginRight: 5,
         justifyContent: 'center',
         alignItems: 'center',
     },
     counter: {
         fontSize: 12,
         color: Colors.grey,
-        height: 20,
-        marginRight: 10,
+        marginBottom: 10
     },
 });
 

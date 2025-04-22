@@ -30,6 +30,8 @@ import AwesomeUsernameInput from "../../customComponents/AwesomeUsernameInput";
 import CategoriesView from "../CategoriesView";
 import SomebodysProfileView from "../SomebodysProfileView"
 import PreviewPollView from "../PreviewPollView";
+import EditUsernameView from "../EditUsernameView";
+import PasswordView from "../PasswordView"
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -86,13 +88,13 @@ function UserStack() {
     return (
         <Stack.Navigator id="Test">
             <Stack.Screen name="Profile" component={MyUserProfileView} options={{ headerShown: false, gestureEnabled: true }} />
-            <Stack.Screen name="Edit profile" component={ProfileEditView} options={{ headerShown: true, gestureEnabled: true }} />
+            <Stack.Screen name="Edit profile" component={ProfileEditView} options={{ headerShown: false, gestureEnabled: true }} />
             <Stack.Screen name="Following" component={FollowingView} options={{ headerShown: true, gestureEnabled: true }} />
             <Stack.Screen name="Followers" component={FollowersView} options={{ headerShown: true, gestureEnabled: true }} />
             <Stack.Screen name="Edit username"
-                          component={AwesomeUsernameInput}
+                          component={EditUsernameView}
                           options={({ navigation }) => ({
-                              headerShown: true,
+                              headerShown: false,
                               gestureEnabled: true,
                               headerRight: () => (
                                   <HeaderRightButton
@@ -105,7 +107,7 @@ function UserStack() {
             <Stack.Screen name="Edit bio"
                           component={BioEditView}
                           options={({ navigation }) => ({
-                              headerShown: true,
+                              headerShown: false,
                               gestureEnabled: true,
                               headerRight: () => (
                                   <HeaderRightButton
@@ -118,7 +120,7 @@ function UserStack() {
             <Stack.Screen name="Edit email"
                           component={EmailEditView}
                           options={({ navigation }) => ({
-                              headerShown: true,
+                              headerShown: false,
                               gestureEnabled: true,
                               headerRight: () => (
                                   <HeaderRightButton
@@ -128,6 +130,20 @@ function UserStack() {
                               ),
                           })}
             />
+            <Stack.Screen name="Password"
+                          component={PasswordView}
+                          options={({ navigation }) => ({
+                              headerShown: false,
+                              gestureEnabled: true,
+                              headerRight: () => (
+                                  <HeaderRightButton
+                                      onPress={() => handleUpdateProfile('email', getDataService().getUser()?.email, setIsLoading, navigation)}
+                                      isLoading={isLoading}
+                                  />
+                              ),
+                          })}
+            />
+            <AuthStack.Screen name="Verification Code" component={VerificationCodeView} options={{ headerShown: false, gestureEnabled: true }}/>
         </Stack.Navigator>
     );
 }
