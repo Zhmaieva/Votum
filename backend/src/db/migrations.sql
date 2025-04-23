@@ -193,67 +193,75 @@ FROM (
      ) AS sub
 WHERE polls.id = sub.id;
 
+--Tue Apr 22 3:32 PM
+ALTER TABLE polls
+ADD COLUMN likes_count INTEGER NOT NULL DEFAULT 0;
 
-/*
- INSERT INTO polls (created_by, question, votes_number, ends_in) VALUES
--- Favorite color
-((SELECT id FROM users ORDER BY RANDOM() LIMIT 1), 'What is your favorite color?', FLOOR(RANDOM() * 1000000), NOW() + INTERVAL '3 days' + (RANDOM() * INTERVAL '27 days')),
+CREATE OR REPLACE FUNCTION increment_likes_count()
+    RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE polls
+    SET likes_count = likes_count + 1
+    WHERE id = NEW.poll_id;
 
--- Favorite city
-((SELECT id FROM users ORDER BY RANDOM() LIMIT 1), 'Which city would you love to visit?', FLOOR(RANDOM() * 1000000), NOW() + INTERVAL '3 days' + (RANDOM() * INTERVAL '27 days')),
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
 
--- Best ice cream flavor
-((SELECT id FROM users ORDER BY RANDOM() LIMIT 1), 'What is the best ice cream flavor?', FLOOR(RANDOM() * 1000000), NOW() + INTERVAL '3 days' + (RANDOM() * INTERVAL '27 days')),
+CREATE OR REPLACE FUNCTION decrement_likes_count()
+    RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE polls
+    SET likes_count = GREATEST(0, likes_count - 1)
+    WHERE id = OLD.poll_id;
 
--- What to eat now
-((SELECT id FROM users ORDER BY RANDOM() LIMIT 1), 'What should I eat now?', FLOOR(RANDOM() * 1000000), NOW() + INTERVAL '3 days' + (RANDOM() * INTERVAL '27 days')),
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
 
--- Random topics
-((SELECT id FROM users ORDER BY RANDOM() LIMIT 1), 'Cats or dogs?', FLOOR(RANDOM() * 1000000), NOW() + INTERVAL '3 days' + (RANDOM() * INTERVAL '27 days')),
-((SELECT id FROM users ORDER BY RANDOM() LIMIT 1), 'Which superhero is the best?', FLOOR(RANDOM() * 1000000), NOW() + INTERVAL '3 days' + (RANDOM() * INTERVAL '27 days')),
-((SELECT id FROM users ORDER BY RANDOM() LIMIT 1), 'Best way to start the day?', FLOOR(RANDOM() * 1000000), NOW() + INTERVAL '3 days' + (RANDOM() * INTERVAL '27 days')),
-((SELECT id FROM users ORDER BY RANDOM() LIMIT 1), 'Tea or Coffee?', FLOOR(RANDOM() * 1000000), NOW() + INTERVAL '3 days' + (RANDOM() * INTERVAL '27 days'))
-RETURNING id;
+CREATE TRIGGER trigger_increment_likes_count
+    AFTER INSERT ON poll_likes
+    FOR EACH ROW EXECUTE FUNCTION increment_likes_count();
 
- INSERT INTO poll_answer_options (poll_id, text) VALUES
--- Favorite color
-((SELECT id FROM polls WHERE question = 'What is your favorite color?' LIMIT 1), 'Red'),
-((SELECT id FROM polls WHERE question = 'What is your favorite color?' LIMIT 1), 'Blue'),
-((SELECT id FROM polls WHERE question = 'What is your favorite color?' LIMIT 1), 'Green'),
-((SELECT id FROM polls WHERE question = 'What is your favorite color?' LIMIT 1), 'Black'),
+CREATE TRIGGER trigger_decrement_likes_count
+    AFTER DELETE ON poll_likes
+    FOR EACH ROW EXECUTE FUNCTION decrement_likes_count();
 
--- Favorite city
-((SELECT id FROM polls WHERE question = 'Which city would you love to visit?' LIMIT 1), 'Paris'),
-((SELECT id FROM polls WHERE question = 'Which city would you love to visit?' LIMIT 1), 'Tokyo'),
-((SELECT id FROM polls WHERE question = 'Which city would you love to visit?' LIMIT 1), 'New York'),
-((SELECT id FROM polls WHERE question = 'Which city would you love to visit?' LIMIT 1), 'Rome'),
 
--- Best ice cream flavor
-((SELECT id FROM polls WHERE question = 'What is the best ice cream flavor?' LIMIT 1), 'Chocolate'),
-((SELECT id FROM polls WHERE question = 'What is the best ice cream flavor?' LIMIT 1), 'Vanilla'),
-((SELECT id FROM polls WHERE question = 'What is the best ice cream flavor?' LIMIT 1), 'Strawberry'),
-((SELECT id FROM polls WHERE question = 'What is the best ice cream flavor?' LIMIT 1), 'Mango'),
+UPDATE polls
+SET likes_count = sub.like_count
+FROM (
+         SELECT poll_id, COUNT(*) AS like_count
+         FROM poll_likes
+         GROUP BY poll_id
+     ) AS sub
+WHERE polls.id = sub.poll_id;
 
--- What to eat now
-((SELECT id FROM polls WHERE question = 'What should I eat now?' LIMIT 1), 'Pizza'),
-((SELECT id FROM polls WHERE question = 'What should I eat now?' LIMIT 1), 'Burger'),
-((SELECT id FROM polls WHERE question = 'What should I eat now?' LIMIT 1), 'Pasta'),
-((SELECT id FROM polls WHERE question = 'What should I eat now?' LIMIT 1), 'Sushi'),
+ALTER TABLE polls
+    ADD COLUMN IF NOT EXISTS votes_count INTEGER DEFAULT 0;
 
--- Random topics
-((SELECT id FROM polls WHERE question = 'Cats or dogs?' LIMIT 1), 'Cats'),
-((SELECT id FROM polls WHERE question = 'Cats or dogs?' LIMIT 1), 'Dogs'),
+CREATE OR REPLACE FUNCTION increment_poll_votes_count()
+    RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE polls
+    SET votes_count = votes_count + 1
+    WHERE id = (
+        SELECT poll_id FROM poll_answer_options WHERE id = NEW.option_id
+    );
 
-((SELECT id FROM polls WHERE question = 'Which superhero is the best?' LIMIT 1), 'Superman'),
-((SELECT id FROM polls WHERE question = 'Which superhero is the best?' LIMIT 1), 'Batman'),
-((SELECT id FROM polls WHERE question = 'Which superhero is the best?' LIMIT 1), 'Spider-Man'),
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
 
-((SELECT id FROM polls WHERE question = 'Best way to start the day?' LIMIT 1), 'Coffee'),
-((SELECT id FROM polls WHERE question = 'Best way to start the day?' LIMIT 1), 'Exercise'),
-((SELECT id FROM polls WHERE question = 'Best way to start the day?' LIMIT 1), 'Breakfast'),
+CREATE TRIGGER trigger_increment_poll_votes_count
+    AFTER INSERT ON poll_votes
+    FOR EACH ROW EXECUTE FUNCTION increment_poll_votes_count();
 
-((SELECT id FROM polls WHERE question = 'Tea or Coffee?' LIMIT 1), 'Tea'),
-((SELECT id FROM polls WHERE question = 'Tea or Coffee?' LIMIT 1), 'Coffee');
- */
-
-SELECT * FROM user_profiles
+UPDATE polls p
+SET votes_count = sub.total_votes
+FROM (
+         SELECT pao.poll_id, SUM(pao.votes_count) AS total_votes
+         FROM poll_answer_options pao
+         GROUP BY pao.poll_id
+     ) AS sub
+WHERE p.id = sub.poll_id;

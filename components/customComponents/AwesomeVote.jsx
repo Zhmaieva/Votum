@@ -5,8 +5,6 @@ import {
     TouchableOpacity,
     StyleSheet,
     Animated,
-    Modal,
-    TouchableWithoutFeedback,
     Pressable
 } from "react-native";
 import { Colors } from '../../utils/colorUtils';
@@ -15,7 +13,6 @@ import ReportPoll from "./AwesomeReportPoll";
 import {globalEventEmitter, onShare} from "../../shared/common";
 import AwesomeLikeButton from "./AwesomeLikeButton";
 import { AwesomeModal } from './AwesomeModal'
-import {useFocusEffect} from "@react-navigation/native";
 import {voteOnPoll} from "../../shared/api/apiClient";
 
 const formatFollowers = (num) => {
@@ -69,7 +66,6 @@ const AwesomeVote = ({
 
     useEffect(() => {
         if (selected || pollExpired || createdByUser) {
-            console.log('effect animation')
             Animated.timing(animation, {
                 toValue: 1,
                 duration: 600,

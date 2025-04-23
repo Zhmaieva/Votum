@@ -1,47 +1,70 @@
-import React, {useState} from "react";
-import {View, StyleSheet, SafeAreaView, ScrollView} from "react-native";
-import { Colors } from '../../utils/colorUtils'
+import React, {useEffect, useState} from "react";
+import {View, StyleSheet, ActivityIndicator, Text} from "react-native";
 import AwesomeCard from "../customComponents/AwesomeCard";
 import AwesomeFeed from "../customComponents/AwesomeFeed";
+import {calculateTimeDifference} from "../../shared/common";
+import {fetchLikedPolls, fetchMyProfile} from "../../shared/api/apiClient";
 
-const pollData = [
-];
+    const LikedView = () => {
 
-const LikedView = () => {
+        const [refreshing, setRefreshing] = useState(false);
+        const [polls, setPolls] = useState(null); // default to null for loading state
+        const [loggedInUserId, setLoggedInUserId] = useState(null);
 
-    const [polls, setPolls] = useState(pollData);
+    useEffect(() => {
+        fetchMyProfile().then(res => {
+            if (res?.userId) {
+                setLoggedInUserId(res.userId);
+            }
+        });
 
-    const handleVote = (pollId, selectedOption) => {
-        setPolls(polls.map(poll =>
-            poll.id === pollId ? {
-                ...poll,
-                results: { ...poll.results, [selectedOption]: (poll.results[selectedOption] || 0) + 1 },
-                totalVotes: poll.totalVotes + 1
-            } : poll
-        ));
-    };
+        fetchLikedPolls().then(res => {
+            setPolls(res);
+        });
+    }, []);
 
-    // Simulate refreshing & loading new polls
     const onRefresh = () => {
         setRefreshing(true);
-        setTimeout(() => {
-            const newPolls = [
-                { id: String(Date.now()), question: 'What is your favorite sport?', options: ['Football', 'Basketball', 'Tennis', 'Swimming'] },
-                ...polls, // Add new poll at the top
-            ];
-            setPolls(newPolls);
+        fetchLikedPolls().then(res => {
+            setPolls(res.slice());
             setRefreshing(false);
-        }, 1500);
+        });
     };
 
+    if (polls === null) {
+        return <ActivityIndicator size="large" color="#0000ff" />;
+    }
+
+    if (!polls?.length) {
+        return (
+            <View style={styles.emptyContainer}>
+                <Text style={styles.emptyText}>
+                    Something went wrong, check your network connection.
+                </Text>
+            </View>
+        );
+    }
+
     return (
-        <AwesomeFeed data={polls} isLikedPollsView={true} onRefresh={onRefresh} renderItem={(item) => {
-            return (
-                <View style={styles.container}>
-                    <AwesomeCard item={item} handleVote={handleVote} />
-                </View>
-            )}
-        }/>
+        <AwesomeFeed
+            data={polls}
+            onRefresh={onRefresh}
+            refreshing={refreshing}
+            isLikedPollsView={true}
+            renderItem={(item) => {
+                item.timeLeft = calculateTimeDifference(item.endsIn);
+                return (
+                    <View style={styles.container}>
+                        <AwesomeCard
+                            item={item}
+                            handleVote={async (itemId, optionId) => {
+                            }}
+                            loggedInUserId={loggedInUserId}
+                        />
+                    </View>
+                )
+            }}
+        />
     );
 };
 

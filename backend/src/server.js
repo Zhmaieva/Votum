@@ -24,6 +24,7 @@ app.use(express.json());
 // Grab the port from CLI args
 const args = process.argv;
 const portIndex = args.indexOf('-p');
+const isDebug = process.argv.includes('--debug');
 const port = (portIndex !== -1 && args[portIndex + 1]) ? parseInt(args[portIndex + 1], 10) : 3000;
 
 function generateToken({id, username}) {
@@ -32,6 +33,31 @@ function generateToken({id, username}) {
 
 function generateSignUpToken({email}) {
     return jwt.sign({ email }, SECRET_KEY);//let's make it non-expirale for convenience
+}
+
+if (isDebug) {
+    app.use((req, res, next) => {
+        const start = Date.now();
+        const originalJson = res.json;
+
+        res.json = function (body) {
+            const duration = Date.now() - start;
+
+            console.groupCollapsed(`[DEBUG] ${req.method} ${req.originalUrl} - ${res.statusCode} (${duration}ms)`);
+
+            console.log('%cRequest Headers:', 'color: gray; font-weight: bold;');
+            console.dir(req.headers, { depth: null });
+
+            console.log('%cResponse Body:', 'color: cyan; font-weight: bold;');
+            console.dir(body, { depth: null });
+
+            console.groupEnd();
+
+            return originalJson.call(this, body);
+        };
+
+        next();
+    });
 }
 
 app.post("/login", async (req, res) => {
@@ -328,6 +354,23 @@ app.get('/polls', authMiddleware, async (req, res) => {
     res.json(result);
 });
 
+app.get('/polls/liked', authMiddleware, async (req, res) => {
+    const result = await pollQueries.fetchLikedPolls(req.user.id);
+    res.json(result);
+});
+
+app.get('/polls/trending', authMiddleware, async (req, res) => {
+    const result = await pollQueries.fetchTrendingPolls(req.user.id);
+    res.json(result);
+});
+
+app.get('user/:id?/polls', authMiddleware, async (req, res) => {
+    const userId = req.params.id;
+
+    const result = await pollQueries.fetchUserPolls(req.user.id, userId);
+    res.json(result);
+});
+
 const durationMap = {
     '1h': '1 hour',
     '1d': '1 day',
@@ -371,7 +414,7 @@ app.get('/polls/:id?/options', authMiddleware, async (req, res, next) => {
     try {
         const pollId = req.params.id;
 
-        const result = await pollQueries.getPollOptions(pollId);
+        const result = await pollQueries.getPollOptionResults(pollId);
 
         if (result)
             return res.json(result);

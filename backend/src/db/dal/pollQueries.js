@@ -4,118 +4,151 @@ const {customAlphabet} = require("nanoid");
 const alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const customNanoid = customAlphabet(alphabet, 6); // 6-char all caps
 
-const fetchPolls = async (userId, featuredId) => {
-    try {
-        if (!featuredId) {
-            featuredId = null;
-        }
+/**
+ * Helper function to fetch poll answer options and attach them to their corresponding polls.
+ * Also checks if the current user has voted on each option.
+ *
+ * @param {string} userId - ID of the currently authenticated user
+ * @param {Array} polls - List of polls to attach options to
+ * @returns {Promise<Array>} - Polls with attached options
+ */
+async function attachOptionsToPolls(userId, polls) {
+    const pollsMap = {};
+    polls.forEach(poll => {
+        pollsMap[poll.id] = {
+            id: poll.id,
+            question: poll.question,
+            options: [],
+            endsIn: poll.ends_in,
+            isLiked: poll.is_liked,
+            user: {
+                userId: poll.user_id,
+                username: poll.username,
+                image: poll.image,
+                followersNumber: poll.followers_number < 0 ? 0 : poll.followers_number,
+                isFollowing: poll.is_following,
+                bio: poll.user_bio
+            }
+        };
+    });
 
-        const pollsQuery = `
+    const pollIds = polls.map(p => p.id);
+    const optionsQuery = `
+        SELECT pao.id, pao.poll_id, pao.text, pao.votes_count as "votesCount",
+               CASE WHEN pv.user_id IS NOT NULL THEN true ELSE false END AS voted
+        FROM poll_answer_options pao
+                 LEFT JOIN poll_votes pv ON pv.option_id = pao.id AND pv.user_id = $1
+        WHERE pao.poll_id = ANY($2)
+        ORDER BY pao.option_order;
+    `;
+    const optionsResult = await pool.query(optionsQuery, [userId, pollIds]);
+
+    const optionsMap = {};
+    optionsResult.rows.forEach(row => {
+        if (!optionsMap[row.poll_id]) optionsMap[row.poll_id] = [];
+        optionsMap[row.poll_id].push({ id: row.id, text: row.text, voted: row.voted, votesCount: row.votesCount });
+    });
+
+
+    Object.keys(pollsMap).forEach(pollId => {
+        const poll = pollsMap[pollId];
+        poll.options = optionsMap[pollId] || [];
+    });
+
+    return Object.values(pollsMap);
+}
+
+// Base SELECT clause reused in all queries
+const pollSelect = `
+    SELECT p.id, p.question, p.ends_in, p.readable_id, u.username, up.user_id, up.image,
+        up.followers_number,
+        CASE WHEN pl.user_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_liked,
+        CASE WHEN uf.user_follower_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_following,
+        CASE WHEN p.created_by = $1 THEN up.bio ELSE '' END AS user_bio
+        FROM polls p
+        JOIN users u ON p.created_by = u.id
+        JOIN user_profiles up ON u.id = up.user_id
+        LEFT JOIN poll_likes pl ON p.id = pl.poll_id AND pl.user_id = $1
+        LEFT JOIN user_follows uf ON u.id = uf.user_follow_id AND uf.user_follower_id = $1
+`;
+
+// WHERE clause used to filter out expired or deleted polls
+const pollWhere = `
+    WHERE p.ends_in > NOW() AND p.is_deleted = false
+`;
+
+/**
+ * Fetch polls for the main feed.
+ * If a featured poll is specified, include it first and exclude it from the rest.
+ *
+ * @param {string} userId - ID of the currently authenticated user
+ * @param {string|null} featuredId - Optional readable ID of a featured poll
+ * @returns {Promise<Array>} - List of polls for feed
+ */
+async function fetchPolls(userId, featuredId = null) {
+    let fullQuery;
+    let params = [userId, featuredId];
+
+    if (featuredId) {
+        fullQuery = `
             SELECT * FROM (
-                              -- Step 1: Featured poll (if provided)
-                              SELECT p.id,
-                                     p.question,
-                                     p.ends_in,
-                                     u.username,
-                                     up.user_id,
-                                     up.image,
-                                     up.followers_number,
-                                     CASE WHEN pl.user_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_liked,
-                                     CASE WHEN uf.user_follower_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_following,
-                                     CASE WHEN p.created_by = $1 THEN up.bio ELSE '' END AS user_bio,
-                                     0 AS sort_order
-                              FROM polls p
-                                       JOIN users u ON p.created_by = u.id
-                                       JOIN user_profiles up ON u.id = up.user_id
-                                       LEFT JOIN poll_likes pl ON p.id = pl.poll_id AND pl.user_id = $1
-                                       LEFT JOIN user_follows uf ON u.id = uf.user_follow_id AND uf.user_follower_id = $1
-                            WHERE ($2::varchar IS NOT NULL AND p.readable_id = $2)
-
-                              UNION ALL
-
-                              -- Step 2: All other polls, excluding featured
-                              SELECT p.id,
-                                     p.question,
-                                     p.ends_in,
-                                     u.username,
-                                     up.user_id,
-                                     up.image,
-                                     up.followers_number,
-                                     CASE WHEN pl.user_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_liked,
-                                     CASE WHEN uf.user_follower_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_following,
-                                     CASE WHEN p.created_by = $1 THEN up.bio ELSE '' END AS user_bio,
-                                     1 AS sort_order
-                              FROM polls p
-                                       JOIN users u ON p.created_by = u.id
-                                       JOIN user_profiles up ON u.id = up.user_id
-                                       LEFT JOIN poll_likes pl ON p.id = pl.poll_id AND pl.user_id = $1
-                                       LEFT JOIN user_follows uf ON u.id = uf.user_follow_id AND uf.user_follower_id = $1
-                              WHERE p.ends_in > NOW() AND p.is_deleted = false
-                                AND ($2::varchar IS NULL OR p.readable_id <> $2)
-                          ) all_polls
-            ORDER BY sort_order;
+                (${pollSelect} ${pollWhere} AND p.readable_id = $2 LIMIT 1)
+                UNION ALL
+                (${pollSelect} ${pollWhere} AND p.readable_id <> $2)
+            ) AS polls
         `;
-
-        const pollsResult = await pool.query(pollsQuery, [userId, featuredId ?? null]);
-        const pollIds = pollsResult.rows.map(row => row.id);
-
-        const optionsQuery = `
-            SELECT
-                pao.id,
-                pao.poll_id,
-                pao.text,
-                pao.votes_count as "votesCount",
-                CASE
-                    WHEN pv.user_id IS NOT NULL THEN true
-                    ELSE false
-                    END AS voted
-            FROM poll_answer_options pao
-                     LEFT JOIN poll_votes pv
-                               ON pv.option_id = pao.id AND pv.user_id = $1
-            WHERE pao.poll_id = ANY($2)
-            ORDER BY pao.option_order;
-        `;
-
-        const optionsResult = await pool.query(optionsQuery, [userId, pollIds]);
-
-        const pollsMap = {};
-        pollsResult.rows.forEach(row => {
-            pollsMap[row.id] = {
-                id: row.id,
-                question: row.question,
-                options: [],
-                endsIn: row.ends_in,
-                isLiked: row.is_liked,
-                user: {
-                    userId: row.user_id,
-                    username: row.username,
-                    image: row.image,
-                    followersNumber: row.followers_number < 0 ? 0 : row.followers_number,
-                    isFollowing: row.is_following,
-                    bio: row.user_bio
-                }
-            };
-        });
-
-        const optionsMap = {};
-        optionsResult.rows.forEach(row => {
-            if (!optionsMap[row.poll_id])
-                optionsMap[row.poll_id] = [];
-
-            optionsMap[row.poll_id].push({ id: row.id, text: row.text, voted: row.voted, votesCount: row.votesCount });
-        });
-
-        Object.keys(pollsMap).forEach(pollId => {
-            const poll = pollsMap[pollId];
-            poll.options = optionsMap[pollId] || [];
-        });
-
-        return Object.values(pollsMap);
-    } catch (err) {
-        console.error('Error fetching polls:', err);
-        return [];
+    } else {
+        fullQuery = `${pollSelect} ${pollWhere}`;
+        params = [userId];
     }
-};
+
+    const result = await pool.query(fullQuery, params);
+    return attachOptionsToPolls(userId, result.rows);
+}
+
+/**
+ * Fetch polls liked by the user.
+ * Does not filter out expired polls.
+ *
+ * @param {string} userId - ID of the currently authenticated user
+ * @returns {Promise<Array>} - List of liked polls
+ */
+async function fetchLikedPolls(userId) {
+    const query = `
+        ${pollSelect}
+        WHERE p.is_deleted = false AND pl.user_id IS NOT NULL
+    `;
+    const result = await pool.query(query, [userId]);
+    return attachOptionsToPolls(userId, result.rows);
+}
+
+/**
+ * Fetch all polls created by a specific user.
+ *
+ * @param {string} requestingUserId - ID of the current user (used for like/follow state)
+ * @param {string} targetUserId - ID of the user whose polls to fetch
+ * @returns {Promise<Array>} - List of polls created by the user
+ */
+async function fetchUserPolls(requestingUserId, targetUserId) {
+    const query = `
+        ${pollSelect}
+        WHERE p.is_deleted = false AND p.created_by = $2
+    `;
+    const result = await pool.query(query, [requestingUserId, targetUserId]);
+    return attachOptionsToPolls(requestingUserId, result.rows);
+}
+
+/**
+ * Fetch trending polls for the main feed.
+ * Uses the same logic as regular feed (filtered for active polls).
+ *
+ * @param {string} userId - ID of the currently authenticated user
+ * @returns {Promise<Array>} - List of trending polls
+ */
+async function fetchTrendingPolls(userId) {
+    const result = await pool.query(`${pollSelect} ${pollWhere} ORDER BY p.votes_count DESC`, [userId]);
+    return attachOptionsToPolls(userId, result.rows);
+}
 
 const getPollById = async (pollId, readable = false) => {
     try {
@@ -180,13 +213,12 @@ const getPollById = async (pollId, readable = false) => {
     }
 };
 
-
 /**
  * Fetches options for a single poll, sorted by option_order ascending.
  * @param {string} pollId - ID of the poll
  * @returns {Promise<{ text: string, votesCount: number }[] | null>}
  */
-const getPollOptions = async (pollId) => {
+const getPollOptionResults = async (pollId) => {
     try {
         const query = `
             SELECT id, text, votes_count AS "votesCount"
@@ -320,7 +352,10 @@ module.exports = {
     deletePoll,
     fetchPolls,
     getPollById,
-    getPollOptions,
+    fetchUserPolls,
+    fetchTrendingPolls,
+    fetchLikedPolls,
+    getPollOptionResults,
     likePoll,
     unlikePoll,
     voteOnPoll,

@@ -46,8 +46,8 @@ const AwesomeCard = ({ item, handleVote, loggedInUserId, loading = false }) => {
                     timeLeft={item?.timeLeft}
                     isLiked={item?.isLiked ?? false}
                     onVote={(optionId) => handleVote(item?.id, optionId)}
-                    createdByUser={item.user.userId === loggedInUserId}
-                    onDeletePoll={() => handleDeletePoll(item.id)}
+                    createdByUser={item.user?.userId === loggedInUserId}
+                    onDeletePoll={() => handleDeletePoll(item?.id)}
                 />
             )}
         </View>

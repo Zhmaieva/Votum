@@ -25,6 +25,12 @@ export const onShare = async (pollId) => {
     }
 };
 
+export const calculateTimeDifference = (dateString) => {
+    const now = new Date();
+    const targetDate = new Date(dateString);
+    return targetDate - now;
+};
+
 // An object serving as a temporary local data storage to exchange between components
 // Resets when app does so
 class DataService {

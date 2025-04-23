@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { TouchableOpacity, Text, ActivityIndicator } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
@@ -27,7 +26,6 @@ import LogInView from "../LogInView"
 import ForgotPasswordView from "../ForgotPassword";
 import FollowersView from "../FollowersView";
 import AwesomeUsernameInput from "../../customComponents/AwesomeUsernameInput";
-import CategoriesView from "../CategoriesView";
 import SomebodysProfileView from "../SomebodysProfileView"
 import PreviewPollView from "../PreviewPollView";
 import EditUsernameView from "../EditUsernameView";
@@ -156,7 +154,6 @@ function FeedStack() {
     return (
         <Stack.Navigator id="Test2">
             <Stack.Screen name="FeedMain" component={FeedView} options={{ headerShown: false, gestureEnabled: true }} />
-            <Stack.Screen name="SearchView" component={SearchView} options={{ headerShown: false, gestureEnabled: true }} />
             <Stack.Screen name="Somebodys Profile" component={SomebodysProfileView} options={{ headerShown: false, gestureEnabled: true }} />
             <Stack.Screen name="Profile" component={MyUserProfileView} options={{ headerShown: false, gestureEnabled: true }} />
 
@@ -164,11 +161,13 @@ function FeedStack() {
     );
 }
 
-// 🔹 Stack Navigator for "Voted" tab
+// 🔹 Stack Navigator for "Liked" tab
 function VotedStack() {
     return (
         <Stack.Navigator id="Test3">
             <Stack.Screen name="VotedMain" component={LikedView} options={{ headerShown: false, gestureEnabled: true }} />
+            <Stack.Screen name="Somebodys Profile" component={SomebodysProfileView} options={{ headerShown: false, gestureEnabled: true }} />
+            <Stack.Screen name="Profile" component={MyUserProfileView} options={{ headerShown: false, gestureEnabled: true }} />
         </Stack.Navigator>
     );
 }
@@ -189,6 +188,7 @@ function SearchStack() {
         <Stack.Navigator id="Test5">
             <Stack.Screen name="SearchMain" component={SearchView} options={{ headerShown: false, gestureEnabled: true }} />
             <Stack.Screen name="Somebodys Profile" component={SomebodysProfileView} options={{ headerShown: false, gestureEnabled: true }} />
+            <Stack.Screen name="Profile" component={MyUserProfileView} options={{ headerShown: false, gestureEnabled: true }} />
         </Stack.Navigator>
     );
 }

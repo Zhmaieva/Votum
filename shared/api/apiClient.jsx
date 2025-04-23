@@ -269,6 +269,34 @@ export const fetchPolls = async (postId) => {
     }
 };
 
+export const fetchLikedPolls = async () => {
+    try {
+        console.log('fetching liked polls...');
+        const response = await apiClient.get(`/polls/liked`, {
+            headers: {
+                Authorization: `Bearer ${await getToken()}`,
+            },
+        });
+        return response?.data;
+    } catch (err) {
+        console.log('Fetch failed', err);
+    }
+};
+
+export const fetchTrendingPolls = async () => {
+    try {
+        console.log('fetching trending polls...');
+        const response = await apiClient.get(`/polls/trending`, {
+            headers: {
+                Authorization: `Bearer ${await getToken()}`,
+            },
+        });
+        return response?.data;
+    } catch (err) {
+        console.log('Fetch failed', err);
+    }
+};
+
 export const getPollShareLink = async (pollId) => {
     try {
         const response = await apiClient.get(`/polls/${pollId}/links`, {
@@ -384,7 +412,6 @@ export const voteOnPoll = async (optionId) => {
  */
 export const getPollOptions = async (pollId) => {
     try {
-        console.log(`refreshing poll options ${pollId}`);
         const response = await apiClient.get(`/polls/${pollId}/options`, {
             headers: {
                 Authorization: `Bearer ${await getToken()}`,
