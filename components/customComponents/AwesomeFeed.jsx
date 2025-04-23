@@ -44,7 +44,7 @@ const AwesomeFeed = ({
     },[])
 
     useEffect(() => {
-        if (data.length === 0) {
+        if (!data?.length || data.length === 0) {
             // If no data, show the "no more polls" item
             setPreloadedData([{ id: 'no-more-polls', type: 'placeholder' }]);
         } else {
@@ -53,8 +53,8 @@ const AwesomeFeed = ({
     }, [data]);
 
     const loadMorePolls = () => {
-        const nextBatch = data.slice(preloadedData.length, preloadedData.length + 5);
-        if (nextBatch.length === 0) {
+        const nextBatch = data?.slice(preloadedData.length, preloadedData.length + 5);
+        if (!nextBatch || nextBatch?.length === 0) {
             if (!preloadedData.find(item => item?.type === 'placeholder')) {
                 setPreloadedData(prevData => [
                     ...prevData,
@@ -81,7 +81,7 @@ const AwesomeFeed = ({
     const renderWithPlaceholder = (item) => {
         if (item?.type === 'placeholder') {
             if (isUserProfileView) {
-                const isCurrentUser = getDataService().getUser()?.userId === data[0]?.user?.userId;
+                const isCurrentUser = data && getDataService().getUser()?.userId === data[0]?.user?.userId;
 
                 return (
                     <View style={styles.placeholderContainerUserProfile}>
@@ -194,7 +194,7 @@ const AwesomeFeed = ({
                 scrollEventThrottle={16}
                 showsVerticalScrollIndicator={false}
                 snapToAlignment="start"
-                snapToOffsets={preloadedData.map((_, index) => index * (POLL_HEIGHT - NEXT_POLL_OFFSET))}
+                snapToOffsets={preloadedData?.map((_, index) => index * (POLL_HEIGHT - NEXT_POLL_OFFSET)) ?? 0}
                 decelerationRate="fast"
                 refreshControl={
                     <RefreshControl refreshing={refreshing ?? false} onRefresh={onRefresh ?? (() => { })} tintColor="#888" />

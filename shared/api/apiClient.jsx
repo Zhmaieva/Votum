@@ -297,6 +297,20 @@ export const fetchTrendingPolls = async () => {
     }
 };
 
+export const fetchUserPolls = async (userId) => {
+    try {
+        console.log('fetching polls...');
+        const response = await apiClient.get(`user/${userId}/polls`, {
+            headers: {
+                Authorization: `Bearer ${await getToken()}`,
+            },
+        });
+        return response?.data;
+    } catch (err) {
+        console.log('Fetch failed', err);
+    }
+};
+
 export const getPollShareLink = async (pollId) => {
     try {
         const response = await apiClient.get(`/polls/${pollId}/links`, {

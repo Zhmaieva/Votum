@@ -364,7 +364,7 @@ app.get('/polls/trending', authMiddleware, async (req, res) => {
     res.json(result);
 });
 
-app.get('user/:id?/polls', authMiddleware, async (req, res) => {
+app.get('/user/:id?/polls', authMiddleware, async (req, res) => {
     const userId = req.params.id;
 
     const result = await pollQueries.fetchUserPolls(req.user.id, userId);

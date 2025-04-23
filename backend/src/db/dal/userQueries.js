@@ -3,28 +3,14 @@ const {deleteImage} = require("../../aws/s3");
 
 async function followUser(userFollowerId, userFollowId) {
     const query = `
-        WITH inserted AS (
-            INSERT INTO user_follows (user_follower_id, user_follow_id)
-                VALUES ($1, $2)
-                ON CONFLICT (user_follower_id, user_follow_id) DO NOTHING
-                RETURNING 1
-        )
---              update_followers AS (
---                  UPDATE user_profiles
---                      SET followers_number = followers_number + 1
---                      WHERE user_id = $2
---                          AND EXISTS (SELECT 1 FROM inserted)
---                      RETURNING 1
---              )
---         UPDATE user_profiles
---         SET following_number = following_number + 1
---         WHERE user_id = $1
---           AND EXISTS (SELECT 1 FROM inserted);
+        INSERT INTO user_follows (user_follower_id, user_follow_id)
+        VALUES ($1, $2)
+        ON CONFLICT (user_follower_id, user_follow_id) DO NOTHING;
   `;
 
     try {
-        const res = await pool.query(query, [userFollowerId, userFollowId]);
-        console.log('Follow inserted (or already exists)', res.rowCount);
+        await pool.query(query, [userFollowerId, userFollowId]);
+        console.log('Follow inserted (or already exists)');
     } catch (err) {
         console.error('Error inserting follow:', err);
     }

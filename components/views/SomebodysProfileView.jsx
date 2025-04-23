@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, Modal } from "react-native";
+import {View, Text, StyleSheet, SafeAreaView, ScrollView, Modal, ActivityIndicator} from "react-native";
 import { Colors } from '../../utils/colorUtils';
-import AwesomeVote from "../customComponents/AwesomeVote";
 import AwesomeUserHeader from "../customComponents/AwesomeUserHeader";
-import AwesomeSwitcher from "../customComponents/AwesomeSwitcher";
 import AwesomeFeed from "../customComponents/AwesomeFeed";
 import AwesomeLoadingHeader from "../customComponents/AwesomeLoadingHeader";
-import { fetchUserProfile } from "../../shared/api/apiClient";
-import { getDataService } from "../../shared/common";
-import { useNavigation, useRoute } from '@react-navigation/native';
+import {fetchLikedPolls, fetchMyProfile, fetchUserPolls, fetchUserProfile} from "../../shared/api/apiClient";
+import {calculateTimeDifference, getDataService} from "../../shared/common";
+import AwesomeCard from "../customComponents/AwesomeCard";
+import AwesomeLoadingPoll from "../customComponents/AwesomeLoadingPoll";
 
 const SomebodysProfileView = ({ route }) => {
     const { userId } = route.params;
@@ -16,19 +15,26 @@ const SomebodysProfileView = ({ route }) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [user, setUser] = useState(null);
     const [loggedInUserId, setLoggedInUserId] = useState(null);
-
-    const pollData = [ /* active polls */ ];
-    const closedPollData = [ /* expired polls */ ];
-
-    const navigation = useNavigation();
+    const [refreshing, setRefreshing] = useState(false);
+    const [polls, setPolls] = useState(null); // default to null for loading state
 
     useEffect(() => {
         const myId = getDataService().getUser()?.userId;
         setLoggedInUserId(myId);
         fetchUserProfile(userId).then(setUser);
+
+        fetchUserPolls(userId).then(res => {
+            setPolls(res);
+        });
     }, []);
 
-    const selectedPollData = selectedOption === "active" ? pollData : closedPollData;
+    const onRefresh = () => {
+        setRefreshing(true);
+        fetchUserPolls(userId).then(res => {
+            setPolls(res.slice());
+            setRefreshing(false);
+        });
+    };
 
     return (
         <View style={styles.container}>
@@ -59,26 +65,35 @@ const SomebodysProfileView = ({ route }) => {
                             <Text style={styles.followersText}>following</Text>
                         </View>
                     </View>
-                    {/*<View style={styles.bottomMargin20}>
-                        <AwesomeSwitcher
-                            leftOption="active"
-                            rightOption="expired"
-                            onDisplayModeChangedHandler={setSelectedOption}
+
+                    {!user || !polls ? (
+                        <View style={styles.container}>
+                            {[1, 2, 3].map((_, idx) => (
+                                <AwesomeLoadingPoll key={idx} />
+                            ))}
+                        </View>
+                    ) : (
+                        <AwesomeFeed
+                            data={polls}
+                            onRefresh={onRefresh}
+                            refreshing={refreshing}
+                            isUserProfileView={true}
+                            renderItem={(item) => {
+                                item.timeLeft = calculateTimeDifference(item.endsIn);
+                                return (
+                                    <View style={styles.container}>
+                                        <AwesomeCard
+                                            hideHeader={true}
+                                            item={item}
+                                            handleVote={async (itemId, optionId) => {
+                                            }}
+                                            loggedInUserId={loggedInUserId}
+                                        />
+                                    </View>
+                                )
+                            }}
                         />
-                    </View>*/}
-                    <AwesomeFeed
-                        data={selectedOption === "active" ? pollData : closedPollData}
-                        onRefresh={() => {}}
-                        refreshing={false}
-                        isUserProfileView={true}
-                        renderItem={(item) => (
-                            <AwesomeVote
-                                timeLeft={item.timeLeft}
-                                question={item.question}
-                                options={item.options}
-                            />
-                        )}
-                    />
+                    )}
                 </View>
             </SafeAreaView>
             <Modal
@@ -97,7 +112,7 @@ export default SomebodysProfileView;
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: Colors.yellow,
+        backgroundColor: Colors.white,
         height: "100%",
     },
     contentWrapper: {

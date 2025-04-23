@@ -7,7 +7,7 @@ import {deletePoll} from "../../shared/api/apiClient";
 import AwesomeLoadingHeader from "./AwesomeLoadingHeader";
 import AwesomeLoadingPoll from "./AwesomeLoadingPoll";
 
-const AwesomeCard = ({ item, handleVote, loggedInUserId, loading = false }) => {
+const AwesomeCard = ({ item, handleVote, loggedInUserId, loading = false, hideHeader = false }) => {
 
     const [isDeleted, setIsDeleted] = React.useState(false);
 
@@ -23,17 +23,20 @@ const AwesomeCard = ({ item, handleVote, loggedInUserId, loading = false }) => {
 
     return (
         <View>
-            <View style={styles.margin15}>
-                {loading ? (
-                    <AwesomeLoadingHeader />
-                ) : (
-                    <AwesomeUserHeader
-                        userData={item.user}
-                        loggedInUserId={loggedInUserId}
-                        isInsideCard={true}
-                    />
-                )}
-            </View>
+
+            {!hideHeader && (
+                <View style={styles.margin15}>
+                    {loading ? (
+                        <AwesomeLoadingHeader />
+                    ) : (
+                        <AwesomeUserHeader
+                            userData={item.user}
+                            loggedInUserId={loggedInUserId}
+                            isInsideCard={true}
+                        />
+                    )}
+                </View>
+            )}
 
             {loading ? (
                 <AwesomeLoadingPoll />

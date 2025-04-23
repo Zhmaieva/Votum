@@ -7,29 +7,17 @@ import AwesomeSwitcher from "../customComponents/AwesomeSwitcher";
 import AwesomeFeed from "../customComponents/AwesomeFeed";
 import AwesomeLoadingPoll from "../customComponents/AwesomeLoadingPoll";
 import AwesomeLoadingHeader from "../customComponents/AwesomeLoadingHeader";
-import { fetchMyProfile } from "../../shared/api/apiClient";
+import {fetchMyProfile, fetchUserPolls, fetchUserProfile} from "../../shared/api/apiClient";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import { getDataService } from "../../shared/common";
-
-const pollData = [];
-const closedPollData = [];
+import {calculateTimeDifference, getDataService} from "../../shared/common";
+import AwesomeCard from "../customComponents/AwesomeCard";
 
 const MyUserProfileView = () => {
-    const [selectedOption, setSelectedOption] = useState("active");
     const [modalVisible, setModalVisible] = useState(false);
     const [user, setUser] = useState(null);
-
-    useFocusEffect(
-        React.useCallback(() => {
-            if (getDataService().getUser()) {
-                setUser(getDataService().getUser());
-            } else {
-                fetchMyProfile().then(res => {
-                    setUser(res);
-                });
-            }
-        }, [])
-    );
+    const [loggedInUserId, setLoggedInUserId] = useState(null);
+    const [refreshing, setRefreshing] = useState(false);
+    const [polls, setPolls] = useState(null); // default to null for loading state
 
     const navigation = useNavigation();
 
@@ -37,7 +25,36 @@ const MyUserProfileView = () => {
         navigation.navigate(screenName);
     };
 
-    const selectedPollData = selectedOption === "active" ? pollData : closedPollData;
+    useFocusEffect(
+        React.useCallback(() => {
+            if (getDataService().getUser()) {
+                setUser(getDataService().getUser());
+                const myId = getDataService().getUser()?.userId;
+                setLoggedInUserId(myId);
+
+                fetchUserPolls(myId).then(res => {
+                    setPolls(res);
+                });
+            } else {
+                fetchMyProfile().then(res => {
+                    setUser(res);
+                    setLoggedInUserId(res.userId);
+                    fetchUserPolls(res.userId).then(res => {
+                        setPolls(res);
+                    });
+                });
+            }
+        }, [])
+    );
+
+    const onRefresh = () => {
+        setRefreshing(true);
+        if (getDataService().getUser()?.userId)
+            fetchUserPolls(getDataService().getUser()?.userId).then(res => {
+                setPolls(res.slice());
+                setRefreshing(false);
+            });
+    };
 
     return (
         <View style={styles.container}>
@@ -71,15 +88,7 @@ const MyUserProfileView = () => {
                         </Pressable>
                     </View>
 
-                    {/*<View style={styles.bottomMargin20}>
-                        <AwesomeSwitcher
-                            leftOption='active'
-                            rightOption='expired'
-                            onDisplayModeChangedHandler={setSelectedOption}
-                        />
-                    </View>*/}
-
-                    {user === null ? (
+                    {!user || !polls ? (
                         <View style={styles.container}>
                             {[1, 2, 3].map((_, idx) => (
                                 <AwesomeLoadingPoll key={idx} />
@@ -87,21 +96,24 @@ const MyUserProfileView = () => {
                         </View>
                     ) : (
                         <AwesomeFeed
-                            data={selectedPollData}
-                            onRefresh={() => {}}
-                            refreshing={false}
+                            data={polls}
+                            onRefresh={onRefresh}
+                            refreshing={refreshing}
                             isUserProfileView={true}
-                            renderItem={(item) => (
-                                <AwesomeVote
-                                    key={item?.id ?? item}
-                                    id={item?.id ?? item}
-                                    question={item?.question}
-                                    options={item?.options}
-                                    timeLeft={item?.timeLeft}
-                                    isLiked={item?.isLiked ?? false}
-                                    createdByUser={item.createdByUser}
-                                />
-                            )}
+                            renderItem={(item) => {
+                                item.timeLeft = calculateTimeDifference(item.endsIn);
+                                return (
+                                    <View style={styles.container}>
+                                        <AwesomeCard
+                                            hideHeader={true}
+                                            item={item}
+                                            handleVote={async (itemId, optionId) => {
+                                            }}
+                                            loggedInUserId={loggedInUserId}
+                                        />
+                                    </View>
+                                )
+                            }}
                         />
                     )}
                 </View>
