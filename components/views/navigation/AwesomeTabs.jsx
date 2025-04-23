@@ -40,15 +40,15 @@ const AuthStack = createStackNavigator();
 function AuthFlow() {
     return (
         <AuthStack.Navigator id='Auth'>
-            <AuthStack.Screen name="Registration" component={RegistrationMethodView} />
-            <AuthStack.Screen name="Email Register" component={EmailRegisterView} />
-            <AuthStack.Screen name="Verification Code" component={VerificationCodeView} />
-            <AuthStack.Screen name="Log in" component={LogInView} />
-            <AuthStack.Screen name="Username" component={UsernameView} />
-            <AuthStack.Screen name="Wellcome" component={WellcomeView} />
-            <AuthStack.Screen name="Profile photo" component={ProfilePhotoView} />
-            <AuthStack.Screen name="Age" component={AgeView} />
-            <AuthStack.Screen name="Forgot password" component={ForgotPasswordView} />
+            <AuthStack.Screen name="Registration" component={RegistrationMethodView} options={{ headerShown: false, gestureEnabled: true }}/>
+            <AuthStack.Screen name="Email Register" component={EmailRegisterView} options={{ headerShown: false, gestureEnabled: true }}/>
+            <AuthStack.Screen name="Verification Code" component={VerificationCodeView} options={{ headerShown: false, gestureEnabled: true }}/>
+            <AuthStack.Screen name="Log in" component={LogInView} options={{ headerShown: false, gestureEnabled: true }}/>
+            <AuthStack.Screen name="Username" component={UsernameView} options={{ headerShown: false, gestureEnabled: true }}/>
+            <AuthStack.Screen name="Wellcome" component={WellcomeView} options={{ headerShown: false, gestureEnabled: true }}/>
+            <AuthStack.Screen name="Profile photo" component={ProfilePhotoView} options={{ headerShown: false, gestureEnabled: true }}/>
+            <AuthStack.Screen name="Age" component={AgeView} options={{ headerShown: false, gestureEnabled: true }}/>
+            <AuthStack.Screen name="Forgot password" component={ForgotPasswordView} options={{ headerShown: false, gestureEnabled: true }}/>
         </AuthStack.Navigator>
     );
 }
@@ -144,6 +144,9 @@ function UserStack() {
                           })}
             />
             <AuthStack.Screen name="Verification Code" component={VerificationCodeView} options={{ headerShown: false, gestureEnabled: true }}/>
+            <AuthStack.Screen name="Log in" component={LogInView} options={{ headerShown: false, gestureEnabled: true }}/>
+            <AuthStack.Screen name="Forgot password" component={ForgotPasswordView} options={{ headerShown: false, gestureEnabled: true }}/>
+            <AuthStack.Screen name="Email Register" component={EmailRegisterView} options={{ headerShown: false, gestureEnabled: true }}/>
         </Stack.Navigator>
     );
 }

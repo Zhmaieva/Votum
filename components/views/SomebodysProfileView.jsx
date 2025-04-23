@@ -59,13 +59,13 @@ const SomebodysProfileView = ({ route }) => {
                             <Text style={styles.followersText}>following</Text>
                         </View>
                     </View>
-                    <View style={styles.bottomMargin20}>
+                    {/*<View style={styles.bottomMargin20}>
                         <AwesomeSwitcher
                             leftOption="active"
                             rightOption="expired"
                             onDisplayModeChangedHandler={setSelectedOption}
                         />
-                    </View>
+                    </View>*/}
                     <AwesomeFeed
                         data={selectedOption === "active" ? pollData : closedPollData}
                         onRefresh={() => {}}

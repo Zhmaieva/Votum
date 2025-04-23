@@ -71,13 +71,13 @@ const MyUserProfileView = () => {
                         </Pressable>
                     </View>
 
-                    <View style={styles.bottomMargin20}>
+                    {/*<View style={styles.bottomMargin20}>
                         <AwesomeSwitcher
                             leftOption='active'
                             rightOption='expired'
                             onDisplayModeChangedHandler={setSelectedOption}
                         />
-                    </View>
+                    </View>*/}
 
                     {user === null ? (
                         <View style={styles.container}>

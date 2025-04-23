@@ -50,7 +50,11 @@ const styles = StyleSheet.create({
         width: '100%',
         height: 40,
         backgroundColor: Colors.white,
-        paddingLeft: 10
+        paddingLeft: 10,
+        shadowRadius: 0,
+        shadowOffset: { width: 2, height: 2 },
+        shadowOpacity: 1,
+        shadowColor: Colors.green,
     },
     bareStyleInput: {
         borderWidth: 1,

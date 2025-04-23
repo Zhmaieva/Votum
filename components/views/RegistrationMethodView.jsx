@@ -1,5 +1,5 @@
 import React, { useState} from "react";
-import { View, StyleSheet, TextInput, Text } from 'react-native';
+import {View, StyleSheet, TextInput, Text, SafeAreaView} from 'react-native';
 import { Colors } from '../../utils/colorUtils';
 import AwesomeButton, {Color} from "../customComponents/AwesomeButton";
 import AwesomeLink from "../customComponents/AwesomeLink";
@@ -24,39 +24,44 @@ const RegistrationMethodView = ({ navigation }) => {
     };
 
     return (
-        <View style={styles.container}>
-            <View>
-                <View style={styles.logoContainer}>
-                    <Text>Logo</Text>
+        <SafeAreaView style={styles.safeArea}>
+            <View style={styles.container}>
+                <View>
+                    <View style={styles.logoContainer}>
+                        <Text>Logo</Text>
+                    </View>
+                    <View style={styles.buttonContainer}>
+                        <AwesomeButton
+                            text="Register with email"
+                            color={Color.BLACK}
+                            screenName='Email Register' />
+                    </View>
+                    <View style={styles.buttonContainer}>
+                        <AwesomeButton text="Google" color={Color.WHITE} />
+                    </View>
+                    <View style={styles.buttonContainer}>
+                        <AwesomeButton text="Apple" color={Color.WHITE} />
+                    </View>
                 </View>
-                <View style={styles.buttonContainer}>
-                    <AwesomeButton
-                        text="Register with email"
-                        color={Color.GREEN}
-                        screenName='Email Register' />
-                </View>
-                <View style={styles.buttonContainer}>
-                    <AwesomeButton text="Google" color={Color.BLACK} />
-                </View>
-                <View style={styles.buttonContainer}>
-                    <AwesomeButton text="Apple" color={Color.BLACK} />
+                <View style={styles.margin15}>
+                    <View style={styles.questionContainer}>
+                        <Text style={styles.questionStyle}>Already have an account?</Text>
+                    </View>
+                    <AwesomeButton text='Log in' color={Color.WHITE} screenName='Log in' />
                 </View>
             </View>
-            <View style={styles.margin15}>
-                <View style={styles.questionContainer}>
-                    <Text style={styles.questionStyle}>Already have an account?</Text>
-                </View>
-                <AwesomeButton text='Log in' color={Color.BLACK} screenName='Log in' />
-            </View>
-        </View>
+        </SafeAreaView>
     );
 };
 
 const styles = StyleSheet.create({
+    safeArea: {
+        flex: 1,
+        backgroundColor: Colors.white,
+    },
     container: {
         flex: 1,
         padding: 15,
-        backgroundColor: Colors.white,
         justifyContent: 'space-between'
     },
     buttonContainer: {
@@ -72,7 +77,7 @@ const styles = StyleSheet.create({
         color: Colors.black,
     },
     logoContainer: {
-        height: '45%',
+        height: '50%',
         borderColor: Colors.green,
         borderWidth: 1.5,
         marginBottom: 18,

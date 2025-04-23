@@ -77,15 +77,17 @@ const AwesomeUserHeader = ({
                         {user.username}
                     </Text>
 
-                    {isOwnProfile && isProfilePage ? (
-                        <Text style={[styles.font14, styles.greyTextStyle, styles.fontFamily]} numberOfLines={2} ellipsizeMode="tail">
-                            {user.bio}
-                        </Text>
-                    ) : (
-                        <Text style={[styles.font14, styles.greyTextStyle, styles.fontFamily]}>
-                            {formattedFollowers} {followersText}
-                        </Text>
-                    )}
+                    <View style={styles.test}>
+                        {isOwnProfile && isProfilePage ? (
+                            <Text style={[styles.font14, styles.greyTextStyle, styles.fontFamily]} numberOfLines={2} ellipsizeMode="tail">
+                                {user.bio}
+                            </Text>
+                        ) : (
+                            <Text style={[styles.font14, styles.greyTextStyle, styles.fontFamily]}>
+                                {formattedFollowers} {followersText}
+                            </Text>
+                        )}
+                    </View>
                 </View>
             </View>
 
@@ -203,4 +205,9 @@ const styles = StyleSheet.create({
     buttonContainer: {
         width: 80,
     },
+    test: {
+        //backgroundColor: 'gold',
+        marginBottom: -3,
+        marginTop: 3
+    }
 });

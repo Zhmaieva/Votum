@@ -22,8 +22,8 @@ const DURATION_OPTIONS = [
 const AddView = () => {
     const [question, setQuestion] = useState('');
     const [options, setOptions] = useState([
-        { id: '1', text: '', label: 'Answer 1' },
-        { id: '2', text: '', label: 'Answer 2' }
+        { id: '1', text: '', label: 'answer 1' },
+        { id: '2', text: '', label: 'answer 2' }
     ]);
     const [selectedDuration, setSelectedDuration] = useState('1h');
     const [durationDropdownOpen, setDurationDropdownOpen] = useState(false);
@@ -90,7 +90,7 @@ const AddView = () => {
                     <Text style={[styles.qTextStyle, styles.fontFamily]}>Q: </Text>
                     <TextInput
                         style={[styles.inputQuestion, styles.fontFamily]}
-                        placeholder="Question"
+                        placeholder="your question here"
                         placeholderTextColor='#ababab'
                         value={question}
                         onChangeText={setQuestion}
@@ -112,7 +112,7 @@ const AddView = () => {
                             />
                             {options.length > 2 && (
                                 <Pressable style={styles.iconOverlay} onPress={() => removeOption(item.id)}>
-                                    <Ionicons name='trash-outline' size={20} color='#ababab' />
+                                    <Ionicons name='trash-outline' size={18} color='#ababab' />
                                 </Pressable>
                             )}
                         </View>
@@ -184,10 +184,10 @@ const styles = StyleSheet.create({
         padding: 15,
     },
     inputQuestion: {
-        flex: 1,
-        //fontWeight: '500',
+        fontWeight: 'bold',
         fontSize: 18,
         color: Colors.black,
+        justifyContent: 'flex-end'
     },
     inputWrapper: {
         position: 'relative',
@@ -202,18 +202,20 @@ const styles = StyleSheet.create({
         paddingRight: 35,
         fontSize: 14,
         textAlignVertical: 'center',
-        borderRadius: 0
+        borderRadius: 0,
     },
     iconOverlay: {
         position: 'absolute',
-        right: 8,
-        top: 8,
+        right: 3,
+        top: 7,
         padding: 4
     },
     qTextStyle: {
         color: Colors.green,
         fontSize: 18,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        justifyContent: 'flex-end',
+        marginBottom: 1
     },
     row: {
         flexDirection: 'row'
@@ -222,7 +224,7 @@ const styles = StyleSheet.create({
         marginBottom: 10
     },
     fontFamily: {
-        fontFamily: 'arial'
+        //fontFamily: 'arial'
     },
     votingFrame: {
         borderWidth: 1,

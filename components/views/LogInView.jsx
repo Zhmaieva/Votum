@@ -1,5 +1,14 @@
 import React, {useState} from 'react';
-import {View, StyleSheet, TextInput, Text, TouchableWithoutFeedback, TouchableOpacity, Modal} from 'react-native';
+import {
+    View,
+    StyleSheet,
+    TextInput,
+    Text,
+    TouchableWithoutFeedback,
+    TouchableOpacity,
+    Modal,
+    SafeAreaView
+} from 'react-native';
 import { Colors } from '../../utils/colorUtils';
 import AwesomeEmailInput from "../customComponents/AwesomeEmailInput";
 import AwesomeButton, {Color} from "../customComponents/AwesomeButton";
@@ -20,41 +29,52 @@ const LogInView = ({ }) => {
     );
 
     return (
-        <View style={styles.container}>
-            <View>
-                <AwesomeEmailInput bareStyle={false} />
-                <AwesomePasswordInput />
-                <View style={styles.margin15}>
-                    <AwesomeButton text="Log in" color={Color.GREEN} additionalFunc={async () => {
-                        const result = await signIn(
-                            getDataService().getUser().email,
-                            getDataService().getUser().password);
-                        if (result) {
-                            globalEventEmitter.emit('signIn', { });
-                        } else {
-                            setModalVisible(true)
-                        }
-                    }} />
+        <SafeAreaView style={styles.safeArea}>
+            <View style={styles.container}>
+                <View>
+                    <Text style={styles.headerStyle}>Email address</Text>
+                    <View style={{marginBottom: 5}}>
+                        <AwesomeEmailInput bareStyle={false} />
+                    </View>
+                    <Text style={styles.headerStyle}>Password</Text>
+                    <View style={{marginBottom: 15}}>
+                        <AwesomePasswordInput />
+                    </View>
+                    <View style={styles.margin15}>
+                        <AwesomeButton text="Log in" color={Color.BLACK} additionalFunc={async () => {
+                            const result = await signIn(
+                                getDataService().getUser().email,
+                                getDataService().getUser().password);
+                            if (result) {
+                                globalEventEmitter.emit('signIn', { });
+                            } else {
+                                setModalVisible(true)
+                            }
+                        }} />
+                    </View>
                 </View>
-            </View>
-            <View style={styles.margin15}>
                 <View style={styles.margin15}>
-                    <AwesomeButton text='Forgot password?' color={Color.GREEN} screenName='Forgot password' />
+                    <View style={styles.margin15}>
+                        <AwesomeButton text='Forgot password?' color={Color.BLACK} screenName='Forgot password' />
+                    </View>
+                    <AwesomeButton text="Create new account" color={Color.WHITE} screenName='Email Register' />
                 </View>
-                <AwesomeButton text="Create new account" color={Color.BLACK} />
+                <AwesomeModal visible={isModalVisible}
+                              text={"Incorrect username or password, try again"}
+                              onPress={_ => {setModalVisible(false)}}
+                              onBackPress={_ => {setModalVisible(false)}}/>
             </View>
-            <AwesomeModal visible={isModalVisible}
-                          text={"Incorrect username or password, try again"}
-                          onPress={_ => {setModalVisible(false)}}
-                          onBackPress={_ => {setModalVisible(false)}}/>
-        </View>
+        </SafeAreaView>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
+    safeArea: {
         flex: 1,
         backgroundColor: Colors.white,
+    },
+    container: {
+        flex: 1,
         padding: 15,
         justifyContent: "space-between"
     },
@@ -67,6 +87,10 @@ const styles = StyleSheet.create({
     centeredStyle: {
         alignItems: 'center'
     },
+    headerStyle: {
+        fontWeight: 'bold',
+        marginBottom: 5
+    }
 });
 
 export default LogInView;

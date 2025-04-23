@@ -11,7 +11,7 @@ const EmailEditView = ({route }) => {
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.container}>
-                <Text style={[styles.margin10, { fontWeight: 'bold' }]}>Enter new email</Text>
+                <Text style={[styles.margin10, { fontWeight: 'bold' }]}>New email</Text>
                 <View style={styles.margin10}>
                     <AwesomeEmailInput value={text} bareStyle={true}/>
                 </View>

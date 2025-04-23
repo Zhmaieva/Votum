@@ -81,10 +81,14 @@ const AwesomeFeed = ({
     const renderWithPlaceholder = (item) => {
         if (item?.type === 'placeholder') {
             if (isUserProfileView) {
+                const isCurrentUser = getDataService().getUser()?.userId === data[0]?.user?.userId;
+
                 return (
                     <View style={styles.placeholderContainerUserProfile}>
                         <Text style={styles.placeholderText}>
-                            This user hasn't created any polls yet
+                            {isCurrentUser
+                                ? 'Create your first poll now'
+                                : "This user hasn't created any polls yet"}
                         </Text>
                     </View>
                 );
@@ -115,7 +119,7 @@ const AwesomeFeed = ({
                     <Text style={styles.placeholderText}>
                         No new polls, try later or{' '}
                     </Text>
-                    <AwesomeLink text="create one." screenName='Add' />
+                    <AwesomeLink text="create one." screenName='Add Poll' />
                 </View>
             );
         }

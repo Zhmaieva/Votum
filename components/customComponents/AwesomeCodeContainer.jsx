@@ -22,7 +22,6 @@ const styles = StyleSheet.create({
     codeInputContainer: {
         width: 50,
         height: 50,
-        //backgroundColor: 'pink',
         borderRadius: 0,
         borderWidth: 1,
         borderColor: 'black',
