@@ -28,7 +28,7 @@ CREATE TABLE poll_answer_options (
     text VARCHAR(50) NOT NULL
 );
 
-ALTER TABLE user_profiles ADD COLUMN bio TEXT DEFAULT 'Find me on other social media';
+ALTER TABLE user_profiles ADD COLUMN bio TEXT DEFAULT 'your bio here';
 
 CREATE TABLE poll_likes (
     user_id UUID NOT NULL,            -- ID of the user who liked the poll

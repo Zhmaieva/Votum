@@ -37,65 +37,63 @@ const SomebodysProfileView = ({ route }) => {
     };
 
     return (
-        <View style={styles.container}>
-            <SafeAreaView style={styles.safeArea}>
-                <View style={styles.contentWrapper}>
-                    <View style={styles.bottomMargin20}>
-                        {user === null ? (
-                            <AwesomeLoadingHeader />
-                        ) : (
-                            <AwesomeUserHeader
-                                userData={user}
-                                loggedInUserId={loggedInUserId}
-                                isProfilePage={true}
-                            />
-                        )}
-                    </View>
-                    <View style={[styles.followersContainer, styles.row]}>
-                        <View style={styles.followersLeftSubContainer}>
-                            <Text style={styles.followersText}>21</Text>
-                            <Text style={styles.followersText}>polls</Text>
-                        </View>
-                        <View style={styles.followersCenterSubContainer}>
-                            <Text style={styles.followersText}>15K</Text>
-                            <Text style={styles.followersText}>followers</Text>
-                        </View>
-                        <View style={styles.followersRightSubContainer}>
-                            <Text style={styles.followersText}>103</Text>
-                            <Text style={styles.followersText}>following</Text>
-                        </View>
-                    </View>
-
-                    {!user || !polls ? (
-                        <View style={styles.container}>
-                            {[1, 2, 3].map((_, idx) => (
-                                <AwesomeLoadingPoll key={idx} />
-                            ))}
-                        </View>
+        <SafeAreaView style={styles.safeArea}>
+            <View style={styles.contentWrapper}>
+                <View style={styles.bottomMargin20}>
+                    {user === null ? (
+                        <AwesomeLoadingHeader />
                     ) : (
-                        <AwesomeFeed
-                            data={polls}
-                            onRefresh={onRefresh}
-                            refreshing={refreshing}
-                            isUserProfileView={true}
-                            renderItem={(item) => {
-                                item.timeLeft = calculateTimeDifference(item.endsIn);
-                                return (
-                                    <View style={styles.container}>
-                                        <AwesomeCard
-                                            hideHeader={true}
-                                            item={item}
-                                            handleVote={async (itemId, optionId) => {
-                                            }}
-                                            loggedInUserId={loggedInUserId}
-                                        />
-                                    </View>
-                                )
-                            }}
+                        <AwesomeUserHeader
+                            userData={user}
+                            loggedInUserId={loggedInUserId}
+                            isProfilePage={true}
                         />
                     )}
                 </View>
-            </SafeAreaView>
+                <View style={[styles.followersContainer, styles.row]}>
+                    <View style={styles.followersLeftSubContainer}>
+                        <Text style={styles.followersText}>21</Text>
+                        <Text style={styles.followersText}>polls</Text>
+                    </View>
+                    <View style={styles.followersCenterSubContainer}>
+                        <Text style={styles.followersText}>15K</Text>
+                        <Text style={styles.followersText}>followers</Text>
+                    </View>
+                    <View style={styles.followersRightSubContainer}>
+                        <Text style={styles.followersText}>103</Text>
+                        <Text style={styles.followersText}>following</Text>
+                    </View>
+                </View>
+
+                {!user || !polls ? (
+                    <View style={styles.container}>
+                        {[1, 2, 3].map((_, idx) => (
+                            <AwesomeLoadingPoll key={idx} />
+                        ))}
+                    </View>
+                ) : (
+                    <AwesomeFeed
+                        data={polls}
+                        onRefresh={onRefresh}
+                        refreshing={refreshing}
+                        isUserProfileView={true}
+                        renderItem={(item) => {
+                            item.timeLeft = calculateTimeDifference(item.endsIn);
+                            return (
+                                <View style={styles.container}>
+                                    <AwesomeCard
+                                        hideHeader={true}
+                                        item={item}
+                                        handleVote={async (itemId, optionId) => {
+                                        }}
+                                        loggedInUserId={loggedInUserId}
+                                    />
+                                </View>
+                            )
+                        }}
+                    />
+                )}
+            </View>
             <Modal
                 animationType="fade"
                 transparent={true}
@@ -104,7 +102,7 @@ const SomebodysProfileView = ({ route }) => {
             >
                 <Text>TEST TEST</Text>
             </Modal>
-        </View>
+        </SafeAreaView>
     );
 };
 
@@ -121,6 +119,7 @@ const styles = StyleSheet.create({
     },
     safeArea: {
         backgroundColor: Colors.white,
+        flex: 1
     },
     row: {
         flexDirection: 'row'
@@ -171,14 +170,11 @@ const styles = StyleSheet.create({
         fontSize: 14
     },
     followersContainer: {
-        //borderTopWidth: 1,
         borderBottomWidth: 1,
         borderColor: '#888',
         justifyContent: 'space-between',
-        //paddingTop: 5,
         paddingBottom: 5,
-        //height: 50,
-        //marginBottom:  20
+        marginBottom:  20
     },
     followersLeftSubContainer: {
         //borderRightWidth: 1,

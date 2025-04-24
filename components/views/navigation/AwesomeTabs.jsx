@@ -30,6 +30,7 @@ import SomebodysProfileView from "../SomebodysProfileView"
 import PreviewPollView from "../PreviewPollView";
 import EditUsernameView from "../EditUsernameView";
 import PasswordView from "../PasswordView"
+import CategoriesView from '../CategoriesView'
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -46,6 +47,7 @@ function AuthFlow() {
             <AuthStack.Screen name="Wellcome" component={WellcomeView} options={{ headerShown: false, gestureEnabled: true }}/>
             <AuthStack.Screen name="Profile photo" component={ProfilePhotoView} options={{ headerShown: false, gestureEnabled: true }}/>
             <AuthStack.Screen name="Age" component={AgeView} options={{ headerShown: false, gestureEnabled: true }}/>
+            <AuthStack.Screen name="Categories" component={CategoriesView} options={{ headerShown: false, gestureEnabled: true }}/>
             <AuthStack.Screen name="Forgot password" component={ForgotPasswordView} options={{ headerShown: false, gestureEnabled: true }}/>
         </AuthStack.Navigator>
     );

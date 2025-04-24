@@ -12,7 +12,7 @@ const PasswordView = ({route }) => {
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.container}>
-                <Text style={[styles.margin10, { fontWeight: 'bold' }]}>Enter your password to proceed</Text>
+                <Text style={[styles.margin10, { fontWeight: 'bold' }]}>Enter new password</Text>
                 <View style={styles.margin10}>
                     <AwesomePasswordInput />
                 </View>

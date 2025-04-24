@@ -11,7 +11,7 @@ import {Ionicons} from "@expo/vector-icons";
 const PreviewPollView = () => {
     const route = useRoute();
     const navigation = useNavigation();
-    const { question, options, selectedDuration } = route.params;
+    const { question, options, selectedDuration, resetAddViewForm } = route.params;
 
     const [user, setUser] = useState(null);
 
@@ -69,6 +69,7 @@ const PreviewPollView = () => {
                         text="Publish"
                         additionalFunc={async () => {
                             await createPoll(question, options.map(o => o.text), selectedDuration);
+                            if (resetAddViewForm) resetAddViewForm();
                             navigation.goBack();
                         }}
                     />
@@ -93,7 +94,7 @@ const styles = StyleSheet.create({
         padding: 20,
     },
     headerContainer: {
-        marginBottom: 20
+        marginBottom: 10
     },
     row: {
         flexDirection: 'row',

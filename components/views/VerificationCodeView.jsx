@@ -95,15 +95,17 @@ export default function VerificationCodeView() {
                         </View>
                     </View>
                     <View style={[styles.margin15, styles.centered]}>
+                        <View style={styles.margin10}>
+                            <AwesomeButton
+                                text={canResend ? 'Resend code now' : `Resend in ${seconds}s`}
+                                color={Color.WHITE}
+                                additionalFunc={canResend ? () => onResendHandler() : null}
+                                disabled={!canResend}
+                            />
+                        </View>
                         <View style={[styles.messageHeight, styles.row, styles.centered, styles.margin10]}>
                             <Text style={[styles.regularFontSize, styles.fontFamily]}>Check spam folder. If you didn't receive a code</Text>
                         </View>
-                        <AwesomeButton
-                            text={canResend ? 'Resend code now' : `Resend in ${seconds}s`}
-                            color={Color.WHITE}
-                            additionalFunc={canResend ? () => onResendHandler() : null}
-                            disabled={!canResend}
-                        />
                     </View>
                     <View style={styles.margin40}>
                         <AwesomeButton text='Next' color={Color.BLACK} additionalFunc={handleSubmit} />
@@ -114,7 +116,7 @@ export default function VerificationCodeView() {
                         <View style={styles.questionContainer}>
                             <Text style={styles.questionStyle}>Already have an account?</Text>
                         </View>
-                        <AwesomeButton text='Log in' color={Color.BLACK} screenName='Log in' />
+                        <AwesomeButton text='Log in' color={Color.WHITE} screenName='Log in' />
                     </View>
                     <AwesomeModal
                         visible={isModalVisible}

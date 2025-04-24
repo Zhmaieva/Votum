@@ -1,4 +1,4 @@
-import {Text, View, StyleSheet } from 'react-native';
+import {Text, View, StyleSheet, SafeAreaView} from 'react-native';
 import React, {useState} from 'react';
 import {Colors} from "../../utils/colorUtils";
 import AwesomeButton, { Color } from "../customComponents/AwesomeButton";
@@ -10,33 +10,48 @@ export default function ProfilePhotoView () {
     const [profileImage, setProfileImage] = useState('');
 
     return (
-        <View style={styles.container}>
-            <View style={styles.subContainer}>
-                <AwesomeProfilePhoto profileImage={profileImage} setProfileImage={setProfileImage} />
-                <View style={styles.buttonContainer}>
-                    <AwesomeButton text='Next' color={Color.GREEN} screenName='Age' />
+        <SafeAreaView style={styles.safeArea}>
+            <View style={styles.container}>
+                <Text style={styles.headerStyle}>Upload Your Profile Photo</Text>
+                <Text style={styles.margin10}>Optional</Text>
+                <View style={styles.subContainer}>
+                    <View style={styles.margin10}>
+                        <AwesomeProfilePhoto profileImage={profileImage} setProfileImage={setProfileImage} />
+                    </View>
+                    <View style={styles.buttonContainer}>
+                        <AwesomeButton text='Next' color={Color.BLACK} screenName='Age' />
+                    </View>
+                    <View style={styles.buttonContainer}>
+                        <AwesomeButton text='Skip' color={Color.WHITE} screenName='Age' />
+                    </View>
                 </View>
             </View>
-            <View style={styles.buttonContainer}>
-                <AwesomeButton text='Skip' color={Color.BLACK} screenName='Age' />
-            </View>
-        </View>
+        </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
+    safeArea: {
         backgroundColor: Colors.white,
+        flex: 1,
+    },
+    container: {
         padding: 15,
         flex: 1,
-        justifyContent: 'space-between',
-        alignItems: 'center'
-    },
-    buttonContainer: {
-        width: '100%',
-        marginBottom: 20
+        justifyContent: 'center'
     },
     subContainer: {
         width: '100%',
+    },
+    buttonContainer: {
+        marginBottom: 15
+    },
+    headerStyle: {
+        marginBottom: 2,
+        fontWeight: 'bold',
+        fontSize: 24
+    },
+    margin10: {
+        marginBottom: 10
     }
 });

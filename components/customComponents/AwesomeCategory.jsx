@@ -50,10 +50,10 @@ const styles = StyleSheet.create({
     },
     tagText: {
         fontSize: 14,
-        marginLeft: 10,
-        marginRight: 10,
-        marginTop: 5,
-        marginBottom: 5
+        marginLeft: 12,
+        marginRight: 12,
+        marginTop: 8,
+        marginBottom: 8
     },
     row: {
         flexDirection: 'row',

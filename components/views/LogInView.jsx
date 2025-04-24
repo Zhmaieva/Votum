@@ -37,7 +37,7 @@ const LogInView = ({ }) => {
                         <AwesomeEmailInput bareStyle={false} />
                     </View>
                     <Text style={styles.headerStyle}>Password</Text>
-                    <View style={{marginBottom: 15}}>
+                    <View style={{marginBottom: 10}}>
                         <AwesomePasswordInput />
                     </View>
                     <View style={styles.margin15}>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import {View, StyleSheet, Text, SafeAreaView} from 'react-native';
 import { Colors } from '../../utils/colorUtils';
 import AwesomeCategory from "../customComponents/AwesomeCategory";
 import AwesomeButton, { Color } from "../customComponents/AwesomeButton";
@@ -42,47 +42,51 @@ const CategoriesView = ({ route }) => {
     };
 
     return (
-        <View style={styles.container}>
-            <View/>
-            <View>
-                <View style={styles.headerContainer}>
-                    <Text style={styles.header}>Choose Your Interests</Text>
-                    <Text style={styles.instructionText}>Select at least one to proceed</Text>
-                </View>
-                <View style={styles.row}>
-                    {categoryList.map((cat) => (
+        <SafeAreaView style={styles.safeArea}>
+            <View style={styles.container}>
+                <View style={styles.margin10}>
+                    <View style={styles.headerContainer}>
+                        <Text style={styles.header}>Choose Your Interests</Text>
+                        <Text style={styles.instructionText}>Select at least one to proceed</Text>
+                    </View>
+                    <View style={styles.row}>
+                        {categoryList.map((cat) => (
+                            <AwesomeCategory
+                                key={cat}
+                                categoryName={cat}
+                                isSelected={selectedCategories.includes(cat)}
+                                onPress={() => toggleCategory(cat)}
+                            />
+                        ))}
                         <AwesomeCategory
-                            key={cat}
-                            categoryName={cat}
-                            isSelected={selectedCategories.includes(cat)}
-                            onPress={() => toggleCategory(cat)}
+                            categoryName='All of them!'
+                            isSelected={allSelected}
+                            onPress={toggleAll}
                         />
-                    ))}
-                    <AwesomeCategory
-                        categoryName='All of them!'
-                        isSelected={allSelected}
-                        onPress={toggleAll}
-                    />
+                    </View>
                 </View>
+                <AwesomeButton text='Next' color={Color.BLACK} additionalFunc={handleContinue} />
+                <AwesomeModal
+                    visible={showError}
+                    text="Please select at least one category."
+                    buttonText="OK"
+                    onPress={() => setShowError(false)}
+                    onBackPress={() => setShowError(false)}
+                />
             </View>
-            <AwesomeButton text='Continue' color={Color.GREEN} additionalFunc={handleContinue} />
-            <AwesomeModal
-                visible={showError}
-                text="Please select at least one category."
-                buttonText="OK"
-                onPress={() => setShowError(false)}
-                onBackPress={() => setShowError(false)}
-            />
-        </View>
+        </SafeAreaView>
     );
 };
 
 const styles = StyleSheet.create({
+    safeArea: {
+        flex: 1,
+        backgroundColor: Colors.white,
+    },
     container: {
         flex: 1,
         padding: 20,
-        backgroundColor: Colors.white,
-        justifyContent: "space-between"
+        justifyContent: "center"
     },
     row: {
         flexDirection: 'row',
@@ -90,13 +94,16 @@ const styles = StyleSheet.create({
     },
     header: {
         fontSize: 24,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
     },
     instructionText: {
         fontSize: 14
     },
     headerContainer: {
         marginBottom: 30
+    },
+    margin10: {
+        marginBottom: 25
     }
 });
 

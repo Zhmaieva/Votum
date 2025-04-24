@@ -44,7 +44,7 @@ const EmailRegisterView = ({route }) => {
                         <Text style={[styles.headerStyle, styles.margin5]}>Email address</Text>
                         <AwesomeEmailInput />
                     </View>
-                    <View style={styles.margin15}>
+                    <View style={{marginBottom: 10}}>
                         <Text style={[styles.headerStyle, styles.margin5]}>Password</Text>
                         <AwesomePasswordInput />
                     </View>
@@ -89,7 +89,7 @@ const EmailRegisterView = ({route }) => {
                     <View style={styles.questionContainer}>
                         <Text style={styles.questionStyle}>Already have an account?</Text>
                     </View>
-                    <AwesomeButton text='Log in' color={Color.WHITE} />
+                    <AwesomeButton text='Log in' color={Color.WHITE} screenName='Log in' />
                 </View>
                 <AwesomeModal visible={isModalVisible} text={error} onPress={() => setModalVisible(false)} onBackPress={() => setModalVisible(false)} />
             </View>
