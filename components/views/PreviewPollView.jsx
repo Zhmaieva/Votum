@@ -8,6 +8,8 @@ import {getDataService, onShare} from '../../shared/common';
 import AwesomeUserHeader from '../customComponents/AwesomeUserHeader';
 import {Ionicons} from "@expo/vector-icons";
 
+const MIN_LOADING_TIME = 1000;
+
 const PreviewPollView = () => {
     const route = useRoute();
     const navigation = useNavigation();
@@ -17,13 +19,31 @@ const PreviewPollView = () => {
 
     useFocusEffect(
         React.useCallback(() => {
+            let isMounted = true;
+            const startTime = Date.now();
+
+            const finishLoading = (userData) => {
+                const loadDuration = Date.now() - startTime;
+                const delay = Math.max(0, MIN_LOADING_TIME - loadDuration);
+                setTimeout(() => {
+                    if (isMounted) {
+                        setUser(userData);
+                    }
+                }, delay);
+            };
+
             if (getDataService().getUser()) {
-                setUser(getDataService().getUser());
+                finishLoading(getDataService().getUser());
             } else {
                 fetchMyProfile().then(res => {
-                    setUser(res);
+                    getDataService().setUser(res);
+                    finishLoading(res);
                 });
             }
+
+            return () => {
+                isMounted = false;
+            };
         }, [])
     );
 
@@ -111,11 +131,11 @@ const styles = StyleSheet.create({
     },
     qTextStyle: {
         color: Colors.green,
-        fontSize: 18,
+        fontSize: 20,
         fontWeight: 'bold'
     },
     questionText: {
-        fontSize: 18,
+        fontSize: 20,
         color: Colors.black,
         fontWeight: 'bold',
     },

@@ -22,6 +22,7 @@ const styles = StyleSheet.create({
         borderColor: Colors.lightGrey,
         backgroundColor: Colors.white,
         marginVertical: 10,
+        marginBottom: 200
     },
     question: {
         width: '80%',

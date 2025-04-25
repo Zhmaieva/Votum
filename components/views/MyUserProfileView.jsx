@@ -25,25 +25,39 @@ const MyUserProfileView = () => {
         navigation.navigate(screenName);
     };
 
+    const MIN_LOADING_TIME = 500;
+
     useFocusEffect(
         React.useCallback(() => {
-            if (getDataService().getUser()) {
-                setUser(getDataService().getUser());
-                const myId = getDataService().getUser()?.userId;
-                setLoggedInUserId(myId);
+            let isMounted = true;
+            const startTime = Date.now();
 
-                fetchUserPolls(myId).then(res => {
-                    setPolls(res);
-                });
+            const finishLoading = (userData) => {
+                const loadDuration = Date.now() - startTime;
+                const delay = Math.max(0, MIN_LOADING_TIME - loadDuration);
+                setTimeout(() => {
+                    if (isMounted) {
+                        setUser(userData);
+                        setLoggedInUserId(userData.userId);
+                        fetchUserPolls(userData.userId).then(res => {
+                            if (isMounted) setPolls(res);
+                        });
+                    }
+                }, delay);
+            };
+
+            if (getDataService().getUser()) {
+                finishLoading(getDataService().getUser());
             } else {
                 fetchMyProfile().then(res => {
-                    setUser(res);
-                    setLoggedInUserId(res.userId);
-                    fetchUserPolls(res.userId).then(res => {
-                        setPolls(res);
-                    });
+                    getDataService().setUser(res);
+                    finishLoading(res);
                 });
             }
+
+            return () => {
+                isMounted = false;
+            };
         }, [])
     );
 
@@ -60,14 +74,14 @@ const MyUserProfileView = () => {
         <View style={styles.container}>
             <SafeAreaView style={styles.safeArea}>
                 <View style={styles.contentWrapper}>
-                    <View style={styles.bottomMargin20}>
+                    <View style={{marginBottom: 15}}>
                         {user === null ? (
                             <AwesomeLoadingHeader />
                         ) : (
                             <AwesomeUserHeader userData={user} loggedInUserId={user?.userId} isProfilePage={true} />
                         )}
                     </View>
-                    <View style={[styles.followersContainer, styles.row]}>
+                    <View style={[styles.followersContainer, styles.row, styles.bottomMargin20]}>
                         <View style={styles.followersLeftSubContainer}>
                             <Text style={styles.followersText}>213</Text>
                             <Text style={styles.followersText}>polls</Text>
@@ -140,7 +154,9 @@ const styles = StyleSheet.create({
         height: "100%",
     },
     contentWrapper: {
-        padding: 15,
+        paddingTop: 10,
+        paddingLeft: 15,
+        paddingRight: 15,
         height: '100%',
     },
     safeArea: {

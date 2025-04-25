@@ -39,7 +39,7 @@ const SomebodysProfileView = ({ route }) => {
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.contentWrapper}>
-                <View style={styles.bottomMargin20}>
+                <View style={{marginBottom: 15}}>
                     {user === null ? (
                         <AwesomeLoadingHeader />
                     ) : (
@@ -114,7 +114,9 @@ const styles = StyleSheet.create({
         height: "100%",
     },
     contentWrapper: {
-        padding: 15,
+        paddingTop: 10,
+        paddingLeft: 15,
+        paddingRight: 15,
         height: '100%',
     },
     safeArea: {

@@ -18,6 +18,7 @@ import {useFocusEffect} from "@react-navigation/native";
 import AwesomeProfilePhoto from "../customComponents/AwesomeProfilePhoto";
 import AwesomeCategory from "../customComponents/AwesomeCategory";
 import {AwesomeModal} from "../customComponents/AwesomeModal";
+import AwesomePollPublishingLoader from "../customComponents/AwesomePollPublishingLoader";
 
 const ProfileEditView = ({ route }) => {
     const [username, setUsername] = useState('');
@@ -92,6 +93,7 @@ const ProfileEditView = ({ route }) => {
                 <View style={styles.margin15}>
                     <AwesomeButton text='Delete Profile' color={Color.BLACK} additionalFunc={()=>setDeleteModalVisible(true)}/>
                 </View>
+                <AwesomePollPublishingLoader/>
             </ScrollView>
 
             {/*<AwesomeButton

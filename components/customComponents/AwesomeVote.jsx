@@ -309,7 +309,7 @@ const styles = StyleSheet.create({
     },
     title: {
         fontWeight: '500',
-        fontSize: 18
+        fontSize: 20
     },
     votingFrame: {
         borderWidth: 1,
@@ -390,7 +390,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     qTextStyle: {
-        fontSize: 18,
+        fontSize: 20,
         fontWeight: 'bold',
         color: Colors.black,
     },
