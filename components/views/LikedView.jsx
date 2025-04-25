@@ -7,9 +7,9 @@ import {fetchLikedPolls, fetchMyProfile} from "../../shared/api/apiClient";
 
     const LikedView = () => {
 
-        const [refreshing, setRefreshing] = useState(false);
-        const [polls, setPolls] = useState(null); // default to null for loading state
-        const [loggedInUserId, setLoggedInUserId] = useState(null);
+    const [refreshing, setRefreshing] = useState(false);
+    const [polls, setPolls] = useState(null); // default to null for loading state
+    const [loggedInUserId, setLoggedInUserId] = useState(null);
 
     useEffect(() => {
         fetchMyProfile().then(res => {

@@ -139,6 +139,37 @@ async function fetchUserPolls(requestingUserId, targetUserId) {
 }
 
 /**
+ * Fetch all polls by filter criteria
+ *
+ * @param {string} requestingUserId - ID of the current user (used for like/follow state)
+ * @param {string} filterQuery - filter criteria
+ * @returns {Promise<Array>} - List of polls created by the user
+ */
+async function searchPolls(requestingUserId, filterQuery) {
+    const query = `
+        SELECT DISTINCT p.id, p.question, p.ends_in, p.readable_id, u.username, up.user_id, up.image,
+               up.followers_number,
+               CASE WHEN pl.user_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_liked,
+               CASE WHEN uf.user_follower_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_following,
+               CASE WHEN p.created_by = $1 THEN up.bio ELSE '' END AS user_bio
+        FROM polls p
+        JOIN users u ON p.created_by = u.id
+        JOIN user_profiles up ON u.id = up.user_id
+        LEFT JOIN poll_likes pl ON p.id = pl.poll_id AND pl.user_id = $1
+        LEFT JOIN user_follows uf ON u.id = uf.user_follow_id AND uf.user_follower_id = $1
+        LEFT JOIN poll_answer_options pao ON pao.poll_id = p.id
+        WHERE p.is_deleted = false
+          AND (
+                p.question ILIKE '%' || $2 || '%' OR
+                pao.text ILIKE '%' || $2 || '%'
+          )
+        ORDER BY p.ends_in DESC;
+    `;
+    const result = await pool.query(query, [requestingUserId, filterQuery]);
+    return attachOptionsToPolls(requestingUserId, result.rows);
+}
+
+/**
  * Fetch trending polls for the main feed.
  * Uses the same logic as regular feed (filtered for active polls).
  *
@@ -351,12 +382,13 @@ module.exports = {
     createPoll,
     deletePoll,
     fetchPolls,
-    getPollById,
     fetchUserPolls,
     fetchTrendingPolls,
     fetchLikedPolls,
+    getPollById,
     getPollOptionResults,
     likePoll,
+    searchPolls,
     unlikePoll,
     voteOnPoll,
 };

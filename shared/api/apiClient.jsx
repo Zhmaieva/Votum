@@ -255,6 +255,20 @@ export const fetchMyProfile = async () => {
     }
 };
 
+export const searchPolls = async (query) => {
+    try {
+        console.log('searching polls...');
+        const response = await apiClient.get(`/polls/search?query=${query ?? ''}`, {
+            headers: {
+                Authorization: `Bearer ${await getToken()}`,
+            },
+        });
+        return response?.data;
+    } catch (err) {
+        console.log('Fetch failed', err);
+    }
+};
+
 export const fetchPolls = async (postId) => {
     try {
         console.log('fetching polls...');

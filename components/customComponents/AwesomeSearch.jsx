@@ -1,8 +1,10 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { View, TextInput, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { Colors } from '../../utils/colorUtils';
 
-const AwesomeSearch = ({ searchQuery, setSearchQuery }) => {
+const AwesomeSearch = ({ onSearchPress }) => {
+    const [searchQuery, setSearchQuery] = useState("");
+
     return (
         <View style={styles.searchContainer}>
             <TextInput
@@ -12,7 +14,7 @@ const AwesomeSearch = ({ searchQuery, setSearchQuery }) => {
                 value={searchQuery}
                 onChangeText={setSearchQuery}
             />
-            <TouchableOpacity style={styles.searchButton}>
+            <TouchableOpacity style={styles.searchButton} onPress={_ => onSearchPress(searchQuery)}>
                 <Text style={styles.searchButtonText}>Search</Text>
             </TouchableOpacity>
         </View>

@@ -37,23 +37,23 @@ const FeedView = ({ route }) => {
             setTrendingPolls(res);
         });
 
-        setInterval(() => {
-            if (!polls?.length) {
-                fetchPolls().then(res => {
-                    if (!res)
-                        return;
-                    setPolls(res);
-                });
-            }
-
-            if (!trendingPolls?.length) {
-                fetchTrendingPolls().then(res => {
-                    if (!res)
-                        return;
-                    setTrendingPolls(res);
-                });
-            }
-        }, 3000)
+        // setInterval(() => {
+        //     if (!polls?.length) {
+        //         fetchPolls().then(res => {
+        //             if (!res)
+        //                 return;
+        //             setPolls(res);
+        //         });
+        //     }
+        //
+        //     if (!trendingPolls?.length) {
+        //         fetchTrendingPolls().then(res => {
+        //             if (!res)
+        //                 return;
+        //             setTrendingPolls(res);
+        //         });
+        //     }
+        // }, 3000)
     }, []);
 
     const onRefresh = () => {

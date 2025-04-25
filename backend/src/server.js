@@ -17,6 +17,7 @@ const {validateEmail, validateUsername, validatePassword} = require("./validatio
 const {uploadMiddleware} = require("./middleware/fileUploadMiddleware");
 const {updateUserImage} = require("./services/userService");
 const {getPollById} = require("./db/dal/pollQueries");
+const {next} = require("lodash/seq");
 
 const app = express();
 app.use(express.json());
@@ -349,26 +350,57 @@ app.get('/profile/follows', authMiddleware, async (req, res, next) => {
 });
 
 app.get('/polls', authMiddleware, async (req, res) => {
-    const { featuredId } = req.query;
-    const result = await pollQueries.fetchPolls(req.user.id, featuredId);
-    res.json(result);
+    try {
+        const { featuredId } = req.query;
+        const result = await pollQueries.fetchPolls(req.user.id, featuredId);
+        res.json(result);
+    } catch (e) {
+        next(e);
+    }
 });
 
-app.get('/polls/liked', authMiddleware, async (req, res) => {
-    const result = await pollQueries.fetchLikedPolls(req.user.id);
-    res.json(result);
+app.get('/polls/search', authMiddleware, async (req, res, next) => {
+    try {
+        const { query } = req.query;
+        if (!query) {
+            res.json([]);
+            return;
+        }
+
+        const result = await pollQueries.searchPolls(req.user.id, query);
+        res.json(result);
+    } catch (e) {
+        next(e);
+    }
 });
 
-app.get('/polls/trending', authMiddleware, async (req, res) => {
-    const result = await pollQueries.fetchTrendingPolls(req.user.id);
-    res.json(result);
+app.get('/polls/liked', authMiddleware, async (req, res, next) => {
+    try {
+        const result = await pollQueries.fetchLikedPolls(req.user.id);
+        res.json(result);
+    } catch (e) {
+        next(e);
+    }
 });
 
-app.get('/user/:id?/polls', authMiddleware, async (req, res) => {
-    const userId = req.params.id;
+app.get('/polls/trending', authMiddleware, async (req, res, next) => {
+    try {
+        const result = await pollQueries.fetchTrendingPolls(req.user.id);
+        res.json(result);
+    } catch (e) {
+        next(e);
+    }
+});
 
-    const result = await pollQueries.fetchUserPolls(req.user.id, userId);
-    res.json(result);
+app.get('/user/:id?/polls', authMiddleware, async (req, res, next) => {
+    try {
+        const userId = req.params.id;
+
+        const result = await pollQueries.fetchUserPolls(req.user.id, userId);
+        res.json(result);
+    } catch (e) {
+        next(e);
+    }
 });
 
 const durationMap = {

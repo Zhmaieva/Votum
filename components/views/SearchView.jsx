@@ -1,61 +1,71 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, SafeAreaView } from "react-native";
+import React, {useEffect, useState} from "react";
+import {View, Text, StyleSheet, SafeAreaView, ActivityIndicator} from "react-native";
 import { Colors } from '../../utils/colorUtils';
 import AwesomeCard from "../customComponents/AwesomeCard";
 import AwesomeFeed from "../customComponents/AwesomeFeed";
 import AwesomeSearch from "../customComponents/AwesomeSearch";
-
-const pollData = [];
+import {fetchLikedPolls, fetchMyProfile, searchPolls} from "../../shared/api/apiClient";
+import {calculateTimeDifference} from "../../shared/common";
 
 const SearchView = () => {
-    const [polls, setPolls] = useState(pollData);
+    const [polls, setPolls] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
+    const [loggedInUserId, setLoggedInUserId] = useState(null);
+
+    useEffect(() => {
+        fetchMyProfile().then(res => {
+            if (res?.userId) {
+                setLoggedInUserId(res.userId);
+            }
+        });
+
+        setPolls([]);
+    }, []);
 
     const onRefresh = () => {
         setRefreshing(true);
-        setTimeout(() => {
-            const newPolls = [
-                { id: String(Date.now()), question: 'What is your favorite sport?', options: ['Football', 'Basketball', 'Tennis', 'Swimming'] },
-                ...polls,
-            ];
-            setPolls(newPolls);
+        searchPolls(searchQuery).then(res => {
+            setPolls(res.slice());
             setRefreshing(false);
-        }, 1500);
+        });
     };
-
-    const handleVote = (pollId, selectedOption) => {
-        setPolls(polls.map(poll =>
-            poll.id === pollId ? {
-                ...poll,
-                results: { ...poll.results, [selectedOption]: (poll.results[selectedOption] || 0) + 1 },
-                totalVotes: poll.totalVotes + 1
-            } : poll
-        ));
-    };
-
-    const filteredPolls = polls.filter(poll =>
-        poll.question.toLowerCase().includes(searchQuery.toLowerCase())
-    );
 
     return (
         <View style={styles.container}>
             <SafeAreaView style={styles.safeArea}>
                 <View style={styles.searchContainer}>
-                    <AwesomeSearch searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+                    <AwesomeSearch onSearchPress={(query) => {
+                        setSearchQuery(query);
+
+                        searchPolls(query).then(res => {
+                            setPolls(res.slice());
+                            setRefreshing(false);
+                        });
+                    }} />
                 </View>
                 <View style={styles.centered}>
-                    {filteredPolls.length === 0 && searchQuery !== "" ? (
+                    {(!polls || polls?.length === 0) && searchQuery !== "" ? (
                         <Text style={styles.noResultsText}>No polls found for "{searchQuery}"</Text>
                     ) : (
                         <AwesomeFeed
-                            data={filteredPolls}
-                            isSearchView={true}
+                            data={polls}
                             onRefresh={onRefresh}
                             refreshing={refreshing}
-                            renderItem={(item) => (
-                                <AwesomeCard item={item} handleVote={handleVote} />
-                            )}
+                            isSearchView={true}
+                            renderItem={(item) => {
+                                item.timeLeft = calculateTimeDifference(item.endsIn);
+                                return (
+                                    <View style={styles.container}>
+                                        <AwesomeCard
+                                            item={item}
+                                            handleVote={async (itemId, optionId) => {
+                                            }}
+                                            loggedInUserId={loggedInUserId}
+                                        />
+                                    </View>
+                                )
+                            }}
                         />
                     )}
                 </View>
