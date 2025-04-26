@@ -32,8 +32,8 @@ const SearchView = () => {
     };
 
     return (
-        <View style={styles.container}>
-            <SafeAreaView style={styles.safeArea}>
+        <SafeAreaView style={styles.safeArea}>
+            <View style={styles.container}>
                 <View style={styles.searchContainer}>
                     <AwesomeSearch onSearchPress={(query) => {
                         setSearchQuery(query);
@@ -56,7 +56,7 @@ const SearchView = () => {
                             renderItem={(item) => {
                                 item.timeLeft = calculateTimeDifference(item.endsIn);
                                 return (
-                                    <View style={styles.container}>
+                                    <View>
                                         <AwesomeCard
                                             item={item}
                                             handleVote={async (itemId, optionId) => {
@@ -69,8 +69,8 @@ const SearchView = () => {
                         />
                     )}
                 </View>
-            </SafeAreaView>
-        </View>
+            </View>
+        </SafeAreaView>
     );
 };
 
@@ -79,16 +79,13 @@ export default SearchView;
 const styles = StyleSheet.create({
     container: {
         backgroundColor: Colors.white,
-        height: "100%",
-        padding: 14,
-    },
-    contentWrapper: {
-        paddingTop: 20
+        paddingRight: 14,
+        paddingLeft: 14,
+        flex: 1
     },
     safeArea: {
         backgroundColor: Colors.white,
-        padding: 20,
-        height: "100%",
+        flex: 1
     },
     alignStyle: {
         justifyContent: 'space-between'
@@ -101,5 +98,8 @@ const styles = StyleSheet.create({
     centered: {
         justifyContent: "center",
         flex: 1
+    },
+    searchContainer: {
+        marginBottom: 10
     }
 });

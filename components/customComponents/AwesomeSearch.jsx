@@ -44,6 +44,7 @@ const styles = StyleSheet.create({
         height: 40,
         width: 80,
         marginLeft: 5,
+        marginRight: 2,
         backgroundColor: Colors.black,
         justifyContent: 'center',
         alignItems: 'center',
@@ -53,8 +54,7 @@ const styles = StyleSheet.create({
         shadowColor: Colors.green,
     },
     searchButtonText: {
-        color: Colors.white,
-        fontWeight: 'bold',
+        color: Colors.white
     },
 });
 
