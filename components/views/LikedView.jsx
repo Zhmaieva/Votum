@@ -72,6 +72,8 @@ export default LikedView;
 
 const styles = StyleSheet.create({
     container: {
-        padding: 15
+        paddingTop: 10,
+        paddingRight: 15,
+        paddingLeft: 15
     }
 });

@@ -12,97 +12,85 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import {calculateTimeDifference, getDataService} from "../../shared/common";
 import AwesomeCard from "../customComponents/AwesomeCard";
 
+const MIN_LOADING_TIME = 500;
+
 const MyUserProfileView = () => {
     const [modalVisible, setModalVisible] = useState(false);
+    const [userDataLoaded, setUserDataLoaded] = useState(false);
     const [user, setUser] = useState(null);
-    const [loggedInUserId, setLoggedInUserId] = useState(null);
+    const [polls, setPolls] = useState(null);
     const [refreshing, setRefreshing] = useState(false);
-    const [polls, setPolls] = useState(null); // default to null for loading state
-
     const navigation = useNavigation();
 
-    const onPressHandler = (screenName) => {
-        navigation.navigate(screenName);
-    };
-
-    const MIN_LOADING_TIME = 500;
+    const onPressHandler = (screenName) => navigation.navigate(screenName);
 
     useFocusEffect(
         React.useCallback(() => {
             let isMounted = true;
             const startTime = Date.now();
 
-            const finishLoading = (userData) => {
-                const loadDuration = Date.now() - startTime;
-                const delay = Math.max(0, MIN_LOADING_TIME - loadDuration);
+            const loadUserData = async () => {
+                let userData = getDataService().getUser();
+                if (!userData) {
+                    userData = await fetchMyProfile();
+                    getDataService().setUser(userData);
+                }
+                if (isMounted) {
+                    setUser(userData);
+                    fetchUserPolls(userData.userId).then(res => {
+                        if (isMounted) setPolls(res);
+                    });
+                }
+            };
+
+            loadUserData().then(() => {
+                const elapsed = Date.now() - startTime;
+                const delay = Math.max(0, MIN_LOADING_TIME - elapsed);
                 setTimeout(() => {
-                    if (isMounted) {
-                        setUser(userData);
-                        setLoggedInUserId(userData.userId);
-                        fetchUserPolls(userData.userId).then(res => {
-                            if (isMounted) setPolls(res);
-                        });
-                    }
+                    if (isMounted) setUserDataLoaded(true);
                 }, delay);
-            };
+            });
 
-            if (getDataService().getUser()) {
-                finishLoading(getDataService().getUser());
-            } else {
-                fetchMyProfile().then(res => {
-                    getDataService().setUser(res);
-                    finishLoading(res);
-                });
-            }
-
-            return () => {
-                isMounted = false;
-            };
+            return () => { isMounted = false; }
         }, [])
     );
 
     const onRefresh = () => {
         setRefreshing(true);
-        if (getDataService().getUser()?.userId)
-            fetchUserPolls(getDataService().getUser()?.userId).then(res => {
-                setPolls(res.slice());
-                setRefreshing(false);
-            });
+        fetchUserPolls(getDataService().getUser()?.userId).then(res => {
+            setPolls(res.slice());
+            setRefreshing(false);
+        });
     };
 
     return (
         <View style={styles.container}>
             <SafeAreaView style={styles.safeArea}>
                 <View style={styles.contentWrapper}>
-                    <View style={{marginBottom: 15}}>
-                        {user === null ? (
+                    <View style={{ marginBottom: 15 }}>
+                        {!userDataLoaded ? (
                             <AwesomeLoadingHeader />
                         ) : (
                             <AwesomeUserHeader userData={user} loggedInUserId={user?.userId} isProfilePage={true} />
                         )}
                     </View>
+
                     <View style={[styles.followersContainer, styles.row, styles.bottomMargin20]}>
                         <View style={styles.followersLeftSubContainer}>
                             <Text style={styles.followersText}>213</Text>
                             <Text style={styles.followersText}>polls</Text>
                         </View>
-                        <Pressable
-                            style={styles.followersCenterSubContainer}
-                            onPress={() => onPressHandler('Followers')}
-                        >
+                        <Pressable style={styles.followersCenterSubContainer} onPress={() => onPressHandler('Followers')}>
                             <Text style={styles.followersText}>{user?.followersNumber ?? 0}</Text>
                             <Text style={styles.followersText}>followers</Text>
                         </Pressable>
-                        <Pressable
-                            style={styles.followersRightSubContainer}
-                            onPress={() => onPressHandler('Following')}
-                        >
+                        <Pressable style={styles.followersRightSubContainer} onPress={() => onPressHandler('Following')}>
                             <Text style={styles.followersText}>{user?.followingNumber ?? 0}</Text>
                             <Text style={styles.followersText}>following</Text>
                         </Pressable>
                     </View>
 
-                    {!user || !polls ? (
+                    {!userDataLoaded ? (
                         <View style={styles.container}>
                             {[1, 2, 3].map((_, idx) => (
                                 <AwesomeLoadingPoll key={idx} />
@@ -121,12 +109,10 @@ const MyUserProfileView = () => {
                                         <AwesomeCard
                                             hideHeader={true}
                                             item={item}
-                                            handleVote={async (itemId, optionId) => {
-                                            }}
-                                            loggedInUserId={loggedInUserId}
+                                            loggedInUserId={user?.userId}
                                         />
                                     </View>
-                                )
+                                );
                             }}
                         />
                     )}
@@ -136,9 +122,7 @@ const MyUserProfileView = () => {
                 animationType="fade"
                 transparent={true}
                 visible={modalVisible}
-                onRequestClose={() => {
-                    setModalVisible(!modalVisible);
-                }}
+                onRequestClose={() => setModalVisible(false)}
             >
                 <Text>TEST TEST</Text>
             </Modal>
@@ -151,13 +135,13 @@ export default MyUserProfileView;
 const styles = StyleSheet.create({
     container: {
         backgroundColor: Colors.white,
-        height: "100%",
+        flex: 1
     },
     contentWrapper: {
         paddingTop: 10,
         paddingLeft: 15,
         paddingRight: 15,
-        height: '100%',
+        height: '100%'
     },
     safeArea: {
         backgroundColor: Colors.white,

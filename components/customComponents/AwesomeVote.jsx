@@ -14,6 +14,7 @@ import {globalEventEmitter, onShare} from "../../shared/common";
 import AwesomeLikeButton from "./AwesomeLikeButton";
 import { AwesomeModal } from './AwesomeModal'
 import {voteOnPoll} from "../../shared/api/apiClient";
+import AwesomeButton, {Color} from "./AwesomeButton";
 
 const formatFollowers = (num) => {
 
@@ -410,8 +411,7 @@ const styles = StyleSheet.create({
         position: 'absolute'
     },
     questionContainer: {
-        width: '100%',
-        paddingRight: 20,
+        paddingRight: 25,
         marginBottom: 10
     }
 });

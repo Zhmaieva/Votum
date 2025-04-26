@@ -17,7 +17,7 @@ import HeaderRightButton from "../../customComponents/HeaderRightButton";
 import FollowingView from "../FollowingView";
 import RegistrationMethodView from "../RegistrationMethodView";
 import EmailRegisterView from "../EmailRegisterView";
-import VerificationCodeView from "../VerificationCodeView";
+import VerificationCodeView, {VERIFICATION_FLOW_TYPE} from "../VerificationCodeView";
 import UsernameView from "../UsernameView";
 import WellcomeView from "../WellcomeView";
 import ProfilePhotoView from "../ProfilePhotoView";
@@ -41,7 +41,8 @@ function AuthFlow() {
         <AuthStack.Navigator id='Auth'>
             <AuthStack.Screen name="Registration" component={RegistrationMethodView} options={{ headerShown: false, gestureEnabled: true }}/>
             <AuthStack.Screen name="Email Register" component={EmailRegisterView} options={{ headerShown: false, gestureEnabled: true }}/>
-            <AuthStack.Screen name="Verification Code" component={VerificationCodeView} options={{ headerShown: false, gestureEnabled: true }}/>
+            <AuthStack.Screen name="Verification Code" component={VerificationCodeView} initialParams={{ flowType: VERIFICATION_FLOW_TYPE.REGISTRATION}} options={{ headerShown: false, gestureEnabled: true }}/>
+            <AuthStack.Screen name="Verification Code Forgot" component={VerificationCodeView} initialParams={{ flowType: VERIFICATION_FLOW_TYPE.FORGOT_PASSWORD}} options={{ headerShown: false, gestureEnabled: true }}/>
             <AuthStack.Screen name="Log in" component={LogInView} options={{ headerShown: false, gestureEnabled: true }}/>
             <AuthStack.Screen name="Username" component={UsernameView} options={{ headerShown: false, gestureEnabled: true }}/>
             <AuthStack.Screen name="Wellcome" component={WellcomeView} options={{ headerShown: false, gestureEnabled: true }}/>
@@ -143,7 +144,7 @@ function UserStack() {
                               ),
                           })}
             />
-            <AuthStack.Screen name="Verification Code" component={VerificationCodeView} options={{ headerShown: false, gestureEnabled: true }}/>
+            <AuthStack.Screen name="Verification Code" component={VerificationCodeView} initialParams={{ flowType: VERIFICATION_FLOW_TYPE.CHANGE_EMAIL}} options={{ headerShown: false, gestureEnabled: true }}/>
             <AuthStack.Screen name="Log in" component={LogInView} options={{ headerShown: false, gestureEnabled: true }}/>
             <AuthStack.Screen name="Forgot password" component={ForgotPasswordView} options={{ headerShown: false, gestureEnabled: true }}/>
             <AuthStack.Screen name="Email Register" component={EmailRegisterView} options={{ headerShown: false, gestureEnabled: true }}/>

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import {StyleSheet} from "react-native";
 import { Colors } from '../../utils/colorUtils'
 import AwesomeCard from "../customComponents/AwesomeCard";
 import AwesomeFeed from "../customComponents/AwesomeFeed";
@@ -44,7 +43,3 @@ const VotingView = () => {
 };
 
 export default VotingView;
-
-const styles = StyleSheet.create({
-
-});

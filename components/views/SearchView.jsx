@@ -79,8 +79,9 @@ export default SearchView;
 const styles = StyleSheet.create({
     container: {
         backgroundColor: Colors.white,
-        paddingRight: 14,
-        paddingLeft: 14,
+        paddingRight: 15,
+        paddingLeft: 15,
+        paddingTop: 10,
         flex: 1
     },
     safeArea: {

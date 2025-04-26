@@ -14,7 +14,14 @@ import { signUpStart, signUpVerify } from '../../shared/api/apiClient';
 import { getDataService } from '../../shared/common';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 
-export default function VerificationCodeView() {
+export const VERIFICATION_FLOW_TYPE = {
+    REGISTRATION: 'REGISTRATION',
+    FORGOT_PASSWORD: 'FORGOT_PASSWORD',
+    CHANGE_EMAIL: 'CHANGE_EMAIL',
+}
+export default function VerificationCodeView({route}) {
+    const { flowType } = route.params ?? {};
+
     const retryInterval = 61;
     const navigation = useNavigation();
 
@@ -40,42 +47,48 @@ export default function VerificationCodeView() {
         if (!canResend) return;
         setCanResend(false);
 
-        if (!justResetTimer) {
-            const email = getDataService()?.getUser()?.email;
-            signUpStart(email);
-        }
 
-        const interval = setInterval(() => {
-            setSeconds(prev => {
-                if (prev <= 1) {
-                    clearInterval(interval);
-                    setCanResend(true);
-                    return retryInterval;
-                }
-                return prev - 1;
-            });
-        }, 1000);
+        if (flowType === VERIFICATION_FLOW_TYPE.REGISTRATION) {
+            if (!justResetTimer) {
+                const email = getDataService()?.getUser()?.email;
+                signUpStart(email);
+            }
+
+            const interval = setInterval(() => {
+                setSeconds(prev => {
+                    if (prev <= 1) {
+                        clearInterval(interval);
+                        setCanResend(true);
+                        return retryInterval;
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+            return;
+        }
     };
 
     const handleSubmit = async () => {
         const code = getValue();
         const email = getDataService()?.getUser()?.email ?? '';
 
-        const response = await signUpVerify(email, code);
+        if (flowType === VERIFICATION_FLOW_TYPE.REGISTRATION) {
+            const response = await signUpVerify(email, code);
 
-        if (response.success) {
-            navigation.navigate('Username');
-            return;
+            if (response.success) {
+                navigation.navigate('Username');
+                return;
+            }
+
+            const errorMessages = {
+                404: 'Incorrect verification code, try again',
+                410: 'Code expired, request new code',
+                403: 'Too many tries, request new code'
+            };
+
+            setError(errorMessages[response.code] || 'Unknown error');
+            setModalVisible(true);
         }
-
-        const errorMessages = {
-            404: 'Incorrect verification code, try again',
-            410: 'Code expired, request new code',
-            403: 'Too many tries, request new code'
-        };
-
-        setError(errorMessages[response.code] || 'Unknown error');
-        setModalVisible(true);
     };
 
     return (
