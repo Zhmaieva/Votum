@@ -1,34 +1,28 @@
 import React, { useState } from 'react';
 import {
     View, TextInput, Dimensions, Text, StyleSheet,
-    FlatList, TouchableOpacity, Pressable, SafeAreaView
+    Pressable, SafeAreaView
 } from 'react-native';
 import { Colors } from "../../utils/colorUtils";
 import { Ionicons } from "@expo/vector-icons";
 import AwesomeButton, { Color } from "../customComponents/AwesomeButton";
 import { AwesomeModal } from "../customComponents/AwesomeModal";
 import { useNavigation } from '@react-navigation/native';
-import AwesomeSegmentedControls from "../customComponents/AwesomeSegmentedControls";
+import AwesomeCategory from "../customComponents/AwesomeCategory";
 
 const { width } = Dimensions.get('window');
-const POLL_WIDTH = width * 0.9;
-
-const DURATION_OPTIONS = [
-    { label: '1 hour', value: '1h' },
-    { label: '1 day', value: '1d' },
-    { label: '1 month', value: '1m' }
-];
 
 const AddView = () => {
     const [question, setQuestion] = useState('');
     const [options, setOptions] = useState([
-        { id: '1', text: '', label: 'answer 1' },
-        { id: '2', text: '', label: 'answer 2' }
+        { id: '1', text: '', label: 'Answer 1' },
+        { id: '2', text: '', label: 'Answer 2' }
     ]);
     const [selectedDuration, setSelectedDuration] = useState('1h');
-    const [durationDropdownOpen, setDurationDropdownOpen] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const navigation = useNavigation();
+
+    const durations = ['1h', '1d', '1w', '1m'];
 
     const addOption = () => {
         if (options.length < 4) {
@@ -68,10 +62,9 @@ const AddView = () => {
         navigation.navigate('Preview Poll', {
             question,
             options: filteredOptions,
-            selectedDuration: selectedOption
+            selectedDuration
         });
     };
-
 
     const [focusedField, setFocusedField] = useState(null);
 
@@ -81,22 +74,24 @@ const AddView = () => {
         return option?.text.length || 0;
     };
 
-    const [selectedOption, setSelectedOption] = useState('1h');
+    const [selectedOption, setSelectedOption] = useState('1d');
 
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.container}>
                 <View style={[styles.row, styles.bottomMargin10]}>
-                    <Text style={[styles.qTextStyle, styles.fontFamily]}>Q: </Text>
-                    <TextInput
-                        style={[styles.inputQuestion, styles.fontFamily]}
-                        placeholder="your question here"
-                        placeholderTextColor='#ababab'
-                        value={question}
-                        onChangeText={setQuestion}
-                        maxLength={40}
-                        onFocus={() => setFocusedField('question')}
-                    />
+                    <Text style={[styles.qTextStyle, styles.fontFamily]}>Q:</Text>
+                    <View style={{ flex: 1 }}>
+                        <TextInput
+                            style={[styles.inputQuestion, styles.fontFamily]}
+                            placeholder="question"
+                            placeholderTextColor='#ababab'
+                            value={question}
+                            onChangeText={setQuestion}
+                            maxLength={40}
+                            onFocus={() => setFocusedField('question')}
+                        />
+                    </View>
                 </View>
                 <View style={styles.votingFrame}>
                     {options.map(item => (
@@ -124,35 +119,26 @@ const AddView = () => {
                         </View>
                     )}
                     <View style={[styles.row, styles.endsInRow]}>
-                        <View style={[styles.row, styles.endsInRow]}>
-                            <Text>Ends in </Text>
-                            <View style={styles.segmentedControlsContainer}>
-                                <AwesomeSegmentedControls
-                                    options={["1h", "1d", "1w", "1m"]}
-                                    onDisplayModeChangedHandler={setSelectedOption}
-                                />
-                            </View>
-                        </View>
-                        {focusedField && (
-                            <Text style={styles.charCounter}>
-                                {getFocusedLength()}/40
-                            </Text>
-                        )}
-                    </View>
-                    {durationDropdownOpen && (
-                        <View style={styles.dropdown}>
-                            {DURATION_OPTIONS.map(option => (
-                                <TouchableOpacity
-                                    key={option.value}
-                                    style={styles.dropdownOption}
-                                    onPress={() => {
-                                        setSelectedDuration(option.value);
-                                        setDurationDropdownOpen(false);
-                                    }}>
-                                    <Text>{option.label}</Text>
-                                </TouchableOpacity>
+                        <Text>Ends in</Text>
+                        <View style={styles.row}>
+                            {["1h", "1d", "1w", "1m"].map((duration) => (
+                                <View style={styles.marginCategory}>
+                                    <AwesomeCategory
+                                        key={duration}
+                                        categoryName={duration}
+                                        isSelected={selectedOption === duration}
+                                        onPress={() => setSelectedOption(duration)}
+                                        noShadow={true}
+                                        size={14}
+                                    />
+                                </View>
                             ))}
                         </View>
+                    </View>
+                    {focusedField && (
+                        <Text style={styles.charCounter}>
+                            {getFocusedLength()}/40
+                        </Text>
                     )}
                 </View>
             </View>
@@ -185,9 +171,9 @@ const styles = StyleSheet.create({
     },
     inputQuestion: {
         fontWeight: 'bold',
-        fontSize: 18,
+        fontSize: 20,
         color: Colors.black,
-        justifyContent: 'flex-end'
+        paddingTop: 1,
     },
     inputWrapper: {
         position: 'relative',
@@ -201,7 +187,6 @@ const styles = StyleSheet.create({
         paddingLeft: 10,
         paddingRight: 35,
         fontSize: 14,
-        textAlignVertical: 'center',
         borderRadius: 0,
     },
     iconOverlay: {
@@ -211,20 +196,16 @@ const styles = StyleSheet.create({
         padding: 4
     },
     qTextStyle: {
-        color: Colors.green,
-        fontSize: 18,
+        color: Colors.black,
+        fontSize: 20,
         fontWeight: 'bold',
-        justifyContent: 'flex-end',
-        marginBottom: 1
+        marginRight: 5,
     },
     row: {
         flexDirection: 'row'
     },
     bottomMargin10: {
         marginBottom: 10
-    },
-    fontFamily: {
-        //fontFamily: 'arial'
     },
     votingFrame: {
         borderWidth: 1,
@@ -233,26 +214,9 @@ const styles = StyleSheet.create({
         padding: 14,
         marginBottom: 20,
     },
-    timer: {
-        marginLeft: 6,
-        borderWidth: 1,
-        borderColor: Colors.grey,
-        paddingHorizontal: 10,
-        paddingVertical: 6
-    },
     endsInRow: {
         alignItems: 'center',
-        marginTop: 10,
-        justifyContent: 'space-between'
-    },
-    dropdown: {
-        backgroundColor: Colors.white,
-        borderColor: Colors.black,
-        borderWidth: 1,
-        marginTop: 5
-    },
-    dropdownOption: {
-        padding: 10
+        marginTop: 16,
     },
     addAnswerContainer: {
         width: '100%'
@@ -263,8 +227,8 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-end',
         paddingBottom: 2
     },
-    segmentedControlsContainer: {
-
+    marginCategory: {
+        marginLeft: 8
     }
 });
 

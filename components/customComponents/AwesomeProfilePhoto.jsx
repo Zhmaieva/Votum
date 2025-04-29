@@ -21,19 +21,25 @@ const AwesomeProfilePhoto = ({ profileImage, setProfileImage }) => {
             }
 
             const result = await ImagePicker.launchImageLibraryAsync({
-                mediaTypes: ImagePicker.Images,
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: true, // 🎯 allows user to crop/resize
+                aspect: [1, 1], // 🎯 keeps the image square (optional: can be [4,3] etc.)
                 quality: 1,
             });
 
             if (!result.canceled) {
-                getDataService().getUser().image = result.assets[0].uri;
+                const uri = result.assets[0].uri;
+
+                // Update locally
+                getDataService().getUser().image = uri;
                 getDataService().commitUserChanges();
+                setProfileImage(uri);
 
-                setProfileImage(getDataService().getUser().image);
-
+                // Upload to server
                 await uploadProfileImage(result.assets[0]);
             }
         } catch (err) {
+            // Roll back to old image
             setProfileImage(oldImage);
             getDataService().getUser().image = oldImage;
             getDataService().commitUserChanges();
@@ -52,7 +58,7 @@ const AwesomeProfilePhoto = ({ profileImage, setProfileImage }) => {
             </TouchableOpacity>
             <AwesomeModal
                 visible={isModalVisible}
-                text={"Image upload failed, try again"}
+                text={"Upload failed. Check your connection or try an image under 5 MB."}
                 onPress={() => setModalVisible(false)}
                 onBackPress={() => setModalVisible(false)}
             />

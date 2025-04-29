@@ -37,7 +37,6 @@ const SearchView = () => {
                 <View style={styles.searchContainer}>
                     <AwesomeSearch onSearchPress={(query) => {
                         setSearchQuery(query);
-
                         searchPolls(query).then(res => {
                             setPolls(res.slice());
                             setRefreshing(false);

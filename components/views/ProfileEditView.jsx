@@ -27,6 +27,7 @@ const ProfileEditView = ({ route }) => {
     const [profileImage, setProfileImage] = useState(getDataService().getUser()?.image ?? '');
     const [isDeleteModalVisible, setDeleteModalVisible] = useState(false);
     const [isErrorModalVisible, setErrorModalVisible] = useState(false);
+    const [isLogoutModalVisible, setLogoutModalVisible] = useState(false);
 
     useFocusEffect(() => {
         getDataService().resetUserChanges();
@@ -87,11 +88,23 @@ const ProfileEditView = ({ route }) => {
                 <View style={styles.margin15}>
                     <AwesomeButton text='Change Password' color={Color.WHITE} settingButton={true}/>
                 </View>
-                <View style={styles.margin25}>
-                    <AwesomeButton text='Notifications' color={Color.WHITE} settingButton={true}/>
+                <View style={styles.margin15}>
+                    <AwesomeButton text='Notifications' color={Color.WHITE} settingButton={true} screenName='Notifications'/>
                 </View>
                 <View style={styles.margin15}>
-                    <AwesomeButton text='Delete Profile' color={Color.BLACK} additionalFunc={()=>setDeleteModalVisible(true)}/>
+                    <AwesomeButton text='Terms and conditions' color={Color.WHITE} settingButton={true} screenName='Terms Conditions' />
+                </View>
+                <View style={styles.margin15}>
+                    <AwesomeButton text='Contact information' color={Color.WHITE} settingButton={true} screenName='Contact Info' />
+                </View>
+                <View style={styles.margin25}>
+                    <AwesomeButton text='Report a bug' color={Color.WHITE} settingButton={true} screenName='Report bug'/>
+                </View>
+                <View style={styles.margin15}>
+                    <AwesomeButton text='Log out' color={Color.BLACK} additionalFunc={() => setLogoutModalVisible(true)} />
+                </View>
+                <View style={styles.margin15}>
+                    <AwesomeButton text='Delete Profile' color={Color.WHITE} additionalFunc={()=>setDeleteModalVisible(true)}/>
                 </View>
                 <AwesomePollPublishingLoader/>
             </ScrollView>
@@ -128,6 +141,19 @@ const ProfileEditView = ({ route }) => {
                 text="Oops"
                 subtext="There was an error while trying to delete your profile, try again later."
                 onBackPress={() => setErrorModalVisible(false)}
+            />
+
+            <AwesomeModal
+                visible={isLogoutModalVisible}
+                text="LOG OUT"
+                subtext="Are you sure you want to log out?"
+                buttonText="Log out"
+                secondaryText="Cancel"
+                onPress={async () => {
+                    setLogoutModalVisible(false);
+                    await signOut();
+                }}
+                onBackPress={() => setLogoutModalVisible(false)}
             />
         </SafeAreaView>
     );

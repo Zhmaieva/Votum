@@ -1,16 +1,18 @@
 import { Text, StyleSheet, Pressable } from 'react-native';
 import { Colors } from '../../utils/colorUtils';
 
-export default function AwesomeCategory ({ categoryName, size = 18, iconName, isSelected, onPress }) {
+export default function AwesomeCategory ({ categoryName, size = 18, isSelected, onPress, noShadow = false }) {
     const containerStyle = [
         styles.tagBase,
         isSelected ? styles.tagSelected : styles.tagDefault,
         styles.row,
-        styles.shadow,
+        !noShadow && styles.shadow,
     ];
 
-    const textStyle = isSelected ? styles.textSelected : styles.textDefault;
-    const iconColor = isSelected ? 'white' : 'black';
+    const textStyle = [
+        isSelected ? styles.textSelected : styles.textDefault,
+        { fontSize: size }, // <== dynamic font size
+    ];
 
     return (
         <Pressable onPress={onPress} style={containerStyle}>
@@ -24,8 +26,6 @@ const styles = StyleSheet.create({
         borderColor: Colors.black,
         borderWidth: 1,
         borderRadius: 0,
-        marginRight: 10,
-        marginBottom: 10,
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 1,
         shadowRadius: 0,
         shadowColor: Colors.green,
-        paddingLeft: 2
+        paddingLeft: 2,
     },
     textDefault: {
         color: Colors.black,
@@ -49,11 +49,10 @@ const styles = StyleSheet.create({
         color: Colors.white,
     },
     tagText: {
-        fontSize: 14,
-        marginLeft: 12,
-        marginRight: 12,
-        marginTop: 8,
-        marginBottom: 8
+        marginLeft: 11,
+        marginRight: 11,
+        marginTop: 7,
+        marginBottom: 7,
     },
     row: {
         flexDirection: 'row',

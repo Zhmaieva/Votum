@@ -56,6 +56,7 @@ const CategoriesView = ({ route }) => {
                                 categoryName={cat}
                                 isSelected={selectedCategories.includes(cat)}
                                 onPress={() => toggleCategory(cat)}
+                                size={18}
                             />
                         ))}
                         <AwesomeCategory

@@ -31,6 +31,11 @@ import PreviewPollView from "../PreviewPollView";
 import EditUsernameView from "../EditUsernameView";
 import PasswordView from "../PasswordView"
 import CategoriesView from '../CategoriesView'
+import ReportBugView from "../ReportBugView"
+import ContactInformationView from "../ContactInformationView"
+import TermsAndConditionsView from "../TermsAndConditionsView";
+import NotificationsView from "../NotificationsView";
+import NotificationSettingsView from "../NotificationSettingsView";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -148,6 +153,11 @@ function UserStack() {
             <AuthStack.Screen name="Log in" component={LogInView} options={{ headerShown: false, gestureEnabled: true }}/>
             <AuthStack.Screen name="Forgot password" component={ForgotPasswordView} options={{ headerShown: false, gestureEnabled: true }}/>
             <AuthStack.Screen name="Email Register" component={EmailRegisterView} options={{ headerShown: false, gestureEnabled: true }}/>
+            <AuthStack.Screen name="Report bug" component={ReportBugView} options={{ headerShown: false, gestureEnabled: true }}/>
+            <AuthStack.Screen name="Contact Info" component={ContactInformationView} options={{ headerShown: false, gestureEnabled: true }}/>
+            <AuthStack.Screen name="Terms Conditions" component={TermsAndConditionsView} options={{ headerShown: false, gestureEnabled: true }}/>
+            <AuthStack.Screen name="Notifications" component={NotificationsView} options={{ headerShown: false, gestureEnabled: true }}/>
+            <AuthStack.Screen name="Notification Settings" component={NotificationSettingsView} options={{ headerShown: false, gestureEnabled: true }}/>
         </Stack.Navigator>
     );
 }
