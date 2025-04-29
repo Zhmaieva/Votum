@@ -5,7 +5,9 @@
   "main": "src/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node src/server.js"
+    "start": "node src/server.js",
+    "start-indexer-job": "node src/jobs/indexerJob.js",
+    "start-poll-monitor-job": "node src/jobs/pollMonitorJob.js"
   },
   "keywords": [],
   "author": "",

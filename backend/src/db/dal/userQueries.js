@@ -1,5 +1,6 @@
 const {pool} = require("./pool");
 const {deleteImage} = require("../../aws/s3");
+const {EVENT_NAMES} = require("../../constants");
 
 async function followUser(userFollowerId, userFollowId) {
     const query = `
@@ -281,6 +282,14 @@ async function checkAndInsertUserWithProfile(username, email, passwordHash) {
 
         const result = await client.query(query, [username.toLowerCase(), email.toLowerCase(), passwordHash]);
 
+        if (result.rows[0]?.code === 1) {
+            await client.query(`
+              INSERT INTO events_queue (entity_id, event_name, event_date)
+              VALUES ($1, $2, (NOW() AT TIME ZONE 'UTC'))
+              ON CONFLICT (entity_id, event_name) DO NOTHING;
+            `, [result.rows[0]?.user_id, EVENT_NAMES.USER_INDEX_UPDATE]);
+        }
+
         await client.query('COMMIT');
 
         return result.rows[0]; // { code: 1 or -1, user_id: UUID or null }
@@ -347,32 +356,6 @@ async function updateProfileImage(imageUrl, userId) {
     return result.rows[0]?.previous_image;
 }
 
-async function refreshUserFollows(userId) {
-    const result = await pool.query(
-        `
-        UPDATE user_profiles
-        SET following_number = (
-            SELECT count(user_follow_id) from user_follows where user_follower_id = $1
-            )
-        WHERE user_id = $1;
-        `,
-        [userId]
-    );
-}
-
-async function refreshUserFollowers(userId) {
-    const result = await pool.query(
-        `
-        UPDATE user_profiles
-        SET followers_number = (
-            SELECT count(user_follower_id) from user_follows where user_follow_id = $1
-            )
-        WHERE user_id = $1;
-        `,
-        [userId]
-    );
-}
-
 /**
  * Delete user and associated data from the database
  * @param userId
@@ -411,6 +394,12 @@ async function deleteUser(userId) {
             [userId]
         );
 
+        await client.query(`
+          INSERT INTO events_queue (entity_id, event_name, event_date)
+          VALUES ($1, $2, (NOW() AT TIME ZONE 'UTC'))
+          ON CONFLICT (entity_id, event_name) DO NOTHING;
+        `, [userId, EVENT_NAMES.USER_INDEX_DELETE]);
+
         const deleteImageResult = await deleteImageRequest;
 
         if (deleteImageResult)
@@ -436,8 +425,6 @@ module.exports = {
     getFollows,
     getUser,
     getUserByLogin,
-    refreshUserFollows,
-    refreshUserFollowers,
     unfollowUser,
     updateProfileImage,
 }

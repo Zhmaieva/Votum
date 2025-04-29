@@ -297,9 +297,6 @@ app.post('/profile/followers', authMiddleware, async (req, res, next) => {
 
         await userQueries.followUser(req.user.id, userId);
 
-        refreshUserFollows(req.user.id).then(_ => {});
-        refreshUserFollowers(userId).then(_ => {});
-
         return res.json({ message: 'User followed successfully' });
     }
     catch (e) {
@@ -312,9 +309,6 @@ app.delete('/profile/followers', authMiddleware, async (req, res, next) => {
         const { userId } = req.query;
 
         await userQueries.unfollowUser(req.user.id, userId);
-
-        refreshUserFollows(req.user.id).then(_ => {});
-        refreshUserFollowers(userId).then(_ => {});
 
         return res.json({ message: 'User unfollowed successfully' });
     }

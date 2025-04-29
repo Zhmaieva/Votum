@@ -265,3 +265,238 @@ FROM (
          GROUP BY pao.poll_id
      ) AS sub
 WHERE p.id = sub.poll_id;
+
+-- Sat Apr 26 1:20 PM
+CREATE TABLE user_polls (
+    user_id UUID NOT NULL,
+    poll_id UUID NOT NULL,
+    feed_score BIGINT NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL
+);
+
+CREATE INDEX idx_user_polls_user_score
+    ON user_polls (user_id, feed_score DESC);
+
+CREATE INDEX idx_user_polls_poll_updated
+    ON user_polls (poll_id, updated_at DESC);
+
+CREATE TABLE events_queue (
+    entity_id UUID NOT NULL,
+    event_name TEXT NOT NULL,
+    event_date TIMESTAMPTZ NOT NULL,
+
+    CONSTRAINT events_queue_pkey PRIMARY KEY (entity_id, event_name)
+);
+
+CREATE OR REPLACE FUNCTION decrement_likes_count()
+    RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE polls
+    SET likes_count = GREATEST(0, likes_count - 1)
+    WHERE id = OLD.poll_id;
+
+    -- 2. Insert event into events_queue
+    INSERT INTO events_queue (entity_id, event_name, event_date)
+    VALUES (OLD.poll_id, 'poll_index_update', NOW() AT TIME ZONE 'UTC')
+    ON CONFLICT (entity_id, event_name) DO NOTHING;
+
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION increment_followers_follows_count()
+    RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE user_profiles
+    SET followers_number = followers_number + 1
+    WHERE user_id = NEW.user_follow_id;
+
+    UPDATE user_profiles
+    SET following_number = following_number + 1
+    WHERE user_id = NEW.user_follower_id;
+
+    -- 2. Insert event into events_queue
+    INSERT INTO events_queue (entity_id, event_name, event_date)
+    VALUES (NEW.user_follower_id, 'user_index_update', NOW() AT TIME ZONE 'UTC')
+    ON CONFLICT (entity_id, event_name) DO NOTHING;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION decrement_followers_follows_count()
+    RETURNS TRIGGER AS $$
+BEGIN
+    -- Decrease followers count for the user being unfollowed
+    UPDATE user_profiles
+    SET followers_number = GREATEST(0, followers_number - 1)
+    WHERE user_id = OLD.user_follow_id;
+
+    -- Decrease following count for the user who unfollowed
+    UPDATE user_profiles
+    SET following_number = GREATEST(0, following_number - 1)
+    WHERE user_id = OLD.user_follower_id;
+
+    -- 2. Insert event into events_queue
+    INSERT INTO events_queue (entity_id, event_name, event_date)
+    VALUES (OLD.user_follower_id, 'user_index_update', NOW() AT TIME ZONE 'UTC')
+    ON CONFLICT (entity_id, event_name) DO NOTHING;
+
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TABLE poll_views (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  poll_id UUID NOT NULL REFERENCES polls(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE
+);
+
+ALTER TABLE poll_views
+    ADD CONSTRAINT unique_poll_views_poll_user UNIQUE (poll_id, user_id);
+
+ALTER TABLE polls
+    ADD COLUMN views_count INTEGER DEFAULT 0;
+
+CREATE OR REPLACE FUNCTION increment_poll_views_count()
+    RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE polls
+    SET views_count = views_count + 1
+    WHERE id = NEW.poll_id;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_increment_views
+    AFTER INSERT ON poll_views
+    FOR EACH ROW
+EXECUTE FUNCTION increment_poll_views_count();
+
+CREATE OR REPLACE FUNCTION increment_likes_count()
+    RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE polls
+    SET likes_count = likes_count + 1
+    WHERE id = NEW.poll_id;
+
+    INSERT INTO poll_views (poll_id, user_id)
+    VALUES (NEW.poll_id, NEW.user_id)
+    ON CONFLICT DO NOTHING;
+
+    -- 2. Insert event into events_queue
+    INSERT INTO events_queue (entity_id, event_name, event_date)
+    VALUES (NEW.poll_id, 'poll_index_update', NOW() AT TIME ZONE 'UTC')
+    ON CONFLICT (entity_id, event_name) DO NOTHING;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION increment_poll_votes_count()
+    RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE polls
+    SET votes_count = votes_count + 1
+    WHERE id = (
+        SELECT poll_id FROM poll_answer_options WHERE id = NEW.option_id
+    );
+
+    INSERT INTO poll_views (poll_id, user_id)
+    VALUES (NEW.poll_id, NEW.user_id)
+    ON CONFLICT DO NOTHING;
+
+    -- 2. Insert event into events_queue
+    INSERT INTO events_queue (entity_id, event_name, event_date)
+    VALUES (NEW.poll_id, 'poll_index_update', NOW() AT TIME ZONE 'UTC')
+    ON CONFLICT (entity_id, event_name) DO NOTHING;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+UPDATE poll_answer_options pao
+SET votes_count = 0;
+
+UPDATE poll_answer_options pao
+SET votes_count = COALESCE(sub.vote_count, 0)
+FROM (
+         SELECT
+             option_id,
+             COUNT(*) AS vote_count
+         FROM poll_votes
+         GROUP BY option_id
+     ) AS sub
+WHERE pao.id = pao.id -- Always true to touch all rows
+  AND (sub.option_id = pao.id);
+
+
+UPDATE polls p
+SET votes_count = sub.total_votes
+FROM (
+         SELECT pao.poll_id, SUM(pao.votes_count) AS total_votes
+         FROM poll_answer_options pao
+         GROUP BY pao.poll_id
+     ) AS sub
+WHERE p.id = sub.poll_id;
+
+INSERT INTO poll_views (poll_id, user_id)
+SELECT combined.poll_id, combined.user_id
+FROM (
+         SELECT user_id, poll_id FROM poll_votes
+         UNION
+         SELECT user_id, poll_id FROM poll_likes
+     ) AS combined
+ON CONFLICT (poll_id, user_id) DO NOTHING;
+
+ALTER TABLE polls
+    ADD COLUMN created_at TIMESTAMPTZ DEFAULT NOW();
+
+CREATE INDEX idx_polls_id_is_deleted ON polls(id, is_deleted);
+
+CREATE UNIQUE INDEX idx_user_polls_user_poll ON user_polls(user_id, poll_id);
+
+ALTER TABLE events_queue
+    ADD COLUMN created_at TIMESTAMPTZ NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC');
+
+
+ALTER TABLE polls
+    ALTER COLUMN created_at TYPE timestamp WITHOUT TIME ZONE
+        USING created_at AT TIME ZONE 'UTC';
+
+ALTER TABLE polls
+    ALTER COLUMN ends_in TYPE timestamp WITHOUT TIME ZONE
+        USING ends_in AT TIME ZONE 'UTC';
+
+UPDATE polls
+SET created_at = (created_at AT TIME ZONE 'UTC')
+WHERE created_at IS NOT NULL;
+
+-- Users table
+ALTER TABLE users
+    ALTER COLUMN created_at TYPE timestamp WITHOUT TIME ZONE
+        USING created_at AT TIME ZONE 'UTC',
+    ALTER COLUMN created_at SET DEFAULT (NOW() AT TIME ZONE 'UTC');
+
+-- Activation Codes table
+ALTER TABLE activation_codes
+    ALTER COLUMN created_at TYPE timestamp WITHOUT TIME ZONE
+        USING created_at AT TIME ZONE 'UTC',
+    ALTER COLUMN created_at SET DEFAULT (NOW() AT TIME ZONE 'UTC'),
+    ALTER COLUMN sent_on TYPE timestamp WITHOUT TIME ZONE
+        USING sent_on AT TIME ZONE 'UTC',
+    ALTER COLUMN sent_on SET DEFAULT (NOW() AT TIME ZONE 'UTC');
+
+-- Polls table
+ALTER TABLE polls
+    ALTER COLUMN created_at TYPE timestamp WITHOUT TIME ZONE
+        USING created_at AT TIME ZONE 'UTC',
+    ALTER COLUMN ends_in TYPE timestamp WITHOUT TIME ZONE
+        USING ends_in AT TIME ZONE 'UTC';
+
+-- Poll Votes table
+ALTER TABLE poll_votes
+    ALTER COLUMN created_at TYPE timestamp WITHOUT TIME ZONE
+        USING created_at AT TIME ZONE 'UTC',
+    ALTER COLUMN created_at SET DEFAULT (NOW() AT TIME ZONE 'UTC');
