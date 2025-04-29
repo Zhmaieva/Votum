@@ -1,4 +1,4 @@
-const {sweepPollIndexUpdateEvents, sweepPollDeleteEvents} = require ("../db/dal/eventQueries");
+const {sweepPollIndexUpdateEvents, sweepPollDeleteEvents, sweepUserDeleteEvents, sweepUserIndexUpdateEvents} = require ("../db/dal/eventQueries");
 
 const run_interval = 5000;
 const sweep_batch_size = 10;
@@ -9,7 +9,9 @@ const sweep_batch_size = 10;
  */
 const job = async function() {
     await sweepPollIndexUpdateEvents(sweep_batch_size);
+    await sweepUserIndexUpdateEvents(sweep_batch_size);
     await sweepPollDeleteEvents(sweep_batch_size);
+    await sweepUserDeleteEvents(sweep_batch_size);
 }
 
 setInterval(async () => {

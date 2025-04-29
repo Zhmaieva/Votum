@@ -479,6 +479,87 @@ async function recalculatePollScore({ pollId, updatedOn }) {
     await pool.query(query, [ pollId, updatedOn ]);
 }
 
+/**
+ * Updates feed score for a given user across all active polls
+ * @param userId User ID
+ * @param updatedOn Cut off update date (event date) - update older polls only
+ * @returns {Promise<void>}
+ */
+async function recalculateUserFeedScores({ userId, updatedOn }) {
+    const query = `
+    WITH eligible_polls AS (
+      SELECT id AS poll_id
+      FROM polls
+      WHERE is_deleted = false
+        AND ends_in > (NOW() AT TIME ZONE 'UTC')
+    )
+    INSERT INTO user_polls (user_id, poll_id, feed_score, updated_at)
+    SELECT 
+      $1 AS user_id,
+      ep.poll_id,
+      CASE 
+          WHEN up.user_id IS NULL THEN 
+              (
+                  COALESCE(
+                      CASE 
+                          WHEN EXTRACT(EPOCH FROM (NOW() - pc.created_at)) / 3600 < 24
+                          THEN 50 - (EXTRACT(EPOCH FROM (NOW() - pc.created_at)) / 3600)
+                          ELSE 0
+                      END, 0
+                  )
+                  + (COALESCE(pc.votes_count, 0) * 2)
+                  + (COALESCE(pc.likes_count, 0) * 3)
+                  + CASE
+                      WHEN EXTRACT(EPOCH FROM (pc.ends_in - NOW())) < 3600
+                           AND EXTRACT(EPOCH FROM (pc.ends_in - NOW())) > 0
+                      THEN 20
+                      ELSE 0
+                    END
+                  + 1000000000 -- 1kkk bonus if not seen
+              )
+          ELSE
+              (
+                  COALESCE(
+                      CASE 
+                          WHEN EXTRACT(EPOCH FROM (NOW() - pc.created_at)) / 3600 < 24
+                          THEN 50 - (EXTRACT(EPOCH FROM (NOW() - pc.created_at)) / 3600)
+                          ELSE 0
+                      END, 0
+                  )
+                  + (COALESCE(pc.votes_count, 0) * 2)
+                  + (COALESCE(pc.likes_count, 0) * 3)
+                  + CASE
+                      WHEN EXTRACT(EPOCH FROM (pc.ends_in - NOW())) < 3600
+                           AND EXTRACT(EPOCH FROM (pc.ends_in - NOW())) > 0
+                      THEN 20
+                      ELSE 0
+                    END
+              )
+      END AS feed_score,
+      $2 -- updatedOn
+    FROM eligible_polls ep
+    JOIN polls pc ON pc.id = ep.poll_id
+    LEFT JOIN poll_views up ON up.poll_id = pc.id AND up.user_id = $1
+    ON CONFLICT (user_id, poll_id) DO UPDATE
+    SET 
+        feed_score = CASE
+                        WHEN user_polls.updated_at < EXCLUDED.updated_at THEN
+                            EXCLUDED.feed_score
+                        ELSE
+                            user_polls.feed_score
+                     END,
+        updated_at = CASE
+                        WHEN user_polls.updated_at < EXCLUDED.updated_at THEN
+                            EXCLUDED.updated_at
+                        ELSE
+                            user_polls.updated_at
+                     END
+    WHERE user_polls.updated_at < EXCLUDED.updated_at;
+  `;
+
+    await pool.query(query, [userId, updatedOn]);
+}
+
 async function publishPollEvents() {
     const query = `
         WITH now_utc AS (
@@ -534,6 +615,7 @@ module.exports = {
     likePoll,
     publishPollEvents,
     recalculatePollScore,
+    recalculateUserFeedScores,
     searchPolls,
     unlikePoll,
     voteOnPoll,
