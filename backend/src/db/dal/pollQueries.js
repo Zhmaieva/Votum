@@ -79,32 +79,127 @@ const pollWhere = `
 `;
 
 /**
- * Fetch polls for the main feed.
- * If a featured poll is specified, include it first and exclude it from the rest.
- *
- * @param {string} userId - ID of the currently authenticated user
- * @param {string|null} featuredId - Optional readable ID of a featured poll
- * @returns {Promise<Array>} - List of polls for feed
+ * Fetches polls for a user based on feed score and featured poll if provided
+ * @param userId User ID
+ * @param batchSize Number of polls to fetch
+ * @param excludedPollIds List of poll IDs to exclude
+ * @param featuredId Featured poll readable_id (optional)
  */
-async function fetchPolls(userId, featuredId = null) {
-    let fullQuery;
-    let params = [userId, featuredId];
+async function fetchPolls(userId, batchSize, excludedPollIds, featuredId) {
+    const client = await pool.connect();
+    try {
+        const excludedArray = excludedPollIds.length > 0 ? excludedPollIds : null;
+        let rows = [];
 
-    if (featuredId) {
-        fullQuery = `
-            SELECT * FROM (
-                (${pollSelect} ${pollWhere} AND p.readable_id = $2 LIMIT 1)
-                UNION ALL
-                (${pollSelect} ${pollWhere} AND p.readable_id <> $2)
-            ) AS polls
+        if (featuredId) {
+            const featuredQuery = `
+                SELECT 
+                  p.id,
+                  p.question,
+                  p.ends_in,
+                  p.readable_id,
+                  u.username,
+                  up2.user_id,
+                  up2.image,
+                  up2.followers_number,
+                  CASE WHEN pl.user_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_liked,
+                  CASE WHEN uf.user_follower_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_following,
+                  CASE WHEN p.created_by = $1 THEN up2.bio ELSE '' END AS user_bio
+                FROM polls p
+                JOIN users u ON u.id = p.created_by
+                JOIN user_profiles up2 ON up2.user_id = u.id
+                LEFT JOIN poll_likes pl ON pl.poll_id = p.id AND pl.user_id = $1
+                LEFT JOIN user_follows uf ON uf.user_follower_id = $1 AND uf.user_follow_id = u.id
+                WHERE p.is_deleted = false
+                  AND p.ends_in > (NOW() AT TIME ZONE 'UTC')
+                  AND p.readable_id = $2
+                LIMIT 1
+              `;
+
+            const { rows: featuredRows } = await client.query(featuredQuery, [userId, featuredId]);
+
+            rows = rows.concat(featuredRows);
+
+            if (featuredRows.length > 0) {
+                // Exclude the featured poll from further selects
+                excludedPollIds = [...excludedPollIds, featuredRows[0].id];
+            }
+        }
+
+        const excludedArrayFinal = excludedPollIds.length > 0 ? excludedPollIds : null;
+
+        // Personalized polls
+        const personalizedQuery = `
+          SELECT 
+            p.id,
+            p.question,
+            p.ends_in,
+            p.readable_id,
+            u.username,
+            up2.user_id,
+            up2.image,
+            up2.followers_number,
+            CASE WHEN pl.user_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_liked,
+            CASE WHEN uf.user_follower_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_following,
+            CASE WHEN p.created_by = $1 THEN up2.bio ELSE '' END AS user_bio
+          FROM user_polls up
+          JOIN polls p ON p.id = up.poll_id
+          JOIN users u ON u.id = p.created_by
+          JOIN user_profiles up2 ON up2.user_id = u.id
+          LEFT JOIN poll_likes pl ON pl.poll_id = p.id AND pl.user_id = $1
+          LEFT JOIN user_follows uf ON uf.user_follower_id = $1 AND uf.user_follow_id = u.id
+          WHERE up.user_id = $1
+            AND p.is_deleted = false
+            AND p.ends_in > (NOW() AT TIME ZONE 'UTC')
+            AND ($3::uuid[] IS NULL OR p.id != ALL($3))
+          ORDER BY up.feed_score DESC, p.created_at DESC
+          LIMIT $2
         `;
-    } else {
-        fullQuery = `${pollSelect} ${pollWhere}`;
-        params = [userId];
-    }
 
-    const result = await pool.query(fullQuery, params);
-    return attachOptionsToPolls(userId, result.rows);
+        const { rows: personalizedRows } = await client.query(personalizedQuery, [userId, batchSize - rows.length, excludedArrayFinal]);
+
+        if (personalizedRows.length > 0) {
+            rows = rows.concat(personalizedRows);
+            return attachOptionsToPolls(userId, rows);
+        }
+
+        // Fallback trending polls
+        const fallbackQuery = `
+          SELECT 
+            p.id,
+            p.question,
+            p.ends_in,
+            p.readable_id,
+            u.username,
+            up2.user_id,
+            up2.image,
+            up2.followers_number,
+            CASE WHEN pl.user_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_liked,
+            CASE WHEN uf.user_follower_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_following,
+            CASE WHEN p.created_by = $1 THEN up2.bio ELSE '' END AS user_bio
+          FROM polls p
+          JOIN users u ON u.id = p.created_by
+          JOIN user_profiles up2 ON up2.user_id = u.id
+          LEFT JOIN poll_likes pl ON pl.poll_id = p.id AND pl.user_id = $1
+          LEFT JOIN user_follows uf ON uf.user_follower_id = $1 AND uf.user_follow_id = u.id
+          WHERE p.is_deleted = false
+            AND p.ends_in > (NOW() AT TIME ZONE 'UTC')
+            AND ($3::uuid[] IS NULL OR p.id != ALL($3))
+          ORDER BY p.votes_count DESC, p.created_at DESC, p.likes_count DESC
+          LIMIT $2
+        `;
+
+        const { rows: fallbackRows } = await client.query(fallbackQuery, [userId, batchSize - rows.length, excludedArrayFinal]);
+
+        rows = rows.concat(fallbackRows);
+
+        return attachOptionsToPolls(userId, rows);
+    } catch (error) {
+        console.error('Error fetching user feed polls:', error);
+        throw error;
+    } finally {
+        client.release();
+    }
 }
 
 /**

@@ -346,7 +346,7 @@ app.get('/profile/follows', authMiddleware, async (req, res, next) => {
 app.get('/polls', authMiddleware, async (req, res) => {
     try {
         const { featuredId } = req.query;
-        const result = await pollQueries.fetchPolls(req.user.id, featuredId);
+        const result = await pollQueries.fetchPolls(req.user.id, 20, [], featuredId);
         res.json(result);
     } catch (e) {
         next(e);
