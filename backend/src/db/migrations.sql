@@ -365,6 +365,11 @@ BEGIN
     SET views_count = views_count + 1
     WHERE id = NEW.poll_id;
 
+    -- 2. Insert event into events_queue
+    INSERT INTO events_queue (entity_id, event_name, event_date)
+    VALUES (NEW.user_id, 'user_index_update', NOW() AT TIME ZONE 'UTC')
+    ON CONFLICT (entity_id, event_name) DO NOTHING;
+
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;

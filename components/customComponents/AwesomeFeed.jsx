@@ -15,7 +15,7 @@ import { Colors } from '../../utils/colorUtils';
 import {getDataService, globalEventEmitter} from "../../shared/common";
 import AwesomeLink from "./AwesomeLink";
 import {useFocusEffect} from "@react-navigation/native";
-import {fetchMyProfile, getPollOptions} from "../../shared/api/apiClient";
+import {fetchMyProfile, getPollOptions, viewPollRequest} from "../../shared/api/apiClient";
 
 const AwesomeFeed = ({
                          data,
@@ -27,7 +27,7 @@ const AwesomeFeed = ({
                          isSearchView = false
 }) => {
     const scrollY = useRef(new Animated.Value(0)).current;
-    const [preloadedData, setPreloadedData] = useState(data);
+    const [preloadedData, setPreloadedData] = useState([]);
 
     const flatListRef = useRef(null);
     const timeoutRef = useRef(setTimeout(() => {}, 100));
@@ -40,17 +40,21 @@ const AwesomeFeed = ({
         if (!getDataService().getUser())
             fetchMyProfile().then(res => {
                 getDataService().setUser(res);
+                applyData();
             });
-    },[])
+        else {
+            applyData();
+        }
+    },[data])
 
-    useEffect(() => {
+    const applyData = () => {
         if (!data?.length || data.length === 0) {
             // If no data, show the "no more polls" item
             setPreloadedData([{ id: 'no-more-polls', type: 'placeholder' }]);
         } else {
             setPreloadedData(data.slice());
         }
-    }, [data]);
+    }
 
     const loadMorePolls = () => {
         const nextBatch = data?.slice(preloadedData.length, preloadedData.length + 5);
@@ -141,6 +145,8 @@ const AwesomeFeed = ({
                 lastIndexRef.current = index;
                 setCurrentIndex(index);
 
+                viewPoll(index).then(_ => {});
+
                 clearTimeout(timeoutRef.current);
                 timeoutRef.current = setTimeout(() => updatePoll(lastIndexRef.current),3000 + Math.random() * 10000);
             }
@@ -157,7 +163,14 @@ const AwesomeFeed = ({
             }
             return prevData;
         });
-    })
+    });
+
+    const viewPoll = async (index) => {
+        console.log('viewPoll', index);
+        if (preloadedData[index] && preloadedData[index].user?.userId !== getDataService().getUser()?.userId) {
+            await viewPollRequest(preloadedData[index].id);
+        }
+    }
 
     const updatePoll = async (index) => {
         if (preloadedData[index].options.some(x => x.voted) || preloadedData[index].user?.userId === getDataService().getUser()?.userId) {

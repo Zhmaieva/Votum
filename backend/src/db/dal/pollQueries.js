@@ -362,6 +362,29 @@ const getPollOptionResults = async (pollId) => {
     }
 };
 
+/**
+ * Records a poll view by a user and enqueues a `poll_index_update` event if it’s the first view by that user.
+ *
+ * @param {string} userId - ID of the user viewing the poll
+ * @param {string} pollId - ID of the poll being viewed
+ * @returns {Promise<void>}
+ */
+async function viewPoll(userId, pollId) {
+    try {
+        // Try inserting a new view
+        await pool.query(
+            `
+                INSERT INTO poll_views (user_id, poll_id)
+                VALUES ($1, $2)
+                ON CONFLICT DO NOTHING;
+            `,
+            [userId, pollId]
+        );
+    } catch (err) {
+        console.error('Error recording poll view:', err);
+    }
+}
+
 async function likePoll(pollId, userId) {
     const query = `
     INSERT INTO poll_likes (poll_id, user_id) 
@@ -504,54 +527,39 @@ async function recalculatePollScore({ pollId, updatedOn }) {
         WITH eligible_users AS (
             SELECT id AS user_id FROM users
         ),
-             is_following AS (
-                 SELECT uf.user_follower_id AS user_id, uf.user_follow_id AS followed_user_id
-                 FROM user_follows uf
-             )
+         is_following AS (
+             SELECT uf.user_follower_id AS user_id, uf.user_follow_id AS followed_user_id
+             FROM user_follows uf
+         )
         INSERT INTO user_polls (user_id, poll_id, feed_score, updated_at)
         SELECT
             eu.user_id,
             pc.id,
-            CASE
-                WHEN up.user_id IS NULL THEN
-                    (
-                        -- Unseen poll: +1_000_000_000
-                        1000000000
-                            +
-                            -- Ending soon bonus: +100 if < 1h left
-                        CASE WHEN EXTRACT(EPOCH FROM (pc.ends_in - NOW() AT TIME ZONE 'UTC')) BETWEEN 0 AND 3600 THEN 100 ELSE 0 END
-                            +
-                            -- Age decay: up to +50 if created < 24h ago
-                        COALESCE(CASE
-                                     WHEN EXTRACT(EPOCH FROM ((NOW() AT TIME ZONE 'UTC') - pc.created_at)) / 3600 < 24
-                                         THEN 300 - (EXTRACT(EPOCH FROM ((NOW() AT TIME ZONE 'UTC') - pc.created_at)) / 3600) * 8
-                                     ELSE 0 END, 0)
-                            +
-                            -- Weighted likes and votes (doubled if followed)
-                        (COALESCE(pc.votes_count, 0) *
-                         CASE WHEN f.user_id IS NOT NULL THEN 4 ELSE 2 END)
-                            +
-                        (COALESCE(pc.likes_count, 0) *
-                         CASE WHEN f.user_id IS NOT NULL THEN 6 ELSE 3 END)
-                        )
-                ELSE
-                    (
-                        -- No unseen bonus
-                        -- Ending soon bonus
-                        CASE WHEN EXTRACT(EPOCH FROM (pc.ends_in - NOW() AT TIME ZONE 'UTC')) BETWEEN 0 AND 3600 THEN 100 ELSE 0 END
-                            +
-                        COALESCE(CASE
-                                     WHEN EXTRACT(EPOCH FROM ((NOW() AT TIME ZONE 'UTC') - pc.created_at)) / 3600 < 24
-                                         THEN 300 - (EXTRACT(EPOCH FROM ((NOW() AT TIME ZONE 'UTC') - pc.created_at)) / 3600) * 8
-                                     ELSE 0 END, 0)
-                            +
-                        (COALESCE(pc.votes_count, 0) *
-                         CASE WHEN f.user_id IS NOT NULL THEN 4 ELSE 2 END)
-                            +
-                        (COALESCE(pc.likes_count, 0) *
-                         CASE WHEN f.user_id IS NOT NULL THEN 6 ELSE 3 END)
-                        )
-                END AS feed_score,
+            (
+                -- No unseen bonus if user is poll creator
+                CASE
+                    WHEN up.user_id IS NULL AND eu.user_id <> pc.created_by THEN 1000000000
+                    ELSE 0
+                    END
+                    +
+                    -- Ending soon bonus
+                CASE WHEN EXTRACT(EPOCH FROM (pc.ends_in - NOW() AT TIME ZONE 'UTC')) BETWEEN 0 AND 3600 THEN 100 ELSE 0 END
+                    +
+                    -- Age decay bonus
+                COALESCE(
+                        CASE
+                            WHEN EXTRACT(EPOCH FROM ((NOW() AT TIME ZONE 'UTC') - pc.created_at)) / 3600 < 24
+                                THEN 300 - (EXTRACT(EPOCH FROM ((NOW() AT TIME ZONE 'UTC') - pc.created_at)) / 3600) * 8
+                            ELSE 0
+                            END, 0
+                )
+                    +
+                    -- Votes weight
+                (COALESCE(pc.votes_count, 0) * CASE WHEN f.user_id IS NOT NULL THEN 4 ELSE 2 END)
+                    +
+                    -- Likes weight
+                (COALESCE(pc.likes_count, 0) * CASE WHEN f.user_id IS NOT NULL THEN 6 ELSE 3 END)
+                ) AS feed_score,
             $2 AS updated_at
         FROM eligible_users eu
                  JOIN polls pc ON pc.id = $1 AND pc.is_deleted = false AND pc.ends_in > (NOW() AT TIME ZONE 'UTC')
@@ -560,22 +568,17 @@ async function recalculatePollScore({ pollId, updatedOn }) {
         ON CONFLICT (user_id, poll_id) DO UPDATE
             SET
                 feed_score = CASE
-                                 WHEN user_polls.updated_at < EXCLUDED.updated_at THEN
-                                     EXCLUDED.feed_score
-                                 ELSE
-                                     user_polls.feed_score
+                                 WHEN user_polls.updated_at < EXCLUDED.updated_at THEN EXCLUDED.feed_score
+                                 ELSE user_polls.feed_score
                     END,
                 updated_at = CASE
-                                 WHEN user_polls.updated_at < EXCLUDED.updated_at THEN
-                                     EXCLUDED.updated_at
-                                 ELSE
-                                     user_polls.updated_at
+                                 WHEN user_polls.updated_at < EXCLUDED.updated_at THEN EXCLUDED.updated_at
+                                 ELSE user_polls.updated_at
                     END
-        WHERE
-            user_polls.updated_at < EXCLUDED.updated_at;
-    `
+        WHERE user_polls.updated_at < EXCLUDED.updated_at;
+    `;
 
-    await pool.query(query, [ pollId, updatedOn ]);
+    await pool.query(query, [pollId, updatedOn]);
 }
 
 /**
@@ -587,20 +590,21 @@ async function recalculatePollScore({ pollId, updatedOn }) {
 async function recalculateUserFeedScores({ userId, updatedOn }) {
     const query = `
         WITH eligible_polls AS (
-            SELECT id AS poll_id
-            FROM polls
-            WHERE is_deleted = false
-              AND ends_in > (NOW() AT TIME ZONE 'UTC')
+            SELECT * FROM polls
+            WHERE is_deleted = false AND ends_in > (NOW() AT TIME ZONE 'UTC')
         )
         INSERT INTO user_polls (user_id, poll_id, feed_score, updated_at)
         SELECT
             $1 AS user_id,
-            ep.poll_id,
+            pc.id,
             (
+                -- No unseen bonus if user is poll creator
                 CASE
-                    WHEN up.user_id IS NULL THEN 1000000000 ELSE 0
+                    WHEN up.user_id IS NULL AND $1 <> pc.created_by THEN 1000000000
+                    ELSE 0
                     END
                     +
+                    -- Age decay bonus
                 COALESCE(
                         CASE
                             WHEN EXTRACT(EPOCH FROM ((NOW() AT TIME ZONE 'UTC') - pc.created_at)) / 3600 < 24
@@ -608,46 +612,35 @@ async function recalculateUserFeedScores({ userId, updatedOn }) {
                             ELSE 0
                             END, 0
                 )
-                    + (
-                    CASE
-                        WHEN uf.user_follow_id IS NOT NULL THEN COALESCE(pc.votes_count, 0) * 4
-                        ELSE COALESCE(pc.votes_count, 0) * 2
-                        END
-                    )
-                    + (
-                    CASE
-                        WHEN uf.user_follow_id IS NOT NULL THEN COALESCE(pc.likes_count, 0) * 6
-                        ELSE COALESCE(pc.likes_count, 0) * 3
-                        END
-                    )
-                    + CASE
-                          WHEN EXTRACT(EPOCH FROM (pc.ends_in - (NOW() AT TIME ZONE 'UTC'))) < 3600
-                              AND EXTRACT(EPOCH FROM (pc.ends_in - (NOW() AT TIME ZONE 'UTC'))) > 0
-                              THEN 100
-                          ELSE 0
+                    +
+                    -- Votes weight
+                (COALESCE(pc.votes_count, 0) * CASE WHEN uf.user_follow_id IS NOT NULL THEN 4 ELSE 2 END)
+                    +
+                    -- Likes weight
+                (COALESCE(pc.likes_count, 0) * CASE WHEN uf.user_follow_id IS NOT NULL THEN 6 ELSE 3 END)
+                    +
+                    -- Ending soon bonus
+                CASE
+                    WHEN EXTRACT(EPOCH FROM (pc.ends_in - (NOW() AT TIME ZONE 'UTC'))) BETWEEN 0 AND 3600 THEN 100
+                    ELSE 0
                     END
                 ) AS feed_score,
-            $2 -- updated_at
-        FROM eligible_polls ep
-                 JOIN polls pc ON pc.id = ep.poll_id
+            $2 AS updated_at
+        FROM eligible_polls pc
                  LEFT JOIN poll_views up ON up.poll_id = pc.id AND up.user_id = $1
                  LEFT JOIN user_follows uf ON uf.user_follower_id = $1 AND uf.user_follow_id = pc.created_by
         ON CONFLICT (user_id, poll_id) DO UPDATE
             SET
                 feed_score = CASE
-                                 WHEN user_polls.updated_at < EXCLUDED.updated_at THEN
-                                     EXCLUDED.feed_score
-                                 ELSE
-                                     user_polls.feed_score
+                                 WHEN user_polls.updated_at < EXCLUDED.updated_at THEN EXCLUDED.feed_score
+                                 ELSE user_polls.feed_score
                     END,
                 updated_at = CASE
-                                 WHEN user_polls.updated_at < EXCLUDED.updated_at THEN
-                                     EXCLUDED.updated_at
-                                 ELSE
-                                     user_polls.updated_at
+                                 WHEN user_polls.updated_at < EXCLUDED.updated_at THEN EXCLUDED.updated_at
+                                 ELSE user_polls.updated_at
                     END
         WHERE user_polls.updated_at < EXCLUDED.updated_at;
-  `;
+    `;
 
     await pool.query(query, [userId, updatedOn]);
 }
@@ -667,6 +660,7 @@ async function publishPollEvents() {
              now_utc
         WHERE p.is_deleted = false
           AND (now_utc.now - p.created_at) <= INTERVAL '24 hours'
+          AND p.ends_in > now_utc.now
           AND (up.poll_id IS NULL OR up.updated_at < (p.created_at + (FLOOR(EXTRACT(EPOCH FROM (now_utc.now - p.created_at)) / 3600) * INTERVAL '1 hour')))
         
         UNION ALL
@@ -677,6 +671,7 @@ async function publishPollEvents() {
            , now_utc
         WHERE p.is_deleted = false
           AND (now_utc.now - p.created_at) > INTERVAL '24 hours'
+          AND p.ends_in > now_utc.now
           AND (up.poll_id IS NULL OR up.updated_at < ((p.created_at AT TIME ZONE 'UTC') + INTERVAL '24 hours'))
 
         UNION ALL
@@ -723,5 +718,6 @@ module.exports = {
     recalculateUserFeedScores,
     searchPolls,
     unlikePoll,
+    viewPoll,
     voteOnPoll,
 };

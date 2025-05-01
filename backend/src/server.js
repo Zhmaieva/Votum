@@ -488,6 +488,19 @@ app.get('/polls/share/:id', async (req, res) => {
     }
 });
 
+app.post('/polls/view', authMiddleware, async (req, res, next) => {
+    try {
+        const { pollId } = req.body;
+
+        await pollQueries.viewPoll(req.user.id, pollId);
+
+        return res.json({ success: true });
+    }
+    catch (e) {
+        next(e);
+    }
+});
+
 app.post('/polls/like', authMiddleware, async (req, res, next) => {
     try {
         const { pollId } = req.body;

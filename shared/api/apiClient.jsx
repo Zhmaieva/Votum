@@ -342,6 +342,22 @@ export const getPollShareLink = async (pollId) => {
     }
 };
 
+export const viewPollRequest = async (id) => {
+    try {
+        console.log(`viewing poll ${id}`);
+        const response = await apiClient.post(`/polls/view`, {
+            pollId: id
+        }, {
+            headers: {
+                Authorization: `Bearer ${await getToken()}`,
+            },
+        });
+        return response?.data;
+    } catch (err) {
+        console.log('Like failed', err);
+    }
+};
+
 export const likePoll = async (id) => {
     try {
         console.log(`liking poll ${id}`);
