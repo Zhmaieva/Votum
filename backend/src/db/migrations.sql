@@ -500,3 +500,22 @@ ALTER TABLE poll_votes
     ALTER COLUMN created_at TYPE timestamp WITHOUT TIME ZONE
         USING created_at AT TIME ZONE 'UTC',
     ALTER COLUMN created_at SET DEFAULT (NOW() AT TIME ZONE 'UTC');
+
+ALTER TABLE user_polls
+    ALTER COLUMN updated_at TYPE timestamp WITHOUT TIME ZONE
+        USING updated_at AT TIME ZONE 'UTC',
+    ALTER COLUMN updated_at SET DEFAULT (NOW() AT TIME ZONE 'UTC');
+
+-- Set default to current UTC time
+ALTER TABLE polls
+    ALTER COLUMN created_at SET DEFAULT (NOW() AT TIME ZONE 'UTC');
+
+INSERT INTO events_queue (entity_id, event_name, event_date)
+SELECT
+    p.id AS entity_id,
+    'poll_index_update' AS event_name,
+    NOW() AT TIME ZONE 'UTC' AS event_date
+FROM polls p
+WHERE p.is_deleted = false
+  AND p.ends_in > (NOW() AT TIME ZONE 'UTC')
+ON CONFLICT (entity_id, event_name) DO NOTHING;
