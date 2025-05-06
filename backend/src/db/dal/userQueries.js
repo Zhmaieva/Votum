@@ -282,14 +282,6 @@ async function checkAndInsertUserWithProfile(username, email, passwordHash) {
 
         const result = await client.query(query, [username.toLowerCase(), email.toLowerCase(), passwordHash]);
 
-        if (result.rows[0]?.code === 1) {
-            await client.query(`
-              INSERT INTO events_queue (entity_id, event_name, event_date)
-              VALUES ($1, $2, (NOW() AT TIME ZONE 'UTC'))
-              ON CONFLICT (entity_id, event_name) DO NOTHING;
-            `, [result.rows[0]?.user_id, EVENT_NAMES.USER_INDEX_UPDATE]);
-        }
-
         await client.query('COMMIT');
 
         return result.rows[0]; // { code: 1 or -1, user_id: UUID or null }
@@ -393,12 +385,6 @@ async function deleteUser(userId) {
             `DELETE FROM users WHERE id = $1 RETURNING id`,
             [userId]
         );
-
-        await client.query(`
-          INSERT INTO events_queue (entity_id, event_name, event_date)
-          VALUES ($1, $2, (NOW() AT TIME ZONE 'UTC'))
-          ON CONFLICT (entity_id, event_name) DO NOTHING;
-        `, [userId, EVENT_NAMES.USER_INDEX_DELETE]);
 
         const deleteImageResult = await deleteImageRequest;
 

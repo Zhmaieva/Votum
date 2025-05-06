@@ -15,13 +15,14 @@ import { Colors } from '../../utils/colorUtils';
 import {getDataService, globalEventEmitter} from "../../shared/common";
 import AwesomeLink from "./AwesomeLink";
 import {useFocusEffect} from "@react-navigation/native";
-import {fetchMyProfile, getPollOptions, viewPollRequest} from "../../shared/api/apiClient";
+import {fetchMyProfile, getPollOptions, viewPoll, viewPollRequest} from "../../shared/api/apiClient";
 
 const AwesomeFeed = ({
                          data,
                          onRefresh,
                          refreshing,
                          renderItem,
+                         appendFunction,
                          isUserProfileView = false,
                          isLikedPollsView = false,
                          isSearchView = false
@@ -145,10 +146,26 @@ const AwesomeFeed = ({
                 lastIndexRef.current = index;
                 setCurrentIndex(index);
 
-                viewPoll(index).then(_ => {});
-
                 clearTimeout(timeoutRef.current);
                 timeoutRef.current = setTimeout(() => updatePoll(lastIndexRef.current),3000 + Math.random() * 10000);
+
+                if (preloadedData[index] && preloadedData[index].type !== 'placeholder' && preloadedData[index].user?.userId !== getDataService().getUser()?.userId) {
+                    await viewPoll(preloadedData[index].id);
+                }
+
+                // ⬇️ Trigger more loading if fewer than 10 polls left
+                if (appendFunction && ((preloadedData.length - index) <= 10)) {
+                    const newPolls = await appendFunction([]); // Your method to fetch more polls
+
+                    // Filter out duplicates
+                    const existingPolls = preloadedData;
+                    const existingIds = new Set(existingPolls.map(p => p.id));
+                    const uniquePolls = newPolls.filter(p => !existingIds.has(p.id));
+
+                    if (uniquePolls.length > 0) {
+                        setPreloadedData(existingPolls.concat(uniquePolls));
+                    }
+                }
             }
         }
     };
@@ -164,13 +181,6 @@ const AwesomeFeed = ({
             return prevData;
         });
     });
-
-    const viewPoll = async (index) => {
-        console.log('viewPoll', index);
-        if (preloadedData[index] && preloadedData[index].user?.userId !== getDataService().getUser()?.userId) {
-            await viewPollRequest(preloadedData[index].id);
-        }
-    }
 
     const updatePoll = async (index) => {
         if (preloadedData[index].options.some(x => x.voted) || preloadedData[index].user?.userId === getDataService().getUser()?.userId) {

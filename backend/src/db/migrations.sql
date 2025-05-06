@@ -297,8 +297,11 @@ BEGIN
 
     -- 2. Insert event into events_queue
     INSERT INTO events_queue (entity_id, event_name, event_date)
-    VALUES (OLD.poll_id, 'poll_index_update', NOW() AT TIME ZONE 'UTC')
-    ON CONFLICT (entity_id, event_name) DO NOTHING;
+    SELECT OLD.poll_id, 'poll_index_update', NOW() AT TIME ZONE 'UTC'
+    WHERE NOT EXISTS (
+        SELECT 1 FROM events_queue
+        WHERE entity_id = OLD.poll_id AND event_name = 'poll_index_update'
+    );
 
     RETURN OLD;
 END;
@@ -314,11 +317,6 @@ BEGIN
     UPDATE user_profiles
     SET following_number = following_number + 1
     WHERE user_id = NEW.user_follower_id;
-
-    -- 2. Insert event into events_queue
-    INSERT INTO events_queue (entity_id, event_name, event_date)
-    VALUES (NEW.user_follower_id, 'user_index_update', NOW() AT TIME ZONE 'UTC')
-    ON CONFLICT (entity_id, event_name) DO NOTHING;
 
     RETURN NEW;
 END;
@@ -336,11 +334,6 @@ BEGIN
     UPDATE user_profiles
     SET following_number = GREATEST(0, following_number - 1)
     WHERE user_id = OLD.user_follower_id;
-
-    -- 2. Insert event into events_queue
-    INSERT INTO events_queue (entity_id, event_name, event_date)
-    VALUES (OLD.user_follower_id, 'user_index_update', NOW() AT TIME ZONE 'UTC')
-    ON CONFLICT (entity_id, event_name) DO NOTHING;
 
     RETURN OLD;
 END;
@@ -365,11 +358,6 @@ BEGIN
     SET views_count = views_count + 1
     WHERE id = NEW.poll_id;
 
-    -- 2. Insert event into events_queue
-    INSERT INTO events_queue (entity_id, event_name, event_date)
-    VALUES (NEW.user_id, 'user_index_update', NOW() AT TIME ZONE 'UTC')
-    ON CONFLICT (entity_id, event_name) DO NOTHING;
-
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -392,8 +380,11 @@ BEGIN
 
     -- 2. Insert event into events_queue
     INSERT INTO events_queue (entity_id, event_name, event_date)
-    VALUES (NEW.poll_id, 'poll_index_update', NOW() AT TIME ZONE 'UTC')
-    ON CONFLICT (entity_id, event_name) DO NOTHING;
+    SELECT NEW.poll_id, 'poll_index_update', NOW() AT TIME ZONE 'UTC'
+    WHERE NOT EXISTS (
+        SELECT 1 FROM events_queue
+        WHERE entity_id = NEW.poll_id AND event_name = 'poll_index_update'
+    );
 
     RETURN NEW;
 END;
@@ -414,8 +405,11 @@ BEGIN
 
     -- 2. Insert event into events_queue
     INSERT INTO events_queue (entity_id, event_name, event_date)
-    VALUES (NEW.poll_id, 'poll_index_update', NOW() AT TIME ZONE 'UTC')
-    ON CONFLICT (entity_id, event_name) DO NOTHING;
+    SELECT NEW.poll_id, 'poll_index_update', NOW() AT TIME ZONE 'UTC'
+    WHERE NOT EXISTS (
+        SELECT 1 FROM events_queue
+        WHERE entity_id = NEW.poll_id AND event_name = 'poll_index_update'
+    );
 
     RETURN NEW;
 END;
@@ -515,12 +509,70 @@ ALTER TABLE user_polls
 ALTER TABLE polls
     ALTER COLUMN created_at SET DEFAULT (NOW() AT TIME ZONE 'UTC');
 
-INSERT INTO events_queue (entity_id, event_name, event_date)
-SELECT
-    p.id AS entity_id,
-    'poll_index_update' AS event_name,
-    NOW() AT TIME ZONE 'UTC' AS event_date
-FROM polls p
-WHERE p.is_deleted = false
-  AND p.ends_in > (NOW() AT TIME ZONE 'UTC')
-ON CONFLICT (entity_id, event_name) DO NOTHING;
+ALTER TABLE events_queue
+    ALTER COLUMN event_date TYPE timestamp WITHOUT TIME ZONE
+        USING event_date AT TIME ZONE 'UTC',
+    ALTER COLUMN event_date SET DEFAULT (NOW() AT TIME ZONE 'UTC');
+
+ALTER TABLE events_queue
+    ALTER COLUMN created_at TYPE timestamp WITHOUT TIME ZONE
+        USING created_at AT TIME ZONE 'UTC',
+    ALTER COLUMN created_at SET DEFAULT (NOW() AT TIME ZONE 'UTC');
+
+ALTER TABLE polls
+    ADD COLUMN indexed_at TIMESTAMPTZ NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC');
+
+CREATE INDEX idx_polls_ends_in ON polls (ends_in DESC);
+CREATE INDEX idx_polls_indexed_at ON polls (indexed_at DESC);
+
+ALTER TABLE events_queue
+    DROP CONSTRAINT events_queue_pkey;
+
+DROP INDEX IF EXISTS events_queue_pkey;
+
+CREATE INDEX idx_events_queue_created_at ON events_queue (created_at ASC);
+
+DROP table user_polls;
+
+CREATE INDEX idx_events_queue_entity_event
+    ON events_queue (entity_id, event_name);
+
+ALTER TABLE poll_views
+    DROP CONSTRAINT IF EXISTS poll_views_pkey;
+DROP INDEX IF EXISTS poll_views_pkey;
+
+-- ALTER TABLE poll_likes
+--     DROP CONSTRAINT IF EXISTS fk_poll;
+ALTER TABLE poll_likes
+    DROP CONSTRAINT IF EXISTS fk_user;
+
+ALTER TABLE poll_views
+    DROP CONSTRAINT IF EXISTS poll_views_user_id_fkey;
+
+ALTER TABLE poll_votes
+    DROP CONSTRAINT IF EXISTS poll_votes_poll_id_fkey;
+
+ALTER TABLE poll_votes
+    DROP CONSTRAINT IF EXISTS poll_votes_user_id_fkey;
+
+ALTER TABLE polls
+    ADD COLUMN feed_score BIGINT NOT NULL DEFAULT 0;
+
+
+DELETE FROM events_queue;
+DELETE FROM poll_likes;
+DELETE FROM poll_votes;
+DELETE FROM poll_views;
+DELETE FROM poll_answer_options;
+
+UPDATE polls SET votes_count = 0, views_count = 0, likes_count = 0;
+
+UPDATE poll_answer_options SET votes_count = 0;
+
+UPDATE polls SET is_deleted = true;
+WHERE id IN (
+    SELECT id FROM polls
+              WHERE polls.is_deleted = false
+);
+
+SELECT * FROM polls ORDER BY feed_score DESC LIMIT 10000;

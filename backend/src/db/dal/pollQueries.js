@@ -128,33 +128,93 @@ async function fetchPolls(userId, batchSize, excludedPollIds, featuredId) {
 
         const excludedArrayFinal = excludedPollIds.length > 0 ? excludedPollIds : null;
 
-        // Personalized polls
         const personalizedQuery = `
-          SELECT 
-            p.id,
-            p.question,
-            p.ends_in,
-            p.readable_id,
-            u.username,
-            up2.user_id,
-            up2.image,
-            up2.followers_number,
-            CASE WHEN pl.user_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_liked,
-            CASE WHEN uf.user_follower_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_following,
-            CASE WHEN p.created_by = $1 THEN up2.bio ELSE '' END AS user_bio
-          FROM user_polls up
-          JOIN polls p ON p.id = up.poll_id
-          JOIN users u ON u.id = p.created_by
-          JOIN user_profiles up2 ON up2.user_id = u.id
-          LEFT JOIN poll_likes pl ON pl.poll_id = p.id AND pl.user_id = $1
-          LEFT JOIN user_follows uf ON uf.user_follower_id = $1 AND uf.user_follow_id = u.id
-          WHERE up.user_id = $1
-            AND p.is_deleted = false
-            AND p.ends_in > (NOW() AT TIME ZONE 'UTC')
-            AND ($3::uuid[] IS NULL OR p.id != ALL($3))
-          ORDER BY up.feed_score DESC, p.created_at DESC
-          LIMIT $2
+            WITH base_polls AS (
+                SELECT
+                    p.id,
+                    p.question,
+                    p.ends_in,
+                    p.readable_id,
+                    u.username,
+                    up2.user_id,
+                    up2.image,
+                    up2.followers_number,
+                    CASE WHEN pl.user_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_liked,
+                    CASE WHEN uf.user_follower_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_following,
+                    CASE WHEN p.created_by = $1 THEN up2.bio ELSE '' END AS user_bio,
+                    p.feed_score AS effective_score,
+                    p.created_at
+                FROM polls p
+                         JOIN users u ON u.id = p.created_by
+                         JOIN user_profiles up2 ON up2.user_id = u.id
+                         LEFT JOIN poll_likes pl ON pl.poll_id = p.id AND pl.user_id = $1
+                         LEFT JOIN user_follows uf ON uf.user_follower_id = $1 AND uf.user_follow_id = u.id
+                WHERE p.is_deleted = false
+                  AND p.ends_in > (NOW() AT TIME ZONE 'UTC')
+                  AND p.created_by <> $1
+                  AND NOT EXISTS (
+                    SELECT 1 FROM poll_views v
+                    WHERE v.poll_id = p.id AND v.user_id = $1
+                )
+                LIMIT $2
+            ),
+                 followed_polls AS (
+                     SELECT
+                         p.id,
+                         p.question,
+                         p.ends_in,
+                         p.readable_id,
+                         u.username,
+                         up2.user_id,
+                         up2.image,
+                         up2.followers_number,
+                         CASE WHEN pl.user_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_liked,
+                         TRUE AS is_following,
+                         CASE WHEN p.created_by = $1 THEN up2.bio ELSE '' END AS user_bio,
+                         p.feed_score * 2 AS effective_score,
+                         p.created_at
+                     FROM polls p
+                              JOIN users u ON u.id = p.created_by
+                              JOIN user_profiles up2 ON up2.user_id = u.id
+                              LEFT JOIN poll_likes pl ON pl.poll_id = p.id AND pl.user_id = $1
+                              JOIN user_follows uf ON uf.user_follower_id = $1 AND uf.user_follow_id = u.id
+                     WHERE p.is_deleted = false
+                       AND p.ends_in > (NOW() AT TIME ZONE 'UTC')
+                       AND p.created_by <> $1
+                       AND NOT EXISTS (
+                         SELECT 1 FROM poll_views v
+                         WHERE v.poll_id = p.id AND v.user_id = $1
+                     )
+                     LIMIT $2
+                 ),
+                 combined AS (
+                     SELECT * FROM base_polls
+                     UNION ALL
+                     SELECT * FROM followed_polls
+                 ),
+                 ranked AS (
+                     SELECT *,
+                            ROW_NUMBER() OVER (PARTITION BY id ORDER BY effective_score DESC) AS rank
+                     FROM combined
+                 )
+            SELECT
+                id,
+                question,
+                ends_in,
+                readable_id,
+                username,
+                user_id,
+                image,
+                followers_number,
+                is_liked,
+                is_following,
+                user_bio
+            FROM ranked
+            WHERE rank = 1
+            ORDER BY effective_score DESC, created_at DESC
+            LIMIT $2;
         `;
+
 
         const { rows: personalizedRows } = await client.query(personalizedQuery, [userId, batchSize - rows.length, excludedArrayFinal]);
 
@@ -413,28 +473,15 @@ async function unlikePoll(pollId, userId) {
 }
 
 async function deletePoll(pollId, userId) {
-    const client = await pool.connect();
     const query = `
         UPDATE polls SET is_deleted = true
         WHERE id = $1 and created_by = $2
     `;
 
     try {
-        await client.query('BEGIN');
-        await client.query(query, [pollId, userId]);
-
-        await client.query(`
-          INSERT INTO events_queue (entity_id, event_name, event_date)
-          VALUES ($1, $2, (NOW() AT TIME ZONE 'UTC'))
-          ON CONFLICT (entity_id, event_name) DO NOTHING;
-        `, [pollId, EVENT_NAMES.POLL_INDEX_DELETE]);
-
-        await client.query('COMMIT');
+        await pool.query(query, [pollId, userId]);
     } catch (err) {
-        await client.query('ROLLBACK');
         console.error('Error deleting poll:', err);
-    } finally {
-        client.release();
     }
 }
 
@@ -519,185 +566,96 @@ async function voteOnPoll({ userId, optionId }) {
 /**
  * Updates score for all users in relation to the poll
  * @param pollId Poll ID
- * @param updatedOn cut off update date (event date) - update older polls only
  * @returns {Promise<void>}
  */
-async function recalculatePollScore({ pollId, updatedOn }) {
+async function recalculatePollsScore({ pollIds }) {
     const query = `
-        WITH eligible_users AS (
-            SELECT id AS user_id FROM users
-        ),
-         is_following AS (
-             SELECT uf.user_follower_id AS user_id, uf.user_follow_id AS followed_user_id
-             FROM user_follows uf
-         )
-        INSERT INTO user_polls (user_id, poll_id, feed_score, updated_at)
-        SELECT
-            eu.user_id,
-            pc.id,
-            (
-                -- No unseen bonus if user is poll creator
+        UPDATE polls
+        SET feed_score = (
+            -- Age decay bonus: up to +300 for new polls
+            COALESCE(
                 CASE
-                    WHEN up.user_id IS NULL AND eu.user_id <> pc.created_by THEN 1000000000
+                    WHEN EXTRACT(EPOCH FROM ((NOW() AT TIME ZONE 'UTC') - created_at)) / 3600 < 24
+                        THEN 300 - (EXTRACT(EPOCH FROM ((NOW() AT TIME ZONE 'UTC') - created_at)) / 3600) * 8
                     ELSE 0
-                    END
-                    +
-                    -- Ending soon bonus
-                CASE WHEN EXTRACT(EPOCH FROM (pc.ends_in - NOW() AT TIME ZONE 'UTC')) BETWEEN 0 AND 3600 THEN 100 ELSE 0 END
-                    +
-                    -- Age decay bonus
-                COALESCE(
-                        CASE
-                            WHEN EXTRACT(EPOCH FROM ((NOW() AT TIME ZONE 'UTC') - pc.created_at)) / 3600 < 24
-                                THEN 300 - (EXTRACT(EPOCH FROM ((NOW() AT TIME ZONE 'UTC') - pc.created_at)) / 3600) * 8
-                            ELSE 0
-                            END, 0
-                )
-                    +
-                    -- Votes weight
-                (COALESCE(pc.votes_count, 0) * CASE WHEN f.user_id IS NOT NULL THEN 4 ELSE 2 END)
-                    +
-                    -- Likes weight
-                (COALESCE(pc.likes_count, 0) * CASE WHEN f.user_id IS NOT NULL THEN 6 ELSE 3 END)
-                ) AS feed_score,
-            $2 AS updated_at
-        FROM eligible_users eu
-                 JOIN polls pc ON pc.id = $1 AND pc.is_deleted = false AND pc.ends_in > (NOW() AT TIME ZONE 'UTC')
-                 LEFT JOIN poll_views up ON up.user_id = eu.user_id AND up.poll_id = pc.id
-                 LEFT JOIN is_following f ON f.user_id = eu.user_id AND f.followed_user_id = pc.created_by
-        ON CONFLICT (user_id, poll_id) DO UPDATE
-            SET
-                feed_score = CASE
-                                 WHEN user_polls.updated_at < EXCLUDED.updated_at THEN EXCLUDED.feed_score
-                                 ELSE user_polls.feed_score
-                    END,
-                updated_at = CASE
-                                 WHEN user_polls.updated_at < EXCLUDED.updated_at THEN EXCLUDED.updated_at
-                                 ELSE user_polls.updated_at
-                    END
-        WHERE user_polls.updated_at < EXCLUDED.updated_at;
-    `;
-
-    await pool.query(query, [pollId, updatedOn]);
-}
-
-/**
- * Updates feed score for a given user across all active polls
- * @param userId User ID
- * @param updatedOn Cut off update date (event date) - update older polls only
- * @returns {Promise<void>}
- */
-async function recalculateUserFeedScores({ userId, updatedOn }) {
-    const query = `
-        WITH eligible_polls AS (
-            SELECT * FROM polls
-            WHERE is_deleted = false AND ends_in > (NOW() AT TIME ZONE 'UTC')
+                END, 0
+            )
+            +
+            -- Ending soon bonus: +100 if < 1h left
+            CASE
+                WHEN EXTRACT(EPOCH FROM (ends_in - NOW() AT TIME ZONE 'UTC')) BETWEEN 0 AND 3600 THEN 100
+                ELSE 0
+            END
+            +
+            -- Votes and likes weights
+            COALESCE(votes_count, 0) * 2
+            +
+            likes_count * 3
         )
-        INSERT INTO user_polls (user_id, poll_id, feed_score, updated_at)
-        SELECT
-            $1 AS user_id,
-            pc.id,
-            (
-                -- No unseen bonus if user is poll creator
-                CASE
-                    WHEN up.user_id IS NULL AND $1 <> pc.created_by THEN 1000000000
-                    ELSE 0
-                    END
-                    +
-                    -- Age decay bonus
-                COALESCE(
-                        CASE
-                            WHEN EXTRACT(EPOCH FROM ((NOW() AT TIME ZONE 'UTC') - pc.created_at)) / 3600 < 24
-                                THEN 300 - (EXTRACT(EPOCH FROM ((NOW() AT TIME ZONE 'UTC') - pc.created_at)) / 3600) * 8
-                            ELSE 0
-                            END, 0
-                )
-                    +
-                    -- Votes weight
-                (COALESCE(pc.votes_count, 0) * CASE WHEN uf.user_follow_id IS NOT NULL THEN 4 ELSE 2 END)
-                    +
-                    -- Likes weight
-                (COALESCE(pc.likes_count, 0) * CASE WHEN uf.user_follow_id IS NOT NULL THEN 6 ELSE 3 END)
-                    +
-                    -- Ending soon bonus
-                CASE
-                    WHEN EXTRACT(EPOCH FROM (pc.ends_in - (NOW() AT TIME ZONE 'UTC'))) BETWEEN 0 AND 3600 THEN 100
-                    ELSE 0
-                    END
-                ) AS feed_score,
-            $2 AS updated_at
-        FROM eligible_polls pc
-                 LEFT JOIN poll_views up ON up.poll_id = pc.id AND up.user_id = $1
-                 LEFT JOIN user_follows uf ON uf.user_follower_id = $1 AND uf.user_follow_id = pc.created_by
-        ON CONFLICT (user_id, poll_id) DO UPDATE
-            SET
-                feed_score = CASE
-                                 WHEN user_polls.updated_at < EXCLUDED.updated_at THEN EXCLUDED.feed_score
-                                 ELSE user_polls.feed_score
-                    END,
-                updated_at = CASE
-                                 WHEN user_polls.updated_at < EXCLUDED.updated_at THEN EXCLUDED.updated_at
-                                 ELSE user_polls.updated_at
-                    END
-        WHERE user_polls.updated_at < EXCLUDED.updated_at;
-    `;
+        WHERE id = ANY($1::uuid[])
+          AND is_deleted = false
+          AND ends_in > NOW() AT TIME ZONE 'UTC';
+    `
 
-    await pool.query(query, [userId, updatedOn]);
+    await pool.query(query, [pollIds]);
 }
 
 async function publishPollEvents() {
     const query = `
         WITH now_utc AS (
             SELECT (NOW() AT TIME ZONE 'UTC') AS now
-        )
-        INSERT INTO events_queue (entity_id, event_name, event_date)
-        SELECT
-            p.id,
-            $1,
-            (p.created_at + (FLOOR(EXTRACT(EPOCH FROM (now_utc.now - p.created_at)) / 3600) * INTERVAL '1 hour')) AS event_date
-        FROM polls p
-                 LEFT JOIN user_polls up ON p.id = up.poll_id,
-             now_utc
-        WHERE p.is_deleted = false
-          AND (now_utc.now - p.created_at) <= INTERVAL '24 hours'
-          AND p.ends_in > now_utc.now
-          AND (up.poll_id IS NULL OR up.updated_at < (p.created_at + (FLOOR(EXTRACT(EPOCH FROM (now_utc.now - p.created_at)) / 3600) * INTERVAL '1 hour')))
-        
-        UNION ALL
+        ),
+             candidate_events AS (
+                 SELECT
+                     p.id AS poll_id,
+                     (p.created_at + (FLOOR(EXTRACT(EPOCH FROM (now() AT TIME ZONE 'UTC' - p.created_at)) / 3600) * INTERVAL '1 hour')) AS event_date
+                 FROM polls p
+                 WHERE p.is_deleted = false
+                   AND (now() AT TIME ZONE 'UTC' - p.created_at) <= INTERVAL '24 hours'
+                   AND p.ends_in > (now() AT TIME ZONE 'UTC')
+                   AND (p.indexed_at < (p.created_at + (FLOOR(EXTRACT(EPOCH FROM (now() AT TIME ZONE 'UTC' - p.created_at)) / 3600) * INTERVAL '1 hour') - INTERVAL '1 second'))
 
-        SELECT p.id, $1, ((p.created_at AT TIME ZONE 'UTC') + INTERVAL '24 hours')
-        FROM polls p
-                 LEFT JOIN user_polls up ON p.id = up.poll_id
-           , now_utc
-        WHERE p.is_deleted = false
-          AND (now_utc.now - p.created_at) > INTERVAL '24 hours'
-          AND p.ends_in > now_utc.now
-          AND (up.poll_id IS NULL OR up.updated_at < ((p.created_at AT TIME ZONE 'UTC') + INTERVAL '24 hours'))
+                 UNION ALL
 
-        UNION ALL
+                 SELECT
+                     p.id AS poll_id,
+                     ((p.created_at AT TIME ZONE 'UTC') + INTERVAL '24 hours') AS event_date
+                 FROM polls p
+                 WHERE p.is_deleted = false
+                   AND (now() AT TIME ZONE 'UTC' - p.created_at) > INTERVAL '24 hours'
+                   AND p.ends_in > (now() AT TIME ZONE 'UTC')
+                   AND (p.indexed_at < ((p.created_at AT TIME ZONE 'UTC') + INTERVAL '24 hours' - INTERVAL '1 second'))
 
-        SELECT p.id, $1, ((p.ends_in - INTERVAL '1 hour') AT TIME ZONE 'UTC')
-        FROM polls p
-                 LEFT JOIN user_polls up ON p.id = up.poll_id
-           , now_utc
-        WHERE p.is_deleted = false
-          AND p.ends_in > now_utc.now
-          AND p.ends_in <= now_utc.now + INTERVAL '1 hour'
-          AND (up.poll_id IS NULL OR up.updated_at < (p.ends_in - INTERVAL '1 hour'))
+                 UNION ALL
 
-        UNION ALL
+                 SELECT
+                     p.id AS poll_id,
+                     ((p.ends_in - INTERVAL '1 hour') AT TIME ZONE 'UTC') AS event_date
+                 FROM polls p
+                 WHERE p.is_deleted = false
+                   AND p.ends_in > (now() AT TIME ZONE 'UTC')
+                   AND p.ends_in <= (now() AT TIME ZONE 'UTC') + INTERVAL '1 hour'
+                   AND (p.indexed_at < (p.ends_in - INTERVAL '1 hour' - INTERVAL '1 second'))
+             ),
+             limited_candidates AS (
+                 SELECT *
+                 FROM candidate_events
+                 ORDER BY event_date ASC
+                 LIMIT 50
+             ),
+             inserted AS (
+                 INSERT INTO events_queue (entity_id, event_name, event_date)
+                     SELECT poll_id, $1, event_date
+                     FROM limited_candidates
+                     RETURNING entity_id
+             )
+        UPDATE polls
+        SET indexed_at = (NOW() AT TIME ZONE 'UTC')
+        FROM inserted
+        WHERE polls.id = inserted.entity_id;
+    `
 
-        SELECT DISTINCT up.poll_id, $2, now_utc.now
-        FROM user_polls up
-                 JOIN polls p ON p.id = up.poll_id
-           , now_utc
-        WHERE p.is_deleted = true
-           OR p.ends_in < now_utc.now
-
-        ON CONFLICT (entity_id, event_name) DO NOTHING;
-    `;
-
-    const result = await pool.query(query, [EVENT_NAMES.POLL_INDEX_UPDATE, EVENT_NAMES.POLL_INDEX_DELETE]);
+    const result = await pool.query(query, [EVENT_NAMES.POLL_INDEX_UPDATE]);
 
     if (result?.rowCount > 0)
         console.log(`Published ${result?.rowCount} events.`);
@@ -714,8 +672,7 @@ module.exports = {
     getPollOptionResults,
     likePoll,
     publishPollEvents,
-    recalculatePollScore,
-    recalculateUserFeedScores,
+    recalculatePollsScore,
     searchPolls,
     unlikePoll,
     viewPoll,

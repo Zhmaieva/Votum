@@ -342,7 +342,7 @@ export const getPollShareLink = async (pollId) => {
     }
 };
 
-export const viewPollRequest = async (id) => {
+export const viewPoll = async (id) => {
     try {
         console.log(`viewing poll ${id}`);
         const response = await apiClient.post(`/polls/view`, {

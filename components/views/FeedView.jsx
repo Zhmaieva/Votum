@@ -94,6 +94,9 @@ const FeedView = ({ route }) => {
                         </View>
                     )
                 }}
+                appendFunction={async (excludedPollIds) => {
+                  return await fetchPolls();
+                }}
             />
         </SafeAreaView>
     );

@@ -10,9 +10,16 @@ const job = async function() {
     await publishPollEvents();
 }
 
+let runFinished = false;
+
 setInterval(async () => {
     try {
+        if (!runFinished)
+            return;
+
+        runFinished = false;
         await job();
+        runFinished = true;
     } catch (e) {
         console.error(e);
     }
