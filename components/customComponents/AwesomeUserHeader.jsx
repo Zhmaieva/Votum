@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, Image, TouchableOpacity, Pressable } from "react-native";
 import { Colors } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from "./AwesomeButton";
-import {getDataService, globalEventEmitter} from "../../shared/common";
+import { globalEventEmitter } from "../../shared/common";
 import { followProfile, unfollowProfile } from "../../shared/api/apiClient";
 import { useNavigation } from "@react-navigation/native";
 import { AwesomeModal } from "./AwesomeModal";
+import { Ionicons } from "@expo/vector-icons";
 
 const formatFollowers = (num) => {
     if (num >= 1_000_000_000) return (num / 1_000_000_000).toFixed(1) + 'B';
@@ -19,8 +20,6 @@ const followChangedEventName = "followChanged";
 const AwesomeUserHeader = ({
                                userData,
                                loggedInUserId,
-                               isFollowersPage = false,
-                               onRemove,
                                isInsideCard = false,
                                isProfilePage = false
                            }) => {
@@ -30,14 +29,18 @@ const AwesomeUserHeader = ({
     const [isBlocked, setIsBlocked] = useState(false);
     const [showBlockModal, setShowBlockModal] = useState(false);
 
-    function handleFollowChangedEvent(userData) {
-        if (!userData) return;
-        if (user?.userId !== userData?.userId) return;
-        setIsFollowing(userData?.isFollowing);
-        setUser(userData);
-    }
+    const isOwnProfile = user?.userId === loggedInUserId;
 
-    globalEventEmitter.on(followChangedEventName, handleFollowChangedEvent);
+    useEffect(() => {
+        const handler = (updatedUser) => {
+            if (updatedUser?.userId === user?.userId) {
+                setUser(updatedUser);
+                setIsFollowing(updatedUser.isFollowing);
+            }
+        };
+        globalEventEmitter.on(followChangedEventName, handler);
+        return () => globalEventEmitter.off(followChangedEventName, handler);
+    }, [user?.userId]);
 
     useEffect(() => {
         setUser(userData);
@@ -46,17 +49,21 @@ const AwesomeUserHeader = ({
 
     if (!user) return <Text>Loading...</Text>;
 
-    const isOwnProfile = user.userId === loggedInUserId;
-    const followersText = user.followersNumber === 1 ? "follower" : "followers";
     const formattedFollowers = formatFollowers(user.followersNumber);
+    const followersText = user.followersNumber === 1 ? "follower" : "followers";
 
-    const handleBlockPress = () => {
-        if (isBlocked) {
-            setIsBlocked(false);
+    const handleFollowToggle = () => {
+        const newFollowState = !isFollowing;
+        setIsFollowing(newFollowState);
+        if (newFollowState) {
+            followProfile(user.userId);
         } else {
-            setShowBlockModal(true);
+            unfollowProfile(user.userId);
         }
+        globalEventEmitter.emit(followChangedEventName, { ...user, isFollowing: newFollowState });
     };
+
+    const handleBlockPress = () => setShowBlockModal(true);
 
     const handleBlockConfirm = () => {
         setIsBlocked(true);
@@ -64,73 +71,80 @@ const AwesomeUserHeader = ({
     };
 
     const content = (
-        <View style={[styles.row, styles.userContainer]}>
-            <View style={[styles.row, styles.firstSubContainer, {marginRight: 10}]}>
-                <View style={styles.avatar}>
+        <View style={styles.userContainer}>
+            <View style={[styles.row, styles.aligned]}>
+                <View style={styles.avatarContainer}>
                     <Image source={{ uri: user.image }} style={styles.avatar} />
                 </View>
-            </View>
-
-            <View style={[styles.row, styles.secondSubContainer]}>
-                <View>
-                    <Text style={[styles.font14, styles.usernameBold, styles.fontFamily]} numberOfLines={1}>
-                        {user.username}
-                    </Text>
-
-                    <View style={styles.test}>
-                        {isOwnProfile && isProfilePage ? (
-                            <Text style={[styles.font14, styles.greyTextStyle, styles.fontFamily]} numberOfLines={2} ellipsizeMode="tail">
-                                {user.bio}
-                            </Text>
-                        ) : (
-                            <Text style={[styles.font14, styles.greyTextStyle, styles.fontFamily]}>
-                                {formattedFollowers} {followersText}
-                            </Text>
-                        )}
+                <View style={{ flex: 1, marginLeft: 12 }}>
+                    <View style={[styles.followersContainer, styles.row]}>
+                        <View style={styles.followersSubContainer}>
+                            <Text style={styles.followersText}>213</Text>
+                            <Text style={styles.followersText}>polls</Text>
+                        </View>
+                        <Pressable style={styles.followersSubContainer} onPress={() => navigation.navigate('Followers', { userId: user.userId })}>
+                            <Text style={styles.followersText}>{user.followersNumber ?? 0}</Text>
+                            <Text style={styles.followersText}>followers</Text>
+                        </Pressable>
+                        <Pressable style={styles.followersSubContainer} onPress={() => navigation.navigate('Following', { userId: user.userId })}>
+                            <Text style={styles.followersText}>{user.followingNumber ?? 0}</Text>
+                            <Text style={styles.followersText}>following</Text>
+                        </Pressable>
                     </View>
                 </View>
             </View>
 
-            <View style={styles.thirdSubContainer}>
-                <View style={styles.buttonContainer}>
-                    {isFollowersPage ? (
-                        <View />
-                    ) : isOwnProfile ? (
-                        isInsideCard ? (
-                            <View />
-                        ) : (
+            <View style={{ marginTop: 12, marginBottom: 12 }}>
+                <Text style={[styles.font14, styles.usernameBold, styles.fontFamily]} numberOfLines={1}>
+                    {user.username}
+                </Text>
+                <Text style={[styles.font14, styles.fontFamily]} numberOfLines={2} ellipsizeMode="tail">
+                    {user.bio}
+                </Text>
+            </View>
+
+            <View style={[styles.row, styles.buttonsContainer]}>
+                {isOwnProfile ? (
+                    <>
+                        <View style={styles.editButton}>
                             <AwesomeButton
-                                color={Color.BLACK}
                                 text="Edit"
+                                color={Color.BLACK}
                                 screenName="Edit profile"
-                                params={{ user }}
                             />
-                        )
-                    ) : isProfilePage ? (
-                        <AwesomeButton
-                            color={Color.BLACK}
-                            text={isBlocked ? "Unblock" : "Block"}
-                            additionalFunc={handleBlockPress}
-                        />
-                    ) : (
-                        <AwesomeButton
-                            color={Color.BLACK}
-                            isInChangedTextMode={isFollowing}
-                            additionalFunc={() => {
-                                user.isFollowing = !user.isFollowing;
-                                setIsFollowing(user.isFollowing);
-                                if (user.isFollowing) {
-                                    followProfile(user.userId);
-                                } else {
-                                    unfollowProfile(user.userId);
-                                }
-                                globalEventEmitter.emit(followChangedEventName, { ...user });
-                            }}
-                            text="Follow"
-                            changedText="Unfollow"
-                        />
-                    )}
-                </View>
+                        </View>
+                        <View style={styles.row}>
+                            <View style={styles.iconContainer}>
+                                <Ionicons name="share-outline" size={26} color={Colors.white} />
+                            </View>
+                            <View style={[styles.iconContainer, { marginLeft: 10 }]}>
+                                <Ionicons name="notifications-outline" size={26} color={Colors.white} />
+                            </View>
+                        </View>
+                    </>
+                ) : (
+                    <>
+                        <View style={styles.editButton}>
+                            <AwesomeButton
+                                text={isFollowing ? "Unfollow" : "Follow"}
+                                isInChangedTextMode={isFollowing}
+                                additionalFunc={handleFollowToggle}
+                                color={Color.BLACK}
+                                textColor={isFollowing ? Colors.black : Colors.white}
+                            />
+                        </View>
+                        <View style={styles.editButton}>
+                            <AwesomeButton
+                                text={isBlocked ? "Unblock" : "Block"}
+                                color={Color.BLACK}
+                                additionalFunc={handleBlockPress}
+                            />
+                        </View>
+                        <View style={styles.iconContainer}>
+                            <Ionicons name="share-outline" size={26} color={Colors.white} />
+                        </View>
+                    </>
+                )}
             </View>
         </View>
     );
@@ -139,10 +153,7 @@ const AwesomeUserHeader = ({
         <>
             {isInsideCard ? (
                 <TouchableOpacity onPress={() => {
-                    if (isOwnProfile)
-                        navigation.navigate("Profile");
-                    else
-                        navigation.navigate("Somebodys Profile", { userId: user.userId });
+                    navigation.navigate(isOwnProfile ? "Profile" : "Somebodys Profile", { userId: user.userId });
                 }}>
                     {content}
                 </TouchableOpacity>
@@ -164,15 +175,24 @@ const AwesomeUserHeader = ({
 export default AwesomeUserHeader;
 
 const styles = StyleSheet.create({
-    greyTextStyle: {
-        color: Colors.grey,
-    },
     row: {
         flexDirection: 'row',
     },
+    aligned: {
+        width: '100%',
+    },
+    userContainer: {
+        width: '100%',
+        paddingRight: 2,
+        paddingBottom: 2,
+    },
+    avatarContainer: {
+        height: 55,
+        width: 55,
+    },
     avatar: {
-        height: 50,
-        width: 50,
+        height: 55,
+        width: 55,
     },
     font14: {
         fontSize: 14,
@@ -183,31 +203,41 @@ const styles = StyleSheet.create({
     fontFamily: {
         fontFamily: 'arial',
     },
-    userContainer: {
-        width: '100%',
-        paddingRight: 2,
-        paddingBottom: 2,
-    },
-    firstSubContainer: {
+    followersContainer: {
+        justifyContent: 'space-between',
         flex: 1,
-        alignItems: "flex-start",
-        marginRight: 5,
-    },
-    secondSubContainer: {
-        flex: 4,
         alignItems: "flex-end",
     },
-    thirdSubContainer: {
-        flex: 2,
-        justifyContent: "flex-end",
-        alignItems: "flex-end",
+    followersSubContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
     },
-    buttonContainer: {
-        width: 80,
+    followersText: {
+        color: Colors.black,
+        fontSize: 14,
+        fontWeight: '600',
     },
-    test: {
-        //backgroundColor: 'gold',
-        marginBottom: -3,
-        marginTop: 3
-    }
+    buttonsContainer: {
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginBottom: 3,
+        marginTop: 5,
+    },
+    editButton: {
+        flex: 1,
+        marginRight: 10,
+    },
+    iconContainer: {
+        width: 40,
+        height: 40,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderColor: Colors.black,
+        borderWidth: 1,
+        backgroundColor: Colors.black,
+        shadowRadius: 0,
+        shadowOffset: { width: 2, height: 2 },
+        shadowOpacity: 1,
+        shadowColor: Colors.green,
+    },
 });

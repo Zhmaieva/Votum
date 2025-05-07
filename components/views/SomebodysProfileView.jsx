@@ -39,7 +39,7 @@ const SomebodysProfileView = ({ route }) => {
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.contentWrapper}>
-                <View style={{marginBottom: 15}}>
+                <View style={{marginBottom: 3}}>
                     {user === null ? (
                         <AwesomeLoadingHeader />
                     ) : (
@@ -49,20 +49,6 @@ const SomebodysProfileView = ({ route }) => {
                             isProfilePage={true}
                         />
                     )}
-                </View>
-                <View style={[styles.followersContainer, styles.row]}>
-                    <View style={styles.followersLeftSubContainer}>
-                        <Text style={styles.followersText}>21</Text>
-                        <Text style={styles.followersText}>polls</Text>
-                    </View>
-                    <View style={styles.followersCenterSubContainer}>
-                        <Text style={styles.followersText}>15K</Text>
-                        <Text style={styles.followersText}>followers</Text>
-                    </View>
-                    <View style={styles.followersRightSubContainer}>
-                        <Text style={styles.followersText}>103</Text>
-                        <Text style={styles.followersText}>following</Text>
-                    </View>
                 </View>
 
                 {!user || !polls ? (

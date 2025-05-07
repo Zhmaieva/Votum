@@ -11,6 +11,8 @@ import {fetchMyProfile, fetchUserPolls, fetchUserProfile} from "../../shared/api
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import {calculateTimeDifference, getDataService} from "../../shared/common";
 import AwesomeCard from "../customComponents/AwesomeCard";
+import {Ionicons} from "@expo/vector-icons";
+import AwesomeButton, {Color} from "../customComponents/AwesomeButton";
 
 const MIN_LOADING_TIME = 500;
 
@@ -67,7 +69,7 @@ const MyUserProfileView = () => {
         <View style={styles.container}>
             <SafeAreaView style={styles.safeArea}>
                 <View style={styles.contentWrapper}>
-                    <View style={{ marginBottom: 15 }}>
+                    <View style={{ marginBottom: 10 }}>
                         {!userDataLoaded ? (
                             <AwesomeLoadingHeader />
                         ) : (
@@ -75,7 +77,7 @@ const MyUserProfileView = () => {
                         )}
                     </View>
 
-                    <View style={[styles.followersContainer, styles.row, styles.bottomMargin20]}>
+                    {/*<View style={[styles.followersContainer, styles.row]}>
                         <View style={styles.followersLeftSubContainer}>
                             <Text style={styles.followersText}>213</Text>
                             <Text style={styles.followersText}>polls</Text>
@@ -88,7 +90,7 @@ const MyUserProfileView = () => {
                             <Text style={styles.followersText}>{user?.followingNumber ?? 0}</Text>
                             <Text style={styles.followersText}>following</Text>
                         </Pressable>
-                    </View>
+                    </View>*/}
 
                     {!userDataLoaded ? (
                         <View style={styles.container}>
@@ -195,25 +197,28 @@ const styles = StyleSheet.create({
         fontSize: 14
     },
     followersContainer: {
-        borderBottomWidth: 1,
-        borderColor: '#888',
         justifyContent: 'space-between',
-        paddingBottom: 5,
+        marginBottom: 10,
+        borderColor: '#999',
     },
     followersLeftSubContainer: {
-        width: '23%',
+        width: '33%',
         alignItems: 'center',
+        justifyContent: 'center',
     },
     followersCenterSubContainer: {
-        width: '23%',
-        alignItems: 'center'
+        width: '33%',
+        alignItems: 'center',
+        justifyContent: 'center'
     },
     followersRightSubContainer: {
-        width: '23%',
-        alignItems: 'center'
+        width: '33%',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginRight: 2
     },
     followersText: {
-        color: Colors.grey
+        color: Colors.grey,
     },
     visible: {
         display: 'flex'

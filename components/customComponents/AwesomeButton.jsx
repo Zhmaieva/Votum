@@ -184,7 +184,7 @@ export default function AwesomeButton({
         fontSize: 14,
         textAlign: 'center',
         fontWeight: '500',
-        width: '100%'
+        //width: '100%'
     },
     leftAlignedText: {
         textAlign: 'left',

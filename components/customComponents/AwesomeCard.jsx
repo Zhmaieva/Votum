@@ -6,6 +6,7 @@ import {globalEventEmitter} from "../../shared/common";
 import {deletePoll} from "../../shared/api/apiClient";
 import AwesomeLoadingHeader from "./AwesomeLoadingHeader";
 import AwesomeLoadingPoll from "./AwesomeLoadingPoll";
+import AwesomeUserHeaderPreview from "./AwesomeUserHeaderPreview";
 
 const AwesomeCard = ({ item, handleVote, loggedInUserId, loading = false, hideHeader = false }) => {
 
@@ -29,7 +30,7 @@ const AwesomeCard = ({ item, handleVote, loggedInUserId, loading = false, hideHe
                     {loading ? (
                         <AwesomeLoadingHeader />
                     ) : (
-                        <AwesomeUserHeader
+                        <AwesomeUserHeaderPreview
                             userData={item.user}
                             loggedInUserId={loggedInUserId}
                             isInsideCard={true}

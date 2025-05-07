@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {View, Text, StyleSheet, Dimensions, TouchableOpacity, SafeAreaView} from 'react-native';
+import {View, Text, StyleSheet, Dimensions, TouchableOpacity, SafeAreaView, ScrollView} from 'react-native';
 import {useRoute, useNavigation, useFocusEffect} from '@react-navigation/native';
 import { Colors } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from '../customComponents/AwesomeButton';
@@ -7,6 +7,7 @@ import {createPoll, durationMap, fetchMyProfile} from '../../shared/api/apiClien
 import {getDataService, onShare} from '../../shared/common';
 import AwesomeUserHeader from '../customComponents/AwesomeUserHeader';
 import {Ionicons} from "@expo/vector-icons";
+import AwesomeUserHeaderPreview from "../customComponents/AwesomeUserHeaderPreview";
 
 const MIN_LOADING_TIME = 1000;
 
@@ -49,57 +50,59 @@ const PreviewPollView = () => {
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            <View style={styles.container}>
-                {user && (
-                    <View style={styles.headerContainer}>
-                        <AwesomeUserHeader userData={user} loggedInUserId={user?.userId} isInsideCard={true} />
+            <ScrollView style={styles.container}>
+                <View>
+                    {user && (
+                        <View style={styles.headerContainer}>
+                            <AwesomeUserHeaderPreview userData={user} loggedInUserId={user?.userId} isInsideCard={true} />
+                        </View>
+                    )}
+                    <View style={[styles.questionContainer, styles.row]}>
+                        <Text style={styles.qTextStyle}>Q: </Text>
+                        <Text style={styles.questionText} numberOfLines={3} ellipsizeMode="tail">{question}</Text>
                     </View>
-                )}
-                <View style={[styles.questionContainer, styles.row]}>
-                    <Text style={styles.qTextStyle}>Q: </Text>
-                    <Text style={styles.questionText}>{question}</Text>
+                    <View style={styles.pollBox}>
+                        <View style={[styles.row, styles.alignToTheRight]}>
+                            <View style={styles.iconContainer}>
+                                <Ionicons name="trash-outline" size={28} color={Colors.black} />
+                            </View>
+                            <View style={styles.iconContainer}>
+                                <Ionicons name="share-outline" size={28} color={Colors.black} />
+                            </View>
+                            <View style={styles.iconContainer}>
+                                <Ionicons name="heart-outline" size={28} color={Colors.black} />
+                            </View>
+                        </View>
+                        {options.map((option, index) => (
+                            <View key={index} style={styles.optionRow}>
+                                <Text style={styles.optionText}>{option.text}</Text>
+                            </View>
+                        ))}
+                        <View style={[styles.row, styles.alignment]}>
+                            <Text style={styles.endsIn}>Ends in {selectedDuration}</Text>
+                            <Text style={styles.voted}>0 voted</Text>
+                        </View>
+                    </View>
                 </View>
-                <View style={styles.pollBox}>
-                    <View style={[styles.row, styles.alignToTheRight]}>
-                        <View style={styles.iconContainer}>
-                            <Ionicons name="trash-outline" size={28} color={Colors.black} />
-                        </View>
-                        <View style={styles.iconContainer}>
-                            <Ionicons name="share-outline" size={28} color={Colors.black} />
-                        </View>
-                        <View style={styles.iconContainer}>
-                            <Ionicons name="heart-outline" size={28} color={Colors.black} />
-                        </View>
+                <View>
+                    <View style={styles.margin10}>
+                        <AwesomeButton
+                            color={Color.BLACK}
+                            text="Publish"
+                            additionalFunc={async () => {
+                                await createPoll(question, options.map(o => o.text), selectedDuration);
+                                if (resetAddViewForm) resetAddViewForm();
+                                navigation.goBack();
+                            }}
+                        />
                     </View>
-                    {options.map((option, index) => (
-                        <View key={index} style={styles.optionRow}>
-                            <Text style={styles.optionText}>{option.text}</Text>
-                        </View>
-                    ))}
-                    <View style={[styles.row, styles.alignment]}>
-                        <Text style={styles.endsIn}>Ends in {selectedDuration}</Text>
-                        <Text style={styles.voted}>0 voted</Text>
-                    </View>
-                </View>
-            </View>
-            <View style={styles.container}>
-                <View style={styles.margin10}>
                     <AwesomeButton
-                        color={Color.BLACK}
-                        text="Publish"
-                        additionalFunc={async () => {
-                            await createPoll(question, options.map(o => o.text), selectedDuration);
-                            if (resetAddViewForm) resetAddViewForm();
-                            navigation.goBack();
-                        }}
+                        color={Color.WHITE}
+                        text="Go back and edit"
+                        additionalFunc={() => navigation.goBack()}
                     />
                 </View>
-                <AwesomeButton
-                    color={Color.WHITE}
-                    text="Go back and edit"
-                    additionalFunc={() => navigation.goBack()}
-                />
-            </View>
+            </ScrollView>
         </SafeAreaView>
     );
 };
@@ -108,13 +111,13 @@ const styles = StyleSheet.create({
     safeArea: {
         backgroundColor: Colors.white,
         flex: 1,
-        justifyContent: 'space-between',
     },
     container: {
-        padding: 20,
+        padding: 14,
+        flex: 1,
     },
     headerContainer: {
-        marginBottom: 10
+        marginBottom: 10,
     },
     row: {
         flexDirection: 'row',
@@ -127,7 +130,8 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between'
     },
     questionContainer: {
-        marginBottom: 15,
+        marginBottom: 10,
+        width: '100%',
     },
     qTextStyle: {
         color: Colors.green,
@@ -138,6 +142,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         color: Colors.black,
         fontWeight: 'bold',
+        width: '90%'
     },
     pollBox: {
         borderWidth: 1,
