@@ -73,25 +73,12 @@ const MyUserProfileView = () => {
                         {!userDataLoaded ? (
                             <AwesomeLoadingHeader />
                         ) : (
-                            <AwesomeUserHeader userData={user} loggedInUserId={user?.userId} isProfilePage={true} />
+                            <AwesomeUserHeader
+                                userData={user}
+                                loggedInUserId={user?.userId}
+                                isProfilePage={true} />
                         )}
                     </View>
-
-                    {/*<View style={[styles.followersContainer, styles.row]}>
-                        <View style={styles.followersLeftSubContainer}>
-                            <Text style={styles.followersText}>213</Text>
-                            <Text style={styles.followersText}>polls</Text>
-                        </View>
-                        <Pressable style={styles.followersCenterSubContainer} onPress={() => onPressHandler('Followers')}>
-                            <Text style={styles.followersText}>{user?.followersNumber ?? 0}</Text>
-                            <Text style={styles.followersText}>followers</Text>
-                        </Pressable>
-                        <Pressable style={styles.followersRightSubContainer} onPress={() => onPressHandler('Following')}>
-                            <Text style={styles.followersText}>{user?.followingNumber ?? 0}</Text>
-                            <Text style={styles.followersText}>following</Text>
-                        </Pressable>
-                    </View>*/}
-
                     {!userDataLoaded ? (
                         <View style={styles.container}>
                             {[1, 2, 3].map((_, idx) => (

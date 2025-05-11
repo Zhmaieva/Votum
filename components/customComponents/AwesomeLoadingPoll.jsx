@@ -17,7 +17,7 @@ const AwesomeLoadingPoll = () => (
 
 const styles = StyleSheet.create({
     container: {
-        padding: 16,
+        padding: 15,
         borderWidth: 1,
         borderColor: Colors.lightGrey,
         backgroundColor: Colors.white,

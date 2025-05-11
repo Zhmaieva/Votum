@@ -1,81 +1,96 @@
-import {Modal, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View} from "react-native";
-import React, {useEffect, useState} from "react";
-import {Colors} from "../../utils/colorUtils";
+import {
+    Modal,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View,
+} from "react-native";
+import React from "react";
+import { Colors } from "../../utils/colorUtils";
 
 /**
- * Shows popup modal
+ * Shows a customizable modal with 1 or 2 buttons
  *
- * @param {boolean} visible
- * @param {function} onPress
- * @param {string} text
- * @param {string} subtext
- * @param {string} buttonText
- * @param {function} onBackPress
- * @returns {JSX.Element}
- * @constructor
+ * @param {boolean} visible - Whether the modal is visible
+ * @param {string} text - Main text
+ * @param {string} subtext - Optional subtext
+ * @param {function} onBackPress - Called when background is pressed
+ * @param {{ label: string, onPress: function }[]} buttons - 1 or 2 buttons with label and onPress
  */
-export function AwesomeModal(
-    {
-        visible = false,
-        text, subtext,
-        buttonText = 'OK',
-        onBackPress = () => {},
-        secondaryText = null,
-        onPress = null,
-        onSecondaryPress = null,
-    }) {
+export function AwesomeModal({
+                                 visible = false,
+                                 text,
+                                 subtext,
+                                 onBackPress = () => {},
+                                 buttons = [],
+                             }) {
+    const renderButtons = () => {
+        if (!buttons || buttons.length === 0) return null;
+
+        if (buttons.length === 1) {
+            return (
+                <TouchableOpacity onPress={buttons[0].onPress ?? onBackPress}>
+                    <Text style={styles.modalButton}>{buttons[0].label}</Text>
+                </TouchableOpacity>
+            );
+        }
+
+        return (
+            <View style={styles.rowSecondaryButton}>
+                {buttons.map((btn, idx) => (
+                    <TouchableOpacity
+                        key={idx}
+                        onPress={btn.onPress ?? onBackPress}
+                        style={{ flex: 1, alignItems: idx === 0 ? "flex-start" : "flex-end" }}
+                    >
+                        <Text style={styles.modalButton}>{btn.label}</Text>
+                    </TouchableOpacity>
+                ))}
+            </View>
+        );
+    };
+
     return (
-        <Modal visible={visible} transparent={true} animationType="fade">
+        <Modal visible={visible} transparent animationType="fade">
             <TouchableWithoutFeedback onPress={onBackPress}>
                 <View style={styles.modalBackground}>
                     <View style={styles.modalContainer}>
                         <View style={styles.row}>
                             <Text style={styles.modalText}>{text}</Text>
-                            <Text style={styles.modalSubText}>{subtext}</Text>
+                            {subtext ? <Text style={styles.modalSubText}>{subtext}</Text> : null}
                         </View>
-                        {
-                            !secondaryText ? (
-                                <TouchableOpacity onPress={onPress ?? onBackPress}>
-                                    <Text style={styles.modalButton}>{buttonText}</Text>
-                                </TouchableOpacity>
-                            ) : (
-                                <View style={styles.rowSecondaryButton}>
-                                    <TouchableOpacity onPress={onSecondaryPress ? onSecondaryPress : onBackPress}>
-                                        <Text style={styles.modalButton}>{secondaryText}</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity onPress={onPress ?? onBackPress}>
-                                        <Text style={styles.modalButton}>{buttonText}</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            )
-                        }
+                        {renderButtons()}
                     </View>
                 </View>
             </TouchableWithoutFeedback>
         </Modal>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
     modalBackground: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0,0,0,0.5)',
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "rgba(0,0,0,0.5)",
     },
     modalContainer: {
         backgroundColor: Colors.white,
         padding: 20,
-        alignItems: 'center',
-        margin: 20
+        alignItems: "center",
+        margin: 20,
     },
     modalText: {
         fontSize: 16,
-        color: Colors.black
+        color: Colors.black,
+        textAlign: "center",
     },
     modalSubText: {
         fontSize: 16,
-        color: Colors.grey
+        color: Colors.grey,
+        textAlign: "center",
+        marginTop: 8,
     },
     modalButton: {
         color: Colors.green,
@@ -83,15 +98,13 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
     row: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        alignItems: 'center',
-        justifyContent: 'center',
+        alignItems: "center",
+        justifyContent: "center",
     },
     rowSecondaryButton: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        width: '100%',
-        marginBottom: 15,
+        flexDirection: "row",
+        justifyContent: "space-between",
+        width: "100%",
+        marginTop: 15,
     },
 });

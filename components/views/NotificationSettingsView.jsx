@@ -1,41 +1,79 @@
-import React, {useState} from 'react';
-import { View, Text, Switch, StyleSheet, SafeAreaView } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
 import { Colors } from '../../utils/colorUtils';
-import AwesomeSquareSwitch from '../customComponents/AwesomeSquareSwitch'
+import AwesomeSquareSwitch from '../customComponents/AwesomeSquareSwitch';
 
 const NotificationSettingsView = () => {
-    const [pushEnabled, setPushEnabled] = React.useState(true);
-    const [emailEnabled, setEmailEnabled] = React.useState(false);
-    const [isEnabledPush, setIsEnabledPush] = useState(false);
-    const [isEnabledEmail, setIsEnabledEmail] = useState(false);
+    const [pushFollowers, setPushFollowers] = useState(true);
+    const [pushNewPolls, setPushNewPolls] = useState(true);
+    const [pushMilestones, setPushMilestones] = useState(true);
+    const [pushTrending, setPushTrending] = useState(true);
+    const [pushSuggested, setPushSuggested] = useState(true);
+    const [emailEnabled, setEmailEnabled] = useState(false);
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            <View style={styles.container}>
+            <ScrollView contentContainerStyle={styles.container}>
                 <Text style={styles.title}>Notification Settings</Text>
 
+                <Text style={styles.sectionTitle}>Push Notifications</Text>
+
                 <View style={styles.settingRow}>
-                    <Text style={styles.settingText}>Push Notifications</Text>
+                    <Text style={styles.settingText}>New followers</Text>
                     <AwesomeSquareSwitch
-                        value={isEnabledPush}
-                        onValueChange={setIsEnabledPush}
+                        value={pushFollowers}
+                        onValueChange={setPushFollowers}
                     />
                 </View>
 
                 <View style={styles.settingRow}>
-                    <Text style={styles.settingText}>Email Notifications</Text>
+                    <Text style={styles.settingText}>Polls from people you follow</Text>
                     <AwesomeSquareSwitch
-                        value={isEnabledEmail}
-                        onValueChange={setIsEnabledEmail}
+                        value={pushNewPolls}
+                        onValueChange={setPushNewPolls}
+                    />
+                </View>
+
+                <View style={styles.settingRow}>
+                    <Text style={styles.settingText}>Poll milestone updates</Text>
+                    <AwesomeSquareSwitch
+                        value={pushMilestones}
+                        onValueChange={setPushMilestones}
+                    />
+                </View>
+
+                <View style={styles.settingRow}>
+                    <Text style={styles.settingText}>Trending polls</Text>
+                    <AwesomeSquareSwitch
+                        value={pushTrending}
+                        onValueChange={setPushTrending}
+                    />
+                </View>
+
+                <View style={styles.settingRow}>
+                    <Text style={styles.settingText}>Suggested polls</Text>
+                    <AwesomeSquareSwitch
+                        value={pushSuggested}
+                        onValueChange={setPushSuggested}
+                    />
+                </View>
+
+                <Text style={[styles.sectionTitle, { marginTop: 30 }]}>Email Notifications</Text>
+
+                <View style={styles.settingRow}>
+                    <Text style={styles.settingText}>Send me email updates</Text>
+                    <AwesomeSquareSwitch
+                        value={emailEnabled}
+                        onValueChange={setEmailEnabled}
                     />
                 </View>
 
                 <View style={styles.infoContainer}>
                     <Text style={styles.infoText}>
-                        You can control how you receive updates about your polls, followers, and more.
+                        Manage how you get updates about your polls, followers, and trends. You can change these settings anytime.
                     </Text>
                 </View>
-            </View>
+            </ScrollView>
         </SafeAreaView>
     );
 };
@@ -46,23 +84,32 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     container: {
-        padding: 20,
+        padding: 15,
     },
     title: {
-        fontSize: 22,
+        fontSize: 20,
         fontWeight: 'bold',
         color: Colors.black,
         marginBottom: 20,
+    },
+    sectionTitle: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: Colors.black,
+        marginTop: 10,
+        marginBottom: 10,
     },
     settingRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginVertical: 15,
+        marginVertical: 10,
     },
     settingText: {
-        fontSize: 16,
+        fontSize: 14,
         color: Colors.black,
+        flex: 1,
+        paddingRight: 10,
     },
     infoContainer: {
         marginTop: 30,

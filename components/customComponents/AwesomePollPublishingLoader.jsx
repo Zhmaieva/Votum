@@ -83,7 +83,7 @@ const AnimatedRect = ({ y, animatedWidth, color }) => {
 
 const styles = StyleSheet.create({
     container: {
-        padding: 20,
+        padding: 15,
         backgroundColor: Colors.white,
         borderWidth: 1,
         borderColor: Colors.black,

@@ -156,8 +156,8 @@ function UserStack() {
             <AuthStack.Screen name="Report bug" component={ReportBugView} options={{ headerShown: false, gestureEnabled: true }}/>
             <AuthStack.Screen name="Contact Info" component={ContactInformationView} options={{ headerShown: false, gestureEnabled: true }}/>
             <AuthStack.Screen name="Terms Conditions" component={TermsAndConditionsView} options={{ headerShown: false, gestureEnabled: true }}/>
-            <AuthStack.Screen name="Notifications" component={NotificationsView} options={{ headerShown: false, gestureEnabled: true }}/>
-            <AuthStack.Screen name="Notification Settings" component={NotificationSettingsView} options={{ headerShown: false, gestureEnabled: true }}/>
+            <AuthStack.Screen name="Notifications" component={NotificationsView} options={{ headerShown: true, gestureEnabled: true }}/>
+            <AuthStack.Screen name="Notification Settings" component={NotificationSettingsView} options={{ headerShown: true, gestureEnabled: true }}/>
         </Stack.Navigator>
     );
 }

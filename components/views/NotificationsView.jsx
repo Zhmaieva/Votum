@@ -5,9 +5,12 @@ import AwesomeButton, { Color } from '../customComponents/AwesomeButton';
 import { useNavigation } from '@react-navigation/native';
 
 const dummyNotifications = [
-    { id: '1', title: 'New follower', description: 'Alex started following you.', time: '2h ago' },
-    { id: '2', title: 'Poll liked', description: 'Your poll "Favorite pizza?" got 5 new likes!', time: '4h ago' },
-    { id: '3', title: 'Vote received', description: 'Someone voted in your poll!', time: '1d ago' },
+    { id: '1', type: 'follow', description: 'Alex started following you.', time: '2h ago' },
+    { id: '2', type: 'engagement', description: 'Your poll "Favorite pizza?" got 5 new likes!', time: '4h ago' },
+    { id: '3', type: 'vote', description: 'Someone voted in your poll "Best movie?"', time: '1d ago' },
+    { id: '4', type: 'engagement', description: 'Your poll "Best vacation spot?" hit 50 votes!', time: '10m ago' },
+    { id: '5', type: 'trending', description: '🔥 Trending in Tech: “Best AI tool of 2025?”', time: '1h ago' },
+    { id: '6', type: 'suggested', description: 'Suggested for you: “Best morning routine?”', time: '30m ago', silent: true },
 ];
 
 const NotificationsView = () => {
@@ -18,11 +21,26 @@ const NotificationsView = () => {
         setNotifications([]);
     };
 
+    const getIcon = (type) => {
+        switch (type) {
+            case 'follow': return '👤';
+            case 'engagement': return '✨';
+            case 'vote': return '🗳️';
+            case 'trending': return '🔥';
+            case 'suggested': return '⭐';
+            default: return '🔔';
+        }
+    };
+
     const renderNotification = ({ item }) => (
         <Pressable style={styles.notificationContainer}>
             <View style={styles.notificationTextContainer}>
-                <Text style={styles.notificationTitle}>{item.title}</Text>
-                <Text style={styles.notificationDescription}>{item.description}</Text>
+                <Text style={styles.notificationTitle}>
+                    {getIcon(item.type)} {item.description}
+                </Text>
+                {item.silent && (
+                    <Text style={styles.silentTag}>in-app only</Text>
+                )}
             </View>
             <Text style={styles.notificationTime}>{item.time}</Text>
         </Pressable>
@@ -100,13 +118,13 @@ const styles = StyleSheet.create({
         marginBottom: 5,
     },
     notificationTitle: {
-        fontSize: 16,
-        fontWeight: 'bold',
+        fontSize: 15,
         color: Colors.black,
     },
-    notificationDescription: {
-        fontSize: 14,
+    silentTag: {
+        fontSize: 12,
         color: Colors.grey,
+        fontStyle: 'italic',
     },
     notificationTime: {
         fontSize: 12,

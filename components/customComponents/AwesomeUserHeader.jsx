@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity, Pressable } from "react-native";
 import { Colors } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from "./AwesomeButton";
-import { globalEventEmitter } from "../../shared/common";
+import {globalEventEmitter, onShare} from "../../shared/common";
 import { followProfile, unfollowProfile } from "../../shared/api/apiClient";
 import { useNavigation } from "@react-navigation/native";
 import { AwesomeModal } from "./AwesomeModal";
@@ -76,7 +76,7 @@ const AwesomeUserHeader = ({
                 <View style={styles.avatarContainer}>
                     <Image source={{ uri: user.image }} style={styles.avatar} />
                 </View>
-                <View style={{ flex: 1, marginLeft: 12 }}>
+                <View style={{ flex: 1, marginLeft: 20 }}>
                     <View style={[styles.followersContainer, styles.row]}>
                         <View style={styles.followersSubContainer}>
                             <Text style={styles.followersText}>213</Text>
@@ -94,7 +94,7 @@ const AwesomeUserHeader = ({
                 </View>
             </View>
 
-            <View style={{ marginTop: 12, marginBottom: 12 }}>
+            <View style={{ marginTop: 8, marginBottom: 8 }}>
                 <Text style={[styles.font14, styles.usernameBold, styles.fontFamily]} numberOfLines={1}>
                     {user.username}
                 </Text>
@@ -114,19 +114,23 @@ const AwesomeUserHeader = ({
                             />
                         </View>
                         <View style={styles.row}>
-                            <View style={styles.iconContainer}>
+                            <Pressable style={styles.iconContainer} onPress={() => onShare(user)}>
                                 <Ionicons name="share-outline" size={26} color={Colors.white} />
-                            </View>
-                            <View style={[styles.iconContainer, { marginLeft: 10 }]}>
+                            </Pressable>
+                            <Pressable
+                                style={[styles.iconContainer, { marginLeft: 10 }]}
+                                onPress={() => navigation.navigate("Notifications")}
+                            >
                                 <Ionicons name="notifications-outline" size={26} color={Colors.white} />
-                            </View>
+                            </Pressable>
                         </View>
                     </>
                 ) : (
                     <>
                         <View style={styles.editButton}>
                             <AwesomeButton
-                                text={isFollowing ? "Unfollow" : "Follow"}
+                                text="Follow"
+                                changedText="Unfollow"
                                 isInChangedTextMode={isFollowing}
                                 additionalFunc={handleFollowToggle}
                                 color={Color.BLACK}
@@ -164,9 +168,11 @@ const AwesomeUserHeader = ({
             <AwesomeModal
                 visible={showBlockModal}
                 text="Are you sure you want to block this user?"
-                onPress={handleBlockConfirm}
                 onBackPress={() => setShowBlockModal(false)}
-                buttonText="OK"
+                buttons={[
+                    { label: "Cancel", onPress: () => setShowBlockModal(false) },
+                    { label: "OK", onPress: handleBlockConfirm },
+                ]}
             />
         </>
     );
@@ -187,12 +193,12 @@ const styles = StyleSheet.create({
         paddingBottom: 2,
     },
     avatarContainer: {
-        height: 55,
-        width: 55,
+        height: 50,
+        width: 50,
     },
     avatar: {
-        height: 55,
-        width: 55,
+        height: 50,
+        width: 50,
     },
     font14: {
         fontSize: 14,
