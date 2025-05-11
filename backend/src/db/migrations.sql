@@ -557,22 +557,3 @@ ALTER TABLE poll_votes
 
 ALTER TABLE polls
     ADD COLUMN feed_score BIGINT NOT NULL DEFAULT 0;
-
-
-DELETE FROM events_queue;
-DELETE FROM poll_likes;
-DELETE FROM poll_votes;
-DELETE FROM poll_views;
-DELETE FROM poll_answer_options;
-
-UPDATE polls SET votes_count = 0, views_count = 0, likes_count = 0;
-
-UPDATE poll_answer_options SET votes_count = 0;
-
-UPDATE polls SET is_deleted = true;
-WHERE id IN (
-    SELECT id FROM polls
-              WHERE polls.is_deleted = false
-);
-
-SELECT * FROM polls ORDER BY feed_score DESC LIMIT 10000;

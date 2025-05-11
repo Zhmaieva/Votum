@@ -17,8 +17,10 @@ async function sweepPollIndexUpdateEvents(sweepSize) {
             RETURNING entity_id, event_date
         `, [sweepSize]);
 
-        const ids = rows.map((row) => row.id);
-        await recalculatePollsScore(ids);
+        const ids = rows.map((row) => row.entity_id);
+        if (ids.length === 0) return;
+
+        await recalculatePollsScore({ pollIds: ids});
 
         if (rows.length > 0) {
             console.log(`Successfully processed ${rows.length} poll_index_update events.`);

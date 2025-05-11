@@ -1,6 +1,6 @@
 import {Alert, Share} from "react-native";
 import mitt from 'mitt';
-import {getPollShareLink} from "./api/apiClient";
+import {fetchPolls, getPollShareLink} from "./api/apiClient";
 
 export const globalEventEmitter = new mitt();
 
@@ -87,6 +87,23 @@ class DataService {
             return false;
         }
         return true;
+    }
+
+    isFetchingPolls = false;
+    async getMorePolls() {
+        let result = [];
+        if (this.isFetchingPolls)
+            return result;
+        this.isFetchingPolls = true;
+        try {
+            result = await fetchPolls();
+        } catch {} finally {
+            setTimeout(() => { // let fetched polls be processed before fetching more
+                this.isFetchingPolls = false;
+            }, 200);
+
+            return result;
+        }
     }
 }
 const service = new DataService()

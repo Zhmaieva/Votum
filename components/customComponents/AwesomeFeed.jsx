@@ -156,14 +156,15 @@ const AwesomeFeed = ({
                 // ⬇️ Trigger more loading if fewer than 10 polls left
                 if (appendFunction && ((preloadedData.length - index) <= 10)) {
                     const newPolls = await appendFunction([]); // Your method to fetch more polls
+                    if (newPolls?.length > 0) {
+                        // Filter out duplicates
+                        const existingPolls = preloadedData;
+                        const existingIds = new Set(existingPolls.map(p => p.id));
+                        const uniquePolls = newPolls.filter(p => !existingIds.has(p.id));
 
-                    // Filter out duplicates
-                    const existingPolls = preloadedData;
-                    const existingIds = new Set(existingPolls.map(p => p.id));
-                    const uniquePolls = newPolls.filter(p => !existingIds.has(p.id));
-
-                    if (uniquePolls.length > 0) {
-                        setPreloadedData(existingPolls.concat(uniquePolls));
+                        if (uniquePolls.length > 0) {
+                            setPreloadedData(existingPolls.concat(uniquePolls));
+                        }
                     }
                 }
             }

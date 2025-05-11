@@ -152,6 +152,7 @@ async function fetchPolls(userId, batchSize, excludedPollIds, featuredId) {
                 WHERE p.is_deleted = false
                   AND p.ends_in > (NOW() AT TIME ZONE 'UTC')
                   AND p.created_by <> $1
+                  AND ($3::uuid[] IS NULL OR p.id != ALL($3))
                   AND NOT EXISTS (
                     SELECT 1 FROM poll_views v
                     WHERE v.poll_id = p.id AND v.user_id = $1
@@ -181,6 +182,7 @@ async function fetchPolls(userId, batchSize, excludedPollIds, featuredId) {
                      WHERE p.is_deleted = false
                        AND p.ends_in > (NOW() AT TIME ZONE 'UTC')
                        AND p.created_by <> $1
+                       AND ($3::uuid[] IS NULL OR p.id != ALL($3))
                        AND NOT EXISTS (
                          SELECT 1 FROM poll_views v
                          WHERE v.poll_id = p.id AND v.user_id = $1
@@ -572,26 +574,24 @@ async function recalculatePollsScore({ pollIds }) {
     const query = `
         UPDATE polls
         SET feed_score = (
-            -- Age decay bonus: up to +300 for new polls
+            -- Age decay bonus: up to +3000 for new polls
             COALESCE(
-                CASE
-                    WHEN EXTRACT(EPOCH FROM ((NOW() AT TIME ZONE 'UTC') - created_at)) / 3600 < 24
-                        THEN 300 - (EXTRACT(EPOCH FROM ((NOW() AT TIME ZONE 'UTC') - created_at)) / 3600) * 8
-                    ELSE 0
-                END, 0
+                    CASE
+                        WHEN EXTRACT(EPOCH FROM ((NOW() AT TIME ZONE 'UTC') - created_at)) / 3600 < 24
+                            THEN 3000 - (EXTRACT(EPOCH FROM ((NOW() AT TIME ZONE 'UTC') - created_at)) / 3600) * 80
+                        ELSE 0
+                        END, 0
             )
-            +
-            -- Ending soon bonus: +100 if < 1h left
+                +
+                -- Ending soon bonus: +100 if < 1h left
             CASE
-                WHEN EXTRACT(EPOCH FROM (ends_in - NOW() AT TIME ZONE 'UTC')) BETWEEN 0 AND 3600 THEN 100
+                WHEN EXTRACT(EPOCH FROM (ends_in - NOW() AT TIME ZONE 'UTC')) BETWEEN 0 AND 3600 THEN 1000
                 ELSE 0
-            END
-            +
-            -- Votes and likes weights
-            COALESCE(votes_count, 0) * 2
-            +
-            likes_count * 3
-        )
+                END
+                +
+                -- Votes and likes weights
+            COALESCE(votes_count, 0) * 2 * likes_count
+            )
         WHERE id = ANY($1::uuid[])
           AND is_deleted = false
           AND ends_in > NOW() AT TIME ZONE 'UTC';

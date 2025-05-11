@@ -5,7 +5,7 @@ import {View, StyleSheet, ActivityIndicator, Text, SafeAreaView} from 'react-nat
 import {fetchPolls, fetchMyProfile, voteOnPoll, fetchTrendingPolls} from "../../shared/api/apiClient";
 import { Colors } from '../../utils/colorUtils';
 import AwesomeSwitcher from "../customComponents/AwesomeSwitcher";
-import {calculateTimeDifference, globalEventEmitter} from "../../shared/common";
+import {calculateTimeDifference, getDataService, globalEventEmitter} from "../../shared/common";
 
 const FeedView = ({ route }) => {
     const [selectedOption, setSelectedOption] = useState("my feed");
@@ -95,7 +95,7 @@ const FeedView = ({ route }) => {
                     )
                 }}
                 appendFunction={async (excludedPollIds) => {
-                  return await fetchPolls();
+                  return await getDataService().getMorePolls();
                 }}
             />
         </SafeAreaView>
