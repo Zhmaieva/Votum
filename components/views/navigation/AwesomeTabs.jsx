@@ -36,6 +36,8 @@ import ContactInformationView from "../ContactInformationView"
 import TermsAndConditionsView from "../TermsAndConditionsView";
 import NotificationsView from "../NotificationsView";
 import NotificationSettingsView from "../NotificationSettingsView";
+import EditBirthDateView from "../EditBirthDateView";
+import EditGenderView from "../EditGenderView";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -94,13 +96,13 @@ function UserStack() {
     return (
         <Stack.Navigator id="Test">
             <Stack.Screen name="Profile" component={MyUserProfileView} options={{ headerShown: false, gestureEnabled: true }} />
-            <Stack.Screen name="Edit profile" component={ProfileEditView} options={{ headerShown: false, gestureEnabled: true }} />
+            <Stack.Screen name="Edit profile" component={ProfileEditView} options={{ headerShown: true, gestureEnabled: true }} />
             <Stack.Screen name="Following" component={FollowingView} options={{ headerShown: true, gestureEnabled: true }} />
             <Stack.Screen name="Followers" component={FollowersView} options={{ headerShown: true, gestureEnabled: true }} />
             <Stack.Screen name="Edit username"
                           component={EditUsernameView}
                           options={({ navigation }) => ({
-                              headerShown: false,
+                              headerShown: true,
                               gestureEnabled: true,
                               headerRight: () => (
                                   <HeaderRightButton
@@ -113,7 +115,7 @@ function UserStack() {
             <Stack.Screen name="Edit bio"
                           component={BioEditView}
                           options={({ navigation }) => ({
-                              headerShown: false,
+                              headerShown: true,
                               gestureEnabled: true,
                               headerRight: () => (
                                   <HeaderRightButton
@@ -126,7 +128,7 @@ function UserStack() {
             <Stack.Screen name="Edit email"
                           component={EmailEditView}
                           options={({ navigation }) => ({
-                              headerShown: false,
+                              headerShown: true,
                               gestureEnabled: true,
                               headerRight: () => (
                                   <HeaderRightButton
@@ -139,7 +141,7 @@ function UserStack() {
             <Stack.Screen name="Password"
                           component={PasswordView}
                           options={({ navigation }) => ({
-                              headerShown: false,
+                              headerShown: true,
                               gestureEnabled: true,
                               headerRight: () => (
                                   <HeaderRightButton
@@ -153,11 +155,13 @@ function UserStack() {
             <AuthStack.Screen name="Log in" component={LogInView} options={{ headerShown: false, gestureEnabled: true }}/>
             <AuthStack.Screen name="Forgot password" component={ForgotPasswordView} options={{ headerShown: false, gestureEnabled: true }}/>
             <AuthStack.Screen name="Email Register" component={EmailRegisterView} options={{ headerShown: false, gestureEnabled: true }}/>
-            <AuthStack.Screen name="Report bug" component={ReportBugView} options={{ headerShown: false, gestureEnabled: true }}/>
-            <AuthStack.Screen name="Contact Info" component={ContactInformationView} options={{ headerShown: false, gestureEnabled: true }}/>
-            <AuthStack.Screen name="Terms Conditions" component={TermsAndConditionsView} options={{ headerShown: false, gestureEnabled: true }}/>
+            <AuthStack.Screen name="Report bug" component={ReportBugView} options={{ headerShown: true, gestureEnabled: true }}/>
+            <AuthStack.Screen name="Contact Info" component={ContactInformationView} options={{ headerShown: true, gestureEnabled: true }}/>
+            <AuthStack.Screen name="Terms Conditions" component={TermsAndConditionsView} options={{ headerShown: true, gestureEnabled: true }}/>
             <AuthStack.Screen name="Notifications" component={NotificationsView} options={{ headerShown: true, gestureEnabled: true }}/>
             <AuthStack.Screen name="Notification Settings" component={NotificationSettingsView} options={{ headerShown: true, gestureEnabled: true }}/>
+            <AuthStack.Screen name="Edit Birth" component={EditBirthDateView} options={{ headerShown: true, gestureEnabled: true }}/>
+            <AuthStack.Screen name="Edit Gender" component={EditGenderView} options={{ headerShown: true, gestureEnabled: true }}/>
         </Stack.Navigator>
     );
 }

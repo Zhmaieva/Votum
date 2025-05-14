@@ -41,7 +41,6 @@ const AwesomePasswordInput = forwardRef((props, inputRef) => {
                     value={password}
                     onChangeText={(text)=>validation(text)}
                     style={styles.input}
-                    placeholder='password'
                     placeholderTextColor="#aaa"
 
                 />

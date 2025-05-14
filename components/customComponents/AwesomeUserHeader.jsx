@@ -73,8 +73,8 @@ const AwesomeUserHeader = ({
     const content = (
         <View style={styles.userContainer}>
             <View style={[styles.row, styles.aligned]}>
-                <View style={styles.avatarContainer}>
-                    <Image source={{ uri: user.image }} style={styles.avatar} />
+                <View style={[styles.avatarContainer, isProfilePage && styles.avatarContainerLarge]}>
+                    <Image source={{ uri: user.image }} style={[styles.avatar, isProfilePage && styles.avatarLarge]} />
                 </View>
                 <View style={{ flex: 1, marginLeft: 20 }}>
                     <View style={[styles.followersContainer, styles.row]}>
@@ -94,7 +94,7 @@ const AwesomeUserHeader = ({
                 </View>
             </View>
 
-            <View style={{ marginTop: 8, marginBottom: 8 }}>
+            <View style={{ marginTop: 8, marginBottom: 6 }}>
                 <Text style={[styles.font14, styles.usernameBold, styles.fontFamily]} numberOfLines={1}>
                     {user.username}
                 </Text>
@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
     followersContainer: {
         justifyContent: 'space-between',
         flex: 1,
-        alignItems: "flex-end",
+        alignItems: "center",
     },
     followersSubContainer: {
         alignItems: 'center',
@@ -245,5 +245,13 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 2, height: 2 },
         shadowOpacity: 1,
         shadowColor: Colors.green,
+    },
+    avatarContainerLarge: {
+        height: 60,
+        width: 60,
+    },
+    avatarLarge: {
+        height: 60,
+        width: 60,
     },
 });

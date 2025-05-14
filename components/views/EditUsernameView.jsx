@@ -51,7 +51,8 @@ const EditUsernameView = ({ navigation }) => {
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.container}>
-                <Text style={[styles.margin10, { fontWeight: 'bold' }]}>Username</Text>
+                <Text style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 10 }}>Username</Text>
+                <Text style={styles.subtittle}>update your username</Text>
                 <AwesomeUsernameInput />
                 <AwesomeButton
                     text='Save username'
@@ -80,6 +81,11 @@ const styles = StyleSheet.create({
     },
     margin10: {
         marginBottom: 8,
+    },
+    subtittle: {
+        fontSize: 14,
+        marginBottom: 5,
+        color: Colors.grey
     }
 });
 

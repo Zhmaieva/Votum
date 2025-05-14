@@ -103,7 +103,6 @@ const AwesomeUsernameInput = ({ route }) => {
                     style={styles.input}
                     value={username}
                     onChangeText={handleInputChange}
-                    placeholder="username"
                     placeholderTextColor="#999"
                     maxLength={charLimit}
                     autoCapitalize="none"

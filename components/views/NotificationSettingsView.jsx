@@ -58,7 +58,7 @@ const NotificationSettingsView = () => {
                     />
                 </View>
 
-                <Text style={[styles.sectionTitle, { marginTop: 30 }]}>Email Notifications</Text>
+                <Text style={[styles.sectionTitle, { marginTop: 20 }]}>Email Notifications</Text>
 
                 <View style={styles.settingRow}>
                     <Text style={styles.settingText}>Send me email updates</Text>
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
         color: Colors.black,
-        marginBottom: 20,
+        marginBottom: 10,
     },
     sectionTitle: {
         fontSize: 16,
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
         paddingRight: 10,
     },
     infoContainer: {
-        marginTop: 30,
+        marginTop: 20,
     },
     infoText: {
         fontSize: 14,

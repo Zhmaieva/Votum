@@ -31,7 +31,7 @@ export default function AwesomeEmailInput({ value, bareStyle = false }) {
         <View>
             <TextInput
                 style={[styles.input, bareStyle ? styles.bareStyleInput : styles.defaultInput]}
-                placeholder='example@gmail.com'
+                //placeholder='example@gmail.com'
                 value={email}
                 onChangeText={(text) => handleCheckEmail(text)}
                 placeholderTextColor='#aaa'

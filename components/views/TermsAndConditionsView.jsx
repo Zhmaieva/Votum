@@ -9,7 +9,11 @@ const TermsAndConditionsView = ({ navigation }) => {
             <ScrollView contentContainerStyle={styles.container}>
                 <Text style={styles.title}>Terms and Conditions</Text>
 
-                <Text style={styles.sectionTitle}>1. Acceptance of Terms</Text>
+                <Text style={styles.subtittle}>
+                    Please read these terms carefully. They outline your rights, responsibilities, and how we handle your data.
+                </Text>
+
+                <Text style={styles.firstSectionTitle}>1. Acceptance of Terms</Text>
                 <Text style={styles.paragraph}>
                     By accessing and using this app, you accept and agree to be bound by the terms and provision of this agreement.
                 </Text>
@@ -60,11 +64,17 @@ const styles = StyleSheet.create({
         padding: 15
     },
     title: {
-        fontSize: 24,
+        fontSize: 20,
         fontWeight: 'bold',
         marginBottom: 20,
         color: Colors.black,
         textAlign: 'flex-start',
+    },
+    firstSectionTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 8,
+        color: Colors.black,
     },
     sectionTitle: {
         fontSize: 18,
@@ -82,6 +92,11 @@ const styles = StyleSheet.create({
     buttonContainer: {
         marginTop: 30,
         //marginBottom: 50,
+    },
+    subtittle: {
+        fontSize: 14,
+        color: Colors.grey,
+        marginBottom: 10
     }
 });
 

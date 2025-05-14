@@ -79,17 +79,17 @@ const ProfileEditView = ({ route }) => {
                 </View>
                 <Text style={[styles.sectionName, styles.marginTop15]}>Personal Details</Text>
                 <View style={styles.margin15}>
-                    <AwesomeButton text='Birth Date' color={Color.WHITE} settingButton={true}/>
+                    <AwesomeButton text='Birth Date' color={Color.WHITE} settingButton={true} screenName='Edit Birth'/>
                 </View>
                 <View style={styles.margin15}>
-                    <AwesomeButton text='Gender' color={Color.WHITE} settingButton={true}/>
+                    <AwesomeButton text='Gender' color={Color.WHITE} settingButton={true} screenName='Edit Gender'/>
                 </View>
                 <Text style={[styles.sectionName, styles.marginTop15]}>Privacy & Security</Text>
                 <View style={styles.margin15}>
                     <AwesomeButton text='Change Password' color={Color.WHITE} settingButton={true}/>
                 </View>
                 <View style={styles.margin15}>
-                    <AwesomeButton text='Notifications' color={Color.WHITE} settingButton={true} screenName='Notifications'/>
+                    <AwesomeButton text='Notifications settings' color={Color.WHITE} settingButton={true} screenName='Notification Settings'/>
                 </View>
                 <View style={styles.margin15}>
                     <AwesomeButton text='Terms and conditions' color={Color.WHITE} settingButton={true} screenName='Terms Conditions' />

@@ -44,11 +44,10 @@ const ReportBugView = () => {
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.container}>
                 <Text style={styles.title}>Report a Bug</Text>
-                <Text style={styles.subtitle}>Describe the issue you encountered</Text>
+                <Text style={styles.subtitle}>describe the issue you encountered</Text>
                 <TextInput
                     ref={descriptionInputRef}
                     style={styles.input}
-                    placeholder="Description here"
                     value={description}
                     onChangeText={setDescription}
                     multiline
@@ -58,7 +57,7 @@ const ReportBugView = () => {
 
                 <View style={styles.buttonContainer}>
                     {isSubmitting ? (
-                        <ActivityIndicator size="large" color={Colors.green} />
+                        <ActivityIndicator size="small" color={Colors.white} />
                     ) : (
                         <AwesomeButton
                             text="Submit"
@@ -96,13 +95,12 @@ const styles = StyleSheet.create({
         flex: 1
     },
     container: {
-        paddingLeft: 14,
-        paddingRight: 14,
+        padding: 15
     },
     title: {
         fontSize: 20,
         fontWeight: 'bold',
-        marginBottom: 15,
+        marginBottom: 10,
         color: Colors.black
     },
     input: {
@@ -121,7 +119,7 @@ const styles = StyleSheet.create({
     },
     buttonContainer: {
         marginTop: 20,
-        alignItems: 'center'
+        width: '100%',
     },
     charCounter: {
         alignSelf: 'flex-end',
@@ -132,7 +130,7 @@ const styles = StyleSheet.create({
     subtitle: {
         fontSize: 14,
         color: Colors.grey,
-        marginBottom: 3,
+        marginBottom: 5,
     },
 });
 

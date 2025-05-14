@@ -95,8 +95,9 @@ export default function VerificationCodeView({route}) {
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.container}>
                 <View>
-                    <Text style={[styles.margin15, { fontWeight: 'bold' }]}>Enter verification code</Text>
-                    <View style={[styles.centered, styles.margin10]}>
+                    <Text style={[styles.margin10, { fontWeight: 'bold', fontSize: 20 }]}>Enter verification code</Text>
+                    <Text style={styles.subtittle}>check spam folder if you didn't receive a code</Text>
+                    <View style={[styles.centered, styles.margin25]}>
                         <View style={[styles.row, styles.equidistantElements, styles.verificationCodeContainer]}>
                             {[...Array(6)].map((_, i) => (
                                 <AwesomeCodeContainer
@@ -108,16 +109,13 @@ export default function VerificationCodeView({route}) {
                         </View>
                     </View>
                     <View style={[styles.margin15, styles.centered]}>
-                        <View style={styles.margin10}>
+                        <View style={styles.resendButtonContainer}>
                             <AwesomeButton
                                 text={canResend ? 'Resend code now' : `Resend in ${seconds}s`}
                                 color={Color.WHITE}
                                 additionalFunc={canResend ? () => onResendHandler() : null}
                                 disabled={!canResend}
                             />
-                        </View>
-                        <View style={[styles.messageHeight, styles.row, styles.centered, styles.margin10]}>
-                            <Text style={[styles.regularFontSize, styles.fontFamily]}>Check spam folder. If you didn't receive a code</Text>
                         </View>
                     </View>
                     <View style={styles.margin40}>
@@ -191,4 +189,16 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: Colors.black
     },
+    subtittle: {
+        fontSize: 14,
+        color: Colors.grey,
+        marginBottom: 10
+    },
+    margin25: {
+        marginBottom: 25
+    },
+    resendButtonContainer: {
+        width: '100%',
+        marginBottom: 2
+    }
 });

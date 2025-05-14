@@ -34,12 +34,12 @@ const BioEditView = ({ navigation, route }) => {
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.container}>
-                <Text style={[styles.margin10, { fontWeight: 'bold' }]}>Bio</Text>
+                <Text style={[styles.margin10, { fontWeight: 'bold', fontSize: 20 }]}>Bio</Text>
+                <Text style={styles.subtittle}>update your bio</Text>
                 <TextInput
                     style={styles.input}
                     value={bio}
                     onChangeText={handleCheckBio}
-                    placeholder="New bio"
                     maxLength={charLimit}
                 />
                 <Text style={styles.counter}>{bio.length}/{charLimit}</Text>
@@ -83,6 +83,11 @@ const styles = StyleSheet.create({
     },
     margin10: {
         marginBottom: 10
+    },
+    subtittle: {
+        fontSize: 14,
+        marginBottom: 5,
+        color: Colors.grey
     }
 });
 

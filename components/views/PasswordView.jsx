@@ -12,7 +12,8 @@ const PasswordView = ({route }) => {
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.container}>
-                <Text style={[styles.margin10, { fontWeight: 'bold' }]}>Enter new password</Text>
+                <Text style={[styles.margin10, { fontWeight: 'bold', fontSize: 20 }]}>Email</Text>
+                <Text style={styles.subtittle}>enter current password</Text>
                 <View style={styles.margin10}>
                     <AwesomePasswordInput />
                 </View>
@@ -32,6 +33,11 @@ const styles = StyleSheet.create({
     },
     margin10: {
         marginBottom: 10
+    },
+    subtittle: {
+        fontSize: 14,
+        marginBottom: 5,
+        color: Colors.grey
     }
 });
 

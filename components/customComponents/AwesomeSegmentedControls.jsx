@@ -2,19 +2,19 @@ import React, { useState, useEffect } from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import { Colors } from '../../utils/colorUtils';
 
-const AwesomeSegmentedControls = ({ options = [], onDisplayModeChangedHandler }) => {
+const AwesomeSegmentedControls = ({ options = [], onSelect }) => {
     const defaultOption = options.includes("1d") ? "1d" : options[0];
     const [selected, setSelected] = useState(defaultOption);
 
     useEffect(() => {
         if (defaultOption) {
-            onDisplayModeChangedHandler(defaultOption);
+            onSelect?.(defaultOption);
         }
     }, [defaultOption]);
 
     const handlePress = (option) => {
         setSelected(option);
-        onDisplayModeChangedHandler(option);
+        onSelect?.(option);
     };
 
     return (

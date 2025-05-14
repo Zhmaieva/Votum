@@ -58,7 +58,7 @@ const ContactInformationView = () => {
                     <Text style={styles.label}>Privacy Policy:</Text>
                     <Text style={styles.value}>Read our Privacy Policy</Text>
                     <View style={styles.buttonContainer}>
-                        <AwesomeButton text="Privacy Policy" color={Color.WHITE} additionalFunc={handlePrivacyPolicyPress} />
+                        <AwesomeButton text="Privacy Policy" color={Color.BLACK} additionalFunc={handlePrivacyPolicyPress} />
                     </View>
                 </View>
 
@@ -87,18 +87,18 @@ const styles = StyleSheet.create({
         padding: 15
     },
     title: {
-        fontSize: 24,
+        fontSize: 20,
         fontWeight: 'bold',
         color: Colors.black,
         marginBottom: 10,
     },
     subtitle: {
-        fontSize: 16,
+        fontSize: 14,
         color: Colors.grey,
-        marginBottom: 20,
+        marginBottom: 10,
     },
     infoSection: {
-        marginBottom: 30,
+        marginBottom: 20,
     },
     label: {
         fontSize: 16,

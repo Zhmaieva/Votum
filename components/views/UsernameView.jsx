@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
     },
     headerStyle: {
         fontWeight: 'bold',
-        marginBottom: 5
+        marginBottom: 5,
     }
 });
 
