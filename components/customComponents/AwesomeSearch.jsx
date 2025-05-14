@@ -60,9 +60,8 @@ const AwesomeSearch = ({ onSearchPress }) => {
             </View>
             <View style={[styles.row, styles.categoriesContainer]}>
                 {categoriesList.map((category) => (
-                    <View style={{marginRight: 8}}>
+                    <View style={{marginRight: 8}} key={category}>
                         <AwesomeCategory
-                            key={category}
                             categoryName={category}
                             isSelected={isSelected(category)}
                             onPress={() => toggleCategory(category)}

@@ -122,9 +122,8 @@ const AddView = () => {
                         <Text>Ends in</Text>
                         <View style={styles.row}>
                             {["1h", "1d", "1w", "1m"].map((duration) => (
-                                <View style={styles.marginCategory}>
+                                <View style={styles.marginCategory} key={duration}>
                                     <AwesomeCategory
-                                        key={duration}
                                         categoryName={duration}
                                         isSelected={selectedOption === duration}
                                         onPress={() => setSelectedOption(duration)}

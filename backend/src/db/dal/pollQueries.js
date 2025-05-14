@@ -515,8 +515,7 @@ async function createPoll(createdBy, question, options, duration) {
 
         await client.query(`
           INSERT INTO events_queue (entity_id, event_name, event_date)
-          VALUES ($1, $2, (NOW() AT TIME ZONE 'UTC'))
-          ON CONFLICT (entity_id, event_name) DO NOTHING;
+          VALUES ($1, $2, (NOW() AT TIME ZONE 'UTC'));
         `, [pollId, EVENT_NAMES.POLL_INDEX_UPDATE]);
 
         const queries = [];
