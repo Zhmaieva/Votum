@@ -558,6 +558,23 @@ ALTER TABLE poll_votes
 ALTER TABLE polls
     ADD COLUMN feed_score BIGINT NOT NULL DEFAULT 0;
 
+
+--Thu May 15 1:38 PM
+
+DROP TRIGGER IF EXISTS trigger_increment_views ON poll_views;
+
+DROP FUNCTION increment_poll_views_count;
+
+ALTER TABLE polls DROP COLUMN views_count;
+
+ALTER TABLE polls DROP COLUMN feed_score;
+
+ALTER TABLE polls DROP COLUMN indexed_at;
+
+ALTER TABLE polls
+ADD COLUMN likes_per_vote REAL DEFAULT 0;
+
+CREATE INDEX idx_polls_likes_per_vote on polls (likes_per_vote DESC);
 -- Fri May 16 16:52
 ALTER TABLE user_profiles
     ALTER COLUMN image SET DEFAULT 'https://storage.beampie.com/vote/profiles/497f7ffb-01f9-4d24-86ee-e7cc4b046f09___7e288897-3f74-4d87-97f0-b8066fb6b4b6.png';

@@ -142,7 +142,7 @@ async function fetchPolls(userId, batchSize, excludedPollIds, featuredId) {
                     CASE WHEN pl.user_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_liked,
                     CASE WHEN uf.user_follower_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_following,
                     CASE WHEN p.created_by = $1 THEN up2.bio ELSE '' END AS user_bio,
-                    p.feed_score AS effective_score,
+                    p.likes_per_vote AS effective_score,
                     p.created_at
                 FROM polls p
                          JOIN users u ON u.id = p.created_by
@@ -172,7 +172,7 @@ async function fetchPolls(userId, batchSize, excludedPollIds, featuredId) {
                          CASE WHEN pl.user_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_liked,
                          TRUE AS is_following,
                          CASE WHEN p.created_by = $1 THEN up2.bio ELSE '' END AS user_bio,
-                         p.feed_score * 2 AS effective_score,
+                         p.likes_per_vote * 2 AS effective_score,
                          p.created_at
                      FROM polls p
                               JOIN users u ON u.id = p.created_by
@@ -573,99 +573,16 @@ async function voteOnPoll({ userId, optionId }) {
 }
 
 /**
- * Updates score for all users in relation to the poll
+ * Updates likes_per_vote for given polls
  * @param pollId Poll ID
  * @returns {Promise<void>}
  */
 async function recalculatePollsScore({ pollIds }) {
     const query = `
-        UPDATE polls
-        SET feed_score = (
-            -- Age decay bonus: up to +3000 for new polls
-            COALESCE(
-                    CASE
-                        WHEN EXTRACT(EPOCH FROM ((NOW() AT TIME ZONE 'UTC') - created_at)) / 3600 < 24
-                            THEN 3000 - (EXTRACT(EPOCH FROM ((NOW() AT TIME ZONE 'UTC') - created_at)) / 3600) * 80
-                        ELSE 0
-                        END, 0
-            )
-                +
-                -- Ending soon bonus: +100 if < 1h left
-            CASE
-                WHEN EXTRACT(EPOCH FROM (ends_in - NOW() AT TIME ZONE 'UTC')) BETWEEN 0 AND 3600 THEN 1000
-                ELSE 0
-                END
-                +
-                -- Votes and likes weights
-            COALESCE(votes_count, 0) * 2 * likes_count
-            )
-        WHERE id = ANY($1::uuid[])
-          AND is_deleted = false
-          AND ends_in > NOW() AT TIME ZONE 'UTC';
+
     `
 
     await pool.query(query, [pollIds]);
-}
-
-async function publishPollEvents() {
-    const query = `
-        WITH now_utc AS (
-            SELECT (NOW() AT TIME ZONE 'UTC') AS now
-        ),
-             candidate_events AS (
-                 SELECT
-                     p.id AS poll_id,
-                     (p.created_at + (FLOOR(EXTRACT(EPOCH FROM (now() AT TIME ZONE 'UTC' - p.created_at)) / 3600) * INTERVAL '1 hour')) AS event_date
-                 FROM polls p
-                 WHERE p.is_deleted = false
-                   AND (now() AT TIME ZONE 'UTC' - p.created_at) <= INTERVAL '24 hours'
-                   AND p.ends_in > (now() AT TIME ZONE 'UTC')
-                   AND (p.indexed_at < (p.created_at + (FLOOR(EXTRACT(EPOCH FROM (now() AT TIME ZONE 'UTC' - p.created_at)) / 3600) * INTERVAL '1 hour') - INTERVAL '1 second'))
-
-                 UNION ALL
-
-                 SELECT
-                     p.id AS poll_id,
-                     ((p.created_at AT TIME ZONE 'UTC') + INTERVAL '24 hours') AS event_date
-                 FROM polls p
-                 WHERE p.is_deleted = false
-                   AND (now() AT TIME ZONE 'UTC' - p.created_at) > INTERVAL '24 hours'
-                   AND p.ends_in > (now() AT TIME ZONE 'UTC')
-                   AND (p.indexed_at < ((p.created_at AT TIME ZONE 'UTC') + INTERVAL '24 hours' - INTERVAL '1 second'))
-
-                 UNION ALL
-
-                 SELECT
-                     p.id AS poll_id,
-                     ((p.ends_in - INTERVAL '1 hour') AT TIME ZONE 'UTC') AS event_date
-                 FROM polls p
-                 WHERE p.is_deleted = false
-                   AND p.ends_in > (now() AT TIME ZONE 'UTC')
-                   AND p.ends_in <= (now() AT TIME ZONE 'UTC') + INTERVAL '1 hour'
-                   AND (p.indexed_at < (p.ends_in - INTERVAL '1 hour' - INTERVAL '1 second'))
-             ),
-             limited_candidates AS (
-                 SELECT *
-                 FROM candidate_events
-                 ORDER BY event_date ASC
-                 LIMIT 50
-             ),
-             inserted AS (
-                 INSERT INTO events_queue (entity_id, event_name, event_date)
-                     SELECT poll_id, $1, event_date
-                     FROM limited_candidates
-                     RETURNING entity_id
-             )
-        UPDATE polls
-        SET indexed_at = (NOW() AT TIME ZONE 'UTC')
-        FROM inserted
-        WHERE polls.id = inserted.entity_id;
-    `
-
-    const result = await pool.query(query, [EVENT_NAMES.POLL_INDEX_UPDATE]);
-
-    if (result?.rowCount > 0)
-        console.log(`Published ${result?.rowCount} events.`);
 }
 
 module.exports = {
@@ -678,7 +595,6 @@ module.exports = {
     getPollById,
     getPollOptionResults,
     likePoll,
-    publishPollEvents,
     recalculatePollsScore,
     searchPolls,
     unlikePoll,
