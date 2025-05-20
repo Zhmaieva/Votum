@@ -734,60 +734,36 @@ CREATE TRIGGER trigger_increment_votes_views_count
     AFTER INSERT ON poll_votes
     FOR EACH ROW EXECUTE FUNCTION increment_views_count();
 
+ALTER TABLE polls
+    ADD COLUMN duration_type INTEGER DEFAULT 1;
 
-WITH interaction_counts AS (
-    SELECT
-        u.id AS user_id,
-        c.id AS category_id,
+UPDATE polls
+SET duration_type = CASE
+    WHEN ends_in - created_at <= INTERVAL '2 hours' THEN 1     -- close to 1h
+    WHEN ends_in - created_at <= INTERVAL '2 days' THEN 2      -- close to 1d
+    WHEN ends_in - created_at <= INTERVAL '8 days' THEN 3      -- close to 1w
+    ELSE 4                                                     -- anything longer
+END;
 
-        COUNT(DISTINCT v.poll_id) FILTER (
-            WHERE p.category_id = c.id
-                AND v.poll_id IS NOT NULL
-                AND v.poll_id NOT IN (SELECT poll_id FROM poll_votes WHERE user_id = u.id)
-                AND v.poll_id NOT IN (SELECT poll_id FROM poll_likes WHERE user_id = u.id)
-            ) AS skips,
+CREATE OR REPLACE FUNCTION set_duration_type()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.duration_type := CASE
+    WHEN NEW.ends_in - NEW.created_at <= INTERVAL '2 hours' THEN 1
+    WHEN NEW.ends_in - NEW.created_at <= INTERVAL '2 days' THEN 2
+    WHEN NEW.ends_in - NEW.created_at <= INTERVAL '8 days' THEN 3
+    ELSE 4
+  END;
 
-        COUNT(DISTINCT pv.poll_id) FILTER (
-            WHERE p.category_id = c.id
-            ) AS votes,
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
 
-        COUNT(DISTINCT pl.poll_id) FILTER (
-            WHERE p.category_id = c.id
-                AND EXISTS (
-                    SELECT 1 FROM poll_votes vv WHERE vv.poll_id = pl.poll_id AND vv.user_id = pl.user_id
-                )
-            ) AS likes
+CREATE TRIGGER trg_set_duration_type
+    BEFORE INSERT ON polls
+    FOR EACH ROW
+EXECUTE FUNCTION set_duration_type();
 
-    FROM users u
-             CROSS JOIN Categories c
-             LEFT JOIN polls p ON p.category_id = c.id
-             LEFT JOIN poll_views v ON v.user_id = u.id AND v.poll_id = p.id
-             LEFT JOIN poll_votes pv ON pv.user_id = u.id AND pv.poll_id = p.id
-             LEFT JOIN poll_likes pl ON pl.user_id = u.id AND pl.poll_id = p.id
-    GROUP BY u.id, c.id
-),
-     scored AS (
-         SELECT
-             user_id,
-             category_id,
-             likes,
-             votes,
-             skips,
-             CASE
-                 WHEN (likes + votes + skips) > 0 THEN
-                     GREATEST(0, LEAST(1,
-                                       0.5 + (
-                                           (2 * likes + 1 * votes - 2 * skips)::float
-                                               / (20 + likes + votes + skips)
-                                           )
-                                 ))
-                 ELSE 0.5
-                 END AS score
-         FROM interaction_counts
-     )
-UPDATE user_categories uc
-SET score = s.score
-FROM scored s
-WHERE uc.user_id = s.user_id AND uc.category_id = s.category_id;
+
 
 
