@@ -404,6 +404,85 @@ async function deleteUser(userId) {
     }
 }
 
+/**
+ * Updates affinity score for given user IDs / category ID map
+ * @param userCategoryPair
+ * @returns {Promise<void>}
+ */
+async function recalculateCategoryScore({ userCategoryPair }) {
+    const formattedValues = userCategoryPair
+        .map(([uid, cid]) => `('${uid}'::uuid, ${cid})`)
+        .join(',\n');
+
+    const query = `
+    WITH input(user_id, category_id) AS (
+        VALUES
+        ${formattedValues}
+      ),
+    interaction_counts AS (
+      SELECT
+        i.user_id,
+        i.category_id,
+    
+        COUNT(DISTINCT v.poll_id) FILTER (
+          WHERE p.category_id = i.category_id
+            AND v.poll_id IS NOT NULL
+            AND v.poll_id NOT IN (
+                SELECT poll_id FROM poll_votes WHERE user_id = i.user_id
+            )
+            AND v.poll_id NOT IN (
+                SELECT poll_id FROM poll_likes WHERE user_id = i.user_id
+            )
+        ) AS skips,
+    
+        COUNT(DISTINCT pv.poll_id) FILTER (
+          WHERE p.category_id = i.category_id
+        ) AS votes,
+    
+        COUNT(DISTINCT pl.poll_id) FILTER (
+          WHERE p.category_id = i.category_id
+            AND EXISTS (
+                SELECT 1 FROM poll_votes vv WHERE vv.poll_id = pl.poll_id AND vv.user_id = pl.user_id
+            )
+        ) AS likes
+    
+      FROM input i
+      JOIN users u ON u.id = i.user_id
+      JOIN Categories c ON c.id = i.category_id
+      LEFT JOIN polls p ON p.category_id = c.id
+      LEFT JOIN poll_views v ON v.user_id = i.user_id AND v.poll_id = p.id
+      LEFT JOIN poll_votes pv ON pv.user_id = i.user_id AND pv.poll_id = p.id
+      LEFT JOIN poll_likes pl ON pl.user_id = i.user_id AND pl.poll_id = p.id
+      GROUP BY i.user_id, i.category_id
+    ),
+     scored AS (
+         SELECT
+             user_id,
+             category_id,
+             likes,
+             votes,
+             skips,
+             CASE
+                 WHEN (likes + votes + skips) > 0 THEN
+                     GREATEST(0.01, LEAST(1,
+                                          0.5 + (
+                                              (2 * likes + 1 * votes - 2 * skips)::float
+                                                  / (20 + likes + votes + skips)
+                                              )
+                                    ))
+                 ELSE 0.5
+                 END AS score
+         FROM interaction_counts
+     )
+    UPDATE user_categories uc
+    SET score = s.score
+    FROM scored s
+    WHERE uc.user_id = s.user_id AND uc.category_id = s.category_id;
+    `
+
+    await pool.query(query);
+}
+
 module.exports = {
     checkActivationCode,
     checkAndInsertUserWithProfile,
@@ -414,6 +493,7 @@ module.exports = {
     getFollows,
     getUser,
     getUserByLogin,
+    recalculateCategoryScore,
     unfollowUser,
     updateProfileImage,
 }

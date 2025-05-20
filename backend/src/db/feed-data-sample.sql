@@ -1370,3 +1370,26 @@ WHERE id IS NOT NULL
     WHERE events_queue.entity_id = polls.id
       AND events_queue.event_name = 'poll_index_update'
 );
+
+INSERT INTO events_queue (entity_id, event_name, event_date, metadata, created_at)
+SELECT
+    uc.user_id,
+    'user_category_update',
+    NOW() AT TIME ZONE 'UTC',
+    uc.category_id::TEXT,
+    NOW() AT TIME ZONE 'UTC'
+FROM user_categories uc
+WHERE NOT EXISTS (
+    SELECT 1 FROM events_queue e
+    WHERE e.entity_id = uc.user_id
+      AND e.event_name = 'user_category_update'
+      AND e.metadata = uc.category_id::TEXT
+);
+
+INSERT INTO poll_views (poll_id, user_id)
+SELECT DISTINCT p.id, u.id
+FROM users u
+CROSS JOIN polls p
+WHERE u.email LIKE '%@autotest.com'
+ON CONFLICT (poll_id, user_id) DO NOTHING;
+
