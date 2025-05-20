@@ -579,3 +579,135 @@ CREATE INDEX idx_polls_likes_per_vote on polls (likes_per_vote DESC);
 ALTER TABLE user_profiles
     ALTER COLUMN image SET DEFAULT 'https://storage.beampie.com/vote/profiles/497f7ffb-01f9-4d24-86ee-e7cc4b046f09___7e288897-3f74-4d87-97f0-b8066fb6b4b6.png';
 
+
+
+DROP TRIGGER IF EXISTS trigger_decrement_likes_count ON poll_likes;
+DROP TRIGGER IF EXISTS trigger_increment_likes_count ON poll_likes;
+DROP FUNCTION increment_likes_count;
+DROP FUNCTION decrement_likes_count;
+ALTER TABLE polls DROP COLUMN likes_count;
+
+CREATE INDEX idx_polls_votes_count on polls (votes_count DESC);
+DROP TRIGGER IF EXISTS trigger_increment_poll_votes_count ON poll_votes;
+DROP FUNCTION increment_poll_votes_count;
+
+CREATE TABLE Categories (
+    Id SERIAL PRIMARY KEY,
+    Name VARCHAR(50) NOT NULL UNIQUE
+);
+
+INSERT INTO Categories (Name) VALUES
+    ('Social life'),
+    ('Health'),
+    ('Entertainment'),
+    ('Food'),
+    ('Lifestyle'),
+    ('Fashion'),
+    ('Tech'),
+    ('Opinions'),
+    ('Media'),
+    ('Games');
+
+CREATE TABLE user_categories (
+    category_id INTEGER REFERENCES Categories(Id) ON DELETE CASCADE,
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    is_chosen BOOLEAN NOT NULL DEFAULT FALSE,
+    score REAL DEFAULT 0,
+
+    PRIMARY KEY (category_id, user_id)
+);
+
+CREATE OR REPLACE FUNCTION insert_user_categories()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO user_categories (user_id, category_id)
+  SELECT NEW.id, c.Id
+  FROM Categories c;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_insert_user_categories
+AFTER INSERT ON users
+FOR EACH ROW
+EXECUTE FUNCTION insert_user_categories();
+
+INSERT INTO user_categories (user_id, category_id)
+SELECT u.id, c.id
+FROM users u
+    CROSS JOIN Categories c
+ON CONFLICT DO NOTHING;
+
+CREATE INDEX idx_user_categories_user_id on user_categories (user_id);
+
+ALTER TABLE events_queue ADD COLUMN metadata TEXT;
+
+ALTER TABLE polls
+    ADD COLUMN category_id INTEGER NOT NULL DEFAULT 1 REFERENCES Categories(Id);
+
+CREATE OR REPLACE FUNCTION insert_user_category_update_event()
+    RETURNS TRIGGER AS $$
+DECLARE
+    _poll_id UUID;
+    _user_id UUID;
+    _category_id INTEGER;
+BEGIN
+    -- Use NEW if available, else OLD
+    _poll_id := COALESCE(NEW.poll_id, OLD.poll_id);
+    _user_id := COALESCE(NEW.user_id, OLD.user_id);
+
+    -- Get category_id from poll
+    SELECT category_id INTO _category_id
+    FROM polls
+    WHERE id = _poll_id;
+
+    -- Only insert if this event doesn't already exist
+    IF NOT EXISTS (
+        SELECT 1 FROM events_queue
+        WHERE entity_id = _user_id
+          AND event_name = 'user_category_update'
+          AND metadata = _category_id::TEXT
+    ) THEN
+        INSERT INTO events_queue (entity_id, event_name, event_date, metadata, created_at)
+        VALUES (
+                   _user_id,
+                   'user_category_update',
+                   NOW() AT TIME ZONE 'UTC',
+                   _category_id::TEXT,
+                   NOW() AT TIME ZONE 'UTC'
+               );
+    END IF;
+
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_user_category_update_like
+    AFTER INSERT OR DELETE ON poll_likes
+    FOR EACH ROW
+EXECUTE FUNCTION insert_user_category_update_event();
+
+CREATE TRIGGER trigger_user_category_update_vote
+    AFTER INSERT ON poll_votes
+    FOR EACH ROW
+EXECUTE FUNCTION insert_user_category_update_event();
+
+CREATE TRIGGER trigger_user_category_update_view
+    AFTER INSERT ON poll_views
+    FOR EACH ROW
+EXECUTE FUNCTION insert_user_category_update_event();
+
+CREATE TABLE poll_shares (
+    user_id UUID NOT NULL,            -- ID of the user who shared the poll
+    poll_id UUID NOT NULL,            -- ID of the poll that was liked
+    created_at TIMESTAMP DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'UTC'),  -- Timestamp when the shared
+
+-- Foreign keys to reference users and polls
+    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_poll FOREIGN KEY (poll_id) REFERENCES polls(id) ON DELETE CASCADE,
+
+-- Unique constraint to ensure each (user_id, poll_id) pair is unique
+    CONSTRAINT unique_user_poll_share UNIQUE (user_id, poll_id)
+);
+

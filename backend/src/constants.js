@@ -4,6 +4,7 @@ const MAIL_PASS = process.env.VOTE_APP_MAIL_PASS;
 
 const EVENT_NAMES = {
     POLL_INDEX_UPDATE: 'poll_index_update',
+    USER_CATEGORY_UPDATE: 'user_category_update',
 }
 
 module.exports = {

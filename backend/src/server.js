@@ -16,7 +16,7 @@ const sendEmail = require("./mail/mailing");
 const {validateEmail, validateUsername, validatePassword} = require("./validation");
 const {uploadMiddleware} = require("./middleware/fileUploadMiddleware");
 const {updateUserImage} = require("./services/userService");
-const {getPollById} = require("./db/dal/pollQueries");
+const {getPollById, sharePoll} = require("./db/dal/pollQueries");
 const {next} = require("lodash/seq");
 
 const app = express();
@@ -456,6 +456,9 @@ app.get('/polls/:id?/links', authMiddleware, async (req, res, next) => {
     try {
         const pollId = req.params.id;
         const poll = await getPollById(pollId);
+
+        if (poll?.readableId)
+            sharePoll(pollId, req.user.id).then(_ => {});
 
         return res.status(200).json({ link: `https://api-voteapp.beampie.com/polls/share/${poll?.readableId ?? ''}` });
     } catch (e) {

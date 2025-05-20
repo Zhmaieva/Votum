@@ -247,7 +247,7 @@ async function fetchPolls(userId, batchSize, excludedPollIds, featuredId) {
           WHERE p.is_deleted = false
             AND p.ends_in > (NOW() AT TIME ZONE 'UTC')
             AND ($3::uuid[] IS NULL OR p.id != ALL($3))
-          ORDER BY p.votes_count DESC, p.created_at DESC, p.likes_count DESC
+          ORDER BY p.votes_count DESC, p.created_at DESC
           LIMIT $2
         `;
 
@@ -353,7 +353,7 @@ const getPollById = async (pollId, readable = false) => {
             FROM polls p
                      JOIN users u ON p.created_by = u.id
                      JOIN user_profiles up ON u.id = up.user_id
-            WHERE ${ readable ? 'p.readable_id = $1' : 'p.id = $1' } AND p.ends_in > NOW() AND p.is_deleted = false;
+            WHERE ${ readable ? 'p.readable_id = $1' : 'p.id = $1' } ${ readable ? '' : 'AND p.ends_in > NOW()' } AND p.is_deleted = false;
         `;
 
         const pollResult = await pool.query(pollQuery, [pollId]);
@@ -469,6 +469,20 @@ async function likePoll(pollId, userId) {
     }
 }
 
+async function sharePoll(pollId, userId) {
+    const query = `
+    INSERT INTO poll_shares (poll_id, user_id) 
+    VALUES ($1, $2)
+    ON CONFLICT (poll_id, user_id) DO NOTHING; -- Prevent duplicate likes
+  `;
+
+    try {
+        await pool.query(query, [pollId, userId]);
+    } catch (err) {
+        console.error('Error sharing poll:', err);
+    }
+}
+
 async function unlikePoll(pollId, userId) {
     const query = `
     DELETE FROM poll_likes 
@@ -573,13 +587,54 @@ async function voteOnPoll({ userId, optionId }) {
 }
 
 /**
- * Updates likes_per_vote for given polls
+ * Updates likes_per_vote for given polls using Wilson score
  * @param pollId Poll ID
  * @returns {Promise<void>}
  */
 async function recalculatePollsScore({ pollIds }) {
     const query = `
-
+        WITH voted_and_liked AS (
+          SELECT
+            p.id AS poll_id,
+            COUNT(DISTINCT pv.user_id) AS votes,
+            COUNT(DISTINCT pl.user_id) AS likes
+          FROM polls p
+          JOIN poll_votes pv ON p.id = pv.poll_id
+          LEFT JOIN poll_likes pl ON pl.poll_id = p.id AND pl.user_id = pv.user_id
+          WHERE p.id = ANY($1::uuid[])
+          GROUP BY p.id
+        ),
+        scores AS (
+          SELECT
+            poll_id,
+            votes,
+            likes,
+            CASE
+              WHEN votes > 0 THEN (
+                (
+                  (likes::float / votes) + (1.96^2 / (2 * votes))
+                  - 1.96 * sqrt(
+                      ((likes::float / votes) * (1 - (likes::float / votes)) / votes)
+                      + (1.96^2 / (4 * votes * votes))
+                  )
+                ) / (1 + (1.96^2 / votes))
+              )
+              ELSE NULL
+            END AS raw_score
+          FROM voted_and_liked
+        )
+        UPDATE polls
+        SET
+          votes_count = s.votes,
+          likes_per_vote = (
+            CASE
+              WHEN s.raw_score IS NULL THEN NULL
+              WHEN s.raw_score < 0.001 THEN 0
+              ELSE s.raw_score
+            END
+          )
+        FROM scores s
+        WHERE polls.id = s.poll_id;
     `
 
     await pool.query(query, [pollIds]);
@@ -597,6 +652,7 @@ module.exports = {
     likePoll,
     recalculatePollsScore,
     searchPolls,
+    sharePoll,
     unlikePoll,
     viewPoll,
     voteOnPoll,
