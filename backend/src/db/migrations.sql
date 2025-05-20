@@ -766,4 +766,57 @@ EXECUTE FUNCTION set_duration_type();
 
 
 
+WITH chosen_categories AS (
+    SELECT category_id, score
+    FROM user_categories
+    WHERE user_id = '2a860eb8-d81e-4503-919c-37101587eef5' AND is_chosen = true
+),
+     category_random_weights AS (
+         SELECT category_id, score, random() * score AS weighted_score
+         FROM chosen_categories
+     ),
+     polls_ranked_by_category AS (
+         SELECT
+             p.id,
+             p.question,
+             p.ends_in,
+             p.readable_id,
+             u.username,
+             up.user_id,
+             up.image,
+             up.followers_number,
+             CASE WHEN pl.user_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_liked,
+             CASE WHEN uf.user_follower_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_following,
+             CASE WHEN p.created_by = '2a860eb8-d81e-4503-919c-37101587eef5' THEN up.bio ELSE '' END AS user_bio,
+             p.likes_per_vote AS effective_score,
+             p.created_at,
+             p.votes_count,
+             crw.weighted_score AS category_weight
+         FROM polls p
+                  JOIN category_random_weights crw ON crw.category_id = p.category_id
+                  JOIN users u ON u.id = p.created_by
+                  JOIN user_profiles up ON up.user_id = u.id
+                  LEFT JOIN poll_likes pl ON pl.poll_id = p.id AND pl.user_id = '2a860eb8-d81e-4503-919c-37101587eef5'
+                  LEFT JOIN user_follows uf ON uf.user_follower_id = '2a860eb8-d81e-4503-919c-37101587eef5' AND uf.user_follow_id = u.id
+         WHERE p.is_deleted = false
+           AND p.ends_in > (NOW() AT TIME ZONE 'UTC')
+           AND p.created_by <> '2a860eb8-d81e-4503-919c-37101587eef5'
+     )
+SELECT
+    id,
+    question,
+    ends_in,
+    readable_id,
+    username,
+    user_id,
+    image,
+    followers_number,
+    is_liked,
+    is_following,
+    user_bio
+FROM polls_ranked_by_category
+ORDER BY category_weight DESC, votes_count DESC
+LIMIT 20;
+
+
 

@@ -81,14 +81,10 @@ const pollWhere = `
 /**
  * Fetches polls for a user based on feed score and featured poll if provided
  * @param userId User ID
- * @param batchSize Number of polls to fetch
- * @param excludedPollIds List of poll IDs to exclude
  * @param featuredId Featured poll readable_id (optional)
  */
-async function fetchPolls(userId, batchSize, excludedPollIds, featuredId) {
-    const client = await pool.connect();
+async function fetchPolls(userId, featuredId) {
     try {
-        const excludedArray = excludedPollIds.length > 0 ? excludedPollIds : null;
         let rows = [];
 
         if (featuredId) {
@@ -116,88 +112,47 @@ async function fetchPolls(userId, batchSize, excludedPollIds, featuredId) {
                 LIMIT 1
               `;
 
-            const { rows: featuredRows } = await client.query(featuredQuery, [userId, featuredId]);
+            const { rows: featuredRows } = await pool.query(featuredQuery, [userId, featuredId]);
 
             rows = rows.concat(featuredRows);
-
-            if (featuredRows.length > 0) {
-                // Exclude the featured poll from further selects
-                excludedPollIds = [...excludedPollIds, featuredRows[0].id];
-            }
         }
 
-        const excludedArrayFinal = excludedPollIds.length > 0 ? excludedPollIds : null;
-
-        const personalizedQuery = `
-            WITH base_polls AS (
-                SELECT
-                    p.id,
-                    p.question,
-                    p.ends_in,
-                    p.readable_id,
-                    u.username,
-                    up2.user_id,
-                    up2.image,
-                    up2.followers_number,
-                    CASE WHEN pl.user_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_liked,
-                    CASE WHEN uf.user_follower_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_following,
-                    CASE WHEN p.created_by = $1 THEN up2.bio ELSE '' END AS user_bio,
-                    p.likes_per_vote AS effective_score,
-                    p.created_at
-                FROM polls p
-                         JOIN users u ON u.id = p.created_by
-                         JOIN user_profiles up2 ON up2.user_id = u.id
-                         LEFT JOIN poll_likes pl ON pl.poll_id = p.id AND pl.user_id = $1
-                         LEFT JOIN user_follows uf ON uf.user_follower_id = $1 AND uf.user_follow_id = u.id
-                WHERE p.is_deleted = false
-                  AND p.ends_in > (NOW() AT TIME ZONE 'UTC')
-                  AND p.created_by <> $1
-                  AND ($3::uuid[] IS NULL OR p.id != ALL($3))
-                  AND NOT EXISTS (
-                    SELECT 1 FROM poll_views v
-                    WHERE v.poll_id = p.id AND v.user_id = $1
-                )
-                LIMIT $2
+        const topPopularQuery = `
+            WITH chosen_categories AS (
+                SELECT category_id, score
+                FROM user_categories
+                WHERE user_id = $1 AND is_chosen = true
             ),
-                 followed_polls AS (
+                 category_random_weights AS (
+                     SELECT category_id, score, random() * score AS weighted_score
+                     FROM chosen_categories
+                 ),
+                 polls_ranked_by_category AS (
                      SELECT
                          p.id,
                          p.question,
                          p.ends_in,
                          p.readable_id,
                          u.username,
-                         up2.user_id,
-                         up2.image,
-                         up2.followers_number,
+                         up.user_id,
+                         up.image,
+                         up.followers_number,
                          CASE WHEN pl.user_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_liked,
-                         TRUE AS is_following,
-                         CASE WHEN p.created_by = $1 THEN up2.bio ELSE '' END AS user_bio,
-                         p.likes_per_vote * 2 AS effective_score,
-                         p.created_at
+                         CASE WHEN uf.user_follower_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_following,
+                         CASE WHEN p.created_by = $1 THEN up.bio ELSE '' END AS user_bio,
+                         p.likes_per_vote AS effective_score,
+                         p.created_at,
+                         p.votes_count,
+                         crw.weighted_score AS category_weight
                      FROM polls p
+                              JOIN category_random_weights crw ON crw.category_id = p.category_id
                               JOIN users u ON u.id = p.created_by
-                              JOIN user_profiles up2 ON up2.user_id = u.id
+                              JOIN user_profiles up ON up.user_id = u.id
                               LEFT JOIN poll_likes pl ON pl.poll_id = p.id AND pl.user_id = $1
-                              JOIN user_follows uf ON uf.user_follower_id = $1 AND uf.user_follow_id = u.id
+                              LEFT JOIN user_follows uf ON uf.user_follower_id = $1 AND uf.user_follow_id = u.id
                      WHERE p.is_deleted = false
                        AND p.ends_in > (NOW() AT TIME ZONE 'UTC')
                        AND p.created_by <> $1
-                       AND ($3::uuid[] IS NULL OR p.id != ALL($3))
-                       AND NOT EXISTS (
-                         SELECT 1 FROM poll_views v
-                         WHERE v.poll_id = p.id AND v.user_id = $1
-                     )
-                     LIMIT $2
-                 ),
-                 combined AS (
-                     SELECT * FROM base_polls
-                     UNION ALL
-                     SELECT * FROM followed_polls
-                 ),
-                 ranked AS (
-                     SELECT *,
-                            ROW_NUMBER() OVER (PARTITION BY id ORDER BY effective_score DESC) AS rank
-                     FROM combined
                  )
             SELECT
                 id,
@@ -211,49 +166,17 @@ async function fetchPolls(userId, batchSize, excludedPollIds, featuredId) {
                 is_liked,
                 is_following,
                 user_bio
-            FROM ranked
-            WHERE rank = 1
-            ORDER BY effective_score DESC, created_at DESC
-            LIMIT $2;
-        `;
+            FROM polls_ranked_by_category
+            ORDER BY category_weight DESC, votes_count DESC
+            LIMIT 20;
+        `
 
+        const { rows: topPopularRows } = await pool.query(topPopularQuery, [userId]);
 
-        const { rows: personalizedRows } = await client.query(personalizedQuery, [userId, batchSize - rows.length, excludedArrayFinal]);
-
-        if (personalizedRows.length > 0) {
-            rows = rows.concat(personalizedRows);
-            return attachOptionsToPolls(userId, rows);
-        }
-
-        // Fallback trending polls
-        const fallbackQuery = `
-          SELECT 
-            p.id,
-            p.question,
-            p.ends_in,
-            p.readable_id,
-            u.username,
-            up2.user_id,
-            up2.image,
-            up2.followers_number,
-            CASE WHEN pl.user_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_liked,
-            CASE WHEN uf.user_follower_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_following,
-            CASE WHEN p.created_by = $1 THEN up2.bio ELSE '' END AS user_bio
-          FROM polls p
-          JOIN users u ON u.id = p.created_by
-          JOIN user_profiles up2 ON up2.user_id = u.id
-          LEFT JOIN poll_likes pl ON pl.poll_id = p.id AND pl.user_id = $1
-          LEFT JOIN user_follows uf ON uf.user_follower_id = $1 AND uf.user_follow_id = u.id
-          WHERE p.is_deleted = false
-            AND p.ends_in > (NOW() AT TIME ZONE 'UTC')
-            AND ($3::uuid[] IS NULL OR p.id != ALL($3))
-          ORDER BY p.votes_count DESC, p.created_at DESC
-          LIMIT $2
-        `;
-
-        const { rows: fallbackRows } = await client.query(fallbackQuery, [userId, batchSize - rows.length, excludedArrayFinal]);
-
-        rows = rows.concat(fallbackRows);
+        // if (topPopularRows.length > 0) {
+        //     rows = rows.concat(topPopularRows);
+        //     return attachOptionsToPolls(userId, rows);
+        // }
 
         return attachOptionsToPolls(userId, rows);
     } catch (error) {
