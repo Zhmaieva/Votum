@@ -46,7 +46,7 @@ const AwesomeSearch = ({ onSearchPress }) => {
             <View style={styles.row}>
                 <TextInput
                     style={styles.searchInput}
-                    placeholder="Search polls"
+                    placeholder="search polls"
                     placeholderTextColor={Colors.grey}
                     value={searchQuery}
                     onChangeText={setSearchQuery}
@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
     searchButton: {
         height: 40,
         width: 80,
-        marginLeft: 5,
+        marginLeft: 8,
         marginRight: 2,
         backgroundColor: Colors.black,
         justifyContent: 'center',

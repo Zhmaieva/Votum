@@ -28,6 +28,7 @@ const AwesomeUserHeader = ({
     const [isFollowing, setIsFollowing] = useState(userData?.isFollowing);
     const [isBlocked, setIsBlocked] = useState(false);
     const [showBlockModal, setShowBlockModal] = useState(false);
+    const [hasNewNotifications, setHasNewNotifications] = useState(true);
 
     const isOwnProfile = user?.userId === loggedInUserId;
 
@@ -73,8 +74,8 @@ const AwesomeUserHeader = ({
     const content = (
         <View style={styles.userContainer}>
             <View style={[styles.row, styles.aligned]}>
-                <View style={[styles.avatarContainer, isProfilePage && styles.avatarContainerLarge]}>
-                    <Image source={{ uri: user.image }} style={[styles.avatar, isProfilePage && styles.avatarLarge]} />
+                <View style={styles.avatarContainer}>
+                    <Image source={{ uri: user.image }} style={styles.avatar} />
                 </View>
                 <View style={{ flex: 1, marginLeft: 20 }}>
                     <View style={[styles.followersContainer, styles.row]}>
@@ -118,10 +119,11 @@ const AwesomeUserHeader = ({
                                 <Ionicons name="share-outline" size={26} color={Colors.white} />
                             </Pressable>
                             <Pressable
-                                style={[styles.iconContainer, { marginLeft: 10 }]}
+                                style={styles.notificationWrapper}
                                 onPress={() => navigation.navigate("Notifications")}
                             >
                                 <Ionicons name="notifications-outline" size={26} color={Colors.white} />
+                                {hasNewNotifications && <View style={styles.greenDot} />}
                             </Pressable>
                         </View>
                     </>
@@ -167,10 +169,11 @@ const AwesomeUserHeader = ({
 
             <AwesomeModal
                 visible={showBlockModal}
-                text="Are you sure you want to block this user?"
+                text="BLOCK USER"
+                subtext='Are you sure you want to block this user?'
                 onBackPress={() => setShowBlockModal(false)}
                 buttons={[
-                    { label: "Cancel", onPress: () => setShowBlockModal(false) },
+                    { label: "CANCEL", onPress: () => setShowBlockModal(false) },
                     { label: "OK", onPress: handleBlockConfirm },
                 ]}
             />
@@ -190,7 +193,6 @@ const styles = StyleSheet.create({
     userContainer: {
         width: '100%',
         paddingRight: 2,
-        paddingBottom: 2,
     },
     avatarContainer: {
         height: 50,
@@ -246,12 +248,28 @@ const styles = StyleSheet.create({
         shadowOpacity: 1,
         shadowColor: Colors.green,
     },
-    avatarContainerLarge: {
-        height: 60,
-        width: 60,
+    notificationWrapper: {
+        position: 'relative',
+        width: 40,
+        height: 40,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderColor: Colors.black,
+        borderWidth: 1,
+        backgroundColor: Colors.black,
+        marginLeft: 10,
+        shadowRadius: 0,
+        shadowOffset: { width: 2, height: 2 },
+        shadowOpacity: 1,
+        shadowColor: Colors.green,
     },
-    avatarLarge: {
-        height: 60,
-        width: 60,
+    greenDot: {
+        position: 'absolute',
+        top: 9,
+        right: 9,
+        width: 7,
+        height: 7,
+        borderRadius: 0,
+        backgroundColor: Colors.green,
     },
 });

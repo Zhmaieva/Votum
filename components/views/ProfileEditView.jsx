@@ -19,6 +19,8 @@ import AwesomeProfilePhoto from "../customComponents/AwesomeProfilePhoto";
 import AwesomeCategory from "../customComponents/AwesomeCategory";
 import {AwesomeModal} from "../customComponents/AwesomeModal";
 import AwesomePollPublishingLoader from "../customComponents/AwesomePollPublishingLoader";
+import { useNavigation } from "@react-navigation/native";
+import { VERIFICATION_FLOW_TYPE } from "../views/VerificationCodeView";
 
 const ProfileEditView = ({ route }) => {
     const [username, setUsername] = useState('');
@@ -28,6 +30,7 @@ const ProfileEditView = ({ route }) => {
     const [isDeleteModalVisible, setDeleteModalVisible] = useState(false);
     const [isErrorModalVisible, setErrorModalVisible] = useState(false);
     const [isLogoutModalVisible, setLogoutModalVisible] = useState(false);
+    const navigation = useNavigation();
 
     useFocusEffect(() => {
         getDataService().resetUserChanges();
@@ -75,7 +78,13 @@ const ProfileEditView = ({ route }) => {
                     <AwesomeButton text={`Bio: ${bioD || '—'}`} color={Color.WHITE} screenName='Edit bio' settingButton={true} />
                 </View>
                 <View style={styles.margin15}>
-                    <AwesomeButton text={`Email: ${email || '—'}`} color={Color.WHITE} screenName='Password' settingButton={true} />
+                    <AwesomeButton
+                        text={`Email: ${email || '—'}`}
+                        color={Color.WHITE}
+                        screenName='Change Email'
+                        settingButton={true}
+                        params={{ flowType: VERIFICATION_FLOW_TYPE.CHANGE_EMAIL }}
+                    />
                 </View>
                 <Text style={[styles.sectionName, styles.marginTop15]}>Personal Details</Text>
                 <View style={styles.margin15}>
@@ -86,7 +95,7 @@ const ProfileEditView = ({ route }) => {
                 </View>
                 <Text style={[styles.sectionName, styles.marginTop15]}>Privacy & Security</Text>
                 <View style={styles.margin15}>
-                    <AwesomeButton text='Change Password' color={Color.WHITE} settingButton={true}/>
+                    <AwesomeButton text='Change Password' color={Color.WHITE} settingButton={true} screenName='Current Password'/>
                 </View>
                 <View style={styles.margin15}>
                     <AwesomeButton text='Notifications settings' color={Color.WHITE} settingButton={true} screenName='Notification Settings'/>
@@ -147,13 +156,15 @@ const ProfileEditView = ({ route }) => {
                 visible={isLogoutModalVisible}
                 text="LOG OUT"
                 subtext="Are you sure you want to log out?"
-                buttonText="Log out"
-                secondaryText="Cancel"
                 onPress={async () => {
                     setLogoutModalVisible(false);
                     await signOut();
                 }}
                 onBackPress={() => setLogoutModalVisible(false)}
+                buttons={[
+                    { label: "CANCEL",  },
+                    { label: "OK",  },
+                ]}
             />
         </SafeAreaView>
     );

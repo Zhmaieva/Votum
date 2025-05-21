@@ -39,7 +39,7 @@ const SomebodysProfileView = ({ route }) => {
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.contentWrapper}>
-                <View style={{marginBottom: 3}}>
+                <View style={{marginBottom: 10}}>
                     {user === null ? (
                         <AwesomeLoadingHeader />
                     ) : (
@@ -80,14 +80,6 @@ const SomebodysProfileView = ({ route }) => {
                     />
                 )}
             </View>
-            <Modal
-                animationType="fade"
-                transparent={true}
-                visible={modalVisible}
-                onRequestClose={() => setModalVisible(false)}
-            >
-                <Text>TEST TEST</Text>
-            </Modal>
         </SafeAreaView>
     );
 };

@@ -91,7 +91,11 @@ const EmailRegisterView = ({route }) => {
                     </View>
                     <AwesomeButton text='Log in' color={Color.WHITE} screenName='Log in' />
                 </View>
-                <AwesomeModal visible={isModalVisible} text={error} onPress={() => setModalVisible(false)} onBackPress={() => setModalVisible(false)} />
+                <AwesomeModal
+                    visible={isModalVisible}
+                    text={error}
+                    onPress={() => setModalVisible(false)}
+                    onBackPress={() => setModalVisible(false)} />
             </View>
         </SafeAreaView>
     );

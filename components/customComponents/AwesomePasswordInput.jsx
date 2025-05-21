@@ -1,49 +1,72 @@
-import { TextInput, View, StyleSheet, Text } from 'react-native';
-import React, {useState, useRef, forwardRef} from 'react';
+import { TextInput, View, StyleSheet, Text, ActivityIndicator } from 'react-native';
+import React, { useState, forwardRef, useImperativeHandle } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../utils/colorUtils';
-import {getDataService} from "../../shared/common";
+import { getDataService } from "../../shared/common";
+import { debounce } from 'lodash';
 
-const AwesomePasswordInput = forwardRef((props, inputRef) => {
-    // State variable to hold the password
-    const [password, setPassword] = useState('');
-
-    // State variable to track password visibility
+const AwesomePasswordInput = forwardRef(({ value, onChangeText, placeholder = '8 - 20 characters' }, ref) => {
+    const [localPassword, setLocalPassword] = useState(value || '');
     const [showPassword, setShowPassword] = useState(false);
-
-    // Function to toggle the password visibility state
-    const toggleShowPassword = () => {
-        setShowPassword(!showPassword);
-    };
-
     const [validationErrorMessage, setValidationErrorMessage] = useState('');
+    const [isChecking, setIsChecking] = useState(false);
+    const [isValid, setIsValid] = useState(null); // null | true | false
 
-    const validation = function (text) {
-        setPassword(text);
-        if (password?.length < 8 || password?.length > 20) {
+    const toggleShowPassword = () => setShowPassword(!showPassword);
+    const validatePassword = debounce((text) => {
+        const valid = text.length >= 8 && text.length <= 20;
+        setIsValid(valid);
+        setIsChecking(false);
+    }, 400);
+
+    const validate = (text) => {
+        // Remove emoji
+        const cleanedText = text.replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '');
+
+        setLocalPassword(cleanedText);
+        setIsChecking(true);
+
+        if (cleanedText.length < 8 || cleanedText.length > 20) {
             setValidationErrorMessage('Your password must be 8-20 characters');
             getDataService().getUser().password = '';
-        }
-        else {
+        } else {
             setValidationErrorMessage('');
-            getDataService().getUser().password = text;
+            getDataService().getUser().password = cleanedText;
         }
-    }
+
+        validatePassword(cleanedText); // debounce validity icon update
+
+        if (onChangeText) {
+            onChangeText(cleanedText);
+        }
+    };
+
+    useImperativeHandle(ref, () => ({
+        isValid: () => localPassword.length >= 8 && localPassword.length <= 20
+    }));
 
     return (
         <View>
             <View style={styles.passwordContainer}>
                 <TextInput
-                    // Set secureTextEntry prop to hide
-                    //password when showPassword is false
-                    ref={inputRef}
                     secureTextEntry={!showPassword}
-                    value={password}
-                    onChangeText={(text)=>validation(text)}
+                    value={value !== undefined ? value : localPassword}
+                    onChangeText={validate}
                     style={styles.input}
+                    placeholder={placeholder}
                     placeholderTextColor="#aaa"
-
                 />
+                <View style={styles.validationIcon}>
+                    {isChecking ? (
+                        <ActivityIndicator size="small" color={Colors.grey} />
+                    ) : isValid !== null && (
+                        <Ionicons
+                            name={isValid ? "checkmark" : "close"}
+                            size={16}
+                            color={isValid ? Colors.green : Colors.red}
+                        />
+                    )}
+                </View>
                 <Ionicons
                     name={showPassword ? 'eye-off-outline' : 'eye-outline'}
                     size={20}
@@ -52,7 +75,7 @@ const AwesomePasswordInput = forwardRef((props, inputRef) => {
                     onPress={toggleShowPassword}
                 />
             </View>
-            <Text style={styles.redFont}>{validationErrorMessage}</Text>
+            {/*<Text style={styles.redFont}>{validationErrorMessage}</Text>*/}
         </View>
     );
 });
@@ -61,38 +84,37 @@ export default AwesomePasswordInput;
 
 const styles = StyleSheet.create({
     passwordContainer: {
-        paddingLeft: 3,
         flexDirection: 'row',
         alignItems: 'center',
         borderWidth: 1,
         borderColor: Colors.black,
         height: 40,
-        paddingEnd: 4,
+        paddingLeft: 8,
+        paddingRight: 4,
         shadowRadius: 0,
         shadowOffset: { width: 2, height: 2 },
         shadowOpacity: 1,
         shadowColor: Colors.green,
         backgroundColor: Colors.white,
-        marginBottom: 3
+        marginBottom: 3,
     },
     input: {
         flex: 1,
         color: Colors.black,
-        paddingVertical: 10,
-        paddingRight: 10,
-        paddingLeft: 8,
         fontSize: 14,
-        width: '100%',
         height: 40,
-        flexDirection: 'row',
-        alignItems: 'center',
+        paddingRight: 10,
     },
     icon: {
-        marginLeft: 10,
-        marginRight: 2
+        marginHorizontal: 3,
+    },
+    validationIcon: {
+        width: 18,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     redFont: {
         fontSize: 12,
         color: Colors.red,
-    }
+    },
 });

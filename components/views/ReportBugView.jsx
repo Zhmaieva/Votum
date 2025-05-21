@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
         shadowRadius: 0,
     },
     buttonContainer: {
-        marginTop: 20,
+        marginTop: 8,
         width: '100%',
     },
     charCounter: {

@@ -38,6 +38,8 @@ import NotificationsView from "../NotificationsView";
 import NotificationSettingsView from "../NotificationSettingsView";
 import EditBirthDateView from "../EditBirthDateView";
 import EditGenderView from "../EditGenderView";
+import SuccessView from "../SuccessView";
+import NewPasswordView from "../NewPasswordView";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -96,6 +98,7 @@ function UserStack() {
     return (
         <Stack.Navigator id="Test">
             <Stack.Screen name="Profile" component={MyUserProfileView} options={{ headerShown: false, gestureEnabled: true }} />
+            <Stack.Screen name="Profile" component={MyUserProfileView} options={{ headerShown: false, gestureEnabled: true }} />
             <Stack.Screen name="Edit profile" component={ProfileEditView} options={{ headerShown: true, gestureEnabled: true }} />
             <Stack.Screen name="Following" component={FollowingView} options={{ headerShown: true, gestureEnabled: true }} />
             <Stack.Screen name="Followers" component={FollowersView} options={{ headerShown: true, gestureEnabled: true }} />
@@ -138,7 +141,7 @@ function UserStack() {
                               ),
                           })}
             />
-            <Stack.Screen name="Password"
+            <Stack.Screen name="Change Email"
                           component={PasswordView}
                           options={({ navigation }) => ({
                               headerShown: true,
@@ -151,7 +154,9 @@ function UserStack() {
                               ),
                           })}
             />
-            <AuthStack.Screen name="Verification Code" component={VerificationCodeView} initialParams={{ flowType: VERIFICATION_FLOW_TYPE.CHANGE_EMAIL}} options={{ headerShown: false, gestureEnabled: true }}/>
+            <AuthStack.Screen name="Current Password" component={PasswordView} initialParams={{ flowType: VERIFICATION_FLOW_TYPE.CHANGE_PASSWORD}} options={{ headerShown: true, gestureEnabled: true }}/>
+            <AuthStack.Screen name="Verification Code" component={VerificationCodeView} initialParams={{ flowType: VERIFICATION_FLOW_TYPE.CHANGE_EMAIL}} options={{ headerShown: true, gestureEnabled: true }}/>
+            <AuthStack.Screen name="Verification Code Password" component={VerificationCodeView} initialParams={{ flowType: VERIFICATION_FLOW_TYPE.CHANGE_PASSWORD}} options={{ headerShown: true, gestureEnabled: true }}/>
             <AuthStack.Screen name="Log in" component={LogInView} options={{ headerShown: false, gestureEnabled: true }}/>
             <AuthStack.Screen name="Forgot password" component={ForgotPasswordView} options={{ headerShown: false, gestureEnabled: true }}/>
             <AuthStack.Screen name="Email Register" component={EmailRegisterView} options={{ headerShown: false, gestureEnabled: true }}/>
@@ -162,6 +167,9 @@ function UserStack() {
             <AuthStack.Screen name="Notification Settings" component={NotificationSettingsView} options={{ headerShown: true, gestureEnabled: true }}/>
             <AuthStack.Screen name="Edit Birth" component={EditBirthDateView} options={{ headerShown: true, gestureEnabled: true }}/>
             <AuthStack.Screen name="Edit Gender" component={EditGenderView} options={{ headerShown: true, gestureEnabled: true }}/>
+            <AuthStack.Screen name="Success email" component={SuccessView} options={{ headerShown: true, gestureEnabled: true }} initialParams={{ flowType: VERIFICATION_FLOW_TYPE.CHANGE_EMAIL}}/>
+            <AuthStack.Screen name="Success password" component={SuccessView} options={{ headerShown: true, gestureEnabled: true }} initialParams={{ flowType: VERIFICATION_FLOW_TYPE.CHANGE_PASSWORD}}/>
+            <AuthStack.Screen name="New Password" component={NewPasswordView} options={{ headerShown: true, gestureEnabled: true }}/>
         </Stack.Navigator>
     );
 }

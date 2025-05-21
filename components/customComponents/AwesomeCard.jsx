@@ -62,6 +62,6 @@ export default AwesomeCard;
 
 const styles = StyleSheet.create({
     margin15: {
-        marginBottom: 15
+        marginBottom: 8
     }
 });

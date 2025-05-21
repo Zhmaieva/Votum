@@ -140,8 +140,6 @@ const AddView = () => {
                         </Text>
                     )}
                 </View>
-            </View>
-            <View style={styles.container}>
                 <AwesomeButton
                     color={Color.BLACK}
                     text="Create poll"

@@ -3,11 +3,12 @@ import {View, Text, StyleSheet, Dimensions, TouchableOpacity, SafeAreaView, Scro
 import {useRoute, useNavigation, useFocusEffect} from '@react-navigation/native';
 import { Colors } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from '../customComponents/AwesomeButton';
-import {createPoll, durationMap, fetchMyProfile} from '../../shared/api/apiClient';
+import {createPoll, durationMap, fetchMyProfile, fetchUserPolls} from '../../shared/api/apiClient';
 import {getDataService, onShare} from '../../shared/common';
 import AwesomeUserHeader from '../customComponents/AwesomeUserHeader';
 import {Ionicons} from "@expo/vector-icons";
 import AwesomeUserHeaderPreview from "../customComponents/AwesomeUserHeaderPreview";
+import AwesomeLoadingHeader from "../customComponents/AwesomeLoadingHeader";
 
 const MIN_LOADING_TIME = 1000;
 
@@ -15,6 +16,7 @@ const PreviewPollView = () => {
     const route = useRoute();
     const navigation = useNavigation();
     const { question, options, selectedDuration, resetAddViewForm } = route.params;
+    const [userDataLoaded, setUserDataLoaded] = useState(false);
 
     const [user, setUser] = useState(null);
 
@@ -23,28 +25,29 @@ const PreviewPollView = () => {
             let isMounted = true;
             const startTime = Date.now();
 
-            const finishLoading = (userData) => {
-                const loadDuration = Date.now() - startTime;
-                const delay = Math.max(0, MIN_LOADING_TIME - loadDuration);
+            const loadUserData = async () => {
+                let userData = getDataService().getUser();
+                if (!userData) {
+                    userData = await fetchMyProfile();
+                    getDataService().setUser(userData);
+                }
+                if (isMounted) {
+                    setUser(userData);
+                    fetchUserPolls(userData.userId).then(res => {
+                        if (isMounted) setPolls(res);
+                    });
+                }
+            };
+
+            loadUserData().then(() => {
+                const elapsed = Date.now() - startTime;
+                const delay = Math.max(0, MIN_LOADING_TIME - elapsed);
                 setTimeout(() => {
-                    if (isMounted) {
-                        setUser(userData);
-                    }
+                    if (isMounted) setUserDataLoaded(true);
                 }, delay);
-            };
+            });
 
-            if (getDataService().getUser()) {
-                finishLoading(getDataService().getUser());
-            } else {
-                fetchMyProfile().then(res => {
-                    getDataService().setUser(res);
-                    finishLoading(res);
-                });
-            }
-
-            return () => {
-                isMounted = false;
-            };
+            return () => { isMounted = false; }
         }, [])
     );
 
@@ -52,10 +55,21 @@ const PreviewPollView = () => {
         <SafeAreaView style={styles.safeArea}>
             <ScrollView style={styles.container}>
                 <View>
-                    {user && (
+                    {/*{user && (
                         <View style={styles.headerContainer}>
-                            <AwesomeUserHeaderPreview userData={user} loggedInUserId={user?.userId} isInsideCard={true} />
+                            <AwesomeUserHeaderPreview
+                                userData={user}
+                                loggedInUserId={user?.userId}
+                                isInsideCard={true} />
                         </View>
+                    )}*/}
+                    {user && !userDataLoaded ? (
+                        <AwesomeLoadingHeader />
+                    ) : (
+                        <AwesomeUserHeaderPreview
+                            userData={user}
+                            loggedInUserId={user?.userId}
+                            isInsideCard={true} />
                     )}
                     <View style={[styles.questionContainer, styles.row]}>
                         <Text style={styles.qTextStyle}>Q: </Text>

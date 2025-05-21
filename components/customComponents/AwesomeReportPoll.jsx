@@ -146,14 +146,14 @@ const styles = StyleSheet.create({
         marginBottom: 20
     },
     submitButton: {
-        backgroundColor: Colors.green,
+        backgroundColor: Colors.black,
         padding: 10,
         alignItems: "center",
         width: '47%',
         shadowRadius: 0,
         shadowOffset: { width: 2, height: 2 },
         shadowOpacity: 1,
-        shadowColor: Colors.black,
+        shadowColor: Colors.green,
     },
     cancelButton: {
         width: '47%',

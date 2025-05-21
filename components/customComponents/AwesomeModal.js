@@ -55,12 +55,18 @@ export function AwesomeModal({
         <Modal visible={visible} transparent animationType="fade">
             <TouchableWithoutFeedback onPress={onBackPress}>
                 <View style={styles.modalBackground}>
-                    <View style={styles.modalContainer}>
-                        <View style={styles.row}>
-                            <Text style={styles.modalText}>{text}</Text>
-                            {subtext ? <Text style={styles.modalSubText}>{subtext}</Text> : null}
+                    <View style={styles.modalBackgroundContainer}>
+                        <View style={styles.modalContainer}>
+                            <View style={styles.row}>
+                                <Text style={styles.modalText}>{text}</Text>
+                                {subtext ? <Text style={styles.modalSubText}>{subtext}</Text> : null}
+                            </View>
                         </View>
-                        {renderButtons()}
+                        <View style={styles.line}/>
+                        <View style={styles.lineGreen}/>
+                        <View style={styles.modalContainer}>
+                            {renderButtons()}
+                        </View>
                     </View>
                 </View>
             </TouchableWithoutFeedback>
@@ -75,27 +81,31 @@ const styles = StyleSheet.create({
         alignItems: "center",
         backgroundColor: "rgba(0,0,0,0.5)",
     },
+    modalBackgroundContainer: {
+        width: '84%'
+    },
     modalContainer: {
         backgroundColor: Colors.white,
-        padding: 20,
+        padding: 15,
         alignItems: "center",
-        margin: 20,
     },
     modalText: {
         fontSize: 16,
         color: Colors.black,
         textAlign: "center",
+        fontWeight: 600,
+        marginBottom: 10
     },
     modalSubText: {
-        fontSize: 16,
+        fontSize: 14,
         color: Colors.grey,
         textAlign: "center",
-        marginTop: 8,
+        marginBottom: 5
     },
     modalButton: {
         color: Colors.green,
         fontSize: 16,
-        marginTop: 10,
+        fontWeight: "bold"
     },
     row: {
         alignItems: "center",
@@ -105,6 +115,19 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         width: "100%",
-        marginTop: 15,
     },
+    line: {
+        height: 1,
+        width: "100%",
+        backgroundColor: Colors.black,
+        shadowRadius: 0,
+        shadowOffset: { width: 0, height: 6 },
+        shadowOpacity: 1,
+        shadowColor: Colors.green,
+    },
+    lineGreen: {
+        backgroundColor: Colors.green,
+        height: 2,
+        width: "100%",
+    }
 });

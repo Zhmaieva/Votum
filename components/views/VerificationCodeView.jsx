@@ -18,7 +18,9 @@ export const VERIFICATION_FLOW_TYPE = {
     REGISTRATION: 'REGISTRATION',
     FORGOT_PASSWORD: 'FORGOT_PASSWORD',
     CHANGE_EMAIL: 'CHANGE_EMAIL',
+    CHANGE_PASSWORD: 'CHANGE_PASSWORD',
 }
+
 export default function VerificationCodeView({route}) {
     const { flowType } = route.params ?? {};
 
@@ -89,6 +91,42 @@ export default function VerificationCodeView({route}) {
             setError(errorMessages[response.code] || 'Unknown error');
             setModalVisible(true);
         }
+
+        if (flowType === VERIFICATION_FLOW_TYPE.CHANGE_EMAIL) {
+            const response = await signUpVerify(email, code);
+
+            if (response.success) {
+                navigation.navigate('Success email');
+                return;
+            }
+
+            const errorMessages = {
+                404: 'Incorrect verification code, try again',
+                410: 'Code expired, request new code',
+                403: 'Too many tries, request new code'
+            };
+
+            setError(errorMessages[response.code] || 'Unknown error');
+            setModalVisible(true);
+        }
+
+        if (flowType === VERIFICATION_FLOW_TYPE.CHANGE_PASSWORD) {
+            const response = await signUpVerify(email, code);
+
+            if (response.success) {
+                navigation.navigate('Success password');
+                return;
+            }
+
+            const errorMessages = {
+                404: 'Incorrect verification code, try again',
+                410: 'Code expired, request new code',
+                403: 'Too many tries, request new code'
+            };
+
+            setError(errorMessages[response.code] || 'Unknown error');
+            setModalVisible(true);
+        }
     };
 
     return (
@@ -123,12 +161,16 @@ export default function VerificationCodeView({route}) {
                     </View>
                 </View>
                 <View>
-                    <View style={styles.margin15}>
-                        <View style={styles.questionContainer}>
-                            <Text style={styles.questionStyle}>Already have an account?</Text>
-                        </View>
-                        <AwesomeButton text='Log in' color={Color.WHITE} screenName='Log in' />
-                    </View>
+                    {
+                        flowType === VERIFICATION_FLOW_TYPE.REGISTRATION ? (
+                            <View style={styles.margin15}>
+                                <View style={styles.questionContainer}>
+                                    <Text style={styles.questionStyle}>Already have an account?</Text>
+                                </View>
+                                <AwesomeButton text='Log in' color={Color.WHITE} screenName='Log in' />
+                            </View>
+                            ) : (<></>)
+                    }
                     <AwesomeModal
                         visible={isModalVisible}
                         text={error}
