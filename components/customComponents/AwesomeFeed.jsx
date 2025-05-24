@@ -57,6 +57,17 @@ const AwesomeFeed = ({
         }
     }
 
+    useEffect(() => {
+        if (
+            preloadedData.length > 0 &&
+            preloadedData[0]?.user?.userId === getDataService().getUser()?.userId
+        ) {
+            requestAnimationFrame(() => {
+                handleSnapChange(0);
+            });
+        }
+    }, [preloadedData]);
+
     const loadMorePolls = () => {
         const nextBatch = data?.slice(preloadedData.length, preloadedData.length + 5);
         if (!nextBatch || nextBatch?.length === 0) {
@@ -136,7 +147,7 @@ const AwesomeFeed = ({
     const lastIndexRef = useRef(-1);
 
     const handleSnapChange = React.useCallback(async (index) => {
-        await onSnapChange(index);
+        await onSnapChange(index ?? 0);
     }, [preloadedData]);
 
     const onSnapChange = async (index) => {
@@ -147,7 +158,7 @@ const AwesomeFeed = ({
                 setCurrentIndex(index);
 
                 clearTimeout(timeoutRef.current);
-                timeoutRef.current = setTimeout(() => updatePoll(lastIndexRef.current),3000 + Math.random() * 10000);
+                timeoutRef.current = setTimeout(() => updatePoll(lastIndexRef.current),1500);
 
                 if (preloadedData[index] && preloadedData[index].type !== 'placeholder' && preloadedData[index].user?.userId !== getDataService().getUser()?.userId) {
                     await viewPoll(preloadedData[index].id);
@@ -173,6 +184,9 @@ const AwesomeFeed = ({
 
     globalEventEmitter.on('vote', ({ pollId, options }) => {
         setPreloadedData(prevData => {
+            clearTimeout(timeoutRef.current);
+            timeoutRef.current = setTimeout(() => updatePoll(lastIndexRef.current),1500);
+
             const updatedData = [...prevData];
             const poll = updatedData.find(x => x.id === pollId);
             if (poll) {
@@ -184,7 +198,9 @@ const AwesomeFeed = ({
     });
 
     const updatePoll = async (index) => {
-        if (preloadedData[index].options.some(x => x.voted) || preloadedData[index].user?.userId === getDataService().getUser()?.userId) {
+        index = index > -1 ? index : 0;
+
+        if (preloadedData[index]?.options.some(x => x.voted) || preloadedData[index]?.user?.userId === getDataService().getUser()?.userId) {
             const pollOptions = await getPollOptions(preloadedData[index].id);
             if (pollOptions) {
                 setPreloadedData(prevData => {
@@ -199,7 +215,7 @@ const AwesomeFeed = ({
         }
 
         clearTimeout(timeoutRef.current);
-        timeoutRef.current = setTimeout(() => updatePoll(lastIndexRef.current),3000 + Math.random() * 10000);
+        timeoutRef.current = setTimeout(() => updatePoll(lastIndexRef.current),1500);
     }
 
     useFocusEffect(React.useCallback(() => {

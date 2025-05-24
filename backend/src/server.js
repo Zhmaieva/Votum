@@ -440,7 +440,7 @@ app.get('/polls/:id?/options', authMiddleware, async (req, res, next) => {
     try {
         const pollId = req.params.id;
 
-        const result = await pollQueries.getPollOptionResults(pollId);
+        const result = await pollQueries.getPollOptionResults(pollId, req.user.id);
 
         if (result)
             return res.json(result);

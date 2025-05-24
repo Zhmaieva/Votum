@@ -9,7 +9,7 @@ import AwesomeLoadingPoll from "../customComponents/AwesomeLoadingPoll";
 import AwesomeLoadingHeader from "../customComponents/AwesomeLoadingHeader";
 import {fetchMyProfile, fetchUserPolls, fetchUserProfile} from "../../shared/api/apiClient";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import {calculateTimeDifference, getDataService} from "../../shared/common";
+import {calculateTimeDifference, getDataService, globalEventEmitter} from "../../shared/common";
 import AwesomeCard from "../customComponents/AwesomeCard";
 import {Ionicons} from "@expo/vector-icons";
 import AwesomeButton, {Color} from "../customComponents/AwesomeButton";
@@ -32,11 +32,9 @@ const MyUserProfileView = () => {
             const startTime = Date.now();
 
             const loadUserData = async () => {
-                let userData = getDataService().getUser();
-                if (!userData) {
-                    userData = await fetchMyProfile();
-                    getDataService().setUser(userData);
-                }
+                let userData = await fetchMyProfile();
+                getDataService().setUser(userData);
+
                 if (isMounted) {
                     setUser(userData);
                     fetchUserPolls(userData.userId).then(res => {
@@ -56,6 +54,13 @@ const MyUserProfileView = () => {
             return () => { isMounted = false; }
         }, [])
     );
+
+    globalEventEmitter.on('deletePoll', async ({ pollId }) => {
+        let userData = await fetchMyProfile();
+        getDataService().setUser(userData);
+
+        setUser(userData);
+    });
 
     const onRefresh = () => {
         setRefreshing(true);

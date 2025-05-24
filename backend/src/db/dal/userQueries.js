@@ -99,17 +99,20 @@ async function getFollows(userId) {
 
 async function getUser(userId) {
     const query = `
-    SELECT
-      u.id as "userId",
-      u.username AS "username",
-      u.email,
-      up.image,
-      GREATEST(up.followers_number, 0) AS "followersNumber",
-      GREATEST(up.following_number, 0) AS "followingNumber",
-      up.bio
-    FROM users u
-    JOIN user_profiles up ON u.id = up.user_id
-    WHERE u.id = $1;
+        SELECT
+            u.id as "userId",
+            u.username AS "username",
+            u.email,
+            up.image,
+            GREATEST(up.followers_number, 0) AS "followersNumber",
+            GREATEST(up.following_number, 0) AS "followingNumber",
+            COUNT(p.id)::integer as "pollsNumber",
+            up.bio
+        FROM users u
+                 JOIN user_profiles up ON u.id = up.user_id
+                 LEFT JOIN polls p ON p.created_by = u.id AND p.is_deleted = false
+        WHERE u.id = $1
+        GROUP BY u.id, u.username, u.email, up.image, up.followers_number, up.following_number, up.bio;
   `;
 
     try {

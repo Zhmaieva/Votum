@@ -50,8 +50,8 @@ const AwesomeUserHeader = ({
 
     if (!user) return <Text>Loading...</Text>;
 
-    const formattedFollowers = formatFollowers(user.followersNumber);
-    const followersText = user.followersNumber === 1 ? "follower" : "followers";
+    // const formattedFollowers = formatFollowers(user.followingNumber);
+    // const followersText = user.followingNumber === 1 ? "follower" : "followers";
 
     const handleFollowToggle = () => {
         const newFollowState = !isFollowing;
@@ -80,8 +80,8 @@ const AwesomeUserHeader = ({
                 <View style={{ flex: 1, marginLeft: 20 }}>
                     <View style={[styles.followersContainer, styles.row]}>
                         <View style={styles.followersSubContainer}>
-                            <Text style={styles.followersText}>213</Text>
-                            <Text style={styles.followersText}>polls</Text>
+                            <Text style={styles.followersText}>{user.pollsNumber ?? 0}</Text>
+                            <Text style={styles.followersText}>{(user.pollsNumber ?? 0) == 1 ? 'poll' : 'polls'}</Text>
                         </View>
                         <Pressable style={styles.followersSubContainer} onPress={() => navigation.navigate('Followers', { userId: user.userId })}>
                             <Text style={styles.followersText}>{user.followersNumber ?? 0}</Text>

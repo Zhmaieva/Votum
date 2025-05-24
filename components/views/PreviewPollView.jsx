@@ -40,11 +40,12 @@ const PreviewPollView = () => {
             };
 
             loadUserData().then(() => {
-                const elapsed = Date.now() - startTime;
-                const delay = Math.max(0, MIN_LOADING_TIME - elapsed);
-                setTimeout(() => {
-                    if (isMounted) setUserDataLoaded(true);
-                }, delay);
+                setUserDataLoaded(true);
+                // const elapsed = Date.now() - startTime;
+                // const delay = Math.max(0, MIN_LOADING_TIME - elapsed);
+                // setTimeout(() => {
+                //     if (isMounted) setUserDataLoaded(true);
+                // }, delay);
             });
 
             return () => { isMounted = false; }
@@ -106,7 +107,7 @@ const PreviewPollView = () => {
                             additionalFunc={async () => {
                                 await createPoll(question, options.map(o => o.text), selectedDuration);
                                 if (resetAddViewForm) resetAddViewForm();
-                                navigation.goBack();
+                                navigation.navigate('My profile', {});
                             }}
                         />
                     </View>

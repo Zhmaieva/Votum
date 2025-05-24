@@ -61,7 +61,7 @@ async function attachOptionsToPolls(userId, polls) {
 
 // Base SELECT clause reused in all queries
 const pollSelect = `
-    SELECT p.id, p.question, p.ends_in, p.readable_id, u.username, up.user_id, up.image,
+    SELECT p.id, p.question, (p.ends_in AT TIME ZONE 'UTC') AS ends_in, p.readable_id, u.username, up.user_id, up.image,
         up.followers_number,
         CASE WHEN pl.user_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_liked,
         CASE WHEN uf.user_follower_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_following,
@@ -405,18 +405,26 @@ const getPollById = async (pollId, readable = false) => {
 /**
  * Fetches options for a single poll, sorted by option_order ascending.
  * @param {string} pollId - ID of the poll
+ * @param {string} userId - ID of the user
  * @returns {Promise<{ text: string, votesCount: number }[] | null>}
  */
-const getPollOptionResults = async (pollId) => {
+const getPollOptionResults = async (pollId, userId) => {
     try {
         const query = `
-            SELECT id, text, votes_count AS "votesCount"
-            FROM poll_answer_options
-            WHERE poll_id = $1
-            ORDER BY option_order
+            SELECT pao.id, pao.text, pao.votes_count AS "votesCount",
+                   bool_or(CASE
+                       WHEN pv.user_id = $2
+                           THEN true
+                       ELSE false
+                       END) AS "voted"
+            FROM poll_answer_options pao
+                     LEFT JOIN poll_votes pv ON pao.id = pv.option_id
+            WHERE pao.poll_id = $1
+            GROUP BY pao.id
+            ORDER BY pao.option_order
         `;
 
-        const result = await pool.query(query, [pollId]);
+        const result = await pool.query(query, [pollId, userId]);
         return result.rows;
     } catch (err) {
         console.error('Error fetching poll options:', err);

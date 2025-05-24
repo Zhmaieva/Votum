@@ -66,14 +66,14 @@ const AwesomeVote = ({
     const prevPercentMap = useRef(null);
 
     useEffect(() => {
-        if (selected || pollExpired || createdByUser) {
+        if (selected) {
             Animated.timing(animation, {
                 toValue: 1,
                 duration: 600,
                 useNativeDriver: false,
             }).start();
         }
-    }, [selected, pollExpired, createdByUser]);
+    }, [selected]);
 
     useEffect(() => {
         refreshOptions(options);
@@ -290,12 +290,15 @@ const AwesomeVote = ({
                 visible={modalVisible}
                 text="Are you sure you want to delete this poll?"
                 buttonText="Yes, delete"
-                onPress={() => {
-                    if (onDeletePoll) {
-                        onDeletePoll();
-                    }
-                    setModalVisible(false);
-                }}
+                buttons={[
+                    { label: "No", onPress: () => setModalVisible(false) },
+                    { label: "Yes, delete", onPress: () => {
+                            if (onDeletePoll) {
+                                onDeletePoll();
+                            }
+                            setModalVisible(false);
+                    } },
+                ]}
                 onBackPress={() => setModalVisible(false)}
             />
         </View>
