@@ -1,6 +1,7 @@
 const {pool} = require("./pool");
 const {customAlphabet} = require("nanoid");
 const {EVENT_NAMES} = require("../../constants");
+const {promise} = require("bcrypt/promises");
 
 const alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const customNanoid = customAlphabet(alphabet, 6); // 6-char all caps
@@ -117,7 +118,7 @@ async function fetchPolls(userId, featuredId) {
             rows = rows.concat(featuredRows);
         }
 
-        const topPopularQuery = `
+        const topPopular = `
             WITH chosen_categories AS (
                 SELECT category_id, score
                 FROM user_categories
@@ -153,6 +154,10 @@ async function fetchPolls(userId, featuredId) {
                      WHERE p.is_deleted = false
                        AND p.ends_in > (NOW() AT TIME ZONE 'UTC')
                        AND p.created_by <> $1
+                       AND NOT EXISTS (
+                           SELECT 1 FROM poll_views v
+                           WHERE v.poll_id = p.id AND v.user_id = $1
+                       )
                  )
             SELECT
                 id,
@@ -167,24 +172,466 @@ async function fetchPolls(userId, featuredId) {
                 is_following,
                 user_bio
             FROM polls_ranked_by_category
-            ORDER BY category_weight DESC, votes_count DESC
-            LIMIT 20;
+            ORDER BY category_weight DESC, votes_count DESC, ends_in ASC
+            LIMIT 10;
+        `;
+
+        const followEngaging = `
+            WITH followed_polls AS (
+              SELECT
+                p.id,
+                p.question,
+                p.ends_in,
+                p.readable_id,
+                u.username,
+                up.user_id,
+                up.image,
+                up.followers_number,
+                CASE WHEN pl.user_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_liked,
+                TRUE AS is_following,
+                CASE WHEN p.created_by = $1 THEN up.bio ELSE '' END AS user_bio,
+                p.likes_per_vote AS effective_score,
+                p.created_at
+              FROM polls p
+              JOIN users u ON u.id = p.created_by
+              JOIN user_profiles up ON up.user_id = u.id
+              JOIN user_follows uf ON uf.user_follower_id = $1 AND uf.user_follow_id = u.id
+              LEFT JOIN poll_likes pl ON pl.poll_id = p.id AND pl.user_id = $1
+              WHERE p.is_deleted = false
+                AND p.ends_in > (NOW() AT TIME ZONE 'UTC')
+                AND p.created_by <> $1
+                AND NOT EXISTS (
+                  SELECT 1 FROM poll_views v
+                  WHERE v.poll_id = p.id AND v.user_id = $1
+                )
+            )
+            SELECT
+              id,
+              question,
+              ends_in,
+              readable_id,
+              username,
+              user_id,
+              image,
+              followers_number,
+              is_liked,
+              is_following,
+              user_bio
+            FROM followed_polls
+            ORDER BY effective_score DESC, ends_in ASC
+            LIMIT 10;
         `
 
-        const { rows: topPopularRows } = await pool.query(topPopularQuery, [userId]);
+        const newlyCreated = `
+            WITH newly_created_polls AS (
+              SELECT p.*
+              FROM polls p
+              WHERE p.is_deleted = false
+                AND p.created_by <> $1
+                AND p.ends_in > (NOW() AT TIME ZONE 'UTC')
+                AND (
+                  (p.duration_type = 1 AND p.created_at > (NOW() AT TIME ZONE 'UTC' - INTERVAL '15 minutes')) OR
+                  (p.duration_type = 2 AND p.created_at BETWEEN (NOW() AT TIME ZONE 'UTC' - INTERVAL '1 hour') AND (NOW() AT TIME ZONE 'UTC' - INTERVAL '15 minutes')) OR
+                  (p.duration_type = 3 AND p.created_at BETWEEN (NOW() AT TIME ZONE 'UTC' - INTERVAL '1 day') AND (NOW() AT TIME ZONE 'UTC' - INTERVAL '1 hour')) OR
+                  (p.duration_type = 4 AND p.created_at BETWEEN (NOW() AT TIME ZONE 'UTC' - INTERVAL '3 days') AND (NOW() AT TIME ZONE 'UTC' - INTERVAL '1 day'))
+                )
+            ),
+            chosen_category AS (
+              SELECT category_id
+              FROM user_categories
+              WHERE user_id = $1 AND is_chosen = true
+              ORDER BY RANDOM() * score DESC
+              LIMIT 1
+            ),
+            joined_polls AS (
+              SELECT
+                p.id,
+                p.question,
+                p.ends_in,
+                p.readable_id,
+                u.username,
+                up.user_id,
+                up.image,
+                up.followers_number,
+                CASE WHEN pl.user_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_liked,
+                CASE WHEN uf.user_follower_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_following,
+                CASE WHEN p.created_by = $1 THEN up.bio ELSE '' END AS user_bio,
+                p.likes_per_vote AS effective_score,
+                p.created_at,
+                p.duration_type
+              FROM newly_created_polls p
+              JOIN chosen_category cc ON cc.category_id = p.category_id
+              JOIN users u ON u.id = p.created_by
+              JOIN user_profiles up ON up.user_id = u.id
+              LEFT JOIN poll_likes pl ON pl.poll_id = p.id AND pl.user_id = $1
+              LEFT JOIN user_follows uf ON uf.user_follower_id = $1 AND uf.user_follow_id = u.id
+            )
+            SELECT
+              id,
+              question,
+              ends_in,
+              readable_id,
+              username,
+              user_id,
+              image,
+              followers_number,
+              is_liked,
+              is_following,
+              user_bio
+            FROM joined_polls
+            ORDER BY effective_score DESC, duration_type, ends_in
+            LIMIT 10;
+        `;
 
-        // if (topPopularRows.length > 0) {
-        //     rows = rows.concat(topPopularRows);
-        //     return attachOptionsToPolls(userId, rows);
-        // }
+        const topEngaging = `
+            WITH chosen_categories AS (
+                SELECT category_id, score
+                FROM user_categories
+                WHERE user_id = $1 AND is_chosen = true
+            ),
+                 category_random_weights AS (
+                     SELECT category_id, score, random() * score AS weighted_score
+                     FROM chosen_categories
+                 ),
+                 polls_ranked_by_category AS (
+                     SELECT
+                         p.id,
+                         p.question,
+                         p.ends_in,
+                         p.readable_id,
+                         u.username,
+                         up.user_id,
+                         up.image,
+                         up.followers_number,
+                         CASE WHEN pl.user_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_liked,
+                         CASE WHEN uf.user_follower_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_following,
+                         CASE WHEN p.created_by = $1 THEN up.bio ELSE '' END AS user_bio,
+                         p.likes_per_vote AS effective_score,
+                         p.created_at,
+                         p.votes_count,
+                         crw.weighted_score AS category_weight
+                     FROM polls p
+                              JOIN category_random_weights crw ON crw.category_id = p.category_id
+                              JOIN users u ON u.id = p.created_by
+                              JOIN user_profiles up ON up.user_id = u.id
+                              LEFT JOIN poll_likes pl ON pl.poll_id = p.id AND pl.user_id = $1
+                              LEFT JOIN user_follows uf ON uf.user_follower_id = $1 AND uf.user_follow_id = u.id
+                     WHERE p.is_deleted = false
+                       AND p.ends_in > (NOW() AT TIME ZONE 'UTC')
+                       AND p.created_by <> $1
+                       AND NOT EXISTS (
+                           SELECT 1 FROM poll_views v
+                           WHERE v.poll_id = p.id AND v.user_id = $1
+                       )
+                 )
+            SELECT
+                id,
+                question,
+                ends_in,
+                readable_id,
+                username,
+                user_id,
+                image,
+                followers_number,
+                is_liked,
+                is_following,
+                user_bio
+            FROM polls_ranked_by_category
+            ORDER BY category_weight DESC, effective_score DESC, ends_in ASC
+            LIMIT 10;
+        `;
+
+        const followPopular = `
+            WITH followed_polls AS (
+              SELECT
+                p.id,
+                p.question,
+                p.ends_in,
+                p.readable_id,
+                u.username,
+                up.user_id,
+                up.image,
+                up.followers_number,
+                CASE WHEN pl.user_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_liked,
+                TRUE AS is_following,
+                CASE WHEN p.created_by = $1 THEN up.bio ELSE '' END AS user_bio,
+                p.votes_count,
+                p.created_at
+              FROM polls p
+              JOIN users u ON u.id = p.created_by
+              JOIN user_profiles up ON up.user_id = u.id
+              JOIN user_follows uf ON uf.user_follower_id = $1 AND uf.user_follow_id = u.id
+              LEFT JOIN poll_likes pl ON pl.poll_id = p.id AND pl.user_id = $1
+              WHERE p.is_deleted = false
+                AND p.ends_in > (NOW() AT TIME ZONE 'UTC')
+                AND p.created_by <> $1
+                AND NOT EXISTS (
+                  SELECT 1 FROM poll_views v
+                  WHERE v.poll_id = p.id AND v.user_id = $1
+                )
+            )
+            SELECT
+              id,
+              question,
+              ends_in,
+              readable_id,
+              username,
+              user_id,
+              image,
+              followers_number,
+              is_liked,
+              is_following,
+              user_bio
+            FROM followed_polls
+            ORDER BY votes_count DESC, ends_in ASC
+            LIMIT 10;
+        `;
+
+        const topPopularNotChosen = `
+            WITH selected_categories AS (
+                SELECT category_id, score
+                FROM user_categories
+                WHERE user_id = $1 AND is_chosen = false
+            ),
+                 category_random_weights AS (
+                     SELECT category_id, score, random() * score AS weighted_score
+                     FROM selected_categories
+                 ),
+                 polls_ranked_by_category AS (
+                     SELECT
+                         p.id,
+                         p.question,
+                         p.ends_in,
+                         p.readable_id,
+                         u.username,
+                         up.user_id,
+                         up.image,
+                         up.followers_number,
+                         CASE WHEN pl.user_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_liked,
+                         CASE WHEN uf.user_follower_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_following,
+                         CASE WHEN p.created_by = $1 THEN up.bio ELSE '' END AS user_bio,
+                         p.likes_per_vote AS effective_score,
+                         p.created_at,
+                         p.votes_count,
+                         crw.weighted_score AS category_weight
+                     FROM polls p
+                              JOIN category_random_weights crw ON crw.category_id = p.category_id
+                              JOIN users u ON u.id = p.created_by
+                              JOIN user_profiles up ON up.user_id = u.id
+                              LEFT JOIN poll_likes pl ON pl.poll_id = p.id AND pl.user_id = $1
+                              LEFT JOIN user_follows uf ON uf.user_follower_id = $1 AND uf.user_follow_id = u.id
+                     WHERE p.is_deleted = false
+                       AND p.ends_in > (NOW() AT TIME ZONE 'UTC')
+                       AND p.created_by <> $1
+                       AND NOT EXISTS (
+                           SELECT 1 FROM poll_views v
+                           WHERE v.poll_id = p.id AND v.user_id = $1
+                       )
+                 )
+            SELECT
+                id,
+                question,
+                ends_in,
+                readable_id,
+                username,
+                user_id,
+                image,
+                followers_number,
+                is_liked,
+                is_following,
+                user_bio
+            FROM polls_ranked_by_category
+            ORDER BY category_weight DESC, votes_count DESC, ends_in ASC
+            LIMIT 10;
+        `;
+
+        const topEngagingNotChosen = `
+            WITH selected_categories AS (
+                SELECT category_id, score
+                FROM user_categories
+                WHERE user_id = $1 AND is_chosen = false
+            ),
+                 category_random_weights AS (
+                     SELECT category_id, score, random() * score AS weighted_score
+                     FROM selected_categories
+                 ),
+                 polls_ranked_by_category AS (
+                     SELECT
+                         p.id,
+                         p.question,
+                         p.ends_in,
+                         p.readable_id,
+                         u.username,
+                         up.user_id,
+                         up.image,
+                         up.followers_number,
+                         CASE WHEN pl.user_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_liked,
+                         CASE WHEN uf.user_follower_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_following,
+                         CASE WHEN p.created_by = $1 THEN up.bio ELSE '' END AS user_bio,
+                         p.likes_per_vote AS effective_score,
+                         p.created_at,
+                         p.votes_count,
+                         crw.weighted_score AS category_weight
+                     FROM polls p
+                              JOIN category_random_weights crw ON crw.category_id = p.category_id
+                              JOIN users u ON u.id = p.created_by
+                              JOIN user_profiles up ON up.user_id = u.id
+                              LEFT JOIN poll_likes pl ON pl.poll_id = p.id AND pl.user_id = $1
+                              LEFT JOIN user_follows uf ON uf.user_follower_id = $1 AND uf.user_follow_id = u.id
+                     WHERE p.is_deleted = false
+                       AND p.ends_in > (NOW() AT TIME ZONE 'UTC')
+                       AND p.created_by <> $1
+                       AND NOT EXISTS (
+                           SELECT 1 FROM poll_views v
+                           WHERE v.poll_id = p.id AND v.user_id = $1
+                       )
+                 )
+            SELECT
+                id,
+                question,
+                ends_in,
+                readable_id,
+                username,
+                user_id,
+                image,
+                followers_number,
+                is_liked,
+                is_following,
+                user_bio
+            FROM polls_ranked_by_category
+            ORDER BY category_weight DESC, effective_score DESC, ends_in ASC
+            LIMIT 10;
+        `;
+
+        const [
+            topPopularQuery,
+            followEngagingQuery,
+            newlyCreatedQuery,
+            topEngagingQuery,
+            followPopularQuery,
+            topPopularNotChosenQuery,
+            topEngagingNotChosenQuery,,
+        ] = await Promise.all([
+            pool.query(topPopular, [userId]),
+            pool.query(followEngaging, [userId]),
+            pool.query(newlyCreated, [userId]),
+            pool.query(topEngaging, [userId]),
+            pool.query(followPopular, [userId]),
+            pool.query(topPopularNotChosen, [userId]),
+            pool.query(topEngagingNotChosen, [userId]),
+        ]);
+
+        console.log('1. Top popular polls:', topPopularQuery.rows);
+        console.log('2. Follow engaging polls:', followEngagingQuery.rows);
+        console.log('3. Newly created polls:', newlyCreatedQuery.rows);
+        console.log('4. Top engaging polls:', topEngagingQuery.rows);
+        console.log('5. Follow popular polls:', followPopularQuery.rows);
+        console.log('6. Top popular polls (other categories):', topPopularNotChosenQuery.rows);
+        console.log('9. Top engaging polls (other categories):', topEngagingNotChosenQuery.rows);
+
+        const finalFeedTracks = buildFinalFeedTracks({
+            topPopularQuery,
+            followEngagingQuery,
+            newlyCreatedQuery,
+            topEngagingQuery,
+            followPopularQuery,
+            topPopularNotChosenQuery,
+            topEngagingNotChosenQuery,
+        });
+
+        rows = rows.concat(finalFeedTracks);
+
+        const seen = new Set();
+        rows = rows.filter(item => {
+            if (seen.has(item.id)) return false;
+            seen.add(item.id);
+            return true;
+        });
 
         return attachOptionsToPolls(userId, rows);
     } catch (error) {
         console.error('Error fetching user feed polls:', error);
-        throw error;
-    } finally {
-        client.release();
     }
+}
+
+// Finalize feed array with 11 ranked slots and soft constraints
+function buildFinalFeedTracks(trackResults) {
+    const finalFeed = [];
+    const usedIds = new Set();
+
+    let lastUser = null;
+    let lastCat = null;
+    let lastDur = null;
+    let streakUser = 0;
+    let streakCat = 0;
+    let streakDur = 0;
+
+    // Helper to try adding a poll from a track with constraints
+    const tryAdd = (polls) => {
+        for (const poll of polls) {
+            if (usedIds.has(poll.id)) continue;
+
+            const { user_id, category_id, duration_type } = poll;
+
+            const sameUser = user_id === lastUser;
+            const sameCat = false;//category_id === lastCat;
+            const sameDur = false;//duration_type === lastDur;
+
+            if ((sameUser && streakUser >= 2) ||
+                (sameCat && streakCat >= 2) ||
+                (sameDur && streakDur >= 2)) {
+                continue;
+            }
+
+            finalFeed.push(poll);
+            usedIds.add(poll.id);
+
+            // update streaks
+            streakUser = sameUser ? streakUser + 1 : 1;
+            lastUser = user_id;
+
+            streakCat = sameCat ? streakCat + 1 : 1;
+            lastCat = category_id;
+
+            streakDur = sameDur ? streakDur + 1 : 1;
+            lastDur = duration_type;
+
+            return true;
+        }
+        return false;
+    };
+
+    const tracks = [
+        trackResults.topPopularQuery,
+        trackResults.followEngagingQuery,
+        trackResults.newlyCreatedQuery,
+        trackResults.topEngagingQuery,
+        trackResults.followPopularQuery,
+        trackResults.topPopularNotChosenQuery,
+        trackResults.topEngagingQuery,         // slot 7 reuse
+        trackResults.followEngagingQuery,      // slot 8 reuse
+        trackResults.topEngagingNotChosenQuery,// slot 9
+        trackResults.topPopularQuery,          // slot 10 reuse
+        trackResults.followPopularQuery        // slot 11 reuse
+    ];
+
+    // Fill initial 11 slots
+    let attempts = 0;
+    while (finalFeed.length < 11 && attempts < 22) {
+        const slot = finalFeed.length;
+        const source = tracks[slot].rows || tracks[slot % tracks.length].rows;
+        tryAdd(source);
+        attempts++;
+    }
+
+    // Fill remaining if underfilled
+    let fallback = 0;
+    while (finalFeed.length < 11 && fallback < tracks.length * 2) {
+        tryAdd(tracks[fallback % tracks.length].rows);
+        fallback++;
+    }
+
+    return finalFeed;
 }
 
 /**

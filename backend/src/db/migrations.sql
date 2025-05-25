@@ -764,6 +764,11 @@ CREATE TRIGGER trg_set_duration_type
     FOR EACH ROW
 EXECUTE FUNCTION set_duration_type();
 
+DROP INDEX idx_polls_ends_in;
+CREATE INDEX idx_polls_ends_in ON polls (ends_in ASC);
+CREATE INDEX idx_polls_ends_in_desc ON polls (ends_in DESC);
+CREATE INDEX idx_polls_created_at ON polls (created_at);
+
 
 
 

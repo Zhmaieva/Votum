@@ -111,7 +111,7 @@ async function getUser(userId) {
         FROM users u
                  JOIN user_profiles up ON u.id = up.user_id
                  LEFT JOIN polls p ON p.created_by = u.id AND p.is_deleted = false
-        WHERE u.id = $1
+        WHERE u.id = $1::uuid
         GROUP BY u.id, u.username, u.email, up.image, up.followers_number, up.following_number, up.bio;
   `;
 
