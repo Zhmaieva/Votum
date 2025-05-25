@@ -769,7 +769,9 @@ CREATE INDEX idx_polls_ends_in ON polls (ends_in ASC);
 CREATE INDEX idx_polls_ends_in_desc ON polls (ends_in DESC);
 CREATE INDEX idx_polls_created_at ON polls (created_at);
 
-
+CREATE TRIGGER trigger_increment_votes_count
+    AFTER INSERT ON poll_votes
+    FOR EACH ROW EXECUTE FUNCTION increment_votes_count();
 
 
 

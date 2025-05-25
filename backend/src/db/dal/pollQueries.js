@@ -101,7 +101,9 @@ async function fetchPolls(userId, featuredId) {
                   up2.followers_number,
                   CASE WHEN pl.user_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_liked,
                   CASE WHEN uf.user_follower_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_following,
-                  CASE WHEN p.created_by = $1 THEN up2.bio ELSE '' END AS user_bio
+                  CASE WHEN p.created_by = $1 THEN up2.bio ELSE '' END AS user_bio,
+                  p.category_id,
+                  p.duration_type
                 FROM polls p
                 JOIN users u ON u.id = p.created_by
                 JOIN user_profiles up2 ON up2.user_id = u.id
@@ -144,7 +146,9 @@ async function fetchPolls(userId, featuredId) {
                          p.likes_per_vote AS effective_score,
                          p.created_at,
                          p.votes_count,
-                         crw.weighted_score AS category_weight
+                         crw.weighted_score AS category_weight,
+                         p.category_id,
+                         p.duration_type
                      FROM polls p
                               JOIN category_random_weights crw ON crw.category_id = p.category_id
                               JOIN users u ON u.id = p.created_by
@@ -170,7 +174,9 @@ async function fetchPolls(userId, featuredId) {
                 followers_number,
                 is_liked,
                 is_following,
-                user_bio
+                user_bio,
+                category_id,
+                duration_type
             FROM polls_ranked_by_category
             ORDER BY category_weight DESC, votes_count DESC, ends_in ASC
             LIMIT 10;
@@ -191,7 +197,9 @@ async function fetchPolls(userId, featuredId) {
                 TRUE AS is_following,
                 CASE WHEN p.created_by = $1 THEN up.bio ELSE '' END AS user_bio,
                 p.likes_per_vote AS effective_score,
-                p.created_at
+                p.created_at,
+                p.category_id,
+                p.duration_type
               FROM polls p
               JOIN users u ON u.id = p.created_by
               JOIN user_profiles up ON up.user_id = u.id
@@ -216,7 +224,9 @@ async function fetchPolls(userId, featuredId) {
               followers_number,
               is_liked,
               is_following,
-              user_bio
+              user_bio,
+              category_id,
+              duration_type
             FROM followed_polls
             ORDER BY effective_score DESC, ends_in ASC
             LIMIT 10;
@@ -258,13 +268,18 @@ async function fetchPolls(userId, featuredId) {
                 CASE WHEN p.created_by = $1 THEN up.bio ELSE '' END AS user_bio,
                 p.likes_per_vote AS effective_score,
                 p.created_at,
-                p.duration_type
+                p.duration_type,
+                p.category_id
               FROM newly_created_polls p
               JOIN chosen_category cc ON cc.category_id = p.category_id
               JOIN users u ON u.id = p.created_by
               JOIN user_profiles up ON up.user_id = u.id
               LEFT JOIN poll_likes pl ON pl.poll_id = p.id AND pl.user_id = $1
               LEFT JOIN user_follows uf ON uf.user_follower_id = $1 AND uf.user_follow_id = u.id
+              WHERE NOT EXISTS (
+                  SELECT 1 FROM poll_views v
+                  WHERE v.poll_id = p.id AND v.user_id = $1
+                  )
             )
             SELECT
               id,
@@ -277,7 +292,9 @@ async function fetchPolls(userId, featuredId) {
               followers_number,
               is_liked,
               is_following,
-              user_bio
+              user_bio,
+              category_id,
+              duration_type
             FROM joined_polls
             ORDER BY effective_score DESC, duration_type, ends_in
             LIMIT 10;
@@ -309,7 +326,9 @@ async function fetchPolls(userId, featuredId) {
                          p.likes_per_vote AS effective_score,
                          p.created_at,
                          p.votes_count,
-                         crw.weighted_score AS category_weight
+                         crw.weighted_score AS category_weight,
+                         p.category_id,
+                         p.duration_type
                      FROM polls p
                               JOIN category_random_weights crw ON crw.category_id = p.category_id
                               JOIN users u ON u.id = p.created_by
@@ -335,7 +354,9 @@ async function fetchPolls(userId, featuredId) {
                 followers_number,
                 is_liked,
                 is_following,
-                user_bio
+                user_bio,
+                category_id,
+                duration_type
             FROM polls_ranked_by_category
             ORDER BY category_weight DESC, effective_score DESC, ends_in ASC
             LIMIT 10;
@@ -356,7 +377,9 @@ async function fetchPolls(userId, featuredId) {
                 TRUE AS is_following,
                 CASE WHEN p.created_by = $1 THEN up.bio ELSE '' END AS user_bio,
                 p.votes_count,
-                p.created_at
+                p.created_at,
+                p.category_id,
+                p.duration_type
               FROM polls p
               JOIN users u ON u.id = p.created_by
               JOIN user_profiles up ON up.user_id = u.id
@@ -381,7 +404,9 @@ async function fetchPolls(userId, featuredId) {
               followers_number,
               is_liked,
               is_following,
-              user_bio
+              user_bio,
+              category_id,
+              duration_type
             FROM followed_polls
             ORDER BY votes_count DESC, ends_in ASC
             LIMIT 10;
@@ -413,7 +438,9 @@ async function fetchPolls(userId, featuredId) {
                          p.likes_per_vote AS effective_score,
                          p.created_at,
                          p.votes_count,
-                         crw.weighted_score AS category_weight
+                         crw.weighted_score AS category_weight,
+                         p.category_id,
+                         p.duration_type
                      FROM polls p
                               JOIN category_random_weights crw ON crw.category_id = p.category_id
                               JOIN users u ON u.id = p.created_by
@@ -439,7 +466,9 @@ async function fetchPolls(userId, featuredId) {
                 followers_number,
                 is_liked,
                 is_following,
-                user_bio
+                user_bio,
+                category_id,
+                duration_type
             FROM polls_ranked_by_category
             ORDER BY category_weight DESC, votes_count DESC, ends_in ASC
             LIMIT 10;
@@ -471,7 +500,9 @@ async function fetchPolls(userId, featuredId) {
                          p.likes_per_vote AS effective_score,
                          p.created_at,
                          p.votes_count,
-                         crw.weighted_score AS category_weight
+                         crw.weighted_score AS category_weight,
+                         p.category_id,
+                         p.duration_type
                      FROM polls p
                               JOIN category_random_weights crw ON crw.category_id = p.category_id
                               JOIN users u ON u.id = p.created_by
@@ -497,7 +528,9 @@ async function fetchPolls(userId, featuredId) {
                 followers_number,
                 is_liked,
                 is_following,
-                user_bio
+                user_bio,
+                category_id,
+                duration_type
             FROM polls_ranked_by_category
             ORDER BY category_weight DESC, effective_score DESC, ends_in ASC
             LIMIT 10;
@@ -574,8 +607,8 @@ function buildFinalFeedTracks(trackResults) {
             const { user_id, category_id, duration_type } = poll;
 
             const sameUser = user_id === lastUser;
-            const sameCat = false;//category_id === lastCat;
-            const sameDur = false;//duration_type === lastDur;
+            const sameCat = category_id === lastCat;
+            const sameDur = duration_type === lastDur;
 
             if ((sameUser && streakUser >= 2) ||
                 (sameCat && streakCat >= 2) ||
