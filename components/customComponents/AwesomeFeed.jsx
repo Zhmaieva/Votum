@@ -158,7 +158,7 @@ const AwesomeFeed = ({
                 setCurrentIndex(index);
 
                 clearTimeout(timeoutRef.current);
-                timeoutRef.current = setTimeout(() => updatePoll(lastIndexRef.current),1500);
+                timeoutRef.current = setTimeout(() => updatePoll(lastIndexRef.current),1500 + Math.random() * 10000);
 
                 if (preloadedData[index] && preloadedData[index].type !== 'placeholder' && preloadedData[index].user?.userId !== getDataService().getUser()?.userId) {
                     await viewPoll(preloadedData[index].id);
@@ -185,7 +185,7 @@ const AwesomeFeed = ({
     globalEventEmitter.on('vote', ({ pollId, options }) => {
         setPreloadedData(prevData => {
             clearTimeout(timeoutRef.current);
-            timeoutRef.current = setTimeout(() => updatePoll(lastIndexRef.current),1500);
+            timeoutRef.current = setTimeout(() => updatePoll(lastIndexRef.current),1500 + Math.random() * 10000);
 
             const updatedData = [...prevData];
             const poll = updatedData.find(x => x.id === pollId);
@@ -215,7 +215,7 @@ const AwesomeFeed = ({
         }
 
         clearTimeout(timeoutRef.current);
-        timeoutRef.current = setTimeout(() => updatePoll(lastIndexRef.current),1500);
+        timeoutRef.current = setTimeout(() => updatePoll(lastIndexRef.current),1500 + Math.random() * 10000);
     }
 
     useFocusEffect(React.useCallback(() => {
