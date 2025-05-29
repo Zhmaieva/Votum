@@ -4,7 +4,8 @@ import {
     Text,
     TouchableOpacity,
     FlatList,
-    StyleSheet
+    StyleSheet,
+    Image
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import {
@@ -65,7 +66,11 @@ const ReportPoll = ({ onReport }) => {
     return (
         <>
             <TouchableOpacity onPress={openSheet}>
-                <Ionicons name="warning-outline" size={28} color={Colors.black} />
+                <Image
+                    source={require('../../assets/images/reportBlack.png')}
+                    style={{ width: 29, height: 29 }}
+                    resizeMode="contain"
+                />
             </TouchableOpacity>
 
             <BottomSheetModal

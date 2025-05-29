@@ -5,16 +5,15 @@ import {
     TouchableOpacity,
     StyleSheet,
     Animated,
-    Pressable
+    Pressable,
+    Image
 } from "react-native";
 import { Colors } from '../../utils/colorUtils';
-import { Ionicons } from '@expo/vector-icons';
 import ReportPoll from "./AwesomeReportPoll";
 import {globalEventEmitter, onShare} from "../../shared/common";
 import AwesomeLikeButton from "./AwesomeLikeButton";
 import { AwesomeModal } from './AwesomeModal'
 import {voteOnPoll} from "../../shared/api/apiClient";
-import AwesomeButton, {Color} from "./AwesomeButton";
 
 const formatFollowers = (num) => {
 
@@ -201,10 +200,18 @@ const AwesomeVote = ({
                     {createdByUser ? (
                         <>
                             <Pressable style={styles.iconContainer} onPress={()=>setModalVisible(true)}>
-                                <Ionicons name="trash-outline" size={26} color={Colors.black} />
+                                <Image
+                                    source={require('../../assets/images/deleteBlack.png')}
+                                    style={{ width: 26, height: 26 }}
+                                    resizeMode="contain"
+                                />
                             </Pressable>
                             <TouchableOpacity style={styles.iconContainer} onPress={() => onShare(id)}>
-                                <Ionicons name="share-outline" size={28} color={Colors.black} />
+                                <Image
+                                    source={require('../../assets/images/shareBlack.png')}
+                                    style={{ width: 28, height: 28 }}
+                                    resizeMode="contain"
+                                />
                             </TouchableOpacity>
                             <View style={styles.iconContainer}>
                                 <AwesomeLikeButton pollId={id} isLikedParam={isLiked} />
@@ -222,7 +229,11 @@ const AwesomeVote = ({
                                 )}
                             </TouchableOpacity>
                             <TouchableOpacity style={styles.iconContainer} onPress={() => onShare(id)}>
-                                <Ionicons name="share-outline" size={28} color={Colors.black} />
+                                <Image
+                                    source={require('../../assets/images/shareBlack.png')}
+                                    style={{ width: 28, height: 28 }}
+                                    resizeMode="contain"
+                                />
                             </TouchableOpacity>
                             <View style={styles.iconContainer}>
                                 <AwesomeLikeButton pollId={id} isLikedParam={isLiked} />
@@ -263,7 +274,7 @@ const AwesomeVote = ({
                                         }]}
                                     />
                                     <View style={styles.answerStyle}>
-                                        <Text style={[styles.answerTextStyle, {
+                                        <Text style={[styles.answerTextStyle,styles.fontFamilyStyle, {
                                             color: Colors.black,
                                             fontWeight: selected === option.id ? "600" : "400"
                                         }]}>
@@ -354,7 +365,7 @@ const styles = StyleSheet.create({
         marginBottom: 10
     },
     fontFamilyStyle: {
-        fontFamily: 'Arial'
+        fontFamily: 'CourierPrime-Regular'
     },
     controlSignsContainer: {
         justifyContent: 'flex-end',

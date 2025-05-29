@@ -1,11 +1,8 @@
-import { View, Pressable } from 'react-native';
-import React, {useEffect, useState} from 'react';
-import { Ionicons } from '@expo/vector-icons';
-import { Colors } from "../../utils/colorUtils";
-import {likePoll, unlikePoll} from "../../shared/api/apiClient";
+import { View, Pressable, Image } from 'react-native';
+import React, { useState } from 'react';
+import { likePoll, unlikePoll } from "../../shared/api/apiClient";
 
-export default function AwesomeLikeButton({pollId, isLikedParam}) {
-
+export default function AwesomeLikeButton({ pollId, isLikedParam }) {
     const [isLiked, setIsLiked] = useState(isLikedParam);
 
     function onPressHandler() {
@@ -26,10 +23,14 @@ export default function AwesomeLikeButton({pollId, isLikedParam}) {
     return (
         <View>
             <Pressable onPress={onPressHandler}>
-                <Ionicons
-                    name={isLiked ? 'heart-sharp' : 'heart-outline'}
-                    size={28}
-                    color={isLiked ? Colors.green : Colors.black}
+                <Image
+                    source={
+                        isLiked
+                            ? require('../../assets/images/heartGreen.png')
+                            : require('../../assets/images/heartBlack.png')
+                    }
+                    style={{ width: 28, height: 28 }}
+                    resizeMode="contain"
                 />
             </Pressable>
         </View>

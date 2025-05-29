@@ -1,3 +1,5 @@
+import * as Font from 'expo-font';
+import { Text } from 'react-native';
 import React, { useEffect, useState, useRef } from "react";
 import * as Linking from 'expo-linking';
 import * as Notifications from 'expo-notifications';
@@ -22,6 +24,7 @@ Notifications.setNotificationHandler({
 export default function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const [fontLoaded, setFontLoaded] = useState(false);
     const navigationRef = useNavigationContainerRef();
     const notificationListener = useRef();
     const responseListener = useRef();
@@ -38,20 +41,19 @@ export default function App() {
     };
 
     useEffect(() => {
-        const subscription = Linking.addEventListener('url', handleUrl);
-        return () => {
-            subscription.remove();
-        };
-    }, []);
+        const loadFontAndInit = async () => {
+            await Font.loadAsync({
+                'CourierPrime-Regular': require('./assets/fonts/CourierPrime-Regular.ttf'),
+                'CourierPrime-Bold': require('./assets/fonts/CourierPrime-Bold.ttf'),
+            });
 
-    useEffect(() => {
-        const init = async () => {
+            setFontLoaded(true);
+
             const tokenAvailable = await isTokenAvailable();
             setIsAuthenticated(tokenAvailable);
             setIsLoading(false);
 
-            if (!tokenAvailable)
-                return;
+            if (!tokenAvailable) return;
 
             const url = await Linking.getInitialURL();
             if (url) handleUrl({ url });
@@ -59,26 +61,27 @@ export default function App() {
             await registerForPushNotificationsAsync();
         };
 
-        init().then(() => {});
+        loadFontAndInit();
 
-        // This listener will fire whenever a notification is received while app is foregrounded
+        const subscription = Linking.addEventListener('url', handleUrl);
+
         notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
             console.log('Notification received:', notification);
         });
 
-        // This listener will fire when the user taps on a notification
         responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
             console.log('User interacted with notification:', response);
         });
 
         return () => {
+            subscription.remove();
             Notifications.removeNotificationSubscription(notificationListener.current);
             Notifications.removeNotificationSubscription(responseListener.current);
         };
     }, []);
 
     globalEventEmitter.on('signIn', () => {
-        getDataService().setUser(null); // pretend we never set the user, so it will be initialised later in profile view
+        getDataService().setUser(null);
         setIsAuthenticated(true);
     });
 
@@ -86,18 +89,20 @@ export default function App() {
         setIsAuthenticated(false);
     });
 
+    if (!fontLoaded || isLoading) {
+        return (
+            <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+                <ActivityIndicator size="large" color="#0000ff" />
+            </View>
+        );
+    }
+
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <BottomSheetModalProvider>
-                {isLoading ? (
-                    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-                        <ActivityIndicator size="large" color="#0000ff" />
-                    </View>
-                ) : (
-                    <NavigationContainer ref={navigationRef}>
-                        {isAuthenticated ? <AwesomeTabs /> : <AuthNavigator />}
-                    </NavigationContainer>
-                )}
+                <NavigationContainer ref={navigationRef}>
+                    {isAuthenticated ? <AwesomeTabs /> : <AuthNavigator />}
+                </NavigationContainer>
             </BottomSheetModalProvider>
         </GestureHandlerRootView>
     );
@@ -121,8 +126,6 @@ async function registerForPushNotificationsAsync() {
 
         const token = (await Notifications.getExpoPushTokenAsync()).data;
         console.log('Expo Push Token:', token);
-
-        // TODO: Save the token to your backend if needed
     } else {
         console.warn('Must use physical device for Push Notifications');
     }

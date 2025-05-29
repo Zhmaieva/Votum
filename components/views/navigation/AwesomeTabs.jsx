@@ -40,6 +40,17 @@ import EditBirthDateView from "../EditBirthDateView";
 import EditGenderView from "../EditGenderView";
 import SuccessView from "../SuccessView";
 import NewPasswordView from "../NewPasswordView";
+import { Image } from 'react-native';
+import myPollsGreen from '../../../assets/images/myPollsGreen.png';
+import myPollsBlack from '../../../assets/images/myPollsBlack.png';
+import feedGreen from '../../../assets/images/feedGreen.png';
+import feedBlack from '../../../assets/images/feedBlack.png';
+import userGreen from '../../../assets/images/userGreen.png';
+import userBlack from '../../../assets/images/userBlack.png';
+import searchGreen from '../../../assets/images/searchGreen.png';
+import searchBlack from '../../../assets/images/searchBlack.png';
+import addGreen from '../../../assets/images/addGreen.png';
+import addBlack from '../../../assets/images/addBlack.png';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -234,23 +245,55 @@ export function AwesomeTabs() {
             id="MainTabNavigator"
             screenOptions={({ route }) => ({
                 tabBarIcon: ({ focused, color, size }) => {
-                    let iconName;
-                    if (route.name === 'My profile') iconName = focused ? 'flame' : 'flame-outline';
-                    if (route.name === 'Feed') iconName = focused ? 'leaf' : 'leaf-outline';
-                    if (route.name === 'Liked') iconName = focused ? 'heart' : 'heart-outline';
-                    if (route.name === 'Search') iconName = focused ? 'search' : 'search-outline';
-                    if (route.name === 'Add Poll') iconName = focused ? 'add-circle' : 'add-circle-outline';
-
-                    return <Ionicons name={iconName} size={size} color={color} />;
+                    if (route.name === 'Voted') {
+                        return (
+                            <Image
+                                source={focused ? myPollsGreen : myPollsBlack}
+                                style={{ width: size, height: size, resizeMode: 'contain' }}
+                            />
+                        );
+                    }
+                    if (route.name === 'My profile') {
+                        return (
+                            <Image
+                                source={focused ? userGreen : userBlack}
+                                style={{ width: size, height: size, resizeMode: 'contain' }}
+                            />
+                        );
+                    }
+                    if (route.name === 'Feed') {
+                        return (
+                            <Image
+                                source={focused ? feedGreen : feedBlack}
+                                style={{ width: size, height: size, resizeMode: 'contain' }}
+                            />
+                        );
+                    }
+                    if (route.name === 'Search') {
+                        return (
+                            <Image
+                                source={focused ? searchGreen : searchBlack}
+                                style={{ width: size, height: size, resizeMode: 'contain' }}
+                            />
+                        );
+                    }
+                    if (route.name === 'Add Poll') {
+                        return (
+                            <Image
+                                source={focused ? addGreen : addBlack}
+                                style={{ width: size, height: size, resizeMode: 'contain' }}
+                            />
+                        );
+                    }
                 },
-                tabBarActiveTintColor: Colors.green,
+                tabBarActiveTintColor: Colors.black,
                 tabBarInactiveTintColor: Colors.black,
             })}
         >
             <Tab.Screen name="Feed" component={FeedStack} options={{ headerShown: false, gestureEnabled: true }} />
             <Tab.Screen name="Search" component={SearchStack} options={{ headerShown: false, gestureEnabled: true }} />
             <Tab.Screen name="Add Poll" component={AddStack} options={{ headerShown: false, gestureEnabled: true }} />
-            <Tab.Screen name="Liked" component={VotedStack} options={{ headerShown: false, gestureEnabled: true }} />
+            <Tab.Screen name="Voted" component={VotedStack} options={{ headerShown: false, gestureEnabled: true }} />
             <Tab.Screen name="My profile" component={UserStack} options={{ headerShown: false, gestureEnabled: true }} />
         </Tab.Navigator>
     );
