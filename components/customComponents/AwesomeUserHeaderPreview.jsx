@@ -110,6 +110,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         paddingVertical: 6,
+        width: "100%",
     },
     avatar: {
         width: 50,
@@ -122,17 +123,19 @@ const styles = StyleSheet.create({
     },
     username: {
         fontWeight: "bold",
-        fontSize: 14,
+        fontSize: 15,
         color: Colors.black,
-        marginBottom: 1
+        marginBottom: 1,
+        fontFamily: 'Ubuntu-Bold',
     },
     subText: {
         fontSize: 14,
         color: Colors.grey,
+        fontFamily: 'Ubuntu-Regular',
     },
     buttonContainer: {
         marginLeft: 10,
-        width: 80,
+        width: 87,
         alignSelf: "flex-end"
     },
 });

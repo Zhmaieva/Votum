@@ -192,8 +192,8 @@ const AwesomeVote = ({
     return (
         <View style={styles.container}>
             <View style={[styles.row, styles.questionContainer]}>
-                <Text style={[styles.qTextStyle, styles.fontFamilyStyle]}>Q: </Text>
-                <Text style={[styles.title, styles.fontFamilyStyle]}>{question}</Text>
+                <Text style={[styles.qTextStyle, styles.fontFamilyStyleBold]}>Q: </Text>
+                <Text style={[styles.title, styles.fontFamilyStyleBold]}>{question}</Text>
             </View>
             <View style={styles.votingFrame}>
                 <View style={[styles.controlSignsContainer, styles.row]}>
@@ -202,14 +202,14 @@ const AwesomeVote = ({
                             <Pressable style={styles.iconContainer} onPress={()=>setModalVisible(true)}>
                                 <Image
                                     source={require('../../assets/images/deleteBlack.png')}
-                                    style={{ width: 26, height: 26 }}
+                                    style={{ width: 24, height: 24 }}
                                     resizeMode="contain"
                                 />
                             </Pressable>
                             <TouchableOpacity style={styles.iconContainer} onPress={() => onShare(id)}>
                                 <Image
                                     source={require('../../assets/images/shareBlack.png')}
-                                    style={{ width: 28, height: 28 }}
+                                    style={{ width: 26, height: 26 }}
                                     resizeMode="contain"
                                 />
                             </TouchableOpacity>
@@ -283,7 +283,7 @@ const AwesomeVote = ({
                                     </View>
                                 </View>
                                 <View style={styles.resultsNumberContainer}>
-                                    <Text style={[styles.buttonText, styles.fontFamilyStyle, {
+                                    <Text style={[styles.buttonText, styles.fontFamilyStyleBold, {
                                         color: Colors.black,
                                         fontWeight: selected === option.id ? "600" : "400"
                                     }]}>{percentMap.current?.get(option.id) || 0}%</Text>
@@ -365,7 +365,10 @@ const styles = StyleSheet.create({
         marginBottom: 10
     },
     fontFamilyStyle: {
-        fontFamily: 'CourierPrime-Regular'
+        fontFamily: 'Ubuntu-Regular'
+    },
+    fontFamilyStyleBold: {
+        fontFamily: 'Ubuntu-Bold'
     },
     controlSignsContainer: {
         justifyContent: 'flex-end',

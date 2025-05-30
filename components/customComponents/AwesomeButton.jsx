@@ -133,12 +133,12 @@ export default function AwesomeButton({
     );
 }
 
-    const styles = StyleSheet.create({
+const styles = StyleSheet.create({
     buttonMain: {
         justifyContent: 'center',
         alignItems: 'center',
         height: 40,
-        minWidth: 80,
+        minWidth: 87,
         paddingHorizontal: 10
     },
     buttonGreen: {
@@ -181,10 +181,10 @@ export default function AwesomeButton({
         opacity: 0.5,
     },
     buttonMainText: {
-        fontSize: 14,
+        fontSize: 15,
         textAlign: 'center',
         fontWeight: '500',
-        //width: '100%'
+        fontFamily: 'Ubuntu-Bold',
     },
     leftAlignedText: {
         textAlign: 'left',

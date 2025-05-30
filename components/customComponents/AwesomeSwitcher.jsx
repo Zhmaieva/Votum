@@ -52,8 +52,9 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     text: {
-        fontSize: 14,
+        fontSize: 15,
         color: Colors.grey,
+        fontFamily: 'Ubuntu-Bold',
     },
     activeTabLeft: {
         backgroundColor: Colors.white,

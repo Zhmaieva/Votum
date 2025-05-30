@@ -68,7 +68,7 @@ const ReportPoll = ({ onReport }) => {
             <TouchableOpacity onPress={openSheet}>
                 <Image
                     source={require('../../assets/images/reportBlack.png')}
-                    style={{ width: 29, height: 29 }}
+                    style={{ width: 28, height: 28 }}
                     resizeMode="contain"
                 />
             </TouchableOpacity>

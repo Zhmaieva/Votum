@@ -80,23 +80,23 @@ const AwesomeUserHeader = ({
                 <View style={{ flex: 1, marginLeft: 20 }}>
                     <View style={[styles.followersContainer, styles.row]}>
                         <View style={styles.followersSubContainer}>
-                            <Text style={styles.followersText}>{user.pollsNumber ?? 0}</Text>
-                            <Text style={styles.followersText}>{(user.pollsNumber ?? 0) == 1 ? 'poll' : 'polls'}</Text>
+                            <Text style={[styles.followersText, styles.fontFamilyBold]}>{user.pollsNumber ?? 0}</Text>
+                            <Text style={[styles.followersText, styles.fontFamilyBold]}>{(user.pollsNumber ?? 0) == 1 ? 'poll' : 'polls'}</Text>
                         </View>
                         <Pressable style={styles.followersSubContainer} onPress={() => navigation.navigate('Followers', { userId: user.userId })}>
-                            <Text style={styles.followersText}>{user.followersNumber ?? 0}</Text>
-                            <Text style={styles.followersText}>followers</Text>
+                            <Text style={[styles.followersText, styles.fontFamilyBold]}>{user.followersNumber ?? 0}</Text>
+                            <Text style={[styles.followersText, styles.fontFamilyBold]}>followers</Text>
                         </Pressable>
                         <Pressable style={styles.followersSubContainer} onPress={() => navigation.navigate('Following', { userId: user.userId })}>
-                            <Text style={styles.followersText}>{user.followingNumber ?? 0}</Text>
-                            <Text style={styles.followersText}>following</Text>
+                            <Text style={[styles.followersText, styles.fontFamilyBold]}>{user.followingNumber ?? 0}</Text>
+                            <Text style={[styles.followersText, styles.fontFamilyBold]}>following</Text>
                         </Pressable>
                     </View>
                 </View>
             </View>
 
             <View style={{ marginTop: 8, marginBottom: 6 }}>
-                <Text style={[styles.font14, styles.usernameBold, styles.fontFamily]} numberOfLines={1}>
+                <Text style={[styles.font14, styles.usernameBold, styles.fontFamilyBold]} numberOfLines={1}>
                     {user.username}
                 </Text>
                 <Text style={[styles.font14, styles.fontFamily]} numberOfLines={2} ellipsizeMode="tail">
@@ -209,7 +209,10 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
     },
     fontFamily: {
-        fontFamily: 'arial',
+        fontFamily: 'Ubuntu-Regular',
+    },
+    fontFamilyBold: {
+        fontFamily: 'Ubuntu-Bold',
     },
     followersContainer: {
         justifyContent: 'space-between',
@@ -222,8 +225,7 @@ const styles = StyleSheet.create({
     },
     followersText: {
         color: Colors.black,
-        fontSize: 14,
-        fontWeight: '600',
+        fontSize: 15,
     },
     buttonsContainer: {
         justifyContent: "space-between",

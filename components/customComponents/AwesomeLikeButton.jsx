@@ -22,7 +22,7 @@ export default function AwesomeLikeButton({ pollId, isLikedParam }) {
 
     return (
         <View>
-            <Pressable onPress={onPressHandler}>
+            <Pressable onPress={onPressHandler} style={{marginLeft: 4}}>
                 <Image
                     source={
                         isLiked

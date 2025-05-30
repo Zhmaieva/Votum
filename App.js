@@ -45,6 +45,8 @@ export default function App() {
             await Font.loadAsync({
                 'CourierPrime-Regular': require('./assets/fonts/CourierPrime-Regular.ttf'),
                 'CourierPrime-Bold': require('./assets/fonts/CourierPrime-Bold.ttf'),
+                'Ubuntu-Regular': require('./assets/fonts/UbuntuMono-Regular.ttf'),
+                'Ubuntu-Bold': require('./assets/fonts/UbuntuMono-Bold.ttf'),
             });
 
             setFontLoaded(true);
