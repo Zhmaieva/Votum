@@ -94,7 +94,9 @@ const EmailRegisterView = ({route }) => {
                 <AwesomeModal
                     visible={isModalVisible}
                     text={error}
-                    onPress={() => setModalVisible(false)}
+                    buttons={[
+                        { label: "OK", onPress: () => setModalVisible(false) },
+                    ]}
                     onBackPress={() => setModalVisible(false)} />
             </View>
         </SafeAreaView>

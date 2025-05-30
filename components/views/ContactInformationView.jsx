@@ -69,8 +69,9 @@ const ContactInformationView = () => {
                 <AwesomeModal
                     visible={isModalVisible}
                     text={modalText}
-                    buttonText="OK"
-                    onPress={() => setModalVisible(false)}
+                    buttons={[
+                        { label: "OK", onPress: () => setModalVisible(false) },
+                    ]}
                     onBackPress={() => setModalVisible(false)}
                 />
             </ScrollView>

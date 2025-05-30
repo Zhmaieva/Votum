@@ -60,18 +60,27 @@ const NewPasswordView = ({ route }) => {
                     visible={isMismatchModalVisible}
                     text="Passwords do not match"
                     subtext="Please make sure both passwords are identical."
+                    buttons={[
+                        { label: "OK", onPress: () => setMismatchModalVisible(false) },
+                    ]}
                     onBackPress={() => setMismatchModalVisible(false)}
                 />
                 <AwesomeModal
                     visible={isEmptyModalVisible}
                     text="Fields required"
                     subtext="Please fill in both password fields."
+                    buttons={[
+                        { label: "OK", onPress: () => setEmptyModalVisible(false) },
+                    ]}
                     onBackPress={() => setEmptyModalVisible(false)}
                 />
                 <AwesomeModal
                     visible={isInvalidLengthModalVisible}
                     text="Invalid password length"
                     subtext="Your password must be between 8 and 20 characters."
+                    buttons={[
+                        { label: "OK", onPress: () => setInvalidLengthModalVisible(false) },
+                    ]}
                     onBackPress={() => setInvalidLengthModalVisible(false)}
                 />
             </View>

@@ -300,7 +300,6 @@ const AwesomeVote = ({
             <AwesomeModal
                 visible={modalVisible}
                 text="Are you sure you want to delete this poll?"
-                buttonText="Yes, delete"
                 buttons={[
                     { label: "No", onPress: () => setModalVisible(false) },
                     { label: "Yes, delete", onPress: () => {

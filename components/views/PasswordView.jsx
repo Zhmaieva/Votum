@@ -63,6 +63,9 @@ const PasswordView = ({ route }) => {
                     visible={showInvalidModal}
                     text="Invalid password"
                     subtext="Password must be 8–20 characters and cannot include emojis."
+                    buttons={[
+                        { label: "OK", onPress: () => setShowInvalidModal(false) },
+                    ]}
                     onBackPress={() => setShowInvalidModal(false)}
                 />
             </View>

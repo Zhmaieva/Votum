@@ -150,7 +150,9 @@ const AddView = () => {
             <AwesomeModal
                 visible={showModal}
                 text="Please fill in the question and at least two answers"
-                buttonText="OK"
+                buttons={[
+                    { label: "OK", onPress: () => setShowModal(false) },
+                ]}
                 onBackPress={() => setShowModal(false)}
             />
         </SafeAreaView>

@@ -129,19 +129,20 @@ const ProfileEditView = ({ route }) => {
                 visible={isDeleteModalVisible}
                 text="DELETE PROFILE"
                 subtext="Are you sure you want to delete your profile? This action is irreversible and will permanently remove all your data."
-                buttonText="Delete my pofile"
-                secondaryText="Cancel"
-                onPress={async () => {
-                    setDeleteModalVisible(false);
-                    //set another modal visible and after password input, execute the logic below passing input password
-                    const result = await deleteUserProfile('hardcoded_password');
-                    if (result) {
-                        await signOut();
-                        return;
-                    }
+                buttons={[
+                    { label: "Delete my pofile", onPress: async () => {
+                            setDeleteModalVisible(false);
+                            //set another modal visible and after password input, execute the logic below passing input password
+                            const result = await deleteUserProfile('hardcoded_password');
+                            if (result) {
+                                await signOut();
+                                return;
+                            }
 
-                    setErrorModalVisible(true);
-                }}
+                            setErrorModalVisible(true);
+                        }},
+                    { label: "Cancel", onPress: () => setDeleteModalVisible(false)},
+                ]}
                 onBackPress={() => setDeleteModalVisible(false)}
             />
 
@@ -149,6 +150,9 @@ const ProfileEditView = ({ route }) => {
                 visible={isErrorModalVisible}
                 text="Oops"
                 subtext="There was an error while trying to delete your profile, try again later."
+                buttons={[
+                    { label: "OK", onPress: () => setErrorModalVisible(false) },
+                ]}
                 onBackPress={() => setErrorModalVisible(false)}
             />
 
@@ -156,15 +160,14 @@ const ProfileEditView = ({ route }) => {
                 visible={isLogoutModalVisible}
                 text="LOG OUT"
                 subtext="Are you sure you want to log out?"
-                onPress={async () => {
-                    setLogoutModalVisible(false);
-                    await signOut();
-                }}
-                onBackPress={() => setLogoutModalVisible(false)}
                 buttons={[
-                    { label: "CANCEL",  },
-                    { label: "OK",  },
+                    { label: "OK", onPress: async () => {
+                            setLogoutModalVisible(false);
+                            await signOut();
+                        }},
+                    { label: "CANCEL", onPress: () => setLogoutModalVisible(false) },
                 ]}
+                onBackPress={() => setLogoutModalVisible(false)}
             />
         </SafeAreaView>
     );

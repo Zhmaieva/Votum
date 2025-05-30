@@ -91,7 +91,9 @@ const UsernameView = ({}) => {
             </View>
             <AwesomeModal visible={isModalVisible}
                           text={error}
-                          onPress={_ => {setModalVisible(false)}}
+                          buttons={[
+                              { label: "OK", onPress: () => setModalVisible(false) },
+                          ]}
                           onBackPress={_ => {setModalVisible(false)}}/>
         </SafeAreaView>
     );

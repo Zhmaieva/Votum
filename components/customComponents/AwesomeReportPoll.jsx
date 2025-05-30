@@ -106,8 +106,9 @@ const ReportPoll = ({ onReport }) => {
             <AwesomeModal
                 visible={errorVisible}
                 text="Please select a reason to report the poll."
-                buttonText="OK"
-                onPress={() => setErrorVisible(false)}
+                buttons={[
+                    { label: "OK", onPress: () => setErrorVisible(false) },
+                ]}
                 onBackPress={() => setErrorVisible(false)}
             />
 
@@ -115,8 +116,9 @@ const ReportPoll = ({ onReport }) => {
             <AwesomeModal
                 visible={modalVisible}
                 text="Report Submitted. Thank you for your feedback."
-                buttonText="OK"
-                onPress={() => setModalVisible(false)}
+                buttons={[
+                    { label: "OK", onPress: () => setModalVisible(false) },
+                ]}
                 onBackPress={() => setModalVisible(false)}
             />
         </>

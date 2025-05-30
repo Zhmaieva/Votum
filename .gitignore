@@ -38,4 +38,3 @@ yarn-error.*
 *.tsbuildinfo
 /.idea/
 
-**/api-constants.jsx

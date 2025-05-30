@@ -58,8 +58,10 @@ const AwesomeProfilePhoto = ({ profileImage, setProfileImage }) => {
             </TouchableOpacity>
             <AwesomeModal
                 visible={isModalVisible}
-                text={"Upload failed. Check your connection or try an image under 5 MB."}
-                onPress={() => setModalVisible(false)}
+                text="Upload failed. Check your connection or try an image under 5 MB."
+                buttons={[
+                    { label: "OK", onPress: () => setModalVisible(false) },
+                ]}
                 onBackPress={() => setModalVisible(false)}
             />
         </View>

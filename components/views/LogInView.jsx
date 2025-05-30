@@ -60,8 +60,10 @@ const LogInView = ({ }) => {
                     <AwesomeButton text="Create new account" color={Color.WHITE} screenName='Email Register' />
                 </View>
                 <AwesomeModal visible={isModalVisible}
-                              text={"Incorrect username or password, try again"}
-                              onPress={_ => {setModalVisible(false)}}
+                              text="Incorrect username or password, try again"
+                              buttons={[
+                                  { label: "OK", onPress: () => setModalVisible(false) },
+                              ]}
                               onBackPress={_ => {setModalVisible(false)}}/>
             </View>
         </SafeAreaView>

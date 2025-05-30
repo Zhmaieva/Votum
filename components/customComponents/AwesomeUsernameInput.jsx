@@ -123,7 +123,9 @@ const AwesomeUsernameInput = ({ route }) => {
             <AwesomeModal
                 visible={isModalVisible}
                 text={modalMessage}
-                onPress={() => setModalVisible(false)}
+                buttons={[
+                    { label: "OK", onPress: () => setModalVisible(false) },
+                ]}
                 onBackPress={() => setModalVisible(false)}
             />
         </View>

@@ -72,16 +72,18 @@ const ReportBugView = () => {
                 <AwesomeModal
                     visible={showErrorModal}
                     text="Please enter a description before submitting."
-                    buttonText="OK"
-                    onPress={() => setShowErrorModal(false)}
+                    buttons={[
+                        { label: "OK", onPress: () => setShowErrorModal(false) },
+                    ]}
                     onBackPress={() => setShowErrorModal(false)}
                 />
 
                 <AwesomeModal
                     visible={showSuccessModal}
                     text="Thank you for your report!"
-                    buttonText="OK"
-                    onPress={() => setShowSuccessModal(false)}
+                    buttons={[
+                        { label: "OK", onPress: () => setShowSuccessModal(false) },
+                    ]}
                     onBackPress={() => setShowSuccessModal(false)}
                 />
             </View>

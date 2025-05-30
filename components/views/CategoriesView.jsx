@@ -70,8 +70,9 @@ const CategoriesView = ({ route }) => {
                 <AwesomeModal
                     visible={showError}
                     text="Please select at least one category."
-                    buttonText="OK"
-                    onPress={() => setShowError(false)}
+                    buttons={[
+                        { label: "OK", onPress: () => setShowError(false) },
+                    ]}
                     onBackPress={() => setShowError(false)}
                 />
             </View>
