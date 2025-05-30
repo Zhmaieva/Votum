@@ -775,5 +775,8 @@ CREATE TRIGGER trigger_increment_votes_count
     AFTER INSERT ON poll_votes
     FOR EACH ROW EXECUTE FUNCTION increment_votes_count();
 
+UPDATE user_categories SET score = 0.5 WHERE score = 0;
+
+
 
 
