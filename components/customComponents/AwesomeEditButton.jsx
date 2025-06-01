@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import React from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { Colors } from '../../utils/colorUtils';
+import {Colors, Fonts} from '../../utils/colorUtils';
 
 export default function AwesomeEditButton({
                                           text,
@@ -47,5 +47,6 @@ const styles = StyleSheet.create({
         color: Colors.black,
         fontSize: 14,
         textAlign: 'center',
+        fontFamily: Fonts.regular,
     },
 });

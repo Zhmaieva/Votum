@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import {
     View, TextInput, Dimensions, Text, StyleSheet,
-    Pressable, SafeAreaView
+    Pressable, SafeAreaView, Image
 } from 'react-native';
-import { Colors } from "../../utils/colorUtils";
+import { Colors, Fonts } from "../../utils/colorUtils";
 import { Ionicons } from "@expo/vector-icons";
 import AwesomeButton, { Color } from "../customComponents/AwesomeButton";
 import { AwesomeModal } from "../customComponents/AwesomeModal";
@@ -80,10 +80,10 @@ const AddView = () => {
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.container}>
                 <View style={[styles.row, styles.bottomMargin10]}>
-                    <Text style={[styles.qTextStyle, styles.fontFamily]}>Q:</Text>
+                    <Text style={[styles.qTextStyle]}>Q:</Text>
                     <View style={{ flex: 1 }}>
                         <TextInput
-                            style={[styles.inputQuestion, styles.fontFamily]}
+                            style={[styles.inputQuestion]}
                             placeholder="question"
                             placeholderTextColor='#ababab'
                             value={question}
@@ -107,7 +107,11 @@ const AddView = () => {
                             />
                             {options.length > 2 && (
                                 <Pressable style={styles.iconOverlay} onPress={() => removeOption(item.id)}>
-                                    <Ionicons name='trash-outline' size={18} color='#ababab' />
+                                    <Image
+                                        source={require('../../assets/images/trashGrey.png')}
+                                        style={{ width: 20, height: 20 }}
+                                        resizeMode="contain"
+                                    />
                                 </Pressable>
                             )}
                         </View>
@@ -119,8 +123,8 @@ const AddView = () => {
                         </View>
                     )}
                     <View style={[styles.row, styles.endsInRow]}>
-                        <Text>Ends in</Text>
-                        <View style={styles.row}>
+                        <View style={[styles.row]}>
+                            <Text style={{fontFamily: Fonts.regular, alignSelf: 'center',}}>Ends in</Text>
                             {["1h", "1d", "1w", "1m"].map((duration) => (
                                 <View style={styles.marginCategory} key={duration}>
                                     <AwesomeCategory
@@ -133,12 +137,12 @@ const AddView = () => {
                                 </View>
                             ))}
                         </View>
+                        {focusedField && (
+                            <Text style={styles.charCounter}>
+                                {getFocusedLength()}/40
+                            </Text>
+                        )}
                     </View>
-                    {focusedField && (
-                        <Text style={styles.charCounter}>
-                            {getFocusedLength()}/40
-                        </Text>
-                    )}
                 </View>
                 <AwesomeButton
                     color={Color.BLACK}
@@ -173,11 +177,12 @@ const styles = StyleSheet.create({
         fontSize: 20,
         color: Colors.black,
         paddingTop: 1,
+        fontFamily: Fonts.medium,
     },
     inputWrapper: {
         position: 'relative',
         width: '100%',
-        marginBottom: 10
+        marginBottom: 10,
     },
     inputWithIcon: {
         borderWidth: 1,
@@ -199,9 +204,10 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
         marginRight: 5,
+        fontFamily: Fonts.medium,
     },
     row: {
-        flexDirection: 'row'
+        flexDirection: 'row',
     },
     bottomMargin10: {
         marginBottom: 10
@@ -214,20 +220,23 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     endsInRow: {
-        alignItems: 'center',
         marginTop: 16,
+        justifyContent: 'space-between'
     },
     addAnswerContainer: {
         width: '100%'
     },
     charCounter: {
-        color: Colors.grey,
-        fontSize: 12,
-        alignSelf: 'flex-end',
-        paddingBottom: 2
+        color: Colors.black,
+        fontSize: 14,
+        alignSelf: 'center',
+        fontFamily: Fonts.regular,
     },
     marginCategory: {
         marginLeft: 8
+    },
+    fontFamily: {
+        fontFamily: Fonts.regular,
     }
 });
 

@@ -13,6 +13,12 @@ export const Colors = {
     lightGrey: '#d3d3d3',
 }
 
+export const Fonts = {
+    regular: 'Fira',
+    medium: 'Fira-Medium',
+    bold: 'Fira-Bold',
+}
+
 const styles = StyleSheet.create({
 
 });

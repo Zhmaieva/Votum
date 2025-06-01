@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
-import { Colors } from '../../utils/colorUtils';
+import {Colors, Fonts} from '../../utils/colorUtils';
 
 const AwesomeSegmentedControls = ({ options = [], onSelect }) => {
     const defaultOption = options.includes("1d") ? "1d" : options[0];
@@ -58,6 +58,7 @@ const styles = StyleSheet.create({
     text: {
         fontSize: 14,
         color: Colors.grey,
+        fontFamily: Fonts.regular
     },
     activeTab: {
         borderColor: Colors.black,
@@ -65,7 +66,7 @@ const styles = StyleSheet.create({
     },
     activeText: {
         color: Colors.black,
-        fontWeight: '600'
+        fontFamily: Fonts.medium
     },
 });
 

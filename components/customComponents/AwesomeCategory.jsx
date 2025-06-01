@@ -1,5 +1,5 @@
 import { Text, StyleSheet, Pressable } from 'react-native';
-import { Colors } from '../../utils/colorUtils';
+import { Colors, Fonts } from '../../utils/colorUtils';
 
 export default function AwesomeCategory ({ categoryName, size = 18, isSelected, onPress, noShadow = false }) {
     const containerStyle = [
@@ -44,15 +44,18 @@ const styles = StyleSheet.create({
     },
     textDefault: {
         color: Colors.black,
+        fontFamily: Fonts.regular,
     },
     textSelected: {
         color: Colors.white,
+        fontFamily: Fonts.regular,
     },
     tagText: {
         marginLeft: 11,
         marginRight: 11,
         marginTop: 7,
         marginBottom: 7,
+        fontFamily: Fonts.regular,
     },
     row: {
         flexDirection: 'row',

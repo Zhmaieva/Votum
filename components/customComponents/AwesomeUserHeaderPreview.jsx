@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
-import { Colors } from '../../utils/colorUtils';
+import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from "./AwesomeButton";
 import { followProfile, unfollowProfile } from "../../shared/api/apiClient";
 import { globalEventEmitter } from "../../shared/common";
@@ -126,16 +126,16 @@ const styles = StyleSheet.create({
         fontSize: 15,
         color: Colors.black,
         marginBottom: 1,
-        fontFamily: 'Ubuntu-Bold',
+        fontFamily: Fonts.medium
     },
     subText: {
         fontSize: 14,
         color: Colors.grey,
-        fontFamily: 'Ubuntu-Regular',
+        fontFamily: Fonts.regular
     },
     buttonContainer: {
         marginLeft: 10,
-        width: 87,
+        width: 85,
         alignSelf: "flex-end"
     },
 });

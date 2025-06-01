@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, Animated } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
-import { Colors } from '../../utils/colorUtils';
+import {Colors, Fonts} from '../../utils/colorUtils';
 
 const AwesomeFullScreenLoader = ({ visible = false, message = '' }) => {
     const rotateAnim = React.useRef(new Animated.Value(0)).current;
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
         marginTop: 15,
         fontSize: 16,
         color: Colors.white,
-        fontWeight: '500',
+        fontFamily: Fonts.medium
     },
 });
 

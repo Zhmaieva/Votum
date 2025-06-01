@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
     },
     switcherContainer: {
         marginTop: 2,
-        marginBottom: 15,
+        marginBottom: 10,
         marginLeft: 15,
         marginRight: 15
     },

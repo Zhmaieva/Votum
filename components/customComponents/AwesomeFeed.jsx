@@ -11,7 +11,7 @@ import {
 const { height, width } = Dimensions.get('window');
 const POLL_HEIGHT = height * 0.82;
 const NEXT_POLL_OFFSET = height * 0.18;
-import { Colors } from '../../utils/colorUtils';
+import {Colors, Fonts} from '../../utils/colorUtils';
 import {getDataService, globalEventEmitter} from "../../shared/common";
 import AwesomeLink from "./AwesomeLink";
 import {useFocusEffect} from "@react-navigation/native";
@@ -303,6 +303,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: Colors.grey,
         textAlign: 'center',
+        fontFamily: Fonts.regular
     },
     row: {
         flexDirection: 'row'

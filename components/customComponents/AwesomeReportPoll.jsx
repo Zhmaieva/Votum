@@ -13,7 +13,7 @@ import {
     BottomSheetView,
     useBottomSheetModal
 } from "@gorhom/bottom-sheet";
-import { Colors } from "../../utils/colorUtils";
+import {Colors, Fonts} from "../../utils/colorUtils";
 import { AwesomeModal } from "./AwesomeModal";
 
 const REPORT_REASONS = [
@@ -134,7 +134,8 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         marginBottom: 10,
         color: Colors.black,
-        marginLeft: 9
+        marginLeft: 9,
+        fontFamily: Fonts.regular
     },
     reasonButton: {
         padding: 10,
@@ -145,6 +146,7 @@ const styles = StyleSheet.create({
     reasonText: {
         fontSize: 14,
         color: Colors.black,
+        fontFamily: Fonts.regular
     },
     row: {
         flexDirection: 'row',
@@ -175,10 +177,12 @@ const styles = StyleSheet.create({
         shadowColor: Colors.green,
     },
     submitText: {
-        color: Colors.white
+        color: Colors.white,
+        fontFamily: Fonts.regular
     },
     cancelText: {
-        color: Colors.black
+        color: Colors.black,
+        fontFamily: Fonts.regular
     },
 });
 

@@ -8,7 +8,7 @@ import {
     Pressable,
     Image
 } from "react-native";
-import { Colors } from '../../utils/colorUtils';
+import { Colors, Fonts } from '../../utils/colorUtils';
 import ReportPoll from "./AwesomeReportPoll";
 import {globalEventEmitter, onShare} from "../../shared/common";
 import AwesomeLikeButton from "./AwesomeLikeButton";
@@ -202,7 +202,7 @@ const AwesomeVote = ({
                             <Pressable style={styles.iconContainer} onPress={()=>setModalVisible(true)}>
                                 <Image
                                     source={require('../../assets/images/deleteBlack.png')}
-                                    style={{ width: 24, height: 24 }}
+                                    style={{ width: 27, height: 27 }}
                                     resizeMode="contain"
                                 />
                             </Pressable>
@@ -283,7 +283,7 @@ const AwesomeVote = ({
                                     </View>
                                 </View>
                                 <View style={styles.resultsNumberContainer}>
-                                    <Text style={[styles.buttonText, styles.fontFamilyStyleBold, {
+                                    <Text style={[styles.buttonText, styles.fontFamilyStyle, {
                                         color: Colors.black,
                                         fontWeight: selected === option.id ? "600" : "400"
                                     }]}>{percentMap.current?.get(option.id) || 0}%</Text>
@@ -322,8 +322,8 @@ const styles = StyleSheet.create({
         width: '100%'
     },
     title: {
-        fontWeight: '500',
-        fontSize: 20
+        fontSize: 20,
+        fontFamily: Fonts.medium
     },
     votingFrame: {
         borderWidth: 1,
@@ -352,7 +352,8 @@ const styles = StyleSheet.create({
         marginLeft: 10
     },
     countStyle: {
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        marginTop: 3
     },
     greyTextStyle: {
         color: Colors.black
@@ -364,10 +365,10 @@ const styles = StyleSheet.create({
         marginBottom: 10
     },
     fontFamilyStyle: {
-        fontFamily: 'Ubuntu-Regular'
+        fontFamily: Fonts.regular
     },
     fontFamilyStyleBold: {
-        fontFamily: 'Ubuntu-Bold'
+        fontFamily: Fonts.medium
     },
     controlSignsContainer: {
         justifyContent: 'flex-end',
@@ -386,7 +387,6 @@ const styles = StyleSheet.create({
         width: 300,
         padding: 20,
         backgroundColor: Colors.white,
-        //borderRadius: 10,
         alignItems: 'center'
     },
     resultBar: {
@@ -408,7 +408,7 @@ const styles = StyleSheet.create({
     },
     qTextStyle: {
         fontSize: 20,
-        fontWeight: 'bold',
+        fontFamily: Fonts.medium,
         color: Colors.black,
     },
     answerStyle: {
@@ -420,7 +420,8 @@ const styles = StyleSheet.create({
     answerTextStyle: {
         color: Colors.black,
         fontSize: 16,
-        marginLeft: 10
+        marginLeft: 10,
+        fontFamily: Fonts.regular
     },
     rightPartBar: {
         height: 40,

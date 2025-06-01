@@ -61,8 +61,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         position: 'relative',
         overflow: 'hidden',
-        /*borderColor: Colors.black,
-        borderWidth: 1,*/
         paddingHorizontal: 2,
     },
     knob: {

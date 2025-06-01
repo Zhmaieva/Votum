@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import { View, TextInput, TouchableOpacity, Text, StyleSheet } from 'react-native';
-import { Colors } from '../../utils/colorUtils';
+import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeCategory from "./AwesomeCategory";
 
 const categoriesList = ['all', 'username', 'question', 'answer'];
@@ -98,6 +98,7 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 2, height: 2 },
         shadowOpacity: 1,
         shadowColor: Colors.green,
+        fontFamily: Fonts.regular,
     },
     searchButton: {
         height: 40,
@@ -113,7 +114,8 @@ const styles = StyleSheet.create({
         shadowColor: Colors.green,
     },
     searchButtonText: {
-        color: Colors.white
+        color: Colors.white,
+        fontFamily: Fonts.medium,
     },
 });
 

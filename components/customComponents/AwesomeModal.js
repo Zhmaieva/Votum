@@ -7,7 +7,7 @@ import {
     View,
 } from "react-native";
 import React from "react";
-import { Colors } from "../../utils/colorUtils";
+import {Colors, Fonts} from "../../utils/colorUtils";
 
 /**
  * Shows a customizable modal with 1 or 2 buttons
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
     modalButton: {
         color: Colors.green,
         fontSize: 16,
-        fontWeight: "bold"
+        fontFamily: Fonts.bold
     },
     row: {
         alignItems: "center",

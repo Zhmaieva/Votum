@@ -1,6 +1,6 @@
 import {Text, StyleSheet, Pressable} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { Colors } from '../../utils/colorUtils';
+import { Colors, Fonts } from '../../utils/colorUtils';
 
 export default function AwesomeLink({text, screenName}) {
 
@@ -26,6 +26,6 @@ const styles = StyleSheet.create({
     linkMainText: {
         color: Colors.black,
         fontSize: 16,
-        fontWeight: '500',
+        fontFamily: Fonts.medium
     },
 });

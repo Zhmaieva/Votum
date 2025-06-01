@@ -1,6 +1,6 @@
 import { Text, TextInput, StyleSheet, View } from 'react-native';
 import React, { useState } from 'react';
-import { Colors } from '../../utils/colorUtils';
+import {Colors, Fonts} from '../../utils/colorUtils';
 import { getDataService } from "../../shared/common";
 
 export default function AwesomeEmailInput({ value, bareStyle = false }) {
@@ -64,14 +64,17 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 2, height: 2 },
         shadowOpacity: 1,
         shadowColor: Colors.green,
+        fontFamily: Fonts.regular
     },
     defaultInput: {
         borderWidth: 1,
-        borderColor: Colors.black
+        borderColor: Colors.black,
+        fontFamily: Fonts.regular
     },
     wrongEmail: {
         fontSize: 12,
         color: Colors.red,
-        marginTop: 3
+        marginTop: 3,
+        fontFamily: Fonts.regular
     }
 });

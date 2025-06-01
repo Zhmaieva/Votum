@@ -1,6 +1,6 @@
 import React from 'react';
 import {TouchableOpacity, Text, ActivityIndicator, StyleSheet} from 'react-native';
-import { Colors } from '../../utils/colorUtils';
+import {Colors, Fonts} from '../../utils/colorUtils';
 
 const HeaderRightButton = ({ onPress, isLoading, disabled = false }) => {
     return (
@@ -24,5 +24,6 @@ const styles = StyleSheet.create({
     buttonText: {
         fontSize: 16,
         color: Colors.green,
+        fontFamily: Fonts.regular
     },
 });

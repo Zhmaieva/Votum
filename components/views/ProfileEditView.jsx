@@ -9,7 +9,7 @@ import {
     ScrollView,
     SafeAreaView
 } from 'react-native';
-import { Colors } from '../../utils/colorUtils';
+import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeButton, {Color} from '../customComponents/AwesomeButton';
 import AwesomeEditButton from "../customComponents/AwesomeEditButton";
 import {deleteUserProfile, fetchMyProfile, signOut} from "../../shared/api/apiClient";
@@ -193,7 +193,8 @@ const styles = StyleSheet.create({
     sectionName: {
         fontWeight: 'bold',
         fontSize: 16,
-        marginBottom: 10
+        marginBottom: 10,
+        fontFamily: Fonts.medium
     },
     marginTop15: {
         marginTop: 15

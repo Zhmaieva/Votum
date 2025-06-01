@@ -53,7 +53,11 @@ const AwesomeProfilePhoto = ({ profileImage, setProfileImage }) => {
             <TouchableOpacity style={styles.imageWrapper} onPress={handleImagePick}>
                 <Image source={{ uri: profileImage }} style={styles.profileImage} />
                 <View style={styles.iconButton}>
-                    <Ionicons name="camera-outline" size={30} color={Colors.white} />
+                    <Image
+                        source={require('../../assets/images/photoWhite.png')}
+                        style={{ width: 28, height: 28 }}
+                        resizeMode="contain"
+                    />
                 </View>
             </TouchableOpacity>
             <AwesomeModal

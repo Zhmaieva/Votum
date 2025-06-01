@@ -1,7 +1,7 @@
-import { Text, StyleSheet, Animated, TouchableWithoutFeedback, ActivityIndicator, View } from 'react-native';
+import {Text, StyleSheet, Animated, TouchableWithoutFeedback, ActivityIndicator, View, Image} from 'react-native';
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { Colors } from '../../utils/colorUtils';
+import { Colors, Fonts } from '../../utils/colorUtils';
 import { Ionicons } from '@expo/vector-icons';
 
 export const Color = {
@@ -124,7 +124,11 @@ export default function AwesomeButton({
                             {buttonName}
                         </Text>
                         {settingButton && (
-                            <Ionicons name="chevron-forward" size={15} color={Colors.black} style={styles.arrowIcon} />
+                            <Image
+                                source={require('../../assets/images/arrowBlack.png')}
+                                style={{ width: 14, height: 14 }}
+                                resizeMode="contain"
+                            />
                         )}
                     </View>
                 </Animated.View>
@@ -138,7 +142,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         height: 40,
-        minWidth: 87,
+        minWidth: 85,
         paddingHorizontal: 10
     },
     buttonGreen: {
@@ -183,8 +187,7 @@ const styles = StyleSheet.create({
     buttonMainText: {
         fontSize: 15,
         textAlign: 'center',
-        fontWeight: '500',
-        fontFamily: 'Ubuntu-Bold',
+        fontFamily: Fonts.medium
     },
     leftAlignedText: {
         textAlign: 'left',

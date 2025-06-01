@@ -47,6 +47,9 @@ export default function App() {
                 'CourierPrime-Bold': require('./assets/fonts/CourierPrime-Bold.ttf'),
                 'Ubuntu-Regular': require('./assets/fonts/UbuntuMono-Regular.ttf'),
                 'Ubuntu-Bold': require('./assets/fonts/UbuntuMono-Bold.ttf'),
+                'Fira': require('./assets/fonts/FiraSans-Regular.ttf'),
+                'Fira-Bold': require('./assets/fonts/FiraSans-Bold.ttf'),
+                'Fira-Medium': require('./assets/fonts/FiraSans-Medium.ttf'),
             });
 
             setFontLoaded(true);

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from "../../../utils/colorUtils.js";
+import { Colors, Fonts } from "../../../utils/colorUtils.js";
 import MyUserProfileView from "../MyUserProfileView";
 import LikedView from '../LikedView';
 import SearchView from '../SearchView';
@@ -244,8 +244,23 @@ export function AwesomeTabs() {
         <Tab.Navigator
             id="MainTabNavigator"
             screenOptions={({ route }) => ({
+                tabBarLabelStyle: {
+                    fontFamily: Fonts.bold,
+                    fontSize: 10,
+                },
+                tabBarStyle: {
+                    backgroundColor: Colors.white,   // background color of the bar
+                    borderTopWidth: 1,
+                    borderColor: Colors.lightGrey,
+                    height: 52,                      // adjust height
+                    elevation: 10,                   // shadow on Android
+                    shadowColor: '#000',            // shadow on iOS
+                    shadowOffset: { width: 0, height: -7 },
+                    shadowOpacity: 0.15,
+                    shadowRadius: 5,
+                },
                 tabBarIcon: ({ focused, color, size }) => {
-                    if (route.name === 'Voted') {
+                    if (route.name === 'VOTED') {
                         return (
                             <Image
                                 source={focused ? myPollsGreen : myPollsBlack}
@@ -253,7 +268,7 @@ export function AwesomeTabs() {
                             />
                         );
                     }
-                    if (route.name === 'My profile') {
+                    if (route.name === 'MY PROFILE') {
                         return (
                             <Image
                                 source={focused ? userGreen : userBlack}
@@ -261,7 +276,7 @@ export function AwesomeTabs() {
                             />
                         );
                     }
-                    if (route.name === 'Feed') {
+                    if (route.name === 'FEED') {
                         return (
                             <Image
                                 source={focused ? feedGreen : feedBlack}
@@ -269,7 +284,7 @@ export function AwesomeTabs() {
                             />
                         );
                     }
-                    if (route.name === 'Search') {
+                    if (route.name === 'SEARCH') {
                         return (
                             <Image
                                 source={focused ? searchGreen : searchBlack}
@@ -277,7 +292,7 @@ export function AwesomeTabs() {
                             />
                         );
                     }
-                    if (route.name === 'Add Poll') {
+                    if (route.name === 'ADD POLL') {
                         return (
                             <Image
                                 source={focused ? addGreen : addBlack}
@@ -290,11 +305,11 @@ export function AwesomeTabs() {
                 tabBarInactiveTintColor: Colors.black,
             })}
         >
-            <Tab.Screen name="Feed" component={FeedStack} options={{ headerShown: false, gestureEnabled: true }} />
-            <Tab.Screen name="Search" component={SearchStack} options={{ headerShown: false, gestureEnabled: true }} />
-            <Tab.Screen name="Add Poll" component={AddStack} options={{ headerShown: false, gestureEnabled: true }} />
-            <Tab.Screen name="Voted" component={VotedStack} options={{ headerShown: false, gestureEnabled: true }} />
-            <Tab.Screen name="My profile" component={UserStack} options={{ headerShown: false, gestureEnabled: true }} />
+            <Tab.Screen name="FEED" component={FeedStack} options={{ headerShown: false, gestureEnabled: true }} />
+            <Tab.Screen name="SEARCH" component={SearchStack} options={{ headerShown: false, gestureEnabled: true }} />
+            <Tab.Screen name="ADD POLL" component={AddStack} options={{ headerShown: false, gestureEnabled: true }} />
+            <Tab.Screen name="VOTED" component={VotedStack} options={{ headerShown: false, gestureEnabled: true }} />
+            <Tab.Screen name="MY PROFILE" component={UserStack} options={{ headerShown: false, gestureEnabled: true }} />
         </Tab.Navigator>
     );
 }

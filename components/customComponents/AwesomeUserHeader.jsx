@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity, Pressable } from "react-native";
-import { Colors } from '../../utils/colorUtils';
+import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from "./AwesomeButton";
 import {globalEventEmitter, onShare} from "../../shared/common";
 import { followProfile, unfollowProfile } from "../../shared/api/apiClient";
@@ -116,13 +116,21 @@ const AwesomeUserHeader = ({
                         </View>
                         <View style={styles.row}>
                             <Pressable style={styles.iconContainer} onPress={() => onShare(user)}>
-                                <Ionicons name="share-outline" size={26} color={Colors.white} />
+                                <Image
+                                    source={require('../../assets/images/shareWhite.png')}
+                                    style={{ width: 26, height: 26 }}
+                                    resizeMode="contain"
+                                />
                             </Pressable>
                             <Pressable
                                 style={styles.notificationWrapper}
                                 onPress={() => navigation.navigate("Notifications")}
                             >
-                                <Ionicons name="notifications-outline" size={26} color={Colors.white} />
+                                <Image
+                                    source={require('../../assets/images/bellWhite.png')}
+                                    style={{ width: 28, height: 28 }}
+                                    resizeMode="contain"
+                                />
                                 {hasNewNotifications && <View style={styles.greenDot} />}
                             </Pressable>
                         </View>
@@ -147,7 +155,11 @@ const AwesomeUserHeader = ({
                             />
                         </View>
                         <View style={styles.iconContainer}>
-                            <Ionicons name="share-outline" size={26} color={Colors.white} />
+                            <Image
+                                source={require('../../assets/images/shareWhite.png')}
+                                style={{ width: 26, height: 26 }}
+                                resizeMode="contain"
+                            />
                         </View>
                     </>
                 )}
@@ -204,15 +216,16 @@ const styles = StyleSheet.create({
     },
     font14: {
         fontSize: 14,
+        fontFamily: Fonts.regular
     },
     usernameBold: {
-        fontWeight: "bold",
+        fontFamily: Fonts.medium
     },
     fontFamily: {
-        fontFamily: 'Ubuntu-Regular',
+        fontFamily: Fonts.regular
     },
     fontFamilyBold: {
-        fontFamily: 'Ubuntu-Bold',
+        fontFamily: Fonts.medium
     },
     followersContainer: {
         justifyContent: 'space-between',
@@ -226,6 +239,7 @@ const styles = StyleSheet.create({
     followersText: {
         color: Colors.black,
         fontSize: 15,
+        fontFamily: Fonts.regular
     },
     buttonsContainer: {
         justifyContent: "space-between",
@@ -267,11 +281,11 @@ const styles = StyleSheet.create({
     },
     greenDot: {
         position: 'absolute',
-        top: 9,
-        right: 9,
-        width: 7,
-        height: 7,
+        top: 10,
+        right: 8,
+        width: 10,
+        height: 10,
         borderRadius: 0,
-        backgroundColor: Colors.green,
+        backgroundColor: Colors.white,
     },
 });

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, TextInput, StyleSheet, Text, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { debounce } from 'lodash';
-import { Colors } from '../../utils/colorUtils';
+import { Colors, Fonts } from '../../utils/colorUtils';
 import { checkRegisteredUsernameAvailability, checkUsernameAvailability } from "../../shared/api/apiClient";
 import { getDataService, globalEventEmitter } from "../../shared/common";
 import { useFocusEffect } from "@react-navigation/native";
@@ -146,7 +146,6 @@ const styles = StyleSheet.create({
         position: 'relative',
         marginBottom: 5,
         backgroundColor: Colors.white,
-        //paddingHorizontal: 10,
         shadowRadius: 0,
         shadowOffset: { width: 2, height: 2 },
         shadowOpacity: 1,
@@ -156,6 +155,7 @@ const styles = StyleSheet.create({
         flex: 1,
         height: 40,
         paddingHorizontal: 10,
+        fontFamily: Fonts.regular
     },
     icon: {
         marginLeft: 10,
@@ -166,7 +166,8 @@ const styles = StyleSheet.create({
     counter: {
         fontSize: 12,
         color: Colors.grey,
-        marginBottom: 10
+        marginBottom: 10,
+        fontFamily: Fonts.regular
     },
 });
 

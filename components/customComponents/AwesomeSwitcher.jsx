@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
-import { Colors } from '../../utils/colorUtils';
+import { Colors, Fonts } from '../../utils/colorUtils';
 
 const AwesomeSwitcher = ({ leftOption, rightOption, onDisplayModeChangedHandler }) => {
     const [selected, setSelected] = useState(leftOption);
@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
     text: {
         fontSize: 15,
         color: Colors.grey,
-        fontFamily: 'Ubuntu-Bold',
+        fontFamily: Fonts.medium
     },
     activeTabLeft: {
         backgroundColor: Colors.white,
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
     },
     activeText: {
         color: Colors.black,
-        fontWeight: '600'
+        fontFamily: Fonts.medium
     },
 });
 

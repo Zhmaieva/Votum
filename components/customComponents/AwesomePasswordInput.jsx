@@ -1,7 +1,7 @@
 import { TextInput, View, StyleSheet, Text, ActivityIndicator } from 'react-native';
 import React, { useState, forwardRef, useImperativeHandle } from 'react';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '../../utils/colorUtils';
+import {Colors, Fonts} from '../../utils/colorUtils';
 import { getDataService } from "../../shared/common";
 import { debounce } from 'lodash';
 
@@ -104,6 +104,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         height: 40,
         paddingRight: 10,
+        fontFamily: Fonts.regular
     },
     icon: {
         marginHorizontal: 3,
@@ -116,5 +117,6 @@ const styles = StyleSheet.create({
     redFont: {
         fontSize: 12,
         color: Colors.red,
+        fontFamily: Fonts.regular
     },
 });

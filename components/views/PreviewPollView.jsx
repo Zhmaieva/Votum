@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import {View, Text, StyleSheet, Dimensions, TouchableOpacity, SafeAreaView, ScrollView} from 'react-native';
+import {View, Text, StyleSheet, Dimensions, TouchableOpacity, SafeAreaView, ScrollView, Image} from 'react-native';
 import {useRoute, useNavigation, useFocusEffect} from '@react-navigation/native';
-import { Colors } from '../../utils/colorUtils';
+import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from '../customComponents/AwesomeButton';
 import {createPoll, durationMap, fetchMyProfile, fetchUserPolls} from '../../shared/api/apiClient';
 import {getDataService, onShare} from '../../shared/common';
@@ -79,13 +79,25 @@ const PreviewPollView = () => {
                     <View style={styles.pollBox}>
                         <View style={[styles.row, styles.alignToTheRight]}>
                             <View style={styles.iconContainer}>
-                                <Ionicons name="trash-outline" size={28} color={Colors.black} />
+                                <Image
+                                    source={require('../../assets/images/trashBlack.png')}
+                                    style={{ width: 27, height: 27 }}
+                                    resizeMode="contain"
+                                />
                             </View>
                             <View style={styles.iconContainer}>
-                                <Ionicons name="share-outline" size={28} color={Colors.black} />
+                                <Image
+                                    source={require('../../assets/images/shareBlack.png')}
+                                    style={{ width: 27, height: 27 }}
+                                    resizeMode="contain"
+                                />
                             </View>
                             <View style={styles.iconContainer}>
-                                <Ionicons name="heart-outline" size={28} color={Colors.black} />
+                                <Image
+                                    source={require('../../assets/images/heartBlack.png')}
+                                    style={{ width: 27, height: 27 }}
+                                    resizeMode="contain"
+                                />
                             </View>
                         </View>
                         {options.map((option, index) => (
@@ -99,7 +111,7 @@ const PreviewPollView = () => {
                         </View>
                     </View>
                 </View>
-                <View>
+                <View style={{marginBottom: 5}}>
                     <View style={styles.margin10}>
                         <AwesomeButton
                             color={Color.BLACK}
@@ -151,13 +163,15 @@ const styles = StyleSheet.create({
     qTextStyle: {
         color: Colors.green,
         fontSize: 20,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        fontFamily: Fonts.medium
     },
     questionText: {
         fontSize: 20,
         color: Colors.black,
         fontWeight: 'bold',
-        width: '90%'
+        width: '90%',
+        fontFamily: Fonts.medium
     },
     pollBox: {
         borderWidth: 1,
@@ -179,17 +193,20 @@ const styles = StyleSheet.create({
     },
     optionText: {
         color: Colors.black,
-        fontSize: 14
+        fontSize: 14,
+        fontFamily: Fonts.regular
     },
     endsIn: {
         marginTop: 10,
         fontSize: 14,
-        color: Colors.grey
+        color: Colors.black,
+        fontFamily: Fonts.regular
     },
     voted: {
         marginTop: 10,
         fontSize: 14,
-        color: Colors.grey
+        color: Colors.black,
+        fontFamily: Fonts.regular
     },
     editButton: {
         height: 40,
@@ -200,10 +217,6 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderColor: Colors.grey
     },
-    editButtonText: {
-        color: Colors.grey,
-        fontWeight: 'bold'
-    },
     publishButton: {
         width: '49%'
     },
@@ -211,7 +224,7 @@ const styles = StyleSheet.create({
         marginBottom: 15
     },
     iconContainer: {
-        marginLeft: 8
+        marginLeft: 10
     },
 });
 
