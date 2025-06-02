@@ -43,6 +43,11 @@ const formatTimeLeft = (millisecondsLeft) => {
     }
 };
 
+const generateRandomId = () => {
+    const random = Math.floor(Math.random() * 1e9); // up to 9 digits
+    const timestamp = Date.now(); // current time in ms
+    return `${random}_${timestamp}`;
+};
 
 const AwesomeVote = ({
                          id = "",
@@ -56,6 +61,7 @@ const AwesomeVote = ({
                      }) => {
     const [optionsData, setOptionsData] = useState(options);
     const [selected, setSelected] = useState(options?.filter(x => x.voted)[0]?.id ?? null);
+    const [voteCardId] = useState(generateRandomId());
     const [animation, setAnimation] = useState(new Animated.Value(0));
     const [modalVisible, setModalVisible] = useState(false);
     const [isReportVisible, setIsReportVisible] = useState(true);
@@ -78,27 +84,18 @@ const AwesomeVote = ({
         refreshOptions(options);
     }, [options]);
 
-    const refreshOptions = (newOptions) => {
-        let optionsMapped = [];
-        setOptionsData(prevOptions =>
-            {
-                optionsMapped = prevOptions.map(o => {
-                    const updated = newOptions.find(u => u.id === o.id);
-                    return updated ? { ...o, votesCount: updated.votesCount } : o;
-                });
-                return optionsMapped;
-            }
-        );
+    const refreshOptions = (newOptions, { forceAnimation = false } = {}) => {
+        let optionsMapped = optionsData.map(o => {
+            const updated = newOptions.find(u => u.id === o.id);
+            return updated ? { ...o, votesCount: updated.votesCount } : o;
+        });
 
         const totalVotes = optionsMapped.reduce((sum, o) => sum + (o.votesCount || 0), 0);
-
-        // Calculate raw percentages
         let percentages = optionsMapped.map((o) => ({
             id: o.id,
             percent: totalVotes ? (o.votesCount || 0) / totalVotes * 100 : 0
         }));
 
-        // Round each, track total, and find the index of the max
         let roundedTotal = 0;
         let maxIndex = 0;
 
@@ -109,36 +106,30 @@ const AwesomeVote = ({
             return { ...p, rounded };
         });
 
-        // Fix rounding error by adjusting the highest
         const roundingError = 100 - roundedTotal;
         if (percentages[maxIndex]?.rounded > 0)
             percentages[maxIndex].rounded += roundingError;
 
-        // Create a map for quick lookup by id
         prevPercentMap.current = percentMap.current;
         percentMap.current = new Map(percentages.map(p => [p.id, p.rounded]));
 
-        const hasChange =
-            !percentMap.current ||
-            newOptions.some((opt) => {
-                const prev = prevPercentMap.current?.get(opt.id);
-                const curr = percentMap.current.get(opt.id);
-                return prev !== curr;
-            });
+        const hasChange = forceAnimation || !percentMap.current || newOptions.some((opt) => {
+            const prev = prevPercentMap.current?.get(opt.id);
+            const curr = percentMap.current.get(opt.id);
+            return prev !== curr;
+        });
 
-        if (!hasChange) {
-            return;
+        setOptionsData(optionsMapped); // Ensure UI updates
+
+        if (hasChange) {
+            if (prevPercentMap.current) animation.setValue(0);
+            Animated.timing(animation, {
+                toValue: 1,
+                duration: 600,
+                useNativeDriver: false,
+            }).start();
         }
-
-        if (prevPercentMap.current)
-            animation.setValue(0);
-
-        Animated.timing(animation, {
-            toValue: 1,
-            duration: 600,
-            useNativeDriver: false,
-        }).start();
-    }
+    };
 
     const handleVote = async (optionId) => {
         const newOptions = optionsData.map(opt =>
@@ -148,8 +139,7 @@ const AwesomeVote = ({
                 voted: true,
             } : opt);
 
-        refreshOptions(newOptions);
-
+        refreshOptions(options, { forceAnimation: true });
         setSelected(optionId);
 
         const result = await voteOnPoll(optionId);
@@ -160,14 +150,26 @@ const AwesomeVote = ({
             console.error('Vote failed:', result.error);
         }
 
-        setTimeout(() => {
-            globalEventEmitter.emit('vote', { pollId: id, options: newOptions});
-        },500);
+        globalEventEmitter.emit('vote', { pollId: id, options: newOptions, optionId, cardId: voteCardId});
 
         if (onVote) {
             onVote(optionId);
         }
     };
+
+    useEffect(() => {
+        const onVote = ({ pollId, options, optionId, cardId }) => {
+            if (pollId !== id || cardId === voteCardId) return;
+
+            refreshOptions(options, { forceAnimation: true });
+
+            setSelected(optionId);
+            onVote?.(optionId);
+        };
+
+        globalEventEmitter.on('vote', onVote);
+        return () => globalEventEmitter.off('vote', onVote); // cleanup
+    }, [id, voteCardId]);
 
     useEffect(() => {
         if (remainingTime <= 0) {
