@@ -4,10 +4,24 @@ import {Colors} from "../../utils/colorUtils";
 import AwesomeButton, { Color } from "../customComponents/AwesomeButton";
 import AwesomeProfilePhoto from "../customComponents/AwesomeProfilePhoto";
 import AgeView from "./AgeView";
+import {useFocusEffect} from "@react-navigation/native";
+import {getDataService} from "../../shared/common";
+import {fetchMyProfile} from "../../shared/api/apiClient";
 
 export default function ProfilePhotoView () {
 
     const [profileImage, setProfileImage] = useState('');
+
+    useFocusEffect(() => {
+        getDataService().resetUserChanges();
+
+        fetchMyProfile().then(res => {
+            if (res?.username) {
+                setProfileImage(res.image);
+                getDataService().setUser(res);
+            }
+        });
+    });
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -18,12 +32,17 @@ export default function ProfilePhotoView () {
                     <View style={styles.margin10}>
                         <AwesomeProfilePhoto profileImage={profileImage} setProfileImage={setProfileImage} />
                     </View>
-                    <View style={styles.buttonContainer}>
-                        <AwesomeButton text='Next' color={Color.BLACK} screenName='Age' />
-                    </View>
-                    <View style={styles.buttonContainer}>
-                        <AwesomeButton text='Skip' color={Color.WHITE} screenName='Age' />
-                    </View>
+                    {
+                        profileImage ? (
+                            <View style={styles.buttonContainer}>
+                                <AwesomeButton text='Next' color={Color.BLACK} screenName='Age' />
+                            </View>
+                        ) : (
+                            <View style={styles.buttonContainer}>
+                                <AwesomeButton text='Skip' color={Color.WHITE} screenName='Age' />
+                            </View>
+                        )
+                    }
                 </View>
             </View>
         </SafeAreaView>

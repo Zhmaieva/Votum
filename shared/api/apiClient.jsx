@@ -484,6 +484,23 @@ export const deletePoll = async (id) => {
     }
 };
 
+export const setUserCategories = async (categoryIds) => {
+    try {
+        console.log(`Setting categories: ${categoryIds.join(', ')}`);
+        const response = await apiClient.post(`/profile/categories`, {
+            categories: categoryIds,
+        }, {
+            headers: {
+                Authorization: `Bearer ${await getToken()}`,
+            },
+        });
+        console.log('Set categories response: ' + JSON.stringify(response.data));
+        return response?.data;
+    } catch (err) {
+        console.log('Setting categories failed', err);
+    }
+};
+
 export const followProfile = async (id) => {
     try {
         console.log(`following profile ${id}`);

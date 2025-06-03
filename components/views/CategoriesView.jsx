@@ -3,12 +3,27 @@ import {View, StyleSheet, Text, SafeAreaView} from 'react-native';
 import { Colors } from '../../utils/colorUtils';
 import AwesomeCategory from "../customComponents/AwesomeCategory";
 import AwesomeButton, { Color } from "../customComponents/AwesomeButton";
-import { AwesomeModal } from "../customComponents/AwesomeModal"; // Assuming path is correct
+import { AwesomeModal } from "../customComponents/AwesomeModal";
+import {globalEventEmitter} from "../../shared/common";
+import {setUserCategories} from "../../shared/api/apiClient"; // Assuming path is correct
 
 const categoryList = [
     'Social life', 'Health', 'Entertainment', 'Food', 'Lifestyle',
     'Fashion', 'Tech', 'Opinions', 'Media', 'Games'
 ];
+
+const categoriesId = {
+    'Social life': 1,
+    'Health': 2,
+    'Entertainment': 3,
+    'Food': 4,
+    'Lifestyle': 5,
+    'Fashion': 6,
+    'Tech': 7,
+    'Opinions': 8,
+    'Media': 9,
+    'Games': 10,
+}
 
 const CategoriesView = ({ route }) => {
     const [selectedCategories, setSelectedCategories] = useState([]);
@@ -32,12 +47,16 @@ const CategoriesView = ({ route }) => {
         }
     };
 
-    const handleContinue = () => {
+    const handleContinue = async () => {
         if (selectedCategories.length === 0) {
             setShowError(true);
         } else {
+            const selectedCategoryIds = selectedCategories.map(name => categoriesId[name]);
+
+            await setUserCategories(selectedCategoryIds);;
+
             console.log("Proceeding with:", selectedCategories);
-            // Insert navigation or next logic here
+            globalEventEmitter.emit('signIn', {});
         }
     };
 

@@ -1,13 +1,18 @@
 import {Text, View, StyleSheet } from 'react-native';
-import React from 'react';
+import React, {use, useEffect} from 'react';
 import {Colors} from "../../utils/colorUtils";
 import AwesomeButton, { Color } from "../customComponents/AwesomeButton";
+import {getDataService} from "../../shared/common";
 
-export default function WellcomeView () {
+export default function WelcomeView () {
+
+    useEffect(() => {
+        getDataService().setUser(null);
+    },[])
 
     return (
         <View style={styles.container}>
-            <Text style={styles.messageStyle}>Wellcome to [APP NAME]</Text>
+            <Text style={styles.messageStyle}>Welcome to VOTUM</Text>
             <View style={styles.logoStyle}/>
             <View style={{width: '100%'}}>
                 <AwesomeButton text='Continue' color={Color.GREEN} screenName='Profile photo'/>

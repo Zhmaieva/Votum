@@ -60,7 +60,8 @@ const UsernameView = ({}) => {
 
                             console.log(response);
                             if (response.success) {
-                                globalEventEmitter.emit('signIn', {})
+                                globalEventEmitter.emit('signup', {})
+                                //globalEventEmitter.emit('signIn', {})
                                 return;
                             }
 

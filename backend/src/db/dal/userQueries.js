@@ -107,10 +107,13 @@ async function getUser(userId) {
             GREATEST(up.followers_number, 0) AS "followersNumber",
             GREATEST(up.following_number, 0) AS "followingNumber",
             COUNT(p.id)::integer as "pollsNumber",
-            up.bio
+            up.bio,
+            CASE 
+                WHEN COUNT(uc.user_id)::integer > 0 THEN true ELSE false END as "onboardingComplete"
         FROM users u
                  JOIN user_profiles up ON u.id = up.user_id
                  LEFT JOIN polls p ON p.created_by = u.id AND p.is_deleted = false
+                 LEFT JOIN user_categories uc ON u.id = uc.user_id AND uc.is_chosen = true
         WHERE u.id = $1::uuid
         GROUP BY u.id, u.username, u.email, up.image, up.followers_number, up.following_number, up.bio;
   `;
@@ -352,6 +355,49 @@ async function updateProfileImage(imageUrl, userId) {
 }
 
 /**
+ * Update profile categories interests
+ * @param categoryIds - array of selected category IDs
+ * @param userId - user ID
+ * @returns {Promise<string>}
+ */
+async function setCategories(categoryIds, userId) {
+    const client = await pool.connect();
+
+    try {
+        await client.query('BEGIN');
+
+        // 1. Mark all categories as not chosen
+        await client.query(
+            `UPDATE user_categories
+             SET is_chosen = false
+             WHERE user_id = $1`,
+            [userId]
+        );
+
+        // 2. Mark only selected categoryIds as chosen
+        if (categoryIds.length > 0) {
+            await client.query(
+                `UPDATE user_categories
+                 SET is_chosen = true
+                 WHERE user_id = $1 AND category_id = ANY($2)`,
+                [userId, categoryIds]
+            );
+        }
+
+        await client.query('COMMIT');
+        return 'Categories updated';
+    } catch (err) {
+        await client.query('ROLLBACK');
+        console.error('Error updating categories:', err);
+        throw err;
+    } finally {
+        client.release();
+    }
+}
+
+
+
+/**
  * Delete user and associated data from the database
  * @param userId
  * @returns {Promise<void>}
@@ -494,6 +540,7 @@ module.exports = {
     getUser,
     getUserByLogin,
     recalculateCategoryScore,
+    setCategories,
     unfollowUser,
     updateProfileImage,
 }

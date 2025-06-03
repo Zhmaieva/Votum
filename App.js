@@ -7,7 +7,7 @@ import * as Device from 'expo-device';
 import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import { AwesomeTabs, AuthNavigator } from "./components/views/navigation/AwesomeTabs";
 import { getDataService, globalEventEmitter } from "./shared/common";
-import { isTokenAvailable } from "./shared/api/apiClient";
+import {fetchMyProfile, isTokenAvailable} from "./shared/api/apiClient";
 import { ActivityIndicator, View, Platform } from "react-native";
 import 'react-native-gesture-handler';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -55,10 +55,18 @@ export default function App() {
             setFontLoaded(true);
 
             const tokenAvailable = await isTokenAvailable();
-            setIsAuthenticated(tokenAvailable);
+            let isOnboardingDone = false;
+            if (tokenAvailable) {
+                const profile = await fetchMyProfile();
+                if (profile) {
+                    getDataService().setUser(profile);
+                    isOnboardingDone = profile.onboardingComplete;
+                }
+            }
+            setIsAuthenticated(tokenAvailable && isOnboardingDone);
             setIsLoading(false);
 
-            if (!tokenAvailable) return;
+            if (!tokenAvailable || !isOnboardingDone) return;
 
             const url = await Linking.getInitialURL();
             if (url) handleUrl({ url });
@@ -86,7 +94,6 @@ export default function App() {
     }, []);
 
     globalEventEmitter.on('signIn', () => {
-        getDataService().setUser(null);
         setIsAuthenticated(true);
     });
 

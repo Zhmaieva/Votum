@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
@@ -11,7 +11,7 @@ import FeedView from "../FeedView";
 import ProfileEditView from "../ProfileEditView";
 import BioEditView from "../BioEditView";
 import EmailEditView from "../EmailEditView";
-import {updateUserProfile} from "../../../shared/api/apiClient";
+import {isTokenAvailable, updateUserProfile} from "../../../shared/api/apiClient";
 import {getDataService, globalEventEmitter} from "../../../shared/common";
 import HeaderRightButton from "../../customComponents/HeaderRightButton";
 import FollowingView from "../FollowingView";
@@ -19,7 +19,7 @@ import RegistrationMethodView from "../RegistrationMethodView";
 import EmailRegisterView from "../EmailRegisterView";
 import VerificationCodeView, {VERIFICATION_FLOW_TYPE} from "../VerificationCodeView";
 import UsernameView from "../UsernameView";
-import WellcomeView from "../WellcomeView";
+import WelcomeView from "../WelcomeView";
 import ProfilePhotoView from "../ProfilePhotoView";
 import AgeView from "../AgeView";
 import LogInView from "../LogInView"
@@ -65,11 +65,18 @@ function AuthFlow() {
             <AuthStack.Screen name="Verification Code Forgot" component={VerificationCodeView} initialParams={{ flowType: VERIFICATION_FLOW_TYPE.FORGOT_PASSWORD}} options={{ headerShown: false, gestureEnabled: true }}/>
             <AuthStack.Screen name="Log in" component={LogInView} options={{ headerShown: false, gestureEnabled: true }}/>
             <AuthStack.Screen name="Username" component={UsernameView} options={{ headerShown: false, gestureEnabled: true }}/>
-            <AuthStack.Screen name="Wellcome" component={WellcomeView} options={{ headerShown: false, gestureEnabled: true }}/>
+            <AuthStack.Screen name="Forgot password" component={ForgotPasswordView} options={{ headerShown: false, gestureEnabled: true }}/>
+        </AuthStack.Navigator>
+    );
+}
+
+function OnboardingFlow() {
+    return (
+        <AuthStack.Navigator id='Onboarding'>
+            <AuthStack.Screen name="Welcome" component={WelcomeView} options={{ headerShown: false, gestureEnabled: true }}/>
             <AuthStack.Screen name="Profile photo" component={ProfilePhotoView} options={{ headerShown: false, gestureEnabled: true }}/>
             <AuthStack.Screen name="Age" component={AgeView} options={{ headerShown: false, gestureEnabled: true }}/>
             <AuthStack.Screen name="Categories" component={CategoriesView} options={{ headerShown: false, gestureEnabled: true }}/>
-            <AuthStack.Screen name="Forgot password" component={ForgotPasswordView} options={{ headerShown: false, gestureEnabled: true }}/>
         </AuthStack.Navigator>
     );
 }
@@ -230,7 +237,25 @@ function SearchStack() {
 
 // Stack Navigator (Includes Auth and Tabs)
 export function AuthNavigator() {
-    return (
+    const [authenticated, setAuthenticated] = useState(false)
+
+    useEffect(() => {
+        isTokenAvailable().then(result => {
+            setAuthenticated(result);
+        })
+    }, []);
+
+    globalEventEmitter.on('signup', () => {
+        setAuthenticated(true);
+    });
+
+    return authenticated ? (
+            <Stack.Navigator screenOptions={{ headerShown: false }}>
+                <Stack.Screen name="Auth" component={OnboardingFlow} />
+                <Stack.Screen name="MainTabs" component={AwesomeTabs} />
+            </Stack.Navigator>
+        )
+        : (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name="Auth" component={AuthFlow} />
             <Stack.Screen name="MainTabs" component={AwesomeTabs} />

@@ -290,6 +290,18 @@ app.post('/profile/image', authMiddleware, uploadMiddleware.single('file'), asyn
     }
 });
 
+app.post('/profile/categories', authMiddleware, async (req, res, next) => {
+    try {
+        const { categories } = req.body;
+
+        await userQueries.setCategories(categories, req.user.id);
+
+        return res.json({ message: 'Categories set successfully' });
+    }
+    catch (e) {
+        next(e);
+    }
+});
 
 app.post('/profile/followers', authMiddleware, async (req, res, next) => {
     try {
