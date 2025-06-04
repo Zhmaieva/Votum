@@ -245,8 +245,6 @@ app.put('/profile', authMiddleware, async (req, res) => {
     try {
         const { username, bio, email } = req.body;
 
-        const usernameLower = username.toLowerCase();
-
         const updateUsersSql = `UPDATE users
          SET
              username = COALESCE(NULLIF($1, NULL), username),
@@ -260,7 +258,7 @@ app.put('/profile', authMiddleware, async (req, res) => {
 
         try {
             await Promise.all([
-                pool.query(updateUsersSql, [usernameLower, email, req.user.id]),
+                pool.query(updateUsersSql, [username?.toLowerCase(), email?.toLowerCase(), req.user.id]),
                 pool.query(updateProfilesSql, [bio, req.user.id])
             ]);
         }
