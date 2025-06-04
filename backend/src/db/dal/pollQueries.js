@@ -21,7 +21,7 @@ async function attachOptionsToPolls(userId, polls) {
             id: poll.id,
             question: poll.question,
             options: [],
-            endsIn: poll.ends_in,
+            endsIn: new Date(poll.ends_in.replace(' ', 'T') + 'Z').toISOString(),
             isLiked: poll.is_liked,
             user: {
                 userId: poll.user_id,
@@ -62,7 +62,7 @@ async function attachOptionsToPolls(userId, polls) {
 
 // Base SELECT clause reused in all queries
 const pollSelect = `
-    SELECT p.id, p.question, (p.ends_in AT TIME ZONE 'UTC') AS ends_in, p.readable_id, u.username, up.user_id, up.image,
+    SELECT p.id, p.question, p.ends_in AS ends_in, p.readable_id, u.username, up.user_id, up.image,
         up.followers_number,
         CASE WHEN pl.user_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_liked,
         CASE WHEN uf.user_follower_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_following,
