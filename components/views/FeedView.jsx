@@ -3,7 +3,7 @@ import AwesomeFeed from "../customComponents/AwesomeFeed";
 import AwesomeCard from "../customComponents/AwesomeCard";
 import {View, StyleSheet, ActivityIndicator, Text, SafeAreaView} from 'react-native';
 import {fetchPolls, fetchMyProfile, voteOnPoll, fetchTrendingPolls} from "../../shared/api/apiClient";
-import { Colors } from '../../utils/colorUtils';
+import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeSwitcher from "../customComponents/AwesomeSwitcher";
 import {calculateTimeDifference, getDataService, globalEventEmitter} from "../../shared/common";
 
@@ -112,8 +112,7 @@ const styles = StyleSheet.create({
         paddingRight: 15,
     },
     switcherContainer: {
-        marginTop: 2,
-        marginBottom: 10,
+        marginBottom: 7,
         marginLeft: 15,
         marginRight: 15
     },
@@ -128,6 +127,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#555',
         textAlign: 'center',
+        fontFamily: Fonts.regular,
     },
     line: {
         marginTop: 15,

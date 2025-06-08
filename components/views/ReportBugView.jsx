@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { View, TextInput, Text, StyleSheet, SafeAreaView, ActivityIndicator } from 'react-native';
 import AwesomeButton, { Color } from '../customComponents/AwesomeButton';
 import { AwesomeModal } from '../customComponents/AwesomeModal';
-import { Colors } from '../../utils/colorUtils';
+import { Colors, Fonts } from '../../utils/colorUtils';
 import { Keyboard } from 'react-native';
 
 const ReportBugView = () => {
@@ -71,7 +71,8 @@ const ReportBugView = () => {
 
                 <AwesomeModal
                     visible={showErrorModal}
-                    text="Please enter a description before submitting."
+                    text="DESCRIPTION REQUIRED"
+                    subtext="Please enter a description before submitting"
                     buttons={[
                         { label: "OK", onPress: () => setShowErrorModal(false) },
                     ]}
@@ -80,7 +81,8 @@ const ReportBugView = () => {
 
                 <AwesomeModal
                     visible={showSuccessModal}
-                    text="Thank you for your report!"
+                    text="REPORT SUBMITTED"
+                    subtext="Thank you for your report!"
                     buttons={[
                         { label: "OK", onPress: () => setShowSuccessModal(false) },
                     ]}
@@ -101,7 +103,7 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 20,
-        fontWeight: 'bold',
+        fontFamily: Fonts.medium,
         marginBottom: 10,
         color: Colors.black
     },
@@ -118,6 +120,7 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 2, height: 2 },
         shadowOpacity: 1,
         shadowRadius: 0,
+        fontFamily: Fonts.regular,
     },
     buttonContainer: {
         marginTop: 8,
@@ -127,12 +130,14 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-end',
         color: Colors.grey,
         fontSize: 12,
-        marginTop: 5
+        marginTop: 5,
+        fontFamily: Fonts.regular,
     },
     subtitle: {
         fontSize: 14,
         color: Colors.grey,
         marginBottom: 5,
+        fontFamily: Fonts.regular,
     },
 });
 

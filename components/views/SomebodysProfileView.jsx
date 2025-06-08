@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {View, Text, StyleSheet, SafeAreaView, ScrollView, Modal, ActivityIndicator} from "react-native";
-import { Colors } from '../../utils/colorUtils';
+import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeUserHeader from "../customComponents/AwesomeUserHeader";
 import AwesomeFeed from "../customComponents/AwesomeFeed";
 import AwesomeLoadingHeader from "../customComponents/AwesomeLoadingHeader";
@@ -100,88 +100,5 @@ const styles = StyleSheet.create({
     safeArea: {
         backgroundColor: Colors.white,
         flex: 1
-    },
-    row: {
-        flexDirection: 'row'
-    },
-    bottomMargin20: {
-        marginBottom: 20
-    },
-    userContainer: {
-        justifyContent: 'space-between',
-        alignItems: 'flex-end',
-    },
-    avatar: {
-        height: 46,
-        width: 46,
-        marginRight: 8,
-        shadowOffset: {
-            width: 3,
-            height: 3
-        },
-        shadowOpacity: 1,
-        shadowRadius: 0,
-        shadowColor: Colors.green,
-    },
-    userSubContainer: {
-        justifyContent: 'flex-end',
-    },
-    font14: {
-        fontSize: 14,
-    },
-    usernameBold: {
-        fontWeight: "bold"
-    },
-    fontFamily: {
-        fontFamily: 'arial',
-    },
-    greyTextStyle: {
-        color: Colors.grey,
-    },
-    followButton: {
-        height: 30,
-        width: 70,
-        backgroundColor: Colors.black,
-        justifyContent: 'center',
-        alignItems: "center"
-    },
-    followButtonText: {
-        color: Colors.white,
-        fontSize: 14
-    },
-    followersContainer: {
-        borderBottomWidth: 1,
-        borderColor: '#888',
-        justifyContent: 'space-between',
-        paddingBottom: 5,
-        marginBottom:  20
-    },
-    followersLeftSubContainer: {
-        //borderRightWidth: 1,
-        width: '23%',
-        //borderColor: Colors.grey,
-        alignItems: 'center',
-        //backgroundColor: Colors.green
-    },
-    followersCenterSubContainer: {
-        //borderRightWidth: 1,
-        width: '23%',
-        //borderColor: Colors.grey,
-        alignItems: 'center'
-    },
-    followersRightSubContainer: {
-        //borderRightWidth: 1,
-        width: '23%',
-        //borderColor: Colors.grey,
-        alignItems: 'center'
-    },
-    followersText: {
-        color: Colors.grey
-    },
-    visible: {
-        display: 'flex'
-    },
-    invisible: {
-        display: 'none'
     },
 });

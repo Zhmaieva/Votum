@@ -5,7 +5,6 @@ import { Colors } from '../../utils/colorUtils';
 import { uploadProfileImage } from "../../shared/api/apiClient";
 import { AwesomeModal } from "./AwesomeModal";
 import { getDataService } from "../../shared/common";
-import { Ionicons } from '@expo/vector-icons';
 
 const AwesomeProfilePhoto = ({ profileImage, setProfileImage }) => {
     const [isModalVisible, setModalVisible] = useState(false);
@@ -22,50 +21,48 @@ const AwesomeProfilePhoto = ({ profileImage, setProfileImage }) => {
 
             const result = await ImagePicker.launchImageLibraryAsync({
                 mediaTypes: ImagePicker.MediaTypeOptions.Images,
-                allowsEditing: true, // 🎯 allows user to crop/resize
-                aspect: [1, 1], // 🎯 keeps the image square (optional: can be [4,3] etc.)
+                allowsEditing: true,
+                aspect: [1, 1],
                 quality: 1,
             });
 
             if (!result.canceled) {
                 const uri = result.assets[0].uri;
-
-                // Update locally
                 getDataService().getUser().image = uri;
                 getDataService().commitUserChanges();
                 setProfileImage(uri);
-
-                // Upload to server
                 await uploadProfileImage(result.assets[0]);
             }
         } catch (err) {
-            // Roll back to old image
             setProfileImage(oldImage);
             getDataService().getUser().image = oldImage;
             getDataService().commitUserChanges();
-
             setModalVisible(true);
         }
     };
 
     return (
-        <View style={styles.profileImageContainer}>
-            <TouchableOpacity style={styles.imageWrapper} onPress={handleImagePick}>
-                <Image source={{ uri: profileImage }} style={styles.profileImage} />
-                <View style={styles.iconButton}>
+        <View style={styles.container}>
+            <TouchableOpacity style={styles.touchable} onPress={handleImagePick} activeOpacity={0.8}>
+                <Image
+                    source={profileImage ? { uri: profileImage } : require('../../assets/images/default-avatar.png')}
+                    style={styles.image}
+                    resizeMode="cover"
+                />
+                <View style={styles.iconOverlay}>
                     <Image
                         source={require('../../assets/images/photoWhite.png')}
-                        style={{ width: 28, height: 28 }}
+                        style={styles.icon}
                         resizeMode="contain"
                     />
                 </View>
             </TouchableOpacity>
+
             <AwesomeModal
                 visible={isModalVisible}
-                text="Upload failed. Check your connection or try an image under 5 MB."
-                buttons={[
-                    { label: "OK", onPress: () => setModalVisible(false) },
-                ]}
+                text="UPLOAD FAILED"
+                subtext="Check your connection or try an image under 5 MB"
+                buttons={[{ label: "OK", onPress: () => setModalVisible(false) }]}
                 onBackPress={() => setModalVisible(false)}
             />
         </View>
@@ -73,27 +70,35 @@ const AwesomeProfilePhoto = ({ profileImage, setProfileImage }) => {
 };
 
 const styles = StyleSheet.create({
-    profileImageContainer: {
-        alignItems: 'center',
-        marginBottom: 10,
-        width: '100%'
-    },
-    imageWrapper: {
-        position: 'relative',
+    container: {
+        aspectRatio: 1, // makes it square
         width: '100%',
-        height: 300,
+        maxWidth: 160,
+        alignSelf: 'center',
     },
-    profileImage: {
+    touchable: {
+        width: '100%',
+        height: '100%',
+        borderRadius: 0,
+        overflow: 'hidden',
+        position: 'relative',
+    },
+    image: {
         width: '100%',
         height: '100%',
     },
-    iconButton: {
+    iconOverlay: {
         position: 'absolute',
-        bottom: 10,
-        right: 10,
+        bottom: 5,
+        right: 5,
         backgroundColor: Colors.black,
+        borderRadius: 0,
         padding: 6,
-    }
+    },
+    icon: {
+        width: 24,
+        height: 24,
+    },
 });
 
 export default AwesomeProfilePhoto;

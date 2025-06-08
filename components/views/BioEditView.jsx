@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, SafeAreaView } from 'react-native';
-import { Colors } from '../../utils/colorUtils';
+import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from "../customComponents/AwesomeButton";
 import { getDataService } from "../../shared/common";
 import { updateUserProfile } from "../../shared/api/apiClient";
@@ -34,7 +34,7 @@ const BioEditView = ({ navigation, route }) => {
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.container}>
-                <Text style={[styles.margin10, { fontWeight: 'bold', fontSize: 20 }]}>Bio</Text>
+                <Text style={[styles.margin10, { fontFamily: Fonts.medium, fontSize: 20 }]}>Bio</Text>
                 <Text style={styles.subtittle}>update your bio</Text>
                 <TextInput
                     style={styles.input}
@@ -73,10 +73,12 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 2, height: 2 },
         shadowOpacity: 1,
         shadowColor: Colors.green,
+        fontFamily: Fonts.regular,
     },
     counter: {
         marginTop: 5,
         fontSize: 12,
+        fontFamily: Fonts.regular,
         color: Colors.grey,
         textAlign: 'right',
         marginBottom: 10
@@ -87,7 +89,8 @@ const styles = StyleSheet.create({
     subtittle: {
         fontSize: 14,
         marginBottom: 5,
-        color: Colors.grey
+        color: Colors.grey,
+        fontFamily: Fonts.regular,
     }
 });
 

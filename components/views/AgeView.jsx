@@ -1,6 +1,6 @@
 import {Text, View, StyleSheet, SafeAreaView} from 'react-native';
 import React, {useState} from 'react';
-import {Colors} from "../../utils/colorUtils";
+import {Colors, Fonts} from "../../utils/colorUtils";
 import AwesomeButton, { Color } from "../customComponents/AwesomeButton";
 import AwesomeBirthPicker from "../customComponents/AwesomeBirthPicker";
 
@@ -13,7 +13,7 @@ export default function AgeView () {
             <View style={styles.container}>
                 <View style={styles.firstSubContainer}>
                     <Text style={styles.headerStyle}>Select Your Birth Date</Text>
-                    <Text style={styles.margin10}>Optional</Text>
+                    <Text style={{marginBottom: 10, fontFamily: Fonts.regular,}}>Optional</Text>
                     <View style={styles.margin10}>
                         <AwesomeBirthPicker dateOfBirth={dateOfBirth} setDateOfBirth={setDateOfBirth} />
                     </View>
@@ -48,8 +48,8 @@ const styles = StyleSheet.create({
         marginBottom: 20
     },
     headerStyle: {
-        fontWeight: 'bold',
         fontSize: 24,
+        fontFamily: Fonts.medium,
         marginBottom: 2
     },
     margin10: {

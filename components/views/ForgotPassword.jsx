@@ -5,7 +5,7 @@ import {
     SafeAreaView,
     Text
 } from 'react-native';
-import { Colors } from '../../utils/colorUtils';
+import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeEmailInput from "../customComponents/AwesomeEmailInput";
 import AwesomeButton, { Color } from "../customComponents/AwesomeButton";
 import { AwesomeModal } from "../customComponents/AwesomeModal";
@@ -22,7 +22,7 @@ const ForgotPasswordView = ({ navigation, route }) => {
         const trimmedEmail = email.trim();
 
         if (!trimmedEmail) {
-            setModalMessage("Please enter your email address.");
+            setModalMessage("Please enter your email address");
             setModalVisible(true);
             return;
         }
@@ -63,7 +63,8 @@ const ForgotPasswordView = ({ navigation, route }) => {
 
                 <AwesomeModal
                     visible={modalVisible}
-                    text={modalMessage}
+                    text="EMAIL REQUIRED"
+                    subtext={modalMessage}
                     buttons={[
                         { label: "OK", onPress: () => setModalVisible(false) },
                     ]}
@@ -91,8 +92,8 @@ const styles = StyleSheet.create({
         marginBottom: 7
     },
     headerStyle: {
-        fontWeight: 'bold',
-        marginBottom: 5
+        marginBottom: 5,
+        fontFamily: Fonts.medium
     },
 });
 

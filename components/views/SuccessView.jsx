@@ -1,6 +1,6 @@
 import React from 'react';
 import { SafeAreaView, View, Text, StyleSheet } from 'react-native';
-import { Colors } from '../../utils/colorUtils';
+import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from '../customComponents/AwesomeButton';
 
 export const VERIFICATION_FLOW_TYPE = {
@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 20,
-        fontWeight: 'bold',
+        fontFamily: Fonts.medium,
         color: Colors.black,
         marginBottom: 10,
     },
@@ -66,6 +66,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: Colors.grey,
         marginBottom: 20,
+        fontFamily: Fonts.regular,
     },
     buttonContainer: {
         width: '100%',

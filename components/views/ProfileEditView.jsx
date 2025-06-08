@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
     View,
     Text,
@@ -7,7 +7,7 @@ import {
     TouchableWithoutFeedback,
     Modal,
     ScrollView,
-    SafeAreaView
+    SafeAreaView, Pressable
 } from 'react-native';
 import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeButton, {Color} from '../customComponents/AwesomeButton';
@@ -26,50 +26,67 @@ const ProfileEditView = ({ route }) => {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [bioD, setBioD] = useState('');
-    const [profileImage, setProfileImage] = useState(getDataService().getUser()?.image ?? '');
+    const [profileImage, setProfileImage] = useState('');
+    const [user, setUser] = useState(getDataService().getUser());
     const [isDeleteModalVisible, setDeleteModalVisible] = useState(false);
     const [isErrorModalVisible, setErrorModalVisible] = useState(false);
     const [isLogoutModalVisible, setLogoutModalVisible] = useState(false);
     const navigation = useNavigation();
 
-    useFocusEffect(() => {
-        getDataService().resetUserChanges();
+    useFocusEffect(
+        useCallback(() => {
+            getDataService().resetUserChanges();
 
-        const savedEmail = getDataService().getUser()?.email;
-        if (savedEmail) // immediately get last locally saved email
-            setEmail(savedEmail);
-
-        const savedUsername = getDataService().getUser()?.username;
-        if (savedUsername) // immediately get last locally saved username
-            setUsername(savedUsername);
-
-        const savedBio = getDataService().getUser()?.bio;
-        if (savedBio) // immediately get last locally saved bio
-            setBioD(savedBio);
-
-        const savedImage = getDataService().getUser()?.image;
-        if (savedImage) // immediately get last locally saved image
-        {
-            setProfileImage(savedImage);
-        }
-
-        if (!getDataService().getUser()) { // fallback to fetching data from server if no local temp data
-            fetchMyProfile().then(res => {
-                if (res?.username) {
-                    setUsername(res.username);
-                    setEmail(res.email);
-                    setBioD(res.bio);
-                    setProfileImage(res.image);
-                    getDataService().setUser(res);
-                }
-            });
-        }
-    });
+            const localUser = getDataService().getUser();
+            if (localUser) {
+                setUser(localUser);
+                setUsername(localUser.username);
+                setEmail(localUser.email);
+                setBioD(localUser.bio);
+                setProfileImage(localUser.image);
+            } else {
+                fetchMyProfile().then(res => {
+                    if (res?.username) {
+                        setUser(res);
+                        setUsername(res.username);
+                        setEmail(res.email);
+                        setBioD(res.bio);
+                        setProfileImage(res.image);
+                        getDataService().setUser(res);
+                    }
+                });
+            }
+        }, [])
+    );
 
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView style={styles.subContainer}>
-                <AwesomeProfilePhoto profileImage={profileImage} setProfileImage={setProfileImage} />
+                <View style={styles.row}>
+                    <Pressable
+                        style={styles.sideButton}
+                        onPress={() => navigation.navigate('Followers', { userId: user?.userId })}
+                    >
+                        <Text style={styles.followersCounterText}>
+                            {user?.followersNumber ?? 0}
+                        </Text>
+                        <Text style={styles.followersText}>followers</Text>
+                    </Pressable>
+
+                    <View style={styles.flexibleImageContainer}>
+                        <AwesomeProfilePhoto profileImage={profileImage} setProfileImage={setProfileImage} />
+                    </View>
+
+                    <Pressable
+                        style={styles.sideButton}
+                        onPress={() => navigation.navigate('Following', { userId: user?.userId })}
+                    >
+                        <Text style={styles.followersCounterText}>
+                            {user?.followingNumber ?? 0}
+                        </Text>
+                        <Text style={styles.followersText}>following</Text>
+                    </Pressable>
+                </View>
                 <Text style={[styles.sectionName, styles.marginTop15]}>Profile Info</Text>
                 <View style={styles.margin15}>
                     <AwesomeButton text={`Username: ${username || '—'}`} color={Color.WHITE} screenName='Edit username' settingButton={true} />
@@ -128,9 +145,9 @@ const ProfileEditView = ({ route }) => {
             <AwesomeModal
                 visible={isDeleteModalVisible}
                 text="DELETE PROFILE"
-                subtext="Are you sure you want to delete your profile? This action is irreversible and will permanently remove all your data."
+                subtext="Are you sure? This will permanently delete all your data"
                 buttons={[
-                    { label: "Delete my pofile", onPress: async () => {
+                    { label: "DELETE", onPress: async () => {
                             setDeleteModalVisible(false);
                             //set another modal visible and after password input, execute the logic below passing input password
                             const result = await deleteUserProfile('hardcoded_password');
@@ -141,15 +158,15 @@ const ProfileEditView = ({ route }) => {
 
                             setErrorModalVisible(true);
                         }},
-                    { label: "Cancel", onPress: () => setDeleteModalVisible(false)},
+                    { label: "CANCEL", onPress: () => setDeleteModalVisible(false)},
                 ]}
                 onBackPress={() => setDeleteModalVisible(false)}
             />
 
             <AwesomeModal
                 visible={isErrorModalVisible}
-                text="Oops"
-                subtext="There was an error while trying to delete your profile, try again later."
+                text="PROFILE DELETION FAILED"
+                subtext="There was an error while trying to delete your profile, try again later"
                 buttons={[
                     { label: "OK", onPress: () => setErrorModalVisible(false) },
                 ]}
@@ -191,7 +208,6 @@ const styles = StyleSheet.create({
         marginBottom: 12
     },
     sectionName: {
-        fontWeight: 'bold',
         fontSize: 16,
         marginBottom: 10,
         fontFamily: Fonts.medium
@@ -201,7 +217,35 @@ const styles = StyleSheet.create({
     },
     margin25: {
         marginBottom: 25
-    }
+    },
+    imageContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    followersCounterText: {
+        fontSize: 40,
+        fontFamily: Fonts.medium,
+        textAlign: 'center',
+        marginBottom: -10
+    },
+    followersText: {
+        textAlign: 'center',
+        fontSize: 14,
+        color: Colors.black,
+        fontFamily: Fonts.bold,
+    },
+    sideButton: {
+        minWidth: 80,
+        alignItems: 'center',
+        marginBottom: -3,
+        alignSelf: 'flex-end'
+    },
+    flexibleImageContainer: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingHorizontal: 10,
+    },
 });
 
 export default ProfileEditView;

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Colors } from '../../utils/colorUtils'
 import AwesomeCard from "../customComponents/AwesomeCard";
 import AwesomeFeed from "../customComponents/AwesomeFeed";
 

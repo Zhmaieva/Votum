@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, FlatList, SafeAreaView, Pressable } from 'react-native';
-import { Colors } from '../../utils/colorUtils';
+import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from '../customComponents/AwesomeButton';
 import { useNavigation } from '@react-navigation/native';
 
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 22,
-        fontWeight: 'bold',
+        fontFamily: Fonts.medium,
         color: Colors.black,
     },
     listContainer: {
@@ -120,16 +120,18 @@ const styles = StyleSheet.create({
     notificationTitle: {
         fontSize: 15,
         color: Colors.black,
+        fontFamily: Fonts.regular,
     },
     silentTag: {
         fontSize: 12,
         color: Colors.grey,
-        fontStyle: 'italic',
+        fontFamily: Fonts.regular,
     },
     notificationTime: {
         fontSize: 12,
         color: Colors.grey,
         alignSelf: 'flex-end',
+        fontFamily: Fonts.regular,
     },
     emptyStateContainer: {
         flex: 1,
@@ -141,6 +143,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: Colors.grey,
         textAlign: 'center',
+        fontFamily: Fonts.regular,
     },
     buttonContainer: {
         width: 82,

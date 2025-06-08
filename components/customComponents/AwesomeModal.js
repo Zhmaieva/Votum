@@ -93,19 +93,20 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: Colors.black,
         textAlign: "center",
-        fontWeight: 600,
+        fontFamily: Fonts.medium,
         marginBottom: 10
     },
     modalSubText: {
         fontSize: 14,
         color: Colors.grey,
         textAlign: "center",
-        marginBottom: 5
+        marginBottom: 5,
+        fontFamily: Fonts.regular,
     },
     modalButton: {
         color: Colors.green,
         fontSize: 16,
-        fontFamily: Fonts.bold
+        fontFamily: Fonts.medium
     },
     row: {
         alignItems: "center",

@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import { View, StyleSheet, Animated, Text } from 'react-native';
-import { Colors } from '../../utils/colorUtils';
+import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeUserHeader from "../customComponents/AwesomeUserHeader";
 import {fetchFollowers, fetchFollows, fetchMyProfile} from "../../shared/api/apiClient";
 import {useFocusEffect} from "@react-navigation/native";
@@ -80,6 +80,7 @@ const styles = StyleSheet.create({
         color: Colors.grey,
         textAlign: 'center',
         paddingHorizontal: 20,
+        fontFamily: Fonts.regular
     },
 });
 

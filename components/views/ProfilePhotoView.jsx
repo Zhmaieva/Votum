@@ -1,6 +1,6 @@
 import {Text, View, StyleSheet, SafeAreaView} from 'react-native';
 import React, {useState} from 'react';
-import {Colors} from "../../utils/colorUtils";
+import {Colors, Fonts} from "../../utils/colorUtils";
 import AwesomeButton, { Color } from "../customComponents/AwesomeButton";
 import AwesomeProfilePhoto from "../customComponents/AwesomeProfilePhoto";
 import AgeView from "./AgeView";
@@ -27,7 +27,7 @@ export default function ProfilePhotoView () {
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.container}>
                 <Text style={styles.headerStyle}>Upload Your Profile Photo</Text>
-                <Text style={styles.margin10}>Optional</Text>
+                <Text style={{marginBottom: 10, fontFamily: Fonts.regular}}>Optional</Text>
                 <View style={styles.subContainer}>
                     <View style={styles.margin10}>
                         <AwesomeProfilePhoto profileImage={profileImage} setProfileImage={setProfileImage} />
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     },
     headerStyle: {
         marginBottom: 2,
-        fontWeight: 'bold',
+        fontFamily: Fonts.medium,
         fontSize: 24
     },
     margin10: {

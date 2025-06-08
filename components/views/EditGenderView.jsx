@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { SafeAreaView, View, Text, StyleSheet } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { Colors } from '../../utils/colorUtils';
+import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from '../customComponents/AwesomeButton';
 import AwesomeSegmentedControls from '../customComponents/AwesomeSegmentedControls';
 
-const GENDER_OPTIONS = ['male', 'female', 'non-binary', 'prefer not to say'];
+const GENDER_OPTIONS = ['male', 'female', 'non-binary', 'no answer'];
 
 export default function EditGenderView() {
     const navigation = useNavigation();
@@ -26,7 +26,7 @@ export default function EditGenderView() {
                 <View style={styles.firstSubContainer}>
                     <Text style={styles.headerStyle}>Gender</Text>
                     <Text style={styles.subtittle}>choose your gender</Text>
-                    <View style={{marginBottom: 5}}>
+                    <View style={{marginBottom: 20, width: '100%'}}>
                         <AwesomeSegmentedControls
                             options={GENDER_OPTIONS}
                             selectedOption={gender}
@@ -48,16 +48,18 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     container: {
-        padding: 15,
+        paddingBottom: 15,
+        paddingRight: 15,
+        paddingLeft: 15,
         flex: 1,
+        justifyContent: 'center',
     },
     firstSubContainer: {
         width: '100%',
     },
     headerStyle: {
-        fontWeight: 'bold',
-        fontSize: 20,
-        marginBottom: 10,
+        fontSize: 24,
+        fontFamily: Fonts.medium
     },
     margin10: {
         marginBottom: 10,
@@ -66,8 +68,8 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
     subtittle: {
-        color: Colors.grey,
-        marginBottom: 10,
-        fontSize: 14
-    }
+        fontSize: 14,
+        fontFamily: Fonts.regular,
+        marginBottom: 25
+    },
 });

@@ -1,6 +1,6 @@
 import React from 'react';
 import {View, StyleSheet, SafeAreaView, Text} from 'react-native';
-import { Colors } from '../../utils/colorUtils';
+import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeEmailInput from "../customComponents/AwesomeEmailInput";
 import AwesomeButton, {Color} from "../customComponents/AwesomeButton"; // Reuse your AwesomeButton component
 
@@ -11,7 +11,7 @@ const EmailEditView = ({route }) => {
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.container}>
-                <Text style={[styles.margin10, { fontWeight: 'bold', fontSize: 20 }]}>Email change</Text>
+                <Text style={[styles.margin10, { fontFamily: Fonts.medium, fontSize: 20 }]}>Email change</Text>
                 <Text style={styles.subtittle}>enter new email</Text>
                 <View style={styles.margin10}>
                     <AwesomeEmailInput value={text} bareStyle={true}/>
@@ -35,7 +35,6 @@ const styles = StyleSheet.create({
         width: '100%',
         borderColor: Colors.lightGrey,
         borderBottomWidth: 1,
-        //borderTopWidth: 1,
         paddingHorizontal: 10
     },
     margin10: {
@@ -44,7 +43,8 @@ const styles = StyleSheet.create({
     subtittle: {
         fontSize: 14,
         color: Colors.grey,
-        marginBottom: 5
+        marginBottom: 5,
+        fontFamily: Fonts.regular,
     }
 });
 

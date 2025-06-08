@@ -56,14 +56,6 @@ const PreviewPollView = () => {
         <SafeAreaView style={styles.safeArea}>
             <ScrollView style={styles.container}>
                 <View>
-                    {/*{user && (
-                        <View style={styles.headerContainer}>
-                            <AwesomeUserHeaderPreview
-                                userData={user}
-                                loggedInUserId={user?.userId}
-                                isInsideCard={true} />
-                        </View>
-                    )}*/}
                     {user && !userDataLoaded ? (
                         <AwesomeLoadingHeader />
                     ) : (
@@ -163,13 +155,11 @@ const styles = StyleSheet.create({
     qTextStyle: {
         color: Colors.green,
         fontSize: 20,
-        fontWeight: 'bold',
         fontFamily: Fonts.medium
     },
     questionText: {
         fontSize: 20,
         color: Colors.black,
-        fontWeight: 'bold',
         width: '90%',
         fontFamily: Fonts.medium
     },

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { SafeAreaView, View, Text, StyleSheet } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { Colors } from '../../utils/colorUtils';
+import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from '../customComponents/AwesomeButton';
 import AwesomeBirthPicker from '../customComponents/AwesomeBirthPicker';
 
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
         marginBottom: 15,
     },
     headerStyle: {
-        fontWeight: 'bold',
+        fontFamily: Fonts.medium,
         fontSize: 20,
         marginBottom: 10,
     },
@@ -63,6 +63,7 @@ const styles = StyleSheet.create({
     subtittle: {
         fontSize: 14,
         color: Colors.grey,
-        marginBottom: 5
+        marginBottom: 5,
+        fontFamily: Fonts.regular,
     }
 });

@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {View, Text, StyleSheet, SafeAreaView, ActivityIndicator} from "react-native";
-import { Colors } from '../../utils/colorUtils';
+import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeCard from "../customComponents/AwesomeCard";
 import AwesomeFeed from "../customComponents/AwesomeFeed";
 import AwesomeSearch from "../customComponents/AwesomeSearch";
@@ -94,6 +94,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: Colors.grey,
         textAlign: 'center',
+        fontFamily: Fonts.regular,
     },
     centered: {
         justifyContent: "center",

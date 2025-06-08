@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
     },
     textSelected: {
         color: Colors.white,
-        fontFamily: Fonts.regular,
+        fontFamily: Fonts.medium,
     },
     tagText: {
         marginLeft: 11,

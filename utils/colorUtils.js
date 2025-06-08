@@ -15,8 +15,10 @@ export const Colors = {
 
 export const Fonts = {
     regular: 'Fira',
-    medium: 'Fira-Medium',
-    bold: 'Fira-Bold',
+    medium: 'Fira-Bold',
+    bold: 'Fira-Medium',
+    pixel: 'Pixel',
+    hac: 'Hac',
 }
 
 const styles = StyleSheet.create({

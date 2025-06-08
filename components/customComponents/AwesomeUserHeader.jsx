@@ -77,20 +77,19 @@ const AwesomeUserHeader = ({
                 <View style={styles.avatarContainer}>
                     <Image source={{ uri: user.image }} style={styles.avatar} />
                 </View>
-                <View style={{ flex: 1, marginLeft: 20 }}>
+                <View>
                     <View style={[styles.followersContainer, styles.row]}>
-                        <View style={styles.followersSubContainer}>
-                            <Text style={[styles.followersText, styles.fontFamilyBold]}>{user.pollsNumber ?? 0}</Text>
-                            <Text style={[styles.followersText, styles.fontFamilyBold]}>{(user.pollsNumber ?? 0) == 1 ? 'poll' : 'polls'}</Text>
+                        <View style={styles.counterStyleContainerRight}>
+                            <Text style={styles.counterTextStyle}>
+                                {isOwnProfile ? 'your polls got ' : `user's polls got `}
+                            </Text>
+                            <Text style={styles.counterStyle}>
+                                {formatFollowers(user.votesNumber || 0)}
+                            </Text>
+                            <Text style={styles.counterTextStyle}>
+                                {(user.votesNumber || 0) === 1 ? ' vote' : ' votes'}
+                            </Text>
                         </View>
-                        <Pressable style={styles.followersSubContainer} onPress={() => navigation.navigate('Followers', { userId: user.userId })}>
-                            <Text style={[styles.followersText, styles.fontFamilyBold]}>{user.followersNumber ?? 0}</Text>
-                            <Text style={[styles.followersText, styles.fontFamilyBold]}>followers</Text>
-                        </Pressable>
-                        <Pressable style={styles.followersSubContainer} onPress={() => navigation.navigate('Following', { userId: user.userId })}>
-                            <Text style={[styles.followersText, styles.fontFamilyBold]}>{user.followingNumber ?? 0}</Text>
-                            <Text style={[styles.followersText, styles.fontFamilyBold]}>following</Text>
-                        </Pressable>
                     </View>
                 </View>
             </View>
@@ -109,7 +108,7 @@ const AwesomeUserHeader = ({
                     <>
                         <View style={styles.editButton}>
                             <AwesomeButton
-                                text="Edit"
+                                text="Account Details"
                                 color={Color.BLACK}
                                 screenName="Edit profile"
                             />
@@ -201,6 +200,7 @@ const styles = StyleSheet.create({
     },
     aligned: {
         width: '100%',
+        justifyContent: 'space-between',
     },
     userContainer: {
         width: '100%',
@@ -228,9 +228,10 @@ const styles = StyleSheet.create({
         fontFamily: Fonts.medium
     },
     followersContainer: {
-        justifyContent: 'space-between',
+        justifyContent: 'center',
         flex: 1,
-        alignItems: "center",
+        alignItems: "flex-end",
+        marginBottom: -2
     },
     followersSubContainer: {
         alignItems: 'center',
@@ -239,7 +240,7 @@ const styles = StyleSheet.create({
     followersText: {
         color: Colors.black,
         fontSize: 15,
-        fontFamily: Fonts.regular
+        fontFamily: Fonts.medium
     },
     buttonsContainer: {
         justifyContent: "space-between",
@@ -288,4 +289,35 @@ const styles = StyleSheet.create({
         borderRadius: 0,
         backgroundColor: Colors.white,
     },
+    counterStyle: {
+        fontFamily: Fonts.medium,
+        fontSize: 42,
+        color: Colors.black,
+        marginBottom: -7
+    },
+    counterTextStyle: {
+        fontFamily: Fonts.medium,
+        fontSize: 15,
+    },
+    counterStyleContainerLeft: {
+        alignItems: 'center',
+    },
+    counterStyleContainerRight: {
+        alignItems: 'flex-end',
+        flexDirection: 'row',
+    },
+    counterStyleContainerCenter: {
+        marginRight: 0,
+        marginLeft: 5,
+    },
+    counterSignStyle: {
+        fontFamily: Fonts.pixel,
+        fontSize: 30,
+    },
+    counterTopTextStyle: {
+        marginBottom: 2,
+        fontFamily: Fonts.pixel,
+        fontSize: 10,
+        color: Colors.black,
+    }
 });

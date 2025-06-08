@@ -8,7 +8,7 @@ import { useState, useRef } from 'react';
 import React from 'react';
 import AwesomeButton, { Color } from '../customComponents/AwesomeButton';
 import AwesomeCodeContainer from '../customComponents/AwesomeCodeContainer';
-import { Colors } from '../../utils/colorUtils';
+import { Colors, Fonts } from '../../utils/colorUtils';
 import { AwesomeModal } from '../customComponents/AwesomeModal';
 import { signUpStart, signUpVerify } from '../../shared/api/apiClient';
 import { getDataService } from '../../shared/common';
@@ -133,7 +133,7 @@ export default function VerificationCodeView({route}) {
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.container}>
                 <View>
-                    <Text style={[styles.margin10, { fontWeight: 'bold', fontSize: 20 }]}>Enter verification code</Text>
+                    <Text style={[styles.margin10, { fontFamily: Fonts.medium, fontSize: 20 }]}>Enter verification code</Text>
                     <Text style={styles.subtittle}>check spam folder if you didn't receive a code</Text>
                     <View style={[styles.centered, styles.margin25]}>
                         <View style={[styles.row, styles.equidistantElements, styles.verificationCodeContainer]}>
@@ -173,7 +173,8 @@ export default function VerificationCodeView({route}) {
                     }
                     <AwesomeModal
                         visible={isModalVisible}
-                        text={error}
+                        text="VERIFICATION ISSUE"
+                        subtext={error}
                         buttons={[
                             { label: "OK", onPress: () => setModalVisible(false) },
                         ]}
@@ -195,9 +196,6 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         height: '100%'
     },
-    fontFamily: {
-        fontFamily: 'san-serif'
-    },
     centered: {
         alignItems: 'center',
     },
@@ -206,9 +204,6 @@ const styles = StyleSheet.create({
     },
     equidistantElements: {
         justifyContent: 'space-between'
-    },
-    regularFontSize: {
-        fontSize: 14
     },
     margin40: {
         marginBottom: 40,
@@ -231,12 +226,14 @@ const styles = StyleSheet.create({
     },
     questionStyle: {
         fontSize: 14,
-        color: Colors.black
+        color: Colors.black,
+        fontFamily: Fonts.regular,
     },
     subtittle: {
         fontSize: 14,
         color: Colors.grey,
-        marginBottom: 10
+        marginBottom: 10,
+        fontFamily: Fonts.regular,
     },
     margin25: {
         marginBottom: 25

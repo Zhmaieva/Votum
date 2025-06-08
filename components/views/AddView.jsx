@@ -153,11 +153,12 @@ const AddView = () => {
 
             <AwesomeModal
                 visible={showModal}
-                text="Please fill in the question and at least two answers"
-                buttons={[
-                    { label: "OK", onPress: () => setShowModal(false) },
-                ]}
+                text="EMPTY FIELD(S)"
+                subtext='Please fill in the question and at least two answers'
                 onBackPress={() => setShowModal(false)}
+                buttons={[
+                    { label: "OK", onPress: () => setShowModal(false) }
+                ]}
             />
         </SafeAreaView>
     );
@@ -173,7 +174,6 @@ const styles = StyleSheet.create({
         padding: 15,
     },
     inputQuestion: {
-        fontWeight: 'bold',
         fontSize: 20,
         color: Colors.black,
         paddingTop: 1,
@@ -192,6 +192,7 @@ const styles = StyleSheet.create({
         paddingRight: 35,
         fontSize: 14,
         borderRadius: 0,
+        fontFamily: Fonts.regular,
     },
     iconOverlay: {
         position: 'absolute',
@@ -202,7 +203,6 @@ const styles = StyleSheet.create({
     qTextStyle: {
         color: Colors.black,
         fontSize: 20,
-        fontWeight: 'bold',
         marginRight: 5,
         fontFamily: Fonts.medium,
     },

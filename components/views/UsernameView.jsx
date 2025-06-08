@@ -9,7 +9,7 @@ import {
     Modal,
     SafeAreaView
 } from 'react-native';
-import { Colors } from '../../utils/colorUtils';
+import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeButton, {Color} from "../customComponents/AwesomeButton";
 import AwesomeUsernameInput from "../customComponents/AwesomeUsernameInput";
 import {signUpFinish} from "../../shared/api/apiClient";
@@ -91,7 +91,8 @@ const UsernameView = ({}) => {
                 </View>
             </View>
             <AwesomeModal visible={isModalVisible}
-                          text={error}
+                          text="USERNAME ERROR"
+                          subtext={error}
                           buttons={[
                               { label: "OK", onPress: () => setModalVisible(false) },
                           ]}
@@ -115,7 +116,7 @@ const styles = StyleSheet.create({
     },
     logInStyle: {
         fontSize: 16,
-        fontWeight: "bold",
+        fontFamily: Fonts.medium,
         color: Colors.black
     },
     questionContainer: {
@@ -124,7 +125,8 @@ const styles = StyleSheet.create({
     },
     questionStyle: {
         fontSize: 14,
-        color: Colors.black
+        color: Colors.black,
+        fontFamily: Fonts.regular,
     },
     nextButtonContainer: {
         marginBottom: 18
@@ -133,7 +135,7 @@ const styles = StyleSheet.create({
         marginBottom: 15
     },
     headerStyle: {
-        fontWeight: 'bold',
+        fontFamily: Fonts.medium,
         marginBottom: 5,
     }
 });

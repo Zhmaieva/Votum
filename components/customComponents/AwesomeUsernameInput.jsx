@@ -81,10 +81,10 @@ const AwesomeUsernameInput = ({ route }) => {
             if (!errorState) return;
 
             if (errorState.usernameEmpty) {
-                setModalMessage('Username cannot be empty.');
+                setModalMessage('Username cannot be empty');
                 setModalVisible(true);
             } else if (errorState.usernameTaken) {
-                setModalMessage('This username is already taken.');
+                setModalMessage('This username is already taken');
                 setModalVisible(true);
             }
         }
@@ -122,7 +122,8 @@ const AwesomeUsernameInput = ({ route }) => {
             <Text style={styles.counter}>{username?.length ?? 0}/{charLimit}</Text>
             <AwesomeModal
                 visible={isModalVisible}
-                text={modalMessage}
+                text="USERNAME ISSUE"
+                subtext={modalMessage}
                 buttons={[
                     { label: "OK", onPress: () => setModalVisible(false) },
                 ]}

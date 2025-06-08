@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Linking, SafeAreaView, ScrollView } from 'react-native';
-import { Colors } from '../../utils/colorUtils';
+import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from '../customComponents/AwesomeButton';
 import { AwesomeModal } from '../customComponents/AwesomeModal';
 
@@ -15,7 +15,7 @@ const ContactInformationView = () => {
             setModalVisible(true);
         } catch (error) {
             console.error('Failed to open link:', error);
-            setModalText('Something went wrong. Please try again.');
+            setModalText('Something went wrong, please try again');
             setModalVisible(true);
         }
     };
@@ -68,7 +68,8 @@ const ContactInformationView = () => {
 
                 <AwesomeModal
                     visible={isModalVisible}
-                    text={modalText}
+                    text="INFO MESSAGE"
+                    subtext={modalText}
                     buttons={[
                         { label: "OK", onPress: () => setModalVisible(false) },
                     ]}
@@ -89,28 +90,30 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 20,
-        fontWeight: 'bold',
         color: Colors.black,
         marginBottom: 10,
+        fontFamily: Fonts.medium,
     },
     subtitle: {
         fontSize: 14,
         color: Colors.grey,
         marginBottom: 10,
+        fontFamily: Fonts.regular,
     },
     infoSection: {
         marginBottom: 20,
     },
     label: {
         fontSize: 16,
-        fontWeight: 'bold',
         color: Colors.black,
         marginBottom: 5,
+        fontFamily: Fonts.medium,
     },
     value: {
         fontSize: 14,
         color: Colors.grey,
         marginBottom: 10,
+        fontFamily: Fonts.regular,
     },
     buttonContainer: {
         width: '100%',
@@ -122,6 +125,7 @@ const styles = StyleSheet.create({
     footerText: {
         fontSize: 12,
         color: Colors.grey,
+        fontFamily: Fonts.regular,
     }
 });
 

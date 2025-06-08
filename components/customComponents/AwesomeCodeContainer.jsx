@@ -1,4 +1,5 @@
 import { TextInput, View, StyleSheet } from 'react-native';
+import { Fonts } from '../../utils/colorUtils';
 
 export default function AwesomeCodeContainer ({value, onTextInput, refOutlet}) {
 
@@ -30,6 +31,7 @@ const styles = StyleSheet.create({
         flex:1,
         alignItems:'center',
         paddingLeft: 19,
-        fontSize: 18
+        fontSize: 18,
+        fontFamily: Fonts.regular
     }
 });

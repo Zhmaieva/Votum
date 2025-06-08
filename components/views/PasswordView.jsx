@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { SafeAreaView, View, Text, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { Colors } from '../../utils/colorUtils';
+import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from "../customComponents/AwesomeButton";
 import AwesomePasswordInput from "../customComponents/AwesomePasswordInput";
 import { AwesomeModal } from "../customComponents/AwesomeModal";
@@ -61,8 +61,8 @@ const PasswordView = ({ route }) => {
 
                 <AwesomeModal
                     visible={showInvalidModal}
-                    text="Invalid password"
-                    subtext="Password must be 8–20 characters and cannot include emojis."
+                    text="INVALID PASSWORD"
+                    subtext="Password must be 8–20 characters and cannot include emojis"
                     buttons={[
                         { label: "OK", onPress: () => setShowInvalidModal(false) },
                     ]}
@@ -85,13 +85,14 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     header: {
-        fontWeight: 'bold',
+        fontFamily: Fonts.medium,
         fontSize: 20,
     },
     subtittle: {
         fontSize: 14,
         marginBottom: 5,
         color: Colors.grey,
+        fontFamily: Fonts.regular,
     },
 });
 

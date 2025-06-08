@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, SafeAreaView, Text } from 'react-native';
-import { Colors } from '../../utils/colorUtils';
+import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from "../customComponents/AwesomeButton";
 import AwesomePasswordInput from "../customComponents/AwesomePasswordInput";
 import { AwesomeModal } from "../customComponents/AwesomeModal";
@@ -42,7 +42,7 @@ const NewPasswordView = ({ route }) => {
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.container}>
-                <Text style={[styles.margin10, { fontWeight: 'bold', fontSize: 20 }]}>New Password</Text>
+                <Text style={[styles.margin10, { fontFamily: Fonts.medium, fontSize: 20 }]}>New Password</Text>
 
                 <Text style={styles.subtittle}>enter new password</Text>
                 <View style={styles.margin10}>
@@ -58,8 +58,8 @@ const NewPasswordView = ({ route }) => {
 
                 <AwesomeModal
                     visible={isMismatchModalVisible}
-                    text="Passwords do not match"
-                    subtext="Please make sure both passwords are identical."
+                    text="PASSWORDS DON'T MATCH"
+                    subtext="Please make sure both passwords are identical"
                     buttons={[
                         { label: "OK", onPress: () => setMismatchModalVisible(false) },
                     ]}
@@ -67,8 +67,8 @@ const NewPasswordView = ({ route }) => {
                 />
                 <AwesomeModal
                     visible={isEmptyModalVisible}
-                    text="Fields required"
-                    subtext="Please fill in both password fields."
+                    text="PASSWORD REQUIRED"
+                    subtext="Please fill in both password fields"
                     buttons={[
                         { label: "OK", onPress: () => setEmptyModalVisible(false) },
                     ]}
@@ -76,8 +76,8 @@ const NewPasswordView = ({ route }) => {
                 />
                 <AwesomeModal
                     visible={isInvalidLengthModalVisible}
-                    text="Invalid password length"
-                    subtext="Your password must be between 8 and 20 characters."
+                    text="INVALID PASSWORD LENGTH"
+                    subtext="Your password must be between 8 and 20 characters"
                     buttons={[
                         { label: "OK", onPress: () => setInvalidLengthModalVisible(false) },
                     ]}
@@ -103,6 +103,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         marginBottom: 5,
         color: Colors.grey,
+        fontFamily: Fonts.regular,
     },
 });
 

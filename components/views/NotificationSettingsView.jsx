@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
-import { Colors } from '../../utils/colorUtils';
+import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeSquareSwitch from '../customComponents/AwesomeSquareSwitch';
 
 const NotificationSettingsView = () => {
@@ -88,16 +88,16 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 20,
-        fontWeight: 'bold',
+        fontFamily: Fonts.medium,
         color: Colors.black,
         marginBottom: 10,
     },
     sectionTitle: {
         fontSize: 16,
-        fontWeight: '600',
         color: Colors.black,
         marginTop: 10,
         marginBottom: 10,
+        fontFamily: Fonts.medium,
     },
     settingRow: {
         flexDirection: 'row',
@@ -110,6 +110,7 @@ const styles = StyleSheet.create({
         color: Colors.black,
         flex: 1,
         paddingRight: 10,
+        fontFamily: Fonts.regular,
     },
     infoContainer: {
         marginTop: 20,
@@ -117,6 +118,7 @@ const styles = StyleSheet.create({
     infoText: {
         fontSize: 14,
         color: Colors.grey,
+        fontFamily: Fonts.regular,
     },
 });
 

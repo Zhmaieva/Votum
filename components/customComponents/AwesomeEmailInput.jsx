@@ -55,6 +55,7 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 2, height: 2 },
         shadowOpacity: 1,
         shadowColor: Colors.green,
+        fontFamily: Fonts.regular
     },
     bareStyleInput: {
         borderWidth: 1,

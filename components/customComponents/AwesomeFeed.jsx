@@ -9,8 +9,8 @@ import {
     Text
 } from 'react-native';
 const { height, width } = Dimensions.get('window');
-const POLL_HEIGHT = height * 0.82;
-const NEXT_POLL_OFFSET = height * 0.18;
+const POLL_HEIGHT = height * 0.83;
+const NEXT_POLL_OFFSET = height * 0.17;
 import {Colors, Fonts} from '../../utils/colorUtils';
 import {getDataService, globalEventEmitter} from "../../shared/common";
 import AwesomeLink from "./AwesomeLink";

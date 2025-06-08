@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, Modal, Pressable } from "react-native";
-import { Colors } from '../../utils/colorUtils';
+import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeVote from "../customComponents/AwesomeVote";
 import AwesomeUserHeader from "../customComponents/AwesomeUserHeader";
 import AwesomeSwitcher from "../customComponents/AwesomeSwitcher";
@@ -165,29 +165,6 @@ const styles = StyleSheet.create({
     userSubContainer: {
         justifyContent: 'flex-end',
     },
-    font14: {
-        fontSize: 14,
-    },
-    usernameBold: {
-        fontWeight: "bold"
-    },
-    fontFamily: {
-        fontFamily: 'arial',
-    },
-    greyTextStyle: {
-        color: Colors.grey,
-    },
-    followButton: {
-        height: 30,
-        width: 70,
-        backgroundColor: Colors.black,
-        justifyContent: 'center',
-        alignItems: "center"
-    },
-    followButtonText: {
-        color: Colors.white,
-        fontSize: 14
-    },
     followersContainer: {
         justifyContent: 'space-between',
         marginBottom: 10,
@@ -208,9 +185,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         marginRight: 2
-    },
-    followersText: {
-        color: Colors.grey,
     },
     visible: {
         display: 'flex'

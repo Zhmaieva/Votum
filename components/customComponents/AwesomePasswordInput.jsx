@@ -97,6 +97,7 @@ const styles = StyleSheet.create({
         shadowColor: Colors.green,
         backgroundColor: Colors.white,
         marginBottom: 3,
+        fontFamily: Fonts.regular
     },
     input: {
         flex: 1,

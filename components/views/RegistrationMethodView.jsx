@@ -1,6 +1,6 @@
 import React, { useState} from "react";
 import {View, StyleSheet, TextInput, Text, SafeAreaView} from 'react-native';
-import { Colors } from '../../utils/colorUtils';
+import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeButton, {Color} from "../customComponents/AwesomeButton";
 import AwesomeLink from "../customComponents/AwesomeLink";
 
@@ -28,7 +28,7 @@ const RegistrationMethodView = ({ navigation }) => {
             <View style={styles.container}>
                 <View>
                     <View style={styles.logoContainer}>
-                        <Text>Logo</Text>
+                        <Text style={styles.familyStyle}>Logo</Text>
                     </View>
                     <View style={styles.buttonContainer}>
                         <AwesomeButton
@@ -75,6 +75,7 @@ const styles = StyleSheet.create({
     questionStyle: {
         fontSize: 14,
         color: Colors.black,
+        fontFamily: Fonts.regular,
     },
     logoContainer: {
         height: '50%',
@@ -89,11 +90,14 @@ const styles = StyleSheet.create({
     },
     logInStyle: {
         fontSize: 16,
-        fontWeight: "bold",
+        fontFamily: Fonts.medium,
         color: Colors.black
     },
     margin15: {
         marginBottom: 15
+    },
+    familyStyle: {
+        fontFamily: Fonts.regular,
     }
 });
 

@@ -9,7 +9,7 @@ import {
     Modal,
     SafeAreaView
 } from 'react-native';
-import { Colors } from '../../utils/colorUtils';
+import { Colors, Fonts} from '../../utils/colorUtils';
 import AwesomeEmailInput from "../customComponents/AwesomeEmailInput";
 import AwesomeButton, {Color} from "../customComponents/AwesomeButton";
 import AwesomePasswordInput from "../customComponents/AwesomePasswordInput";
@@ -60,7 +60,8 @@ const LogInView = ({ }) => {
                     <AwesomeButton text="Create new account" color={Color.WHITE} screenName='Email Register' />
                 </View>
                 <AwesomeModal visible={isModalVisible}
-                              text="Incorrect username or password, try again"
+                              text="LOGIN FAILED"
+                              subtext="Incorrect username or password, try again"
                               buttons={[
                                   { label: "OK", onPress: () => setModalVisible(false) },
                               ]}
@@ -90,8 +91,8 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     headerStyle: {
-        fontWeight: 'bold',
-        marginBottom: 5
+        marginBottom: 5,
+        fontFamily: Fonts.medium,
     }
 });
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, ScrollView, StyleSheet, SafeAreaView } from 'react-native';
-import { Colors } from '../../utils/colorUtils';
+import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from '../customComponents/AwesomeButton';
 
 const TermsAndConditionsView = ({ navigation }) => {
@@ -65,20 +65,20 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 20,
-        fontWeight: 'bold',
+        fontFamily: Fonts.medium,
         marginBottom: 20,
         color: Colors.black,
         textAlign: 'flex-start',
     },
     firstSectionTitle: {
         fontSize: 18,
-        fontWeight: 'bold',
+        fontFamily: Fonts.medium,
         marginBottom: 8,
         color: Colors.black,
     },
     sectionTitle: {
         fontSize: 18,
-        fontWeight: 'bold',
+        fontFamily: Fonts.medium,
         marginTop: 15,
         marginBottom: 8,
         color: Colors.black,
@@ -88,6 +88,7 @@ const styles = StyleSheet.create({
         color: Colors.black,
         lineHeight: 22,
         marginBottom: 10,
+        fontFamily: Fonts.regular,
     },
     buttonContainer: {
         marginTop: 30,
@@ -96,7 +97,8 @@ const styles = StyleSheet.create({
     subtittle: {
         fontSize: 14,
         color: Colors.grey,
-        marginBottom: 10
+        marginBottom: 10,
+        fontFamily: Fonts.regular,
     }
 });
 

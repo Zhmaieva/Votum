@@ -9,7 +9,7 @@ import {
     TouchableOpacity,
     SafeAreaView
 } from 'react-native';
-import { Colors } from '../../utils/colorUtils';
+import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeEmailInput from "../customComponents/AwesomeEmailInput";
 import AwesomeButton, {Color} from "../customComponents/AwesomeButton";
 import AwesomePasswordInput from "../customComponents/AwesomePasswordInput";
@@ -93,7 +93,8 @@ const EmailRegisterView = ({route }) => {
                 </View>
                 <AwesomeModal
                     visible={isModalVisible}
-                    text={error}
+                    text="ACCOUNT DETAILS ERROR"
+                    subtext={error}
                     buttons={[
                         { label: "OK", onPress: () => setModalVisible(false) },
                     ]}
@@ -118,7 +119,7 @@ const styles = StyleSheet.create({
     },
     logInStyle: {
         fontSize: 16,
-        fontWeight: "bold",
+        fontFamily: Fonts.medium,
         color: Colors.black
     },
     questionContainer: {
@@ -127,7 +128,8 @@ const styles = StyleSheet.create({
     },
     questionStyle: {
         fontSize: 14,
-        color: Colors.black
+        color: Colors.black,
+        fontFamily: Fonts.regular,
     },
     nextButtonContainer: {
         marginBottom: 18
@@ -139,7 +141,7 @@ const styles = StyleSheet.create({
         marginBottom: 5
     },
     headerStyle: {
-        fontWeight: 'bold'
+        fontFamily: Fonts.medium,
     }
 });
 

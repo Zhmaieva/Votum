@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="SqlDialectMappings">
-    <file url="file://$USER_HOME$/Downloads/hardcoded_test_polls.sql" dialect="PostgreSQL" />
-    <file url="file://$USER_HOME$/Downloads/hardcoded_test_polls_fixed_users.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/backend/src/db/feed-data-sample.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/backend/src/db/migrations.sql" dialect="PostgreSQL" />
   </component>

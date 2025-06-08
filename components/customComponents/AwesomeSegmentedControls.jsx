@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
-import {Colors, Fonts} from '../../utils/colorUtils';
+import { Colors, Fonts } from '../../utils/colorUtils';
 
 const AwesomeSegmentedControls = ({ options = [], onSelect }) => {
     const defaultOption = options.includes("1d") ? "1d" : options[0];
@@ -20,17 +20,27 @@ const AwesomeSegmentedControls = ({ options = [], onSelect }) => {
     return (
         <View style={styles.container}>
             <View style={styles.switcher}>
-                {options.map((option) => (
-                    <Pressable
-                        key={option}
-                        style={[styles.tab, selected === option && styles.activeTab]}
-                        onPress={() => handlePress(option)}
-                    >
-                        <Text style={[styles.text, selected === option && styles.activeText]}>
-                            {option}
-                        </Text>
-                    </Pressable>
-                ))}
+                {options.map((option) => {
+                    const isSelected = selected === option;
+                    return (
+                        <Pressable
+                            key={option}
+                            style={[
+                                styles.tabBase,
+                                isSelected ? styles.tabSelected : styles.tabDefault,
+                                styles.shadow,
+                            ]}
+                            onPress={() => handlePress(option)}
+                        >
+                            <Text style={[
+                                isSelected ? styles.textSelected : styles.textDefault,
+                                styles.tabText
+                            ]}>
+                                {option}
+                            </Text>
+                        </Pressable>
+                    );
+                })}
             </View>
         </View>
     );
@@ -39,34 +49,46 @@ const AwesomeSegmentedControls = ({ options = [], onSelect }) => {
 const styles = StyleSheet.create({
     container: {
         alignItems: "center",
+        width: '100%',
     },
     switcher: {
         flexDirection: "row",
+        justifyContent: "space-between",
         width: "100%",
-        position: "relative",
-        borderColor: Colors.grey,
-        overflow: "hidden",
     },
-    tab: {
-        height: 40,
-        minWidth: 40,
-        paddingHorizontal: 10,
-        justifyContent: 'center',
-        alignItems: "center",
-        borderColor: Colors.black,
-    },
-    text: {
-        fontSize: 14,
-        color: Colors.grey,
-        fontFamily: Fonts.regular
-    },
-    activeTab: {
+    tabBase: {
+        flex: 1,
         borderColor: Colors.black,
         borderWidth: 1,
+        borderRadius: 0,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 7
     },
-    activeText: {
+    tabDefault: {
+        backgroundColor: Colors.white,
+    },
+    tabSelected: {
+        backgroundColor: Colors.black,
+    },
+    shadow: {
+        shadowOffset: { width: 2, height: 2 },
+        shadowOpacity: 1,
+        shadowRadius: 0,
+        shadowColor: Colors.green,
+        paddingLeft: 2,
+    },
+    textDefault: {
         color: Colors.black,
-        fontFamily: Fonts.medium
+        fontFamily: Fonts.regular,
+    },
+    textSelected: {
+        color: Colors.white,
+        fontFamily: Fonts.medium,
+    },
+    tabText: {
+        marginVertical: 7,
+        fontSize: 14,
     },
 });
 

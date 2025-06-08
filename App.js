@@ -50,6 +50,7 @@ export default function App() {
                 'Fira': require('./assets/fonts/FiraSans-Regular.ttf'),
                 'Fira-Bold': require('./assets/fonts/FiraSans-Bold.ttf'),
                 'Fira-Medium': require('./assets/fonts/FiraSans-Medium.ttf'),
+                'Pixel': require('./assets/fonts/PressStart2P-Regular.ttf'),
             });
 
             setFontLoaded(true);

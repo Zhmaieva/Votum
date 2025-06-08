@@ -278,7 +278,7 @@ const AwesomeVote = ({
                                     <View style={styles.answerStyle}>
                                         <Text style={[styles.answerTextStyle,styles.fontFamilyStyle, {
                                             color: Colors.black,
-                                            fontWeight: selected === option.id ? "600" : "400"
+                                            fontFamily: selected === option.id ? Fonts.medium : Fonts.regular
                                         }]}>
                                             {option.text}
                                         </Text>
@@ -287,7 +287,7 @@ const AwesomeVote = ({
                                 <View style={styles.resultsNumberContainer}>
                                     <Text style={[styles.buttonText, styles.fontFamilyStyle, {
                                         color: Colors.black,
-                                        fontWeight: selected === option.id ? "600" : "400"
+                                        fontFamily: selected === option.id ? Fonts.medium : Fonts.regular
                                     }]}>{percentMap.current?.get(option.id) || 0}%</Text>
                                 </View>
                             </View>
@@ -301,10 +301,11 @@ const AwesomeVote = ({
             </View>
             <AwesomeModal
                 visible={modalVisible}
-                text="Are you sure you want to delete this poll?"
+                text="CONFIRM DELETION"
+                subtext="Are you sure you want to delete this poll?"
                 buttons={[
-                    { label: "No", onPress: () => setModalVisible(false) },
-                    { label: "Yes, delete", onPress: () => {
+                    { label: "NO", onPress: () => setModalVisible(false) },
+                    { label: "YES, DELETE", onPress: () => {
                             if (onDeletePoll) {
                                 onDeletePoll();
                             }
@@ -351,7 +352,7 @@ const styles = StyleSheet.create({
     buttonText: {
         color: Colors.black,
         fontSize: 16,
-        marginLeft: 10
+        marginLeft: 10,
     },
     countStyle: {
         justifyContent: 'space-between',

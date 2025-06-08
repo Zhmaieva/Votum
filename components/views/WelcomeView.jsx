@@ -1,6 +1,6 @@
 import {Text, View, StyleSheet } from 'react-native';
-import React, {use, useEffect} from 'react';
-import {Colors} from "../../utils/colorUtils";
+import React, {useEffect} from 'react';
+import {Colors, Fonts} from "../../utils/colorUtils";
 import AwesomeButton, { Color } from "../customComponents/AwesomeButton";
 import {getDataService} from "../../shared/common";
 
@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
     },
     messageStyle: {
         fontSize: 22,
-        fontWeight: "bold",
+        fontFamily: Fonts.medium,
         marginBottom: 20
     },
     logoStyle: {
