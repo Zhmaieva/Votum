@@ -1,5 +1,4 @@
 import * as Font from 'expo-font';
-import { Text } from 'react-native';
 import React, { useEffect, useState, useRef } from "react";
 import * as Linking from 'expo-linking';
 import * as Notifications from 'expo-notifications';
@@ -7,7 +6,7 @@ import * as Device from 'expo-device';
 import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import { AwesomeTabs, AuthNavigator } from "./components/views/navigation/AwesomeTabs";
 import { getDataService, globalEventEmitter } from "./shared/common";
-import {fetchMyProfile, isTokenAvailable} from "./shared/api/apiClient";
+import {fetchMyProfile, isTokenAvailable, updatePushToken} from "./shared/api/apiClient";
 import { ActivityIndicator, View, Platform } from "react-native";
 import 'react-native-gesture-handler';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -15,8 +14,8 @@ import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
-        shouldShowAlert: true,
-        shouldPlaySound: true,
+        shouldShowList: true,
+        shouldPlaySound: false,
         shouldSetBadge: false,
     }),
 });
@@ -26,8 +25,6 @@ export default function App() {
     const [isLoading, setIsLoading] = useState(true);
     const [fontLoaded, setFontLoaded] = useState(false);
     const navigationRef = useNavigationContainerRef();
-    const notificationListener = useRef();
-    const responseListener = useRef();
 
     const handleUrl = ({ url }) => {
         if (!url) return;
@@ -67,7 +64,10 @@ export default function App() {
             setIsAuthenticated(tokenAvailable && isOnboardingDone);
             setIsLoading(false);
 
-            if (!tokenAvailable || !isOnboardingDone) return;
+            if (!tokenAvailable || !isOnboardingDone) {
+                await deregisterForPushNotificationsAsync();
+                return;
+            }
 
             const url = await Linking.getInitialURL();
             if (url) handleUrl({ url });
@@ -75,30 +75,54 @@ export default function App() {
             await registerForPushNotificationsAsync();
         };
 
-        loadFontAndInit();
+        loadFontAndInit().then(_ => {});
 
         const subscription = Linking.addEventListener('url', handleUrl);
 
-        notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+        const notificationReceivedListener = Notifications.addNotificationReceivedListener(notification => {
             console.log('Notification received:', notification);
         });
 
-        responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-            console.log('User interacted with notification:', response);
+        const notificationResponseReceivedListener = Notifications.addNotificationResponseReceivedListener(response => {
+            const data = response.notification?.request?.content?.data;
+            if (!data?.screenName)
+                return;
+
+            console.log('Current routes:', navigationRef.getRootState());
+
+            if (data?.screenName === 'Notifications') {
+                navigationRef.reset({
+                    index: 0,
+                    routes: [
+                        {
+                            name: 'MY PROFILE',
+                            state: {
+                                index: 1,
+                                routes: [
+                                    { name: 'Profile' }, // this matches your <Stack.Screen name="Profile" ... />
+                                    { name: 'Notifications' },
+                                ]
+                            }
+                        }
+                    ]
+                });
+            }
         });
 
         return () => {
-            subscription.remove();
-            Notifications.removeNotificationSubscription(notificationListener.current);
-            Notifications.removeNotificationSubscription(responseListener.current);
+            subscription?.remove();
+            notificationReceivedListener?.remove();
+            notificationResponseReceivedListener?.remove();
         };
     }, []);
 
-    globalEventEmitter.on('signIn', () => {
+    globalEventEmitter.on('signIn', async () => {
+        await registerForPushNotificationsAsync();
         setIsAuthenticated(true);
     });
 
-    globalEventEmitter.on('signOut', () => {
+    globalEventEmitter.on('signOut', async () => {
+        await deregisterForPushNotificationsAsync();
         setIsAuthenticated(false);
     });
 
@@ -121,6 +145,10 @@ export default function App() {
     );
 }
 
+async function deregisterForPushNotificationsAsync() {
+    await updatePushToken(null);
+}
+
 // Helper function
 async function registerForPushNotificationsAsync() {
     if (Device.isDevice) {
@@ -138,7 +166,8 @@ async function registerForPushNotificationsAsync() {
         }
 
         const token = (await Notifications.getExpoPushTokenAsync()).data;
-        console.log('Expo Push Token:', token);
+
+        await updatePushToken(token);
     } else {
         console.warn('Must use physical device for Push Notifications');
     }

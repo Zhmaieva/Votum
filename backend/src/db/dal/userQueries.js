@@ -60,7 +60,7 @@ async function getFollowers(userId) {
     FROM users u
     JOIN user_profiles up ON u.id = up.user_id
     JOIN user_follows uf ON uf.user_follower_id = u.id
-    WHERE uf.user_follow_id = $1;
+    WHERE uf.user_follow_id = $1::uuid;
   `;
 
     try {
@@ -84,7 +84,7 @@ async function getFollows(userId) {
     FROM users u
     JOIN user_profiles up ON u.id = up.user_id
     JOIN user_follows uf ON uf.user_follow_id = u.id
-    WHERE uf.user_follower_id = $1;
+    WHERE uf.user_follower_id = $1::uuid;
   `;
 
     try {
@@ -355,6 +355,24 @@ async function updateProfileImage(imageUrl, userId) {
 }
 
 /**
+ * Update push token
+ * @param pushToken
+ * @param timezoneOffset
+ * @param userId
+ */
+async function updatePushToken(pushToken, timezoneOffset, userId) {
+    await pool.query(
+        `UPDATE users
+         SET push_token = $2,
+             timezone_offset = $3
+         WHERE id = $1;
+        `,
+        [userId, pushToken, timezoneOffset]
+    );
+}
+
+
+/**
  * Update profile categories interests
  * @param categoryIds - array of selected category IDs
  * @param userId - user ID
@@ -543,4 +561,5 @@ module.exports = {
     setCategories,
     unfollowUser,
     updateProfileImage,
+    updatePushToken,
 }

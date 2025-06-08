@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node src/server.js",
     "start-indexer-job": "node src/jobs/indexerJob.js",
-    "start-poll-monitor-job": "node src/jobs/pollMonitorJob.js"
+    "start-notification-job": "node src/jobs/notificationJob.js"
   },
   "keywords": [],
   "author": "",
@@ -22,6 +22,7 @@
     "jsonwebtoken": "^9.0.2",
     "multer": "^1.4.5-lts.2",
     "nanoid": "^3.3.11",
+    "node-fecth": "^0.0.1-security",
     "nodemailer": "^6.10.0",
     "pg": "^8.13.3",
     "react-native-uuid": "^2.0.3",

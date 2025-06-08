@@ -18,6 +18,8 @@ const {uploadMiddleware} = require("./middleware/fileUploadMiddleware");
 const {updateUserImage} = require("./services/userService");
 const {getPollById, sharePoll} = require("./db/dal/pollQueries");
 const {next} = require("lodash/seq");
+const {sendExpoPushNotification} = require("./services/notificationService");
+const {getUserNotifications, deleteAllUserNotifications, markNotificationsAsRead} = require("./db/dal/notificationQueries");
 
 const app = express();
 app.use(express.json());
@@ -224,9 +226,11 @@ app.post('/users/sign-in', async (req, res, next) => {
     }
 });
 
-app.get('/profile/:id?', authMiddleware, async (req, res) => {
+app.get('/profile/:id?', authMiddleware, async (req, res, next) => {
     try {
         const userId = req.params.id;
+
+        if (userId === 'followers' || userId === 'notifications') return next(); // Forward to next matching route
 
         const user = await userQueries.getUser(userId ?? req.user.id);
 
@@ -301,6 +305,35 @@ app.post('/profile/categories', authMiddleware, async (req, res, next) => {
     }
 });
 
+app.post('/test/push', async (req, res, next) => {
+    try {
+        const { token, title, body, screenName, code } = req.body;
+
+        if (code !== 'KAkmfm320ALZ939lLZNdmd0i8Mkm3kmzx0zkMALl0--21332xz0xz0..j21mxc.v3.33343xvcij8329rundsbdb z73')
+            return res.status(403).json({ message: 'Unauthorized' });
+
+        await sendExpoPushNotification(token, title, body, { screenName: screenName });
+
+        return res.json({ message: 'Message sent successfully' });
+    }
+    catch (e) {
+        next(e);
+    }
+});
+
+app.put('/user/token', authMiddleware, async (req, res, next) => {
+    try {
+        const { token, timezoneOffset } = req.body;
+
+        await userQueries.updatePushToken(token, timezoneOffset, req.user.id);
+
+        return res.json({ message: 'Push token set successfully' });
+    }
+    catch (e) {
+        next(e);
+    }
+});
+
 app.post('/profile/followers', authMiddleware, async (req, res, next) => {
     try {
         const { userId } = req.body;
@@ -321,6 +354,40 @@ app.delete('/profile/followers', authMiddleware, async (req, res, next) => {
         await userQueries.unfollowUser(req.user.id, userId);
 
         return res.json({ message: 'User unfollowed successfully' });
+    }
+    catch (e) {
+        next(e);
+    }
+});
+
+app.get('/profile/notifications', authMiddleware, async (req, res, next) => {
+    try {
+        const result = await getUserNotifications(req.user.id);
+
+        return res.json({ notifications: result });
+    }
+    catch (e) {
+        next(e);
+    }
+});
+
+app.put('/profile/notifications', authMiddleware, async (req, res, next) => {
+    try {
+        const { notificationIds } = req.body;
+        await markNotificationsAsRead(req.user.id, notificationIds);
+
+        return res.status(200);
+    }
+    catch (e) {
+        next(e);
+    }
+});
+
+app.delete('/profile/notifications', authMiddleware, async (req, res, next) => {
+    try {
+        await deleteAllUserNotifications(req.user.id);
+
+        return res.status(200);
     }
     catch (e) {
         next(e);

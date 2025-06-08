@@ -776,3 +776,30 @@ CREATE TRIGGER trigger_increment_votes_count
     FOR EACH ROW EXECUTE FUNCTION increment_votes_count();
 
 UPDATE user_categories SET score = 0.5 WHERE score = 0;
+
+-- Thu Jun 5 2025 11:46 AM
+ALTER TABLE users
+ADD COLUMN push_token TEXT;
+
+ALTER TABLE users
+    ADD COLUMN timezone_offset INTEGER DEFAULT 0;
+
+CREATE TABLE notifications (
+    id UUID NOT NUll PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL,
+    state INTEGER DEFAULT 0, -- 0: created, 1: sent, 2: no_push_token, 3: unknown_error
+    notification_tag INTEGER DEFAULT 0, -- 0: new_follows
+    message_title TEXT,
+    message_body TEXT,
+    message_data TEXT,
+    created_at TIMESTAMP DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'UTC'),
+    processed_at TIMESTAMP,
+    is_viewed BOOLEAN NOT NULL DEFAULT FALSE,
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+
+-- Foreign keys to reference users and polls
+    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+ALTER TABLE user_follows
+ADD COLUMN created_at TIMESTAMP DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'UTC');

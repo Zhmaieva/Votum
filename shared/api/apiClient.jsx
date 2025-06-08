@@ -10,9 +10,7 @@ const getToken = async function() {
 }
 
 export const isTokenAvailable = async function() {
-    if (tokenValue || await AsyncStorage.getItem('auth_token'))
-        return true;
-    return false;
+    return !!(tokenValue || await AsyncStorage.getItem('auth_token'));
 }
 
 const resetToken = async function() {
@@ -146,10 +144,7 @@ export const checkUsernameAvailability = async (usernameOrEmail) => {
 
         return true;
     } catch (err) {
-        if (err.response && err.response.status === 409) {
-            return false;
-        }
-        return true;
+        return !(err.response && err.response.status === 409);
     }
 };
 
@@ -168,18 +163,15 @@ export const checkRegisteredUsernameAvailability = async (username) => {
 
         return true;
     } catch (err) {
-        if (err.response && err.response.status === 409) {
-            return false;
-        }
-        return true;
+        return !(err.response && err.response.status === 409);
     }
 };
 
 
 /**
  *
- * @param {string} email
- * @param {string} code
+ * @param {string} username
+ * @param {string} password
  * @returns {Promise<{success: boolean, code: number?}>}
  */
 export const signUpFinish = async (username, password) => {
@@ -572,6 +564,76 @@ export const fetchUserProfile = async (userId) => {
         return response?.data;
     } catch (err) {
         console.log("Failed to fetch user profile", err);
+    }
+};
+
+export const updatePushToken = async (token) => {
+    try {
+        const offsetInHours = -new Date().getTimezoneOffset() / 60;
+        const response = await apiClient.put(`/user/token`, {
+            token: token,
+            timezoneOffset: offsetInHours,
+        }, {
+            headers: {
+                Authorization: `Bearer ${await getToken()}`,
+            },
+        });
+        return response?.data;
+    } catch (err) {
+        console.log("Failed to update push token", err);
+    }
+};
+
+/**
+ * Fetches notifications for the current user.
+ * @returns {Promise<Array>} Array of notifications
+ */
+export const fetchUserNotifications = async () => {
+    try {
+        const response = await apiClient.get(`/profile/notifications`, {
+            headers: {
+                Authorization: `Bearer ${await getToken()}`,
+            },
+        });
+        return response?.data?.notifications || [];
+    } catch (err) {
+        console.log("Failed to fetch user notifications", err);
+        return [];
+    }
+};
+
+/**
+ * Marks the given notifications as read.
+ * @param {Array<string>} notificationIds
+ * @returns {Promise<void>}
+ */
+export const markNotificationsAsRead = async (notificationIds) => {
+    try {
+        await apiClient.put(`/profile/notifications`, {
+            notificationIds,
+        }, {
+            headers: {
+                Authorization: `Bearer ${await getToken()}`,
+            },
+        });
+    } catch (err) {
+        console.log("Failed to mark notifications as read", err);
+    }
+};
+
+/**
+ * Deletes all notifications for the current user.
+ * @returns {Promise<void>}
+ */
+export const deleteAllUserNotifications = async () => {
+    try {
+        await apiClient.delete(`/profile/notifications`, {
+            headers: {
+                Authorization: `Bearer ${await getToken()}`,
+            },
+        });
+    } catch (err) {
+        console.log("Failed to delete notifications", err);
     }
 };
 
