@@ -2,23 +2,54 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, FlatList, SafeAreaView, Pressable } from 'react-native';
 import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from '../customComponents/AwesomeButton';
-import { useNavigation } from '@react-navigation/native';
+import {deleteAllUserNotifications, markNotificationsAsRead} from "../../shared/api/apiClient";
+import {useFocusEffect} from "@react-navigation/native";
 
-const dummyNotifications = [
-    { id: '1', type: 'follow', description: 'Alex started following you.', time: '2h ago' },
-    { id: '2', type: 'engagement', description: 'Your poll "Favorite pizza?" got 5 new likes!', time: '4h ago' },
-    { id: '3', type: 'vote', description: 'Someone voted in your poll "Best movie?"', time: '1d ago' },
-    { id: '4', type: 'engagement', description: 'Your poll "Best vacation spot?" hit 50 votes!', time: '10m ago' },
-    { id: '5', type: 'trending', description: '🔥 Trending in Tech: “Best AI tool of 2025?”', time: '1h ago' },
-    { id: '6', type: 'suggested', description: 'Suggested for you: “Best morning routine?”', time: '30m ago', silent: true },
-];
 
-const NotificationsView = () => {
-    const [notifications, setNotifications] = useState(dummyNotifications);
-    const navigation = useNavigation();
+export function getTimeAgoLabel(timestamp) {
+    const now = new Date();
+    const then = new Date(timestamp);
+    const diffMs = now - then;
 
-    const clearAllNotifications = () => {
+    const minutes = Math.floor(diffMs / (1000 * 60));
+    const hours = Math.floor(diffMs / (1000 * 60 * 60));
+    const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    const months = Math.floor(days / 30);
+
+    if (months >= 1) {
+        return `${months}m ago`;
+    } else if (days >= 1) {
+        return `${days}d ago`;
+    } else if (hours >= 1) {
+        return `${hours}h ago`;
+    } else if (minutes >= 1) {
+        return `${minutes}m ago`;
+    } else {
+        return 'just now';
+    }
+}
+
+const NotificationsView = ({route}) => {
+    const [notifications, setNotifications] = useState(
+        route.params.map(x => ({
+            id: x.id,
+            type: 'follow',
+            description: x.message,
+            time: getTimeAgoLabel(x.createdAt),
+        }))
+    );
+
+    useFocusEffect(React.useCallback(() => {
+        const readIds = route.params.filter(x => !x.isViewed).map(x => x.id);
+        if (readIds.length === 0)
+            return;
+
+        markNotificationsAsRead(readIds).then(_ => {});
+    }, []))
+
+    const clearAllNotifications = async () => {
         setNotifications([]);
+        await deleteAllUserNotifications();
     };
 
     const getIcon = (type) => {

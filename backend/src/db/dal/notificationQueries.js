@@ -72,7 +72,7 @@ async function insertNewFollowNotifications() {
 
 async function getUserNotifications(userId) {
     const query = `
-    SELECT message_body, created_at, is_viewed
+    SELECT id, message_body, created_at, is_viewed
     FROM notifications
     WHERE user_id = $1
       AND is_deleted = false
@@ -84,6 +84,7 @@ async function getUserNotifications(userId) {
         const { rows } = await pool.query(query, [userId]);
 
         return rows.map(row => ({
+            id: row.id,
             message: row.message_body,
             createdAt: new Date(row.created_at.replace(' ', 'T') + 'Z').toISOString(),
             isViewed: row.is_viewed

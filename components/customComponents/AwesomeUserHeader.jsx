@@ -3,8 +3,8 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, Pressable } from "reac
 import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from "./AwesomeButton";
 import {globalEventEmitter, onShare} from "../../shared/common";
-import { followProfile, unfollowProfile } from "../../shared/api/apiClient";
-import { useNavigation } from "@react-navigation/native";
+import {fetchUserNotifications, followProfile, unfollowProfile} from "../../shared/api/apiClient";
+import {useFocusEffect, useNavigation} from "@react-navigation/native";
 import { AwesomeModal } from "./AwesomeModal";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -29,8 +29,28 @@ const AwesomeUserHeader = ({
     const [isBlocked, setIsBlocked] = useState(false);
     const [showBlockModal, setShowBlockModal] = useState(false);
     const [hasNewNotifications, setHasNewNotifications] = useState(true);
+    const [notifications, setNotifications] = useState({});
 
     const isOwnProfile = user?.userId === loggedInUserId;
+
+    useFocusEffect(React.useCallback(() => {
+        if (!isOwnProfile)
+            return;
+
+        fetchUserNotifications().then((res) => {
+            if (res) {
+                setNotifications(res);
+                console.log(res);
+                const hasNotifications = res.find(x => !x.isViewed);
+                console.log(hasNotifications);
+                if (hasNotifications)
+                    setHasNewNotifications(true)
+                else
+                    setHasNewNotifications(false);
+            }
+        });
+
+    }, []));
 
     useEffect(() => {
         const handler = (updatedUser) => {
@@ -123,7 +143,7 @@ const AwesomeUserHeader = ({
                             </Pressable>
                             <Pressable
                                 style={styles.notificationWrapper}
-                                onPress={() => navigation.navigate("Notifications")}
+                                onPress={() => navigation.navigate("Notifications", notifications)}
                             >
                                 <Image
                                     source={require('../../assets/images/bellWhite.png')}
