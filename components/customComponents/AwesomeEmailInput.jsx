@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import {Colors, Fonts} from '../../utils/colorUtils';
 import { getDataService } from "../../shared/common";
 
-export default function AwesomeEmailInput({ value, bareStyle = false }) {
+export default function AwesomeEmailInput({ value, bareStyle = false, onChangeText }) {
     const [email, setEmail] = useState(value);
     const [validationErrorMessage, setValidationErrorMessage] = useState('');
     const [isFocused, setIsFocused] = useState(false);
@@ -16,15 +16,24 @@ export default function AwesomeEmailInput({ value, bareStyle = false }) {
 
         if (re.test(text) || regex.test(text)) {
             setValidationErrorMessage('');
+
+            if (onChangeText)
+                onChangeText(text);
+
             try {
                 getDataService().getUser().email = text;
             } catch (error) {
                 console.error('Error saving email:', error);
             }
+
+            return;
         } else {
             getDataService().getUser().email = '';
             setValidationErrorMessage('Please enter a valid email address');
         }
+
+        if (onChangeText)
+            onChangeText('');
     };
 
     return (

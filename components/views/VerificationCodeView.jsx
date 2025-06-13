@@ -10,7 +10,7 @@ import AwesomeButton, { Color } from '../customComponents/AwesomeButton';
 import AwesomeCodeContainer from '../customComponents/AwesomeCodeContainer';
 import { Colors, Fonts } from '../../utils/colorUtils';
 import { AwesomeModal } from '../customComponents/AwesomeModal';
-import { signUpStart, signUpVerify } from '../../shared/api/apiClient';
+import { signUpStart, signUpVerify, forgotPassword } from '../../shared/api/apiClient';
 import { getDataService } from '../../shared/common';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 
@@ -49,25 +49,24 @@ export default function VerificationCodeView({route}) {
         if (!canResend) return;
         setCanResend(false);
 
-
-        if (flowType === VERIFICATION_FLOW_TYPE.REGISTRATION) {
-            if (!justResetTimer) {
-                const email = getDataService()?.getUser()?.email;
-                signUpStart(email);
-            }
-
-            const interval = setInterval(() => {
-                setSeconds(prev => {
-                    if (prev <= 1) {
-                        clearInterval(interval);
-                        setCanResend(true);
-                        return retryInterval;
-                    }
-                    return prev - 1;
-                });
-            }, 1000);
-            return;
+        if (!justResetTimer) {
+            const email = getDataService()?.getUser()?.email;
+            if (flowType === VERIFICATION_FLOW_TYPE.REGISTRATION)
+                signUpStart(email).then(_ => {});
+            else if (flowType === VERIFICATION_FLOW_TYPE.FORGOT_PASSWORD)
+                forgotPassword(email).then(_ => {});
         }
+
+        const interval = setInterval(() => {
+            setSeconds(prev => {
+                if (prev <= 1) {
+                    clearInterval(interval);
+                    setCanResend(true);
+                    return retryInterval;
+                }
+                return prev - 1;
+            });
+        }, 1000);
     };
 
     const handleSubmit = async () => {
@@ -127,6 +126,24 @@ export default function VerificationCodeView({route}) {
             setError(errorMessages[response.code] || 'Unknown error');
             setModalVisible(true);
         }
+
+        if (flowType === VERIFICATION_FLOW_TYPE.FORGOT_PASSWORD) {
+            const response = await signUpVerify(email, code);
+
+            if (response.success) {
+                navigation.navigate('New Password', { flowType: VERIFICATION_FLOW_TYPE.FORGOT_PASSWORD })
+                return;
+            }
+
+            const errorMessages = {
+                404: 'Incorrect verification code, try again',
+                410: 'Code expired, request new code',
+                403: 'Too many tries, request new code'
+            };
+
+            setError(errorMessages[response.code] || 'Unknown error');
+            setModalVisible(true);
+        }
     };
 
     return (
@@ -169,7 +186,13 @@ export default function VerificationCodeView({route}) {
                                 </View>
                                 <AwesomeButton text='Log in' color={Color.WHITE} screenName='Log in' />
                             </View>
+                            ) : (
+                            flowType === VERIFICATION_FLOW_TYPE.FORGOT_PASSWORD ? (
+                                <View style={styles.margin15}>
+                                    <AwesomeButton text='Back' color={Color.WHITE} screenName='Forgot password' />
+                                </View>
                             ) : (<></>)
+                        )
                     }
                     <AwesomeModal
                         visible={isModalVisible}

@@ -6,6 +6,8 @@ import AwesomePasswordInput from "../customComponents/AwesomePasswordInput";
 import { AwesomeModal } from "../customComponents/AwesomeModal";
 import { VERIFICATION_FLOW_TYPE } from "../views/VerificationCodeView";
 import { useNavigation } from "@react-navigation/native";
+import {globalEventEmitter} from "../../shared/common";
+import {resetPassword} from "../../shared/api/apiClient";
 
 const NewPasswordView = ({ route }) => {
     const navigation = useNavigation();
@@ -13,11 +15,12 @@ const NewPasswordView = ({ route }) => {
 
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [isGenericErrorVisible, setGenericErrorVisible] = useState(false);
     const [isMismatchModalVisible, setMismatchModalVisible] = useState(false);
     const [isEmptyModalVisible, setEmptyModalVisible] = useState(false);
     const [isInvalidLengthModalVisible, setInvalidLengthModalVisible] = useState(false);
 
-    const handleNext = () => {
+    const handleNext = async () => {
         if (!password || !confirmPassword) {
             setEmptyModalVisible(true);
             return;
@@ -33,10 +36,14 @@ const NewPasswordView = ({ route }) => {
             return;
         }
 
-        navigation.navigate('Verification Code Password', {
-            flowType: VERIFICATION_FLOW_TYPE.CHANGE_PASSWORD,
-            password
-        });
+        if (flowType === VERIFICATION_FLOW_TYPE.FORGOT_PASSWORD) {
+            const { success } = await resetPassword(password);
+            if (!success) {
+                setGenericErrorVisible(true);
+                return;
+            }
+            globalEventEmitter.emit('signup', {})
+        }
     };
 
     return (
@@ -55,6 +62,16 @@ const NewPasswordView = ({ route }) => {
                 </View>
 
                 <AwesomeButton text='Next' color={Color.BLACK} additionalFunc={handleNext} />
+
+                <AwesomeModal
+                    visible={isGenericErrorVisible}
+                    text="SOMETHING WENT WRONG"
+                    subtext="Please try again later"
+                    buttons={[
+                        { label: "OK", onPress: () => setGenericErrorVisible(false) },
+                    ]}
+                    onBackPress={() => setGenericErrorVisible(false)}
+                />
 
                 <AwesomeModal
                     visible={isMismatchModalVisible}

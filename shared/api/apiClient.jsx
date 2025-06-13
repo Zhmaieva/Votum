@@ -19,8 +19,8 @@ const resetToken = async function() {
 }
 
 export async function signOut() {
-    await resetToken();
     globalEventEmitter.emit('signOut');
+    await resetToken();
 }
 
 // Create an Axios instance
@@ -104,6 +104,59 @@ export const signUpStart = async (email) => {
 
 /**
  *
+ * @param email
+ * @returns {Promise<{success: boolean, code: number?}>}
+ */
+export const forgotPassword = async (email) => {
+    try {
+        await apiClient.post(`/users/passwords/forgot`, {
+            email: email
+        });
+
+        console.log('forgot password requested');
+
+        return { success: true, code: 200 };
+    } catch (err) {
+        if (err.response && err.response.status) {
+            return { success: false, code: err.response.status };
+        }
+        return { success: false };
+    }
+};
+
+/**
+ *
+ * @returns {Promise<{success: boolean, code: number?}>}
+ */
+export const resetPassword = async (password) => {
+    try {
+        const response = await apiClient.post(`/users/passwords`, {
+            password
+        }, {
+            headers: {
+                Authorization: `Bearer ${await AsyncStorage.getItem('sign_in_auth_token')}`,
+            },
+        });
+
+        console.log('password reset complete');
+
+        const { token } = response.data;
+        await AsyncStorage.removeItem('sign_in_auth_token'); // Save token in AsyncStorage
+        await AsyncStorage.setItem('auth_token', token); // Save token in AsyncStorage
+        tokenValue = token;
+
+        return { success: true, code: 200 };
+    } catch (err) {
+        console.log(err);
+        if (err.response && err.response.status) {
+            return { success: false, code: err.response.status };
+        }
+        return { success: false };
+    }
+};
+
+/**
+ *
  * @param {string} email
  * @param {string} code
  * @returns {Promise<{success: boolean, code: number?}>}
@@ -112,10 +165,8 @@ export const signUpVerify = async (email, code) => {
     try {
         const response = await apiClient.post(`/user/register/verify`, {
             email: email,
-            code: code
+             code: code
         });
-
-        console.log('email verification successful');
 
         const { token } = response.data;
         await AsyncStorage.setItem('sign_in_auth_token', token); // Save temp token in AsyncStorage
@@ -569,6 +620,10 @@ export const fetchUserProfile = async (userId) => {
 
 export const updatePushToken = async (token) => {
     try {
+        if (!(await isTokenAvailable())) {
+            return;
+        }
+
         const offsetInHours = -new Date().getTimezoneOffset() / 60;
         const response = await apiClient.put(`/user/token`, {
             token: token,

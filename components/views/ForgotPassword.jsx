@@ -9,8 +9,9 @@ import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeEmailInput from "../customComponents/AwesomeEmailInput";
 import AwesomeButton, { Color } from "../customComponents/AwesomeButton";
 import { AwesomeModal } from "../customComponents/AwesomeModal";
-import { signUpStart } from "../../shared/api/apiClient";
+import {forgotPassword, signUpStart} from "../../shared/api/apiClient";
 import { getDataService } from "../../shared/common";
+import {VERIFICATION_FLOW_TYPE} from "./VerificationCodeView";
 
 const ForgotPasswordView = ({ navigation, route }) => {
     const { text } = route.params || {};
@@ -28,11 +29,11 @@ const ForgotPasswordView = ({ navigation, route }) => {
         }
 
         try {
-            const res = await signUpStart(trimmedEmail);
+            const res = await forgotPassword(trimmedEmail);
 
             if (res?.success) {
                 getDataService().getUser().email = trimmedEmail;
-                navigation.navigate('Verification Code');
+                navigation.navigate('Verification Code', { flowType: VERIFICATION_FLOW_TYPE.FORGOT_PASSWORD});
             } else {
                 throw new Error();
             }

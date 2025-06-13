@@ -9,9 +9,7 @@ const {SECRET_KEY} = require("./constants");
 const {pool} = require("./db/dal/pool");
 const pollQueries = require("./db/dal/pollQueries");
 const userQueries = require("./db/dal/userQueries");
-const {getActivationCode, checkActivationCode, checkAndInsertUserWithProfile, getUserByLogin, updateProfileImage,
-    refreshUserFollows, refreshUserFollowers, getUser
-} = require("./db/dal/userQueries");
+const {getActivationCode, checkActivationCode, checkAndInsertUserWithProfile, getUserByLogin, getUser, getVerificationCode, changePassword} = require("./db/dal/userQueries");
 const sendEmail = require("./mail/mailing");
 const {validateEmail, validateUsername, validatePassword} = require("./validation");
 const {uploadMiddleware} = require("./middleware/fileUploadMiddleware");
@@ -65,7 +63,43 @@ if (isDebug) {
 
 app.post("/login", async (req, res) => {
 
-})
+});
+
+app.post("/users/passwords/forgot", async (req, res, next) => {
+    try {
+        const { email } = req.body;
+
+        if (!await validateEmail(email)) {
+            return res.status(400).send("invalid email");
+        }
+
+        const { code, canSend } = await getVerificationCode(email);
+
+        if (code) {
+            if (canSend) {
+                sendEmail(email, 'Poll App password reset', 'Forgot your password? Please enter this code in Poll App to set a new one: ' + code + ' This code is valid for 15 minutes.');
+            }
+        }
+        return res.json({});
+    } catch (e) {
+        next(e);
+    }
+});
+
+app.post("/users/passwords", signupAuthMiddleware, async (req, res, next) => {
+    try {
+        const { password } = req.body;
+
+        const passwordHash = await bcrypt.hash(password, 10);
+
+        const {id, username} = await changePassword(req.user.email, passwordHash);
+
+        const token = generateToken({id: id, username: username});
+        return res.json({ message: 'Password reset & sign-in successful', token });
+    } catch (e) {
+        next(e);
+    }
+});
 
 app.post("/users/register", async (req, res, next) => {
     try {
@@ -230,7 +264,11 @@ app.get('/profile/:id?', authMiddleware, async (req, res, next) => {
     try {
         const userId = req.params.id;
 
-        if (userId === 'followers' || userId === 'notifications') return next(); // Forward to next matching route
+        if (
+            userId === 'followers' ||
+            userId === 'notifications' ||
+            userId === 'follows'
+        ) return next(); // Forward to next matching route
 
         const user = await userQueries.getUser(userId ?? req.user.id);
 

@@ -111,7 +111,7 @@ const PreviewPollView = () => {
                             additionalFunc={async () => {
                                 await createPoll(question, options.map(o => o.text), selectedDuration);
                                 if (resetAddViewForm) resetAddViewForm();
-                                navigation.navigate('My profile', {});
+                                navigation.navigate('MY PROFILE', {});
                             }}
                         />
                     </View>

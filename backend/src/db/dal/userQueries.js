@@ -168,7 +168,7 @@ async function getActivationCode(email) {
                              attempts_made = 0,
                              sent_on = (NOW() AT TIME ZONE 'UTC')
                          WHERE email = LOWER($1)
-                             AND created_at <= (NOW() AT TIME ZONE 'UTC') - INTERVAL '15 minutes'
+                             AND created_at <= (NOW() AT TIME ZONE 'UTC') - INTERVAL '1 minute'
                          RETURNING code, true AS "canSend"
                  ),
                  inserted AS (
@@ -192,7 +192,73 @@ async function getActivationCode(email) {
         if (result.rows.length > 0) {
             return result.rows[0];
         } else {
-            throw new Error('Failed to retrieve activation code');
+            return { canSend: false, code: 1 };
+        }
+    } catch (error) {
+        console.error('Error fetching activation code:', error);
+        throw error;
+    }
+}
+
+/**
+ * Get or update verification code for a given email.
+ * @param {string} email - The email address.
+ * @returns {Promise<string>} - The activation code.
+ */
+async function getVerificationCode(email) {
+    try {
+        const query = `
+            WITH 
+                 existing_record AS (
+                     SELECT
+                         code,
+                         CASE
+                             WHEN sent_on <= (NOW() AT TIME ZONE 'UTC') - INTERVAL '1 minute' THEN true
+                             ELSE false
+                             END AS "canSend",
+                         email
+                     FROM activation_codes
+                     WHERE email = LOWER($1)
+                       AND created_at >= (NOW() AT TIME ZONE 'UTC') - INTERVAL '15 minutes'
+                 ),
+                 update_sent_on AS (
+                     UPDATE activation_codes
+                         SET sent_on = (NOW() AT TIME ZONE 'UTC')
+                         FROM existing_record
+                         WHERE LOWER(activation_codes.email) = LOWER(existing_record.email)
+                             AND existing_record."canSend" = true
+                         RETURNING activation_codes.code, true AS "canSend"
+                 ),
+                 updated AS (
+                     UPDATE activation_codes
+                         SET created_at = (NOW() AT TIME ZONE 'UTC'),
+                             code = LPAD(FLOOR(RANDOM() * 1000000)::TEXT, 6, '0'),
+                             attempts_made = 0,
+                             sent_on = (NOW() AT TIME ZONE 'UTC')
+                         WHERE email = LOWER($1)
+                             AND created_at <= (NOW() AT TIME ZONE 'UTC') - INTERVAL '1 minute'
+                         RETURNING code, true AS "canSend"
+                 ),
+                 inserted AS (
+                     INSERT INTO activation_codes (email, created_at, code, sent_on)
+                         SELECT LOWER($1), (NOW() AT TIME ZONE 'UTC'), LPAD(FLOOR(RANDOM() * 1000000)::TEXT, 6, '0'), (NOW() AT TIME ZONE 'UTC')
+                         WHERE NOT EXISTS (SELECT 1 FROM activation_codes WHERE email = LOWER($1))
+                           AND EXISTS (SELECT 1 FROM users WHERE email = LOWER($1))
+                         RETURNING code, true AS "canSend"
+                 )
+            SELECT code, "canSend" FROM update_sent_on
+            UNION ALL
+            SELECT code, "canSend" FROM updated
+            UNION ALL
+            SELECT code, "canSend" FROM inserted;
+        `;
+
+        const result = await pool.query(query, [email]);
+
+        if (result.rows.length > 0) {
+            return result.rows[0];
+        } else {
+            return { canSend: false, code: 1 };
         }
     } catch (error) {
         console.error('Error fetching activation code:', error);
@@ -298,6 +364,30 @@ async function checkAndInsertUserWithProfile(username, email, passwordHash) {
     } finally {
         client.release();
     }
+}
+
+/**
+ * Changes user's password
+ * @param email
+ * @param passwordHash
+ * @returns {Promise<any>}
+ */
+async function changePassword(email, passwordHash) {
+    console.log('email', email);
+    console.log('passwordHash', passwordHash);
+
+    const query = `
+        UPDATE users
+        SET password_hash = $2
+        WHERE email = $1
+        RETURNING id, username;
+    `;
+
+    const result = await pool.query(query, [email.toLowerCase(), passwordHash]);
+    if (result.rows.length > 0) {
+        return { id: result.rows[0].id, username: result.rows[0].username };
+    }
+    throw new Error('No such user in the database');
 }
 
 /**
@@ -550,6 +640,7 @@ async function recalculateCategoryScore({ userCategoryPair }) {
 module.exports = {
     checkActivationCode,
     checkAndInsertUserWithProfile,
+    changePassword,
     deleteUser,
     followUser,
     getActivationCode,
@@ -557,6 +648,7 @@ module.exports = {
     getFollows,
     getUser,
     getUserByLogin,
+    getVerificationCode,
     recalculateCategoryScore,
     setCategories,
     unfollowUser,

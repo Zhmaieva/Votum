@@ -117,13 +117,28 @@ export default function App() {
     }, []);
 
     globalEventEmitter.on('signIn', async () => {
-        await registerForPushNotificationsAsync();
+        if (isAuthenticated)
+            await registerForPushNotificationsAsync();
         setIsAuthenticated(true);
     });
 
     globalEventEmitter.on('signOut', async () => {
-        await deregisterForPushNotificationsAsync();
+        if (isAuthenticated)
+            await deregisterForPushNotificationsAsync();
         setIsAuthenticated(false);
+    });
+
+    globalEventEmitter.on('signup', async () => {
+        const tokenAvailable = await isTokenAvailable();
+        let isOnboardingDone = false;
+        if (tokenAvailable) {
+            const profile = await fetchMyProfile();
+            if (profile) {
+                getDataService().setUser(profile);
+                isOnboardingDone = profile.onboardingComplete;
+            }
+        }
+        setIsAuthenticated(tokenAvailable && isOnboardingDone);
     });
 
     if (!fontLoaded || isLoading) {

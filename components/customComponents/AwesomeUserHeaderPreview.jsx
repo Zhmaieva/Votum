@@ -35,23 +35,21 @@ const AwesomeUserHeaderPreview = ({ userData, loggedInUserId }) => {
         };
     }, [user?.userId]);
 
+    globalEventEmitter.on('imagePicked', ({userId, imageUri}) => {
+        if (user?.userId !== userId)
+            return;
+
+        const newUser = { ...user };
+        newUser.image = imageUri;
+        setUser(newUser);
+    });
+
     useEffect(() => {
         setUser(userData);
         setIsFollowing(userData?.isFollowing);
     }, [userData]);
 
     if (!user) return null;
-
-    const handleFollowToggle = () => {
-        const newFollowState = !isFollowing;
-        setIsFollowing(newFollowState);
-        if (newFollowState) {
-            followProfile(user.userId);
-        } else {
-            unfollowProfile(user.userId);
-        }
-        globalEventEmitter.emit(followChangedEventName, { ...user, isFollowing: newFollowState });
-    };
 
     const handlePress = () => {
         if (isOwnProfile) {
