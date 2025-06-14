@@ -13,8 +13,8 @@ export default function AgeView () {
             <View style={styles.container}>
                 <View style={styles.firstSubContainer}>
                     <Text style={styles.headerStyle}>Select Your Birth Date</Text>
-                    <Text style={{marginBottom: 10, fontFamily: Fonts.regular,}}>Optional</Text>
-                    <View style={styles.margin10}>
+                    <Text style={{marginBottom: 15, fontFamily: Fonts.regular,}}>Personalize your profile</Text>
+                    <View style={styles.margin20}>
                         <AwesomeBirthPicker dateOfBirth={dateOfBirth} setDateOfBirth={setDateOfBirth} />
                     </View>
                     <View style={styles.subContainer}>
@@ -41,18 +41,17 @@ const styles = StyleSheet.create({
     },
     firstSubContainer: {
         width: '100%',
-        marginBottom: 15,
+        marginBottom: 15
     },
     secondSubContainer: {
         width: '100%',
-        marginBottom: 20
     },
     headerStyle: {
         fontSize: 24,
         fontFamily: Fonts.medium,
         marginBottom: 2
     },
-    margin10: {
-        marginBottom: 10
+    margin20: {
+        marginBottom: 15
     }
 });

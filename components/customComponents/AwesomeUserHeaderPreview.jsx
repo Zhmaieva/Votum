@@ -8,11 +8,11 @@ import { useNavigation } from "@react-navigation/native";
 
 const followChangedEventName = "followChanged";
 
-const formatFollowers = (num) => {
+const formatVotes = (num) => {
     if (num >= 1_000_000_000) return (num / 1_000_000_000).toFixed(1) + 'B';
     if (num >= 1_000_000) return (num / 1_000_000).toFixed(1) + 'M';
     if (num >= 1_000) return (num / 1_000).toFixed(1) + 'K';
-    return num;
+    return num.toString();
 };
 
 const AwesomeUserHeaderPreview = ({ userData, loggedInUserId }) => {
@@ -59,39 +59,23 @@ const AwesomeUserHeaderPreview = ({ userData, loggedInUserId }) => {
         }
     };
 
-    const formattedFollowers = formatFollowers(user.followersNumber);
-    const followersText = user.followersNumber === 1 ? "follower" : "followers";
+    const formattedVotes = formatVotes(user.votesNumber || 0);
 
     return (
         <TouchableOpacity onPress={handlePress} style={styles.container}>
             <Image source={{ uri: user.image }} style={styles.avatar} />
             <View style={styles.textContainer}>
                 <Text style={styles.username}>{user.username}</Text>
-                {isOwnProfile ? (
-                    <Text style={styles.subText} numberOfLines={1} ellipsizeMode="tail">
-                        {user.bio ?? ""}
-                    </Text>
-                ) : (
-                    <Text style={styles.subText}>
-                        {formattedFollowers} {followersText}
-                    </Text>
-                )}
+                <Text style={styles.subText}>
+                    {formattedVotes} votes
+                </Text>
             </View>
             {!isOwnProfile && (
                 <View style={styles.buttonContainer}>
                     <AwesomeButton
                         color={Color.BLACK}
                         isInChangedTextMode={isFollowing}
-                        additionalFunc={() => {
-                            user.isFollowing = !user.isFollowing;
-                            setIsFollowing(user.isFollowing);
-                            if (user.isFollowing) {
-                                followProfile(user.userId);
-                            } else {
-                                unfollowProfile(user.userId);
-                            }
-                            globalEventEmitter.emit(followChangedEventName, { ...user });
-                        }}
+                        additionalFunc={handleFollowToggle}
                         text="Follow"
                         changedText="Unfollow"
                     />

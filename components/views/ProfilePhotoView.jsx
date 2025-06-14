@@ -27,12 +27,12 @@ export default function ProfilePhotoView () {
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.container}>
                 <Text style={styles.headerStyle}>Upload Your Profile Photo</Text>
-                <Text style={{marginBottom: 10, fontFamily: Fonts.regular}}>Optional</Text>
+                <Text style={{marginBottom: 10, fontFamily: Fonts.regular}}>Personalize your profile</Text>
                 <View style={styles.subContainer}>
-                    <View style={styles.margin10}>
+                    <View style={styles.photoContainer}>
                         <AwesomeProfilePhoto profileImage={profileImage} setProfileImage={setProfileImage} />
                     </View>
-                    {
+                    {/*{
                         profileImage ? (
                             <View style={styles.buttonContainer}>
                                 <AwesomeButton text='Next' color={Color.BLACK} screenName='Age' />
@@ -42,7 +42,13 @@ export default function ProfilePhotoView () {
                                 <AwesomeButton text='Skip' color={Color.WHITE} screenName='Age' />
                             </View>
                         )
-                    }
+                    }*/}
+                    <View style={styles.buttonContainer}>
+                        <AwesomeButton text='Next' color={Color.BLACK} screenName='Age' />
+                    </View>
+                    <View style={styles.buttonContainer}>
+                        <AwesomeButton text='Skip' color={Color.WHITE} screenName='Age' />
+                    </View>
                 </View>
             </View>
         </SafeAreaView>
@@ -70,7 +76,8 @@ const styles = StyleSheet.create({
         fontFamily: Fonts.medium,
         fontSize: 24
     },
-    margin10: {
-        marginBottom: 10
+    photoContainer: {
+        marginBottom: 30,
+        marginTop: 16
     }
 });

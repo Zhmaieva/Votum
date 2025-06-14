@@ -114,7 +114,7 @@ const AwesomeFeed = ({
                 return (
                     <View style={styles.placeholderContainerLikes}>
                         <Text style={styles.placeholderText}>
-                            You haven't liked any polls yet. Go spread some love
+                            You haven't voted yet. Jump in and share your opinion!
                         </Text>
                     </View>
                 );

@@ -74,7 +74,7 @@ const CategoriesView = ({ route }) => {
                                 categoryName='all of them!'
                                 isSelected={allSelected}
                                 onPress={toggleAll}
-                                size={14}
+                                size={15}
                             />
                         </View>
                         {categoryList.map((cat) => (
@@ -84,7 +84,7 @@ const CategoriesView = ({ route }) => {
                                     categoryName={cat}
                                     isSelected={selectedCategories.includes(cat)}
                                     onPress={() => toggleCategory(cat)}
-                                    size={14}
+                                    size={15}
                                 />
                             </View>
                         ))}
@@ -93,8 +93,8 @@ const CategoriesView = ({ route }) => {
                 <AwesomeButton text='Next' color={Color.BLACK} additionalFunc={handleContinue} />
                 <AwesomeModal
                     visible={showError}
-                    text="PICK A FEW MORE"
-                    subtext="Please select at least 3 categories"
+                    text="PICK A CATEGORY"
+                    subtext="Please select at least 1 category"
                     buttons={[
                         { label: "OK", onPress: () => setShowError(false) },
                     ]}

@@ -76,6 +76,7 @@ const styles = StyleSheet.create({
         aspectRatio: 1, // makes it square
         width: '100%',
         maxWidth: 160,
+        maxHeight: 160,
         alignSelf: 'center',
     },
     touchable: {

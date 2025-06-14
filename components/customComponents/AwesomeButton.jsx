@@ -13,6 +13,7 @@ export const Color = {
 export default function AwesomeButton({
                                           text,
                                           screenName,
+                                          textElement,
                                           params = {},
                                           color = Color.GREEN,
                                           additionalFunc,
@@ -120,9 +121,15 @@ export default function AwesomeButton({
                     ]}
                 >
                     <View style={[styles.contentWrapper, settingButton && styles.settingWrapper]}>
-                        <Text style={[styles.buttonMainText, textStyle, settingButton && styles.leftAlignedText]}>
-                            {buttonName}
-                        </Text>
+                        {textElement ? (
+                            <Text style={[styles.buttonMainText, textStyle, settingButton && styles.leftAlignedText]}>
+                                {textElement}
+                            </Text>
+                        ) : (
+                            <Text style={[styles.buttonMainText, textStyle, settingButton && styles.leftAlignedText]}>
+                                {buttonName}
+                            </Text>
+                        )}
                         {settingButton && (
                             <Image
                                 source={require('../../assets/images/arrowBlack.png')}

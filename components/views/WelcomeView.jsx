@@ -15,7 +15,7 @@ export default function WelcomeView () {
             <Text style={styles.messageStyle}>Welcome to VOTUM</Text>
             <View style={styles.logoStyle}/>
             <View style={{width: '100%'}}>
-                <AwesomeButton text='Continue' color={Color.GREEN} screenName='Profile photo'/>
+                <AwesomeButton text='Continue' color={Color.BLACK} screenName='Profile photo'/>
             </View>
         </View>
     );

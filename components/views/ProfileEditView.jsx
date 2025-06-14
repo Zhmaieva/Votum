@@ -89,16 +89,41 @@ const ProfileEditView = ({ route }) => {
                 </View>
                 <Text style={[styles.sectionName, styles.marginTop15]}>Profile Info</Text>
                 <View style={styles.margin15}>
-                    <AwesomeButton text={`Username: ${username || '—'}`} color={Color.WHITE} screenName='Edit username' settingButton={true} />
-                </View>
-                <View style={styles.margin15}>
-                    <AwesomeButton text={`Bio: ${bioD || '—'}`} color={Color.WHITE} screenName='Edit bio' settingButton={true} />
+                    <AwesomeButton
+                        textElement={
+                            <>
+                                <Text style={{ fontFamily: Fonts.medium }}>Username: </Text>
+                                <Text style={{ fontFamily: Fonts.regular }}>{username || '—'}</Text>
+                            </>
+                        }
+                        color={Color.WHITE}
+                        screenName="Edit username"
+                        settingButton={true}
+                    />
                 </View>
                 <View style={styles.margin15}>
                     <AwesomeButton
-                        text={`Email: ${email || '—'}`}
+                        textElement={
+                            <>
+                                <Text style={{ fontFamily: Fonts.medium }}>Bio: </Text>
+                                <Text style={{ fontFamily: Fonts.regular }}>{bioD || '—'}</Text>
+                            </>
+                        }
                         color={Color.WHITE}
-                        screenName='Change Email'
+                        screenName="Edit bio"
+                        settingButton={true}
+                    />
+                </View>
+                <View style={styles.margin15}>
+                    <AwesomeButton
+                        textElement={
+                            <>
+                                <Text style={{ fontFamily: Fonts.medium }}>Email: </Text>
+                                <Text style={{ fontFamily: Fonts.regular }}>{email || '—'}</Text>
+                            </>
+                        }
+                        color={Color.WHITE}
+                        screenName="Change Email"
                         settingButton={true}
                         params={{ flowType: VERIFICATION_FLOW_TYPE.CHANGE_EMAIL }}
                     />
@@ -224,7 +249,7 @@ const styles = StyleSheet.create({
     },
     followersCounterText: {
         fontSize: 40,
-        fontFamily: Fonts.medium,
+        fontFamily: Fonts.bold,
         textAlign: 'center',
         marginBottom: -10
     },

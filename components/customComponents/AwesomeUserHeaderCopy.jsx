@@ -109,7 +109,7 @@ const AwesomeUserHeader = ({
                     <>
                         <View style={styles.editButton}>
                             <AwesomeButton
-                                text="Account Details"
+                                text="Account details"
                                 color={Color.BLACK}
                                 screenName="Edit profile"
                             />

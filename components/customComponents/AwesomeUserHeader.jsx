@@ -128,7 +128,7 @@ const AwesomeUserHeader = ({
                     <>
                         <View style={styles.editButton}>
                             <AwesomeButton
-                                text="Account Details"
+                                text="Account details"
                                 color={Color.BLACK}
                                 screenName="Edit profile"
                             />
@@ -316,7 +316,7 @@ const styles = StyleSheet.create({
         marginBottom: -7
     },
     counterTextStyle: {
-        fontFamily: Fonts.medium,
+        fontFamily: Fonts.bold,
         fontSize: 15,
     },
     counterStyleContainerLeft: {

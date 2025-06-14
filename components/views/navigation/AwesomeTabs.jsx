@@ -51,6 +51,7 @@ import searchGreen from '../../../assets/images/searchGreen.png';
 import searchBlack from '../../../assets/images/searchBlack.png';
 import addGreen from '../../../assets/images/addGreen.png';
 import addBlack from '../../../assets/images/addBlack.png';
+import IntermediatePage from '../IntermediatePage.jsx';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -221,6 +222,8 @@ function AddStack() {
         <Stack.Navigator id="Test4">
             <Stack.Screen name="AddMain" component={AddView} options={{ headerShown: false, gestureEnabled: true }} />
             <Stack.Screen name="Preview Poll" component={PreviewPollView} options={{ headerShown: false, gestureEnabled: true }} />
+            <Stack.Screen name="Interm Page" component={IntermediatePage} options={{ headerShown: false, gestureEnabled: true }} />
+            <Stack.Screen name="Profile" component={MyUserProfileView} options={{ headerShown: false, gestureEnabled: true }} />
         </Stack.Navigator>
     );
 }

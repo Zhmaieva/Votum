@@ -52,6 +52,25 @@ const PreviewPollView = () => {
         }, [])
     );
 
+    const handlePublish = async () => {
+        try {
+            await createPoll(
+                question,
+                options.map(o => o.text),
+                selectedDuration
+            );
+
+            if (resetAddViewForm) resetAddViewForm();
+
+            navigation.navigate('Interm Page', {
+                userId: user?.userId,
+            });
+        } catch (e) {
+            console.error("Error publishing poll:", e);
+            // Optional: Show error feedback
+        }
+    };
+
     return (
         <SafeAreaView style={styles.safeArea}>
             <ScrollView style={styles.container}>
@@ -108,11 +127,7 @@ const PreviewPollView = () => {
                         <AwesomeButton
                             color={Color.BLACK}
                             text="Publish"
-                            additionalFunc={async () => {
-                                await createPoll(question, options.map(o => o.text), selectedDuration);
-                                if (resetAddViewForm) resetAddViewForm();
-                                navigation.navigate('MY PROFILE', {});
-                            }}
+                            additionalFunc={handlePublish}
                         />
                     </View>
                     <AwesomeButton
