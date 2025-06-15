@@ -1,11 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import AwesomeFeed from "../customComponents/AwesomeFeed";
 import AwesomeCard from "../customComponents/AwesomeCard";
 import {View, StyleSheet, ActivityIndicator, Text, SafeAreaView} from 'react-native';
 import {fetchPolls, fetchMyProfile, voteOnPoll, fetchTrendingPolls} from "../../shared/api/apiClient";
 import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeSwitcher from "../customComponents/AwesomeSwitcher";
-import {calculateTimeDifference, getDataService, globalEventEmitter} from "../../shared/common";
+import {
+    calculateTimeDifference,
+    getDataService,
+    globalEventEmitter,
+    MIN_EXTRA_LOADING_TIME,
+    MIN_LOADING_TIME
+} from "../../shared/common";
+import AwesomeLoadingPoll from "../customComponents/AwesomeLoadingPoll";
 
 const FeedView = ({ route }) => {
     const [selectedOption, setSelectedOption] = useState("my feed");
@@ -13,6 +20,9 @@ const FeedView = ({ route }) => {
     const [polls, setPolls] = useState(null); // default to null for loading state
     const [trendingPolls, setTrendingPolls] = useState(null); // default to null for loading state
     const [loggedInUserId, setLoggedInUserId] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    const loaded = useRef(false);
 
     globalEventEmitter.on('sharedPoll', ({ pollId }) => {
         fetchPolls(pollId).then(res => {
@@ -20,35 +30,75 @@ const FeedView = ({ route }) => {
         });
     })
 
-    useEffect(() => {
-        fetchMyProfile().then(res => {
-            if (res?.userId) {
-                setLoggedInUserId(res.userId);
+    const handleLoading = async function (startTime) {
+        loaded.current = true;
+        const elapsed = Date.now() - startTime;
+        console.log('elapsed', elapsed);
+        let delay = Math.max(0, elapsed - MIN_LOADING_TIME);
+        if (delay > 0 && loading && !polls) {
+            delay = MIN_EXTRA_LOADING_TIME;
+        }
+        setTimeout(() => {
+            setLoading(false);
+        }, delay);
+    }
+
+    const scheduleLoading = async () => {
+        loaded.current = false;
+        setTimeout(() => {
+            if (!loaded.current && !loading) {
+                setLoading(true);
             }
-        });
+        }, MIN_LOADING_TIME);
+    }
 
-        fetchPolls().then(res => {
-            setPolls(res);
-        });
+    useEffect(() => {
+        const startTime = Date.now();
 
-        fetchTrendingPolls().then(res => {
-            if (!res)
-                return;
-            setTrendingPolls(res);
+        scheduleLoading().then(_ => {});
+
+        Promise.all([
+            fetchMyProfile().then(async res => {
+                if (res?.userId) {
+                    setLoggedInUserId(res.userId);
+                }
+            }),
+            fetchPolls().then(res => {
+                setPolls(res);
+            }),
+            fetchTrendingPolls().then(res => {
+                if (!res)
+                    return;
+                setTrendingPolls(res);
+            })
+        ]).then(async (res) => {
+           await handleLoading(startTime);
         });
     }, []);
 
     const onRefresh = () => {
         setRefreshing(true);
-        if (selectedOption.toLowerCase() === 'my feed')
-            fetchPolls().then(res => {
+        const startTime = Date.now();
+
+        if (selectedOption.toLowerCase() === 'my feed') {
+
+            scheduleLoading().then(_ => {});
+
+            fetchPolls().then(async res => {
+                //await new Promise(resolve => setTimeout(resolve, 1000)); //to test delay
+
                 setPolls(res);
                 setRefreshing(false);
+
+                await handleLoading(startTime);
             });
+        }
         else
-            fetchTrendingPolls().then(res => {
+            fetchTrendingPolls().then(async res => {
                 setTrendingPolls(res);
                 setRefreshing(false);
+
+               await handleLoading(startTime);
             });
     };
 
@@ -81,6 +131,7 @@ const FeedView = ({ route }) => {
                 data={selectedOption.toLowerCase() === 'my feed' ? polls : trendingPolls}
                 onRefresh={onRefresh}
                 refreshing={refreshing}
+                isLoading={loading}
                 renderItem={(item) => {
                     item.timeLeft = calculateTimeDifference(item.endsIn);
                     return (
@@ -95,7 +146,7 @@ const FeedView = ({ route }) => {
                     )
                 }}
                 appendFunction={async (excludedPollIds) => {
-                  return await getDataService().getMorePolls();
+                    return await getDataService().getMorePolls();
                 }}
             />
         </SafeAreaView>

@@ -1,53 +1,61 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, Modal, Pressable } from "react-native";
-import { Colors, Fonts } from '../../utils/colorUtils';
-import AwesomeVote from "../customComponents/AwesomeVote";
+import { Colors } from '../../utils/colorUtils';
 import AwesomeUserHeader from "../customComponents/AwesomeUserHeader";
-import AwesomeSwitcher from "../customComponents/AwesomeSwitcher";
 import AwesomeFeed from "../customComponents/AwesomeFeed";
 import AwesomeLoadingPoll from "../customComponents/AwesomeLoadingPoll";
 import AwesomeLoadingHeader from "../customComponents/AwesomeLoadingHeader";
 import {fetchMyProfile, fetchUserPolls, fetchUserProfile} from "../../shared/api/apiClient";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import {calculateTimeDifference, getDataService, globalEventEmitter} from "../../shared/common";
+import {
+    calculateTimeDifference,
+    getDataService,
+    globalEventEmitter,
+    MIN_EXTRA_LOADING_TIME,
+    MIN_LOADING_TIME
+} from "../../shared/common";
 import AwesomeCard from "../customComponents/AwesomeCard";
-import {Ionicons} from "@expo/vector-icons";
-import AwesomeButton, {Color} from "../customComponents/AwesomeButton";
-
-const MIN_LOADING_TIME = 500;
 
 const MyUserProfileView = () => {
     const [modalVisible, setModalVisible] = useState(false);
-    const [userDataLoaded, setUserDataLoaded] = useState(false);
+    const [userDataLoaded, setUserDataLoaded] = useState(true);
     const [user, setUser] = useState(null);
     const [polls, setPolls] = useState(null);
     const [refreshing, setRefreshing] = useState(false);
     const navigation = useNavigation();
-
-    const onPressHandler = (screenName) => navigation.navigate(screenName);
 
     useFocusEffect(
         React.useCallback(() => {
             let isMounted = true;
             const startTime = Date.now();
 
+            let loaded = false;
             const loadUserData = async () => {
                 let userData = await fetchMyProfile();
                 getDataService().setUser(userData);
+                setUser(userData);
 
-                if (isMounted) {
-                    setUser(userData);
-                    fetchUserPolls(userData.userId).then(res => {
-                        if (isMounted) setPolls(res);
-                    });
-                }
+                const pollsData = await fetchUserPolls(userData.userId);
+                setPolls(pollsData);
+
+                loaded = true;
             };
+
+            setTimeout(() => {
+                if (!loaded && userDataLoaded && (!user || !polls)) {
+                    setUserDataLoaded(false);
+                }
+            }, MIN_LOADING_TIME);
 
             loadUserData().then(() => {
                 const elapsed = Date.now() - startTime;
-                const delay = Math.max(0, MIN_LOADING_TIME - elapsed);
+                let delay = Math.max(0, elapsed - MIN_LOADING_TIME);
+                if (delay > 0 && userDataLoaded && (!user || !polls)) {
+                    setUserDataLoaded(false);
+                    delay = MIN_EXTRA_LOADING_TIME;
+                }
                 setTimeout(() => {
-                    if (isMounted) setUserDataLoaded(true);
+                    setUserDataLoaded(true);
                 }, delay);
             });
 
@@ -78,10 +86,15 @@ const MyUserProfileView = () => {
                         {!userDataLoaded ? (
                             <AwesomeLoadingHeader />
                         ) : (
-                            <AwesomeUserHeader
-                                userData={user}
-                                loggedInUserId={user?.userId}
-                                isProfilePage={true} />
+                            user && polls ? (
+                                <AwesomeUserHeader
+                                    userData={user}
+                                    loggedInUserId={user?.userId}
+                                    isProfilePage={true}
+                                />
+                            ) : (
+                                <></>
+                            )
                         )}
                     </View>
                     {!userDataLoaded ? (
@@ -91,24 +104,28 @@ const MyUserProfileView = () => {
                             ))}
                         </View>
                     ) : (
-                        <AwesomeFeed
-                            data={polls}
-                            onRefresh={onRefresh}
-                            refreshing={refreshing}
-                            isUserProfileView={true}
-                            renderItem={(item) => {
-                                item.timeLeft = calculateTimeDifference(item.endsIn);
-                                return (
-                                    <View style={styles.container}>
-                                        <AwesomeCard
-                                            hideHeader={true}
-                                            item={item}
-                                            loggedInUserId={user?.userId}
-                                        />
-                                    </View>
-                                );
-                            }}
-                        />
+                        user && polls ? (
+                            <AwesomeFeed
+                                data={polls}
+                                onRefresh={onRefresh}
+                                refreshing={refreshing}
+                                isUserProfileView={true}
+                                renderItem={(item) => {
+                                    item.timeLeft = calculateTimeDifference(item.endsIn);
+                                    return (
+                                        <View style={styles.container}>
+                                            <AwesomeCard
+                                                hideHeader={true}
+                                                item={item}
+                                                loggedInUserId={user?.userId}
+                                            />
+                                        </View>
+                                    );
+                                }}
+                            />
+                        ) : (
+                            <></>
+                        )
                     )}
                 </View>
             </SafeAreaView>

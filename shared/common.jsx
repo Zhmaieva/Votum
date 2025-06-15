@@ -1,6 +1,9 @@
 import {Alert, Share} from "react-native";
 import mitt from 'mitt';
-import {fetchPolls, getPollShareLink} from "./api/apiClient";
+import {fetchMyProfile, fetchPolls, fetchTrendingPolls, getPollShareLink} from "./api/apiClient";
+
+export const MIN_LOADING_TIME = 200;
+export const MIN_EXTRA_LOADING_TIME = 400;
 
 export const globalEventEmitter = new mitt();
 
@@ -30,6 +33,54 @@ export const calculateTimeDifference = (dateString) => {
     const targetDate = new Date(dateString);
     return targetDate - now;
 };
+
+export class Loader {
+
+    loaded = false;
+    loading = false;
+
+    constructor(onLoadingChange) {
+        this.onLoadingChange = onLoadingChange;
+    }
+
+    __setLoading(value) {
+        this.loading = value;
+        this.onLoadingChange(this.loading);
+    }
+
+    __handleLoading = async (startTime)=> {
+        this.loaded = true;
+        const elapsed = Date.now() - startTime;
+        console.log('elapsed', elapsed);
+        let delay = Math.max(0, elapsed - MIN_LOADING_TIME);
+        if (delay > 0) {
+            this.__setLoading(true);
+            delay = MIN_EXTRA_LOADING_TIME;
+        }
+        setTimeout(() => {
+            this.__setLoading(false);
+        }, delay);
+    }
+
+    __scheduleLoading = async () => {
+        this.loaded = false;
+        setTimeout(() => {
+            if (!this.loaded && !this.loading) {
+                this.__setLoading(true);
+            }
+        }, MIN_LOADING_TIME);
+    }
+
+    async load(promises) {
+        const startTime = Date.now();
+
+        await this.__scheduleLoading();
+
+        Promise.all(promises).then(async _ => {
+            await this.__handleLoading(startTime);
+        })
+    }
+}
 
 // An object serving as a temporary local data storage to exchange between components
 // Resets when app does so

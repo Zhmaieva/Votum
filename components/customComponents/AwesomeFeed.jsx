@@ -16,6 +16,7 @@ import {getDataService, globalEventEmitter} from "../../shared/common";
 import AwesomeLink from "./AwesomeLink";
 import {useFocusEffect} from "@react-navigation/native";
 import {fetchMyProfile, getPollOptions, viewPoll, viewPollRequest} from "../../shared/api/apiClient";
+import AwesomeLoadingPoll from "./AwesomeLoadingPoll";
 
 const AwesomeFeed = ({
                          data,
@@ -25,7 +26,8 @@ const AwesomeFeed = ({
                          appendFunction,
                          isUserProfileView = false,
                          isLikedPollsView = false,
-                         isSearchView = false
+                         isSearchView = false,
+                         isLoading = false,
 }) => {
     const scrollY = useRef(new Animated.Value(0)).current;
     const [preloadedData, setPreloadedData] = useState([]);
@@ -74,7 +76,7 @@ const AwesomeFeed = ({
             if (!preloadedData.find(item => item?.type === 'placeholder')) {
                 setPreloadedData(prevData => [
                     ...prevData,
-                    { id: 'no-more-polls', type: 'placeholder' }
+                    { id: 'no-more-polls-end', type: 'placeholder' }
                 ]);
             }
         } else {
@@ -99,15 +101,27 @@ const AwesomeFeed = ({
             if (isUserProfileView) {
                 const isCurrentUser = data && getDataService().getUser()?.userId === data[0]?.user?.userId;
 
-                return (
-                    <View style={styles.placeholderContainerUserProfile}>
-                        <Text style={styles.placeholderText}>
-                            {isCurrentUser
-                                ? 'Create your first poll now'
-                                : "This user hasn't created any polls yet"}
-                        </Text>
-                    </View>
-                );
+                if (item?.id === 'no-more-polls') {
+                    return (
+                        <View style={styles.placeholderContainerUserProfile}>
+                            <Text style={styles.placeholderText}>
+                                {isCurrentUser
+                                    ? 'Create your first poll now'
+                                    : "This user hasn't created any polls yet"}
+                            </Text>
+                        </View>
+                    );
+                } else {
+                    return (
+                        <View style={styles.placeholderContainerUserProfile}>
+                            <Text style={styles.placeholderText}>
+                                {isCurrentUser
+                                    ? 'No more polls here, time to create a new one'
+                                    : "No more polls to show"}
+                            </Text>
+                        </View>
+                    );
+                }
             }
 
             if (isLikedPollsView) {
@@ -225,38 +239,53 @@ const AwesomeFeed = ({
     }, []));
 
     return (
-        <SafeAreaView style={styles.container}>
-            <Animated.FlatList
-                data={preloadedData}
-                ref={flatListRef}
-                keyExtractor={(item) => item?.id ?? String(Math.random())}
-                pagingEnabled
-                scrollEventThrottle={16}
-                showsVerticalScrollIndicator={false}
-                snapToAlignment="start"
-                snapToOffsets={preloadedData?.map((_, index) => index * (POLL_HEIGHT - NEXT_POLL_OFFSET)) ?? 0}
-                decelerationRate="fast"
-                refreshControl={
-                    <RefreshControl refreshing={refreshing ?? false} onRefresh={onRefresh ?? (() => { })} tintColor="#888" />
-                }
-                renderItem={({ item }) => (
-                    <View style={styles.pollContainer}>{renderWithPlaceholder(item)}</View>
-                )}
-                onEndReached={loadMorePolls}
-                onEndReachedThreshold={0.5}
-                onScroll={({nativeEvent}) => {
-                    const offsetY = nativeEvent.contentOffset.y;
-                    const index = Math.round(offsetY / (POLL_HEIGHT - NEXT_POLL_OFFSET));
-                    handleSnapChange(index);
+        <>
+            {
+                isLoading ? (
+                    <View style={styles.container}>
+                        {[1, 2, 3].map((_, idx) => (
+                            <AwesomeLoadingPoll key={idx}/>
+                        ))}
+                    </View>
+                ) : (
+                    <SafeAreaView style={styles.container}>
+                        <Animated.FlatList
+                            data={preloadedData}
+                            ref={flatListRef}
+                            keyExtractor={(item) => item?.id ?? String(Math.random())}
+                            pagingEnabled
+                            scrollEventThrottle={16}
+                            showsVerticalScrollIndicator={false}
+                            snapToAlignment="start"
+                            snapToOffsets={preloadedData?.map((_, index) => index * (POLL_HEIGHT - NEXT_POLL_OFFSET)) ?? 0}
+                            decelerationRate="fast"
+                            refreshControl={
+                                <RefreshControl refreshing={refreshing ?? false} onRefresh={onRefresh ?? (() => {
+                                })} tintColor="#888"/>
+                            }
+                            renderItem={({item}) => (
+                                <View style={styles.pollContainer}>{renderWithPlaceholder(item)}</View>
+                            )}
+                            onEndReached={loadMorePolls}
+                            onEndReachedThreshold={0.5}
+                            onScroll={({nativeEvent}) => {
+                                const offsetY = nativeEvent.contentOffset.y;
+                                const index = Math.round(offsetY / (POLL_HEIGHT - NEXT_POLL_OFFSET));
+                                handleSnapChange(index);
 
-                    Animated.event(
-                        [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-                        { useNativeDriver: false }
-                    )
-                }}
-            />
-        </SafeAreaView>
-    );
+                                Animated.event(
+                                    [{nativeEvent: {contentOffset: {y: scrollY}}}],
+                                    {useNativeDriver: false}
+                                )
+                            }}
+                        />
+                    </SafeAreaView>
+                )
+            }
+        </>
+
+    )
+
 };
 
 const styles = StyleSheet.create({
