@@ -326,10 +326,10 @@ export const fetchPolls = async (postId) => {
     }
 };
 
-export const fetchLikedPolls = async () => {
+export const fetchVotedPolls = async () => {
     try {
-        console.log('fetching liked polls...');
-        const response = await apiClient.get(`/polls/liked`, {
+        console.log('fetching voted polls...');
+        const response = await apiClient.get(`/polls/voted`, {
             headers: {
                 Authorization: `Bearer ${await getToken()}`,
             },

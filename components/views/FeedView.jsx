@@ -8,7 +8,7 @@ import AwesomeSwitcher from "../customComponents/AwesomeSwitcher";
 import {
     calculateTimeDifference,
     getDataService,
-    globalEventEmitter,
+    globalEventEmitter, Loader,
     MIN_EXTRA_LOADING_TIME,
     MIN_LOADING_TIME
 } from "../../shared/common";
@@ -22,42 +22,16 @@ const FeedView = ({ route }) => {
     const [loggedInUserId, setLoggedInUserId] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    const loaded = useRef(false);
-
     globalEventEmitter.on('sharedPoll', ({ pollId }) => {
         fetchPolls(pollId).then(res => {
             setPolls(res);
         });
     })
 
-    const handleLoading = async function (startTime) {
-        loaded.current = true;
-        const elapsed = Date.now() - startTime;
-        console.log('elapsed', elapsed);
-        let delay = Math.max(0, elapsed - MIN_LOADING_TIME);
-        if (delay > 0 && loading && !polls) {
-            delay = MIN_EXTRA_LOADING_TIME;
-        }
-        setTimeout(() => {
-            setLoading(false);
-        }, delay);
-    }
-
-    const scheduleLoading = async () => {
-        loaded.current = false;
-        setTimeout(() => {
-            if (!loaded.current && !loading) {
-                setLoading(true);
-            }
-        }, MIN_LOADING_TIME);
-    }
+    const loader = new Loader(setLoading);
 
     useEffect(() => {
-        const startTime = Date.now();
-
-        scheduleLoading().then(_ => {});
-
-        Promise.all([
+        loader.load([
             fetchMyProfile().then(async res => {
                 if (res?.userId) {
                     setLoggedInUserId(res.userId);
@@ -71,35 +45,29 @@ const FeedView = ({ route }) => {
                     return;
                 setTrendingPolls(res);
             })
-        ]).then(async (res) => {
-           await handleLoading(startTime);
-        });
+        ]).then(_=>{});
     }, []);
 
-    const onRefresh = () => {
+    const onRefresh = async () => {
         setRefreshing(true);
-        const startTime = Date.now();
 
         if (selectedOption.toLowerCase() === 'my feed') {
+            await loader.load([
+                fetchPolls().then(async res => {
+                    //await new Promise(resolve => setTimeout(resolve, 1000)); //to test delay
 
-            scheduleLoading().then(_ => {});
-
-            fetchPolls().then(async res => {
-                //await new Promise(resolve => setTimeout(resolve, 1000)); //to test delay
-
-                setPolls(res);
-                setRefreshing(false);
-
-                await handleLoading(startTime);
-            });
+                    setPolls(res);
+                    setRefreshing(false);
+                })
+            ]);
         }
         else
-            fetchTrendingPolls().then(async res => {
-                setTrendingPolls(res);
-                setRefreshing(false);
-
-               await handleLoading(startTime);
-            });
+            await loader.load([
+                fetchTrendingPolls().then(async res => {
+                    setTrendingPolls(res);
+                    setRefreshing(false);
+                })
+            ]);
     };
 
     if (polls === null) {

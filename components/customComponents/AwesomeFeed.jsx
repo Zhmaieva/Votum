@@ -25,9 +25,10 @@ const AwesomeFeed = ({
                          renderItem,
                          appendFunction,
                          isUserProfileView = false,
-                         isLikedPollsView = false,
+                         isVotedPollsView = false,
                          isSearchView = false,
                          isLoading = false,
+                         searchQuery = null,
 }) => {
     const scrollY = useRef(new Animated.Value(0)).current;
     const [preloadedData, setPreloadedData] = useState([]);
@@ -124,7 +125,7 @@ const AwesomeFeed = ({
                 }
             }
 
-            if (isLikedPollsView) {
+            if (isVotedPollsView) {
                 return (
                     <View style={styles.placeholderContainerLikes}>
                         <Text style={styles.placeholderText}>
@@ -135,6 +136,15 @@ const AwesomeFeed = ({
             }
 
             if (isSearchView) {
+                if (searchQuery) {
+                    return (
+                        <View style={styles.placeholderContainerSearch}>
+                            <Text style={styles.placeholderText}>
+                                No polls found for "{searchQuery}"
+                            </Text>
+                        </View>
+                    )
+                }
                 return (
                     <View style={styles.placeholderContainerSearch}>
                         <Text style={styles.placeholderText}>

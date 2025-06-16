@@ -71,6 +71,7 @@ const pollSelect = `
         JOIN users u ON p.created_by = u.id
         JOIN user_profiles up ON u.id = up.user_id
         LEFT JOIN poll_likes pl ON p.id = pl.poll_id AND pl.user_id = $1
+        LEFT JOIN poll_votes pv ON p.id = pv.poll_id AND pv.user_id = $1
         LEFT JOIN user_follows uf ON u.id = uf.user_follow_id AND uf.user_follower_id = $1
 `;
 
@@ -674,10 +675,10 @@ function buildFinalFeedTracks(trackResults) {
  * @param {string} userId - ID of the currently authenticated user
  * @returns {Promise<Array>} - List of liked polls
  */
-async function fetchLikedPolls(userId) {
+async function fetchVotedPolls(userId) {
     const query = `
         ${pollSelect}
-        WHERE p.is_deleted = false AND pl.user_id IS NOT NULL
+        WHERE p.is_deleted = false AND pv.user_id IS NOT NULL
     `;
     const result = await pool.query(query, [userId]);
     return attachOptionsToPolls(userId, result.rows);
@@ -1050,7 +1051,7 @@ module.exports = {
     fetchPolls,
     fetchUserPolls,
     fetchTrendingPolls,
-    fetchLikedPolls,
+    fetchVotedPolls,
     getPollById,
     getPollOptionResults,
     likePoll,

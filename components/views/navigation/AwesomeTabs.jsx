@@ -4,7 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Fonts } from "../../../utils/colorUtils.js";
 import MyUserProfileView from "../MyUserProfileView";
-import LikedView from '../LikedView';
+import VotedView from '../VotedView';
 import SearchView from '../SearchView';
 import AddView from "../AddView";
 import FeedView from "../FeedView";
@@ -209,7 +209,7 @@ function FeedStack() {
 function VotedStack() {
     return (
         <Stack.Navigator id="Test3">
-            <Stack.Screen name="VotedMain" component={LikedView} options={{ headerShown: false, gestureEnabled: true }} />
+            <Stack.Screen name="VotedMain" component={VotedView} options={{ headerShown: false, gestureEnabled: true }} />
             <Stack.Screen name="Somebodys Profile" component={SomebodysProfileView} options={{ headerShown: false, gestureEnabled: true }} />
             <Stack.Screen name="Profile" component={MyUserProfileView} options={{ headerShown: false, gestureEnabled: true }} />
         </Stack.Navigator>

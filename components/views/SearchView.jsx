@@ -4,14 +4,17 @@ import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeCard from "../customComponents/AwesomeCard";
 import AwesomeFeed from "../customComponents/AwesomeFeed";
 import AwesomeSearch from "../customComponents/AwesomeSearch";
-import {fetchLikedPolls, fetchMyProfile, searchPolls} from "../../shared/api/apiClient";
-import {calculateTimeDifference} from "../../shared/common";
+import {fetchMyProfile, searchPolls} from "../../shared/api/apiClient";
+import {calculateTimeDifference, Loader, MIN_LOADING_TIME} from "../../shared/common";
 
 const SearchView = () => {
     const [polls, setPolls] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [loggedInUserId, setLoggedInUserId] = useState(null);
+    const [loading, setLoading] = useState(false);
+
+    const loader = new Loader(setLoading);
 
     useEffect(() => {
         fetchMyProfile().then(res => {
@@ -23,50 +26,55 @@ const SearchView = () => {
         setPolls([]);
     }, []);
 
-    const onRefresh = () => {
+    const onRefresh = async () => {
         setRefreshing(true);
-        searchPolls(searchQuery).then(res => {
-            setPolls(res.slice());
-            setRefreshing(false);
-        });
+        await loader.load([
+            searchPolls(searchQuery).then(res => {
+                setPolls(res.slice());
+                setRefreshing(false);
+            })
+        ]);
     };
 
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.container}>
                 <View style={styles.searchContainer}>
-                    <AwesomeSearch onSearchPress={(query) => {
-                        setSearchQuery(query);
-                        searchPolls(query).then(res => {
-                            setPolls(res.slice());
-                            setRefreshing(false);
-                        });
+                    <AwesomeSearch onSearchPress={async (query) => {
+                        if (query)
+                            await loader.load([
+                                searchPolls(query).then(async res => {
+                                    setPolls(res.slice());
+                                    setRefreshing(false);
+                                })
+                            ]);
+                        setTimeout(() => {
+                            setSearchQuery(query);
+                        }, MIN_LOADING_TIME)
                     }} />
                 </View>
                 <View style={styles.centered}>
-                    {(!polls || polls?.length === 0) && searchQuery !== "" ? (
-                        <Text style={styles.noResultsText}>No polls found for "{searchQuery}"</Text>
-                    ) : (
-                        <AwesomeFeed
-                            data={polls}
-                            onRefresh={onRefresh}
-                            refreshing={refreshing}
-                            isSearchView={true}
-                            renderItem={(item) => {
-                                item.timeLeft = calculateTimeDifference(item.endsIn);
-                                return (
-                                    <View>
-                                        <AwesomeCard
-                                            item={item}
-                                            handleVote={async (itemId, optionId) => {
-                                            }}
-                                            loggedInUserId={loggedInUserId}
-                                        />
-                                    </View>
-                                )
-                            }}
-                        />
-                    )}
+                    <AwesomeFeed
+                        data={polls}
+                        onRefresh={onRefresh}
+                        refreshing={refreshing}
+                        isLoading={loading}
+                        isSearchView={true}
+                        searchQuery={searchQuery}
+                        renderItem={(item) => {
+                            item.timeLeft = calculateTimeDifference(item.endsIn);
+                            return (
+                                <View>
+                                    <AwesomeCard
+                                        item={item}
+                                        handleVote={async (itemId, optionId) => {
+                                        }}
+                                        loggedInUserId={loggedInUserId}
+                                    />
+                                </View>
+                            )
+                        }}
+                    />
                 </View>
             </View>
         </SafeAreaView>

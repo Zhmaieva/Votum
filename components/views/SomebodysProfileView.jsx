@@ -4,10 +4,11 @@ import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeUserHeader from "../customComponents/AwesomeUserHeader";
 import AwesomeFeed from "../customComponents/AwesomeFeed";
 import AwesomeLoadingHeader from "../customComponents/AwesomeLoadingHeader";
-import {fetchLikedPolls, fetchMyProfile, fetchUserPolls, fetchUserProfile} from "../../shared/api/apiClient";
-import {calculateTimeDifference, getDataService} from "../../shared/common";
+import {fetchVotedPolls, fetchMyProfile, fetchUserPolls, fetchUserProfile} from "../../shared/api/apiClient";
+import {calculateTimeDifference, getDataService, Loader} from "../../shared/common";
 import AwesomeCard from "../customComponents/AwesomeCard";
 import AwesomeLoadingPoll from "../customComponents/AwesomeLoadingPoll";
+import {isLoading} from "expo-font";
 
 const SomebodysProfileView = ({ route }) => {
     const { userId } = route.params;
@@ -17,15 +18,19 @@ const SomebodysProfileView = ({ route }) => {
     const [loggedInUserId, setLoggedInUserId] = useState(null);
     const [refreshing, setRefreshing] = useState(false);
     const [polls, setPolls] = useState(null); // default to null for loading state
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         const myId = getDataService().getUser()?.userId;
         setLoggedInUserId(myId);
-        fetchUserProfile(userId).then(setUser);
 
-        fetchUserPolls(userId).then(res => {
-            setPolls(res);
-        });
+        new Loader(setLoading).load([
+            fetchUserProfile(userId).then(setUser),
+            fetchUserPolls(userId).then(async res => {
+                //await new Promise(resolve => setTimeout(resolve, 4000)); //to test delay
+                setPolls(res);
+            })
+        ]).then(_ => {});
     }, []);
 
     const onRefresh = () => {
@@ -40,29 +45,27 @@ const SomebodysProfileView = ({ route }) => {
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.contentWrapper}>
                 <View style={{marginBottom: 10}}>
-                    {user === null ? (
+                    {loading ? (
                         <AwesomeLoadingHeader />
                     ) : (
-                        <AwesomeUserHeader
-                            userData={user}
-                            loggedInUserId={loggedInUserId}
-                            isProfilePage={true}
-                        />
+                        user && polls ? (
+                            <AwesomeUserHeader
+                                userData={user}
+                                loggedInUserId={loggedInUserId}
+                                isProfilePage={true}
+                            />
+                        ) : (
+                            <></>
+                        )
                     )}
                 </View>
-
-                {!user || !polls ? (
-                    <View style={styles.container}>
-                        {[1, 2, 3].map((_, idx) => (
-                            <AwesomeLoadingPoll key={idx} />
-                        ))}
-                    </View>
-                ) : (
+                {user && polls ? (
                     <AwesomeFeed
                         data={polls}
                         onRefresh={onRefresh}
                         refreshing={refreshing}
                         isUserProfileView={true}
+                        isLoading={loading}
                         renderItem={(item) => {
                             item.timeLeft = calculateTimeDifference(item.endsIn);
                             return (
@@ -78,6 +81,8 @@ const SomebodysProfileView = ({ route }) => {
                             )
                         }}
                     />
+                ) : (
+                    <></>
                 )}
             </View>
         </SafeAreaView>

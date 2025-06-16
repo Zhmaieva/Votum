@@ -3,7 +3,7 @@ import mitt from 'mitt';
 import {fetchMyProfile, fetchPolls, fetchTrendingPolls, getPollShareLink} from "./api/apiClient";
 
 export const MIN_LOADING_TIME = 200;
-export const MIN_EXTRA_LOADING_TIME = 400;
+export const MIN_EXTRA_LOADING_TIME = 800;
 
 export const globalEventEmitter = new mitt();
 
@@ -45,7 +45,7 @@ export class Loader {
 
     __setLoading(value) {
         this.loading = value;
-        this.onLoadingChange(this.loading);
+        this.onLoadingChange(value);
     }
 
     __handleLoading = async (startTime)=> {
@@ -65,7 +65,7 @@ export class Loader {
     __scheduleLoading = async () => {
         this.loaded = false;
         setTimeout(() => {
-            if (!this.loaded && !this.loading) {
+            if (!this.loaded) {
                 this.__setLoading(true);
             }
         }, MIN_LOADING_TIME);
@@ -75,6 +75,9 @@ export class Loader {
         const startTime = Date.now();
 
         await this.__scheduleLoading();
+
+        // Simulate loading globally
+        //promises = promises.concat([new Promise(resolve => setTimeout(resolve, 1000))])
 
         Promise.all(promises).then(async _ => {
             await this.__handleLoading(startTime);

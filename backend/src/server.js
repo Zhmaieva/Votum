@@ -483,9 +483,9 @@ app.get('/polls/search', authMiddleware, async (req, res, next) => {
     }
 });
 
-app.get('/polls/liked', authMiddleware, async (req, res, next) => {
+app.get('/polls/voted', authMiddleware, async (req, res, next) => {
     try {
-        const result = await pollQueries.fetchLikedPolls(req.user.id);
+        const result = await pollQueries.fetchVotedPolls(req.user.id);
         res.json(result);
     } catch (e) {
         next(e);

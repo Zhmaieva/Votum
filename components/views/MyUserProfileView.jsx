@@ -10,7 +10,7 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import {
     calculateTimeDifference,
     getDataService,
-    globalEventEmitter,
+    globalEventEmitter, Loader,
     MIN_EXTRA_LOADING_TIME,
     MIN_LOADING_TIME
 } from "../../shared/common";
@@ -18,48 +18,26 @@ import AwesomeCard from "../customComponents/AwesomeCard";
 
 const MyUserProfileView = () => {
     const [modalVisible, setModalVisible] = useState(false);
-    const [userDataLoaded, setUserDataLoaded] = useState(true);
+    const [userDataLoading, setUserDataLoading] = useState(false);
     const [user, setUser] = useState(null);
     const [polls, setPolls] = useState(null);
     const [refreshing, setRefreshing] = useState(false);
-    const navigation = useNavigation();
 
     useFocusEffect(
         React.useCallback(() => {
-            let isMounted = true;
-            const startTime = Date.now();
+            new Loader(setUserDataLoading).load([
+                (async () => {
+                    //await new Promise(resolve => setTimeout(resolve, 1000)); //to test delay
 
-            let loaded = false;
-            const loadUserData = async () => {
-                let userData = await fetchMyProfile();
-                getDataService().setUser(userData);
-                setUser(userData);
+                    let userData = await fetchMyProfile();
 
-                const pollsData = await fetchUserPolls(userData.userId);
-                setPolls(pollsData);
+                    getDataService().setUser(userData);
+                    setUser(userData);
 
-                loaded = true;
-            };
-
-            setTimeout(() => {
-                if (!loaded && userDataLoaded && (!user || !polls)) {
-                    setUserDataLoaded(false);
-                }
-            }, MIN_LOADING_TIME);
-
-            loadUserData().then(() => {
-                const elapsed = Date.now() - startTime;
-                let delay = Math.max(0, elapsed - MIN_LOADING_TIME);
-                if (delay > 0 && userDataLoaded && (!user || !polls)) {
-                    setUserDataLoaded(false);
-                    delay = MIN_EXTRA_LOADING_TIME;
-                }
-                setTimeout(() => {
-                    setUserDataLoaded(true);
-                }, delay);
-            });
-
-            return () => { isMounted = false; }
+                    const pollsData = await fetchUserPolls(userData.userId);
+                    setPolls(pollsData);
+                })()
+            ]).then(_ => {});
         }, [])
     );
 
@@ -83,7 +61,7 @@ const MyUserProfileView = () => {
             <SafeAreaView style={styles.safeArea}>
                 <View style={styles.contentWrapper}>
                     <View style={{ marginBottom: 10 }}>
-                        {!userDataLoaded ? (
+                        {userDataLoading ? (
                             <AwesomeLoadingHeader />
                         ) : (
                             user && polls ? (
@@ -97,35 +75,28 @@ const MyUserProfileView = () => {
                             )
                         )}
                     </View>
-                    {!userDataLoaded ? (
-                        <View style={styles.container}>
-                            {[1, 2, 3].map((_, idx) => (
-                                <AwesomeLoadingPoll key={idx} />
-                            ))}
-                        </View>
+                    {user && polls ? (
+                        <AwesomeFeed
+                            data={polls}
+                            onRefresh={onRefresh}
+                            refreshing={refreshing}
+                            isUserProfileView={true}
+                            isLoading={userDataLoading}
+                            renderItem={(item) => {
+                                item.timeLeft = calculateTimeDifference(item.endsIn);
+                                return (
+                                    <View style={styles.container}>
+                                        <AwesomeCard
+                                            hideHeader={true}
+                                            item={item}
+                                            loggedInUserId={user?.userId}
+                                        />
+                                    </View>
+                                );
+                            }}
+                        />
                     ) : (
-                        user && polls ? (
-                            <AwesomeFeed
-                                data={polls}
-                                onRefresh={onRefresh}
-                                refreshing={refreshing}
-                                isUserProfileView={true}
-                                renderItem={(item) => {
-                                    item.timeLeft = calculateTimeDifference(item.endsIn);
-                                    return (
-                                        <View style={styles.container}>
-                                            <AwesomeCard
-                                                hideHeader={true}
-                                                item={item}
-                                                loggedInUserId={user?.userId}
-                                            />
-                                        </View>
-                                    );
-                                }}
-                            />
-                        ) : (
-                            <></>
-                        )
+                        <></>
                     )}
                 </View>
             </SafeAreaView>
