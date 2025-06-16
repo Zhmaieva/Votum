@@ -12,7 +12,9 @@ const VotedView = () => {
     const [loggedInUserId, setLoggedInUserId] = useState(null);
     const [loading, setLoading] = useState(false);
 
-    const loader = new Loader(setLoading);
+    const loader = new Loader((value) => {
+        setLoading(value);
+    });
 
     useEffect(() => {
         loader.load([
@@ -22,7 +24,6 @@ const VotedView = () => {
                 }
             }),
             fetchVotedPolls().then(async res => {
-                //await new Promise(resolve => setTimeout(resolve, 4000)); //to test delay
                 setPolls(res);
             })
         ]).then(() => {});
@@ -54,6 +55,7 @@ const VotedView = () => {
     };
 
     return (
+        (polls || loading) ? (
         <AwesomeFeed
             data={polls}
             onRefresh={onRefresh}
@@ -74,6 +76,9 @@ const VotedView = () => {
                 )
             }}
         />
+        ) : (
+            <></>
+        )
     );
 };
 

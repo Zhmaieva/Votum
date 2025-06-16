@@ -49,6 +49,17 @@ const AwesomeUserHeaderPreview = ({ userData, loggedInUserId }) => {
         setIsFollowing(userData?.isFollowing);
     }, [userData]);
 
+    const handleFollowToggle = () => {
+        const newFollowState = !isFollowing;
+        setIsFollowing(newFollowState);
+        if (newFollowState) {
+            followProfile(user.userId);
+        } else {
+            unfollowProfile(user.userId);
+        }
+        globalEventEmitter.emit(followChangedEventName, { ...user, isFollowing: newFollowState });
+    };
+
     if (!user) return null;
 
     const handlePress = () => {
