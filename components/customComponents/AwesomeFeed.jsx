@@ -31,7 +31,9 @@ const AwesomeFeed = ({
                          searchQuery = null,
 }) => {
     const scrollY = useRef(new Animated.Value(0)).current;
-    const [preloadedData, setPreloadedData] = useState([]);
+    const [preloadedData, setPreloadedData] = useState(!data?.length || data.length === 0
+        ? [{ id: 'no-more-polls', type: 'placeholder' }]
+        : data);
 
     const flatListRef = useRef(null);
     const timeoutRef = useRef(setTimeout(() => {}, 100));
@@ -41,26 +43,17 @@ const AwesomeFeed = ({
     });
 
     useEffect(() => {
+        setPreloadedData(!data?.length || data.length === 0
+            ? [{ id: 'no-more-polls', type: 'placeholder' }]
+            : data);
+    }, [data])
+
+    useEffect(() => {
         if (!getDataService().getUser())
             fetchMyProfile().then(res => {
                 getDataService().setUser(res);
-                applyData();
             });
-        else {
-            applyData();
-        }
-    },[data])
 
-    const applyData = () => {
-        if (!data?.length || data.length === 0) {
-            // If no data, show the "no more polls" item
-            setPreloadedData([{ id: 'no-more-polls', type: 'placeholder' }]);
-        } else {
-            setPreloadedData(data.slice());
-        }
-    }
-
-    useEffect(() => {
         if (
             preloadedData.length > 0 &&
             preloadedData[0]?.user?.userId === getDataService().getUser()?.userId
@@ -69,7 +62,10 @@ const AwesomeFeed = ({
                 handleSnapChange(0);
             });
         }
-    }, [preloadedData]);
+
+        globalEventEmitter.on('deletePoll', onDeletePoll);
+        return () => globalEventEmitter.off('deletePoll', onDeletePoll); // cleanup
+    },[preloadedData])
 
     const loadMorePolls = () => {
         const nextBatch = data?.slice(preloadedData.length, preloadedData.length + 5);
@@ -88,14 +84,16 @@ const AwesomeFeed = ({
         }
     };
 
-    globalEventEmitter.on('deletePoll', ({ pollId }) => {
-        const newData = data.filter((poll) => poll.id !== pollId);
-        if (newData.length === 0) {
-            setPreloadedData([{ id: 'no-more-polls', type: 'placeholder' }]);
-        } else {
-            setPreloadedData(newData.slice());
-        }
-    });
+    const onDeletePoll = ({ pollId }) => {
+        setPreloadedData(prevData => {
+            const newData = prevData.filter((poll) => poll.id !== pollId);
+            if (newData.length === 0) {
+                return [{ id: 'no-more-polls', type: 'placeholder' }];
+            } else {
+                return newData;
+            }
+        });
+    };
 
     const renderWithPlaceholder = (item) => {
         if (item?.type === 'placeholder') {
@@ -260,7 +258,9 @@ const AwesomeFeed = ({
                 ) : (
                     <SafeAreaView style={styles.container}>
                         <Animated.FlatList
-                            data={preloadedData}
+                            data={preloadedData.filter((item, index, self) =>
+                                index === self.findIndex((t) => t.id === item.id)
+                            )}
                             ref={flatListRef}
                             keyExtractor={(item) => item?.id ?? String(Math.random())}
                             pagingEnabled
