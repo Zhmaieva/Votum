@@ -91,6 +91,7 @@ function UserStack() {
     const handleUpdateProfile = async (field, value, setIsLoading, navigation) => {
         setIsLoading(true);
         try {
+            console.log('value', `-${value}-`);
             if (value === null) {
                 getDataService().setUserNameTakenError();
                 return;
