@@ -70,7 +70,7 @@ const AwesomeUserHeaderPreview = ({ userData, loggedInUserId }) => {
         }
     };
 
-    const formattedVotes = formatVotes(user.votesNumber || 0);
+    const formattedVotes = formatVotes(user.totalVotesNumber || 0);
 
     return (
         <TouchableOpacity onPress={handlePress} style={styles.container}>

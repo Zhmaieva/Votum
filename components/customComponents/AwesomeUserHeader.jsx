@@ -104,10 +104,10 @@ const AwesomeUserHeader = ({
                                 {isOwnProfile ? 'your polls got ' : `user's polls got `}
                             </Text>
                             <Text style={styles.counterStyle}>
-                                {formatFollowers(user.votesNumber || 0)}
+                                {formatFollowers(user.totalVotesNumber || 0)}
                             </Text>
                             <Text style={styles.counterTextStyle}>
-                                {(user.votesNumber || 0) === 1 ? ' vote' : ' votes'}
+                                {(user.totalVotesNumber || 0) === 1 ? ' vote' : ' votes'}
                             </Text>
                         </View>
                     </View>

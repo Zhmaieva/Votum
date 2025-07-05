@@ -51,10 +51,26 @@ async function attachOptionsToPolls(userId, polls) {
         optionsMap[row.poll_id].push({ id: row.id, text: row.text, voted: row.voted, votesCount: row.votesCount });
     });
 
+    // Fetch total votes per author
+    const authorIds = [...new Set(polls.map(p => p.user_id))];
+    const votesPerAuthorQuery = `
+        SELECT created_by AS user_id, COALESCE(SUM(votes_count), 0)::INTEGER AS total_votes
+        FROM polls
+        WHERE created_by = ANY($1) AND is_deleted = false
+        GROUP BY created_by;
+    `;
+    const votesResult = await pool.query(votesPerAuthorQuery, [authorIds]);
+
+    const votesByUser = {};
+    votesResult.rows.forEach(row => {
+        votesByUser[row.user_id] = row.total_votes;
+    });
+
 
     Object.keys(pollsMap).forEach(pollId => {
         const poll = pollsMap[pollId];
         poll.options = optionsMap[pollId] || [];
+        poll.user.totalVotesNumber = votesByUser[poll.user.userId] ?? 0;
     });
 
     return Object.values(pollsMap);
