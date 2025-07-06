@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, {useState, useCallback, useEffect} from 'react';
 import {
     View,
     Text,
@@ -13,7 +13,7 @@ import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeButton, {Color} from '../customComponents/AwesomeButton';
 import AwesomeEditButton from "../customComponents/AwesomeEditButton";
 import {deleteUserProfile, fetchMyProfile, signOut} from "../../shared/api/apiClient";
-import {getDataService} from "../../shared/common";
+import {getDataService, globalEventEmitter} from "../../shared/common";
 import {useFocusEffect} from "@react-navigation/native";
 import AwesomeProfilePhoto from "../customComponents/AwesomeProfilePhoto";
 import AwesomeCategory from "../customComponents/AwesomeCategory";
@@ -21,6 +21,8 @@ import {AwesomeModal} from "../customComponents/AwesomeModal";
 import AwesomePollPublishingLoader from "../customComponents/AwesomePollPublishingLoader";
 import { useNavigation } from "@react-navigation/native";
 import { VERIFICATION_FLOW_TYPE } from "../views/VerificationCodeView";
+
+const followChangedEventName = "followChanged";
 
 const ProfileEditView = ({ route }) => {
     const [username, setUsername] = useState('');
@@ -58,6 +60,20 @@ const ProfileEditView = ({ route }) => {
             }
         }, [])
     );
+
+    useEffect(() => {
+        const handler = (updatedUser) => {
+            let followersCurrent = getDataService().getUser().followingNumber;
+            followersCurrent += updatedUser.isFollowing ? 1 : -1;
+            getDataService().getUser().followingNumber = followersCurrent >= 0 ? followersCurrent : 0;
+
+            getDataService().commitUserChanges();
+        };
+        globalEventEmitter.on(followChangedEventName, handler);
+        return () => {
+            globalEventEmitter.off(followChangedEventName, handler);
+        };
+    }, []);
 
     return (
         <SafeAreaView style={styles.container}>

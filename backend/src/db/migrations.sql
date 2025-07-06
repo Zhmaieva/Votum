@@ -803,3 +803,37 @@ CREATE TABLE notifications (
 
 ALTER TABLE user_follows
 ADD COLUMN created_at TIMESTAMP DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'UTC');
+
+
+-- Sun Jul 6 2:25 PM
+CREATE OR REPLACE FUNCTION decrement_followers_follows_count()
+    RETURNS TRIGGER AS $$
+BEGIN
+    -- Decrease followers count for the user being unfollowed
+    UPDATE user_profiles
+    SET followers_number = GREATEST(0, followers_number - 1)
+    WHERE user_id = OLD.user_follow_id;
+
+    -- Decrease following count for the user who unfollowed
+    UPDATE user_profiles
+    SET following_number = GREATEST(0, following_number - 1)
+    WHERE user_id = OLD.user_follower_id;
+
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION increment_followers_follows_count()
+    RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE user_profiles
+    SET followers_number = followers_number + 1
+    WHERE user_id = NEW.user_follow_id;
+
+    UPDATE user_profiles
+    SET following_number = following_number + 1
+    WHERE user_id = NEW.user_follower_id;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;

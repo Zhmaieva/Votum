@@ -19,22 +19,9 @@ async function followUser(userFollowerId, userFollowId) {
 
 async function unfollowUser(userFollowerId, userFollowId) {
     const query = `
-        WITH deleted AS (
-            DELETE FROM user_follows
-                WHERE user_follower_id = $1 AND user_follow_id = $2
-                RETURNING 1
-        ),
-             update_followers AS (
-                 UPDATE user_profiles
-                     SET followers_number = GREATEST(followers_number - 1, 0)
-                     WHERE user_id = $2
-                         AND EXISTS (SELECT 1 FROM deleted)
-                     RETURNING 1
-             )
-        UPDATE user_profiles
-        SET following_number = GREATEST(following_number - 1, 0)
-        WHERE user_id = $1
-          AND EXISTS (SELECT 1 FROM deleted);
+        DELETE FROM user_follows
+        WHERE user_follower_id = $1 AND user_follow_id = $2
+        RETURNING 1
   `;
 
     try {
@@ -51,16 +38,22 @@ async function unfollowUser(userFollowerId, userFollowId) {
 
 async function getFollowers(userId) {
     const query = `
-    SELECT
-      u.id as "userId",
-      u.username AS "username",
-      up.image,
-      GREATEST(up.followers_number, 0) AS "followersNumber",
-      up.bio
-    FROM users u
-    JOIN user_profiles up ON u.id = up.user_id
-    JOIN user_follows uf ON uf.user_follower_id = u.id
-    WHERE uf.user_follow_id = $1::uuid;
+        SELECT
+            u.id as "userId",
+            u.username AS "username",
+            up.image,
+            GREATEST(up.followers_number, 0) AS "followersNumber",
+            up.bio,
+            CASE
+                WHEN uf2.user_follow_id IS NOT NULL THEN TRUE
+                ELSE FALSE
+                END AS "isFollowing"
+        FROM users u
+                 JOIN user_profiles up ON u.id = up.user_id
+                 JOIN user_follows uf ON uf.user_follower_id = u.id
+                 LEFT JOIN user_follows uf2
+                           ON uf2.user_follower_id = $1::uuid AND uf2.user_follow_id = u.id
+        WHERE uf.user_follow_id = $1::uuid;
   `;
 
     try {
