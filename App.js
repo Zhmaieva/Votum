@@ -11,6 +11,7 @@ import { ActivityIndicator, View, Platform } from "react-native";
 import 'react-native-gesture-handler';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
+import {SafeAreaProvider} from "react-native-safe-area-context";
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -150,13 +151,15 @@ export default function App() {
     }
 
     return (
-        <GestureHandlerRootView style={{ flex: 1 }}>
-            <BottomSheetModalProvider>
-                <NavigationContainer ref={navigationRef}>
-                    {isAuthenticated ? <AwesomeTabs /> : <AuthNavigator />}
-                </NavigationContainer>
-            </BottomSheetModalProvider>
-        </GestureHandlerRootView>
+        <SafeAreaProvider>
+            <GestureHandlerRootView style={{ flex: 1 }}>
+                <BottomSheetModalProvider>
+                    <NavigationContainer ref={navigationRef}>
+                        {isAuthenticated ? <AwesomeTabs /> : <AuthNavigator />}
+                    </NavigationContainer>
+                </BottomSheetModalProvider>
+            </GestureHandlerRootView>
+            </SafeAreaProvider>
     );
 }
 

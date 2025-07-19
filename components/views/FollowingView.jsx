@@ -1,9 +1,9 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, StyleSheet, Animated, Text } from 'react-native';
 import { Colors, Fonts } from '../../utils/colorUtils';
-import AwesomeUserHeader from "../customComponents/AwesomeUserHeader";
-import {fetchFollows, fetchMyProfile} from "../../shared/api/apiClient";
-import {useFocusEffect} from "@react-navigation/native";
+import AwesomeUserHeaderPreview from "../customComponents/AwesomeUserHeaderPreview";
+import { fetchFollows, fetchMyProfile } from "../../shared/api/apiClient";
+import { useFocusEffect } from "@react-navigation/native";
 
 const FollowingView = () => {
     const scrollY = useRef(new Animated.Value(0)).current;
@@ -43,7 +43,7 @@ const FollowingView = () => {
                     decelerationRate="fast"
                     renderItem={({ item }) => (
                         <View style={styles.margin10}>
-                            <AwesomeUserHeader
+                            <AwesomeUserHeaderPreview
                                 userData={item}
                                 loggedInUserId={user?.userId}
                             />

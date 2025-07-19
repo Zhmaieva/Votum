@@ -173,7 +173,6 @@ const ProfileEditView = ({ route }) => {
                 <View style={styles.margin15}>
                     <AwesomeButton text='Delete Profile' color={Color.WHITE} additionalFunc={()=>setDeleteModalVisible(true)}/>
                 </View>
-                <AwesomePollPublishingLoader/>
             </ScrollView>
 
             {/*<AwesomeButton

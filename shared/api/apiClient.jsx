@@ -733,3 +733,12 @@ export const deleteUserProfile = async (password) => {
         return false;
     }
 };
+
+export const checkIfPollExists = async (pollId) => {
+    try {
+        const res = await apiClient.get(`/polls/${pollId}`); // or whatever your route is
+        return !!res?.data;
+    } catch (e) {
+        return false;
+    }
+};

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Votum – The Pulse of Public Opinion</title>
+  <title>Votum – real public opinion</title>
   <link rel="stylesheet" href="styles.css" />
   <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet" />
 </head>
@@ -18,53 +18,53 @@
 <div class="page-wrapper">
 
   <main class="content">
-    <section style="padding: 1.5rem 2rem; background: #ffffff;">
+    <section style="padding: 1.5rem 2rem; background: #000000;">
       <div style="
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 1rem;
+    gap: 2rem;
   ">
         <!-- Left button -->
-        <div style="font-family: monospace; font-size: 1.25rem;">
+        <!--<div style="font-family: monospace; font-size: 1.25rem;">
           <a href="#" style="text-decoration: none; color: #000;">Votum</a>
-        </div>
+        </div>-->
 
         <!-- Right buttons -->
         <div style="
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 1rem;
+      gap: 2rem;
       font-family: monospace;
       flex: 1;
     ">
-          <a href="#what" style="text-decoration: none; font-size: 16px; color: #000;">What is it?</a>
-          <a href="#who" style="text-decoration: none; font-size: 16px; color: #000;">Who are we?</a>
-          <a href="#contact" style="text-decoration: none; font-size: 16px; color: #000;">Contact</a>
-          <a href="#support" style="text-decoration: none; font-size: 16px; color: #93a548; font-weight: bold;">Support Us</a>
+          <a href="#what" style="text-decoration: none; font-size: 16px; color: #ffffff;">What is Votum?</a>
+          <a href="#who" style="text-decoration: none; font-size: 16px; color: #ffffff;">Who are we?</a>
+          <!--<a href="#contact" style="text-decoration: none; font-size: 16px; color: #000;">Contact</a>-->
+          <a href="#contact" style="text-decoration: none; font-size: 16px; color: #93a548; font-weight: bold;">We need you</a>
         </div>
       </div>
     </section>
 
     <section class="line"></section>
-    <section class="line-white"></section>
+    <section class="line-green"></section>
     <section class="line"></section>
 
     <header style="display: flex; flex-direction: column; align-items: center; padding: 2rem; text-align: center;">
-      <div style="max-width: 600px; margin-bottom: 3rem;">
-        <img src="logoVotum.png" alt="App Logo" style="width: 100%;">
-        <p>Ask. Vote. Know. The fastest way to capture opinions from the whole world.</p>
+      <div style="max-width: 600px; margin-bottom: 4rem;">
+        <img src="logoVotum.png" alt="App Logo" style="width: 80%;">
+        <p style="color: black">Want to know what people <strong>really</strong> think? You’re in the right place.</p>
       </div>
-      <div style="position: relative; width: 300px; max-width: 90%; margin-bottom: 6.5rem;">
+      <div style="position: relative; width: 400px; max-width: 90%; margin-bottom: 10rem;">
         <video
                 src="video.mov"
                 autoplay
                 muted
                 loop
                 playsinline
-                style="width: 80%; display: block; top: 10px; left: 30px; position: relative;">
+                style="width: 78%; display: block; top: 20px; left: 47px; position: relative;">
         </video>
         <img src="frame.png"
              alt="Device Frame"
@@ -84,14 +84,88 @@
     <section class="line-green"></section>
     <section class="line"></section>
 
-    <section id="what" style="display: flex; justify-content: center; align-items: center; flex-wrap: wrap; padding: 2rem; background: #000;">
+    <section id="what" style="display: flex; justify-content: center; align-items: center; flex-wrap: wrap; padding: 2rem; background: #ffffff;">
       <div class="section-container" style="text-align: center; color: white;">
-        <h2 style="margin-bottom: 1rem;">How It Works</h2>
+        <h2 style="font-size: 1.25rem; font-family: monospace;">What is Votum?</h2>
         <div style="max-width: 700px; margin: auto; text-align: left;">
-          <p>📝 Create a question in seconds</p>
-          <p>🗳️ Get real-time votes from the world</p>
-          <p>📊 See public opinion instantly</p>
+          <p>
+            <strong>It’s the app that asks the questions. Shows the answers.</strong>
+            Go on. Vote.
+            <img src="catInGlasses.jpg" alt="" width="75" height="75" class="floating-cat">
+          </p>
         </div>
+
+        <div class="styled-polls-wrapper">
+          <!-- Poll Card 1 -->
+          <div class="styled-poll-card">
+            <p class="styled-poll-question">Q: Would you delete Instagram for $25,000?</p>
+            <div class="styled-poll-options" data-poll="bribePoll">
+              <button data-option="Yes">Yes</button>
+              <button data-option="No">No</button>
+            </div>
+            <div class="styled-poll-results" style="display:none;">
+              <div class="result-line">
+                <div class="bar"></div>
+                <span class="answer-label">Yes</span>
+                <span class="percentage-label"></span>
+              </div>
+              <div class="result-line">
+                <div class="bar"></div>
+                <span class="answer-label">No</span>
+                <span class="percentage-label"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Poll Card 2 -->
+          <div class="styled-poll-card">
+            <p class="styled-poll-question">Q: Can you actually afford a home?</p>
+            <div class="styled-poll-options" data-poll="kidsPoll">
+              <button data-option="Yes">No way</button>
+              <button data-option="No">I’ll buy one soon</button>
+            </div>
+            <div class="styled-poll-results" style="display:none;">
+              <div class="result-line">
+                <div class="bar"></div>
+                <span class="answer-label">No way</span>
+                <span class="percentage-label"></span>
+              </div>
+              <div class="result-line">
+                <div class="bar"></div>
+                <span class="answer-label">I’ll buy one soon</span>
+                <span class="percentage-label"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Poll Card 3 -->
+          <div class="styled-poll-card">
+            <p class="styled-poll-question">Q: If your thoughts were audible, who’d stick around?</p>
+            <div class="styled-poll-options" data-poll="thoughtPoll">
+              <button data-option="All">All my friends</button>
+              <button data-option="One">1 loyal bestie</button>
+              <button data-option="Mom">My mom</button>
+            </div>
+            <div class="styled-poll-results" style="display:none;">
+              <div class="result-line">
+                <div class="bar"></div>
+                <span class="answer-label">All my friends</span>
+                <span class="percentage-label"></span>
+              </div>
+              <div class="result-line">
+                <div class="bar"></div>
+                <span class="answer-label">1 loyal bestie</span>
+                <span class="percentage-label"></span>
+              </div>
+              <div class="result-line">
+                <div class="bar"></div>
+                <span class="answer-label">My mom</span>
+                <span class="percentage-label"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </section>
 
@@ -100,22 +174,22 @@
     <section class="line"></section>
 
     <section id="who" style="padding: 3rem 1rem; display: flex; flex-direction: column; align-items: center;">
-      <div class="section-container" style="text-align: center; width: 108%;">
-        <h2 style="font-size: 1.15rem; font-family: monospace;">Who are we?</h2>
-        <img src="photo2.png" alt="App Screenshot" style="width: 100%; min-width: 280px; max-width: 680px;">
+      <div class="section-container" style="max-width: 800px; text-align: center;">
+        <h2 style="font-size: 1.25rem; font-family: monospace;">Who are we?</h2>
+        <img src="photo2.png" alt="Votum creators" style="width: 100%; max-width: 800px; height: auto;">
       </div>
+
       <div class="section-container" style="max-width: 800px; text-align: left;">
-        <p>Hey! We’re <span style="font-weight: bold;">Yuliia</span> and <span style="font-weight: bold;">Artem</span> — a couple creating <span style="font-weight: bold;">Votum</span> while keeping up with our energetic one-year-old.</p>
-        <p>We’ve spent years working in commercial IT — from coding to managing projects — and now we’re diving into our biggest challenge yet: building our own platform!</p>
-        <p>The idea for <span style="font-weight: bold;">Votum</span> started with a simple question: what do people really think? Like:</p>
-        <p>- What's better — pizza or burgers?</p>
-        <p>- Does social media do more harm than good?</p>
-        <p>- Was your work affected by AI?</p>
-        <p>We wanted a place for honest, snappy opinions — from light laughs to deep debates because knowing what people really think helps us question our beliefs and start conversations that matter.</p>
-        <p>We built <span style="font-weight: bold;">Votum</span> from the ground up — and the iOS app is almost here.</p>
-        <p>Hop in, vote on everything, and turn thoughts into conversations.</p>
+        <p>Hi, we’re <strong>Julia</strong> and <strong>Artem</strong>, and we’ve been building <strong>Votum</strong> together since March 2025 — while also raising our one-year-old.</p>
+
+        <p><strong>Votum</strong> is a place where anyone can create polls and vote to see what others really think — about anything. From serious topics like politics or the cost of raising kids, to random stuff like “Do you brush your teeth before or after breakfast?”</p>
+
+        <p>We started Votum because it feels like real opinions get lost online. Everything is loud, extreme, or trying too hard. We wanted something more honest — and way simpler.</p>
+
+        <p>We can’t wait to bring Votum to life and finally see what the silent majority actually thinks.</p>
       </div>
     </section>
+
 
     <section class="line"></section>
     <section class="line-white"></section>
@@ -123,10 +197,11 @@
 
     <section id="contact" style="padding: 3rem 1rem; background: #93a548; color: white; text-align: center;">
       <div class="section-container">
-        <h2 style="margin-bottom: 2rem; font-size: 1.15rem;">Contact us</h2>
-
-        <form style="max-width: 600px; margin: 0 auto; display: flex; flex-direction: column; gap: 1rem;">
-          <p style="color: black">write email to votum.contact@gmail.com</p>
+        <h2 style="margin-bottom: 1rem; font-size: 16px">Want to help build Votum?</h2>
+        <p style="margin-bottom: 1.5rem; color: black">Join our early testers — leave your email and get your Tester badge</p>
+        <form style="display: flex; flex-direction: column; align-items: center;">
+          <input type="email" placeholder="you@example.com" style="box-sizing: border-box; width: 100%; border: 1px solid #000000; padding: 1rem; font-size: 1rem;">
+          <button class="cta-button" type="submit" style="box-sizing: border-box; padding: 1rem; font-size: 1rem; width: 100%;">Send Your Email</button>
         </form>
       </div>
     </section>
@@ -135,7 +210,7 @@
     <section class="line-white"></section>
     <section class="line"></section>
 
-    <section id="support" style="padding: 3rem 1rem; background: #ffffff; color: #000;">
+    <!--<section id="support" style="padding: 3rem 1rem; background: #ffffff; color: #000;">
       <div class="section-container" style="text-align: center;">
         <h2 style="margin-bottom: 2rem; font-size: 1.25rem;">How to Support Us</h2>
         <div style="font-size: 1rem; line-height: 1.6; text-align: left;">
@@ -156,7 +231,7 @@
     <section class="line-white"></section>
     <section class="line"></section>
 
-    <section style="padding: 3rem 1rem; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; background: #93a548 ">
+    <section style="padding: 3rem 1rem; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; background: #ffffff ">
       <div class="section-container">
         <h2 style="margin-bottom: 1rem;">Stay Updated</h2>
         <p style="margin-bottom: 1.5rem; color: black">Be the first to know when we launch.</p>
@@ -168,27 +243,161 @@
     </section>
 
     <section class="line"></section>
-    <section class="line-white"></section>
+    <section class="line-white"></section>-->
 
-    <footer style="padding: 2rem 1rem; background: #000000; text-align: center; color: white;">
-      <div class="section-container" class="socials" style="margin-bottom: 1rem;">
-        <a href="https://instagram.com/votum.app" target="_blank" style="display: inline-block;">
-          follow us on Instagram
-          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="white">
+    <footer style="padding: 2rem 1rem; background: #000; text-align: center; color: white;">
+      <div style="max-width: 700px; margin: 0 auto;">
+        <h2 style="margin-bottom: 1.5rem; font-size: 1.25rem; font-family: monospace;">Contact us</h2>
+
+        <p style="margin-bottom: 1.5rem; font-size: 1rem; font-weight: bold; color: white">
+          Want to build something big with us? Reach out at
+          <a href="mailto:votum.contact@gmail.com" style="color: #93a548; text-decoration: underline;">votum.contact@gmail.com</a>
+        </p>
+
+       <!-- <a href="https://instagram.com/votum.app" target="_blank" style="display: inline-flex; align-items: center; gap: 0.5rem; font-size: 1rem; color: #93a548; text-decoration: none; font-weight: bold;">
+          Follow us on Instagram
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill=#93a548>
             <path d="M12 2.2c3.2 0 3.6 0 4.9.1 1.2.1 2 .3 2.4.5.5.2.9.5 1.3.9s.7.8.9 1.3c.2.4.4 1.2.5 2.4.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c-.1 1.2-.3 2-.5 2.4-.2.5-.5.9-.9 1.3s-.8.7-1.3.9c-.4.2-1.2.4-2.4.5-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2-.1-2-.3-2.4-.5-.5-.2-.9-.5-1.3-.9s-.7-.8-.9-1.3c-.2-.4-.4-1.2-.5-2.4C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.9c.1-1.2.3-2 .5-2.4.2-.5.5-.9.9-1.3s.8-.7 1.3-.9c.4-.2 1.2-.4 2.4-.5C8.4 2.2 8.8 2.2 12 2.2zm0-2.2C8.7 0 8.3 0 7 .1 5.7.2 4.7.4 4 .7c-.9.4-1.6.9-2.3 1.6S.4 3.9 0 4.8c-.3.7-.5 1.7-.6 3C-.1 8.3 0 8.7 0 12s0 3.7.1 4.9c.1 1.3.3 2.3.6 3 .4.9.9 1.6 1.6 2.3s1.4 1.2 2.3 1.6c.7.3 1.7.5 3 .6C8.3 24 8.7 24 12 24s3.7 0 4.9-.1c1.3-.1 2.3-.3 3-.6.9-.4 1.6-.9 2.3-1.6s1.2-1.4 1.6-2.3c.3-.7.5-1.7.6-3 .1-1.2.1-1.6.1-4.9s0-3.7-.1-4.9c-.1-1.3-.3-2.3-.6-3-.4-.9-.9-1.6-1.6-2.3s-1.4-1.2-2.3-1.6c-.7-.3-1.7-.5-3-.6C15.7 0 15.3 0 12 0z"/>
             <path d="M12 5.8a6.2 6.2 0 1 0 0 12.4A6.2 6.2 0 0 0 12 5.8zm0 10.3a4.1 4.1 0 1 1 0-8.2 4.1 4.1 0 0 1 0 8.2zm6.4-11.8a1.5 1.5 0 1 0 0 3.1 1.5 1.5 0 0 0 0-3.1z"/>
           </svg>
-        </a>
+        </a>-->
       </div>
-      <p style="margin: 0; font-weight: bold;">&copy; 2025 Votum. All rights reserved.</p>
+
+      <p style="margin-top: 2rem; font-size: 1rem; color: white">&copy; 2025 Votum. All rights reserved.</p>
     </footer>
 
 
+
+
+
+
+
+
+
+
+
+
     <script>
-      function scrollToDownload() {
-        document.getElementById('download').scrollIntoView({ behavior: 'smooth' });
+      const votes = {
+        bribePoll: { Yes: 1045, No: 309 },
+        kidsPoll: { Yes: 780, No: 200 },
+        thoughtPoll: { All: 80, One: 190, Mom: 730 },
+      };
+
+      const optionLabelMap = {
+        bribePoll: {
+          Yes: 'Yes',
+          No: 'No'
+        },
+        kidsPoll: {
+          Yes: 'No way',
+          No: 'I’ll buy one soon'
+        },
+        thoughtPoll: {
+          All: 'All my friends',
+          One: '1 loyal bestie',
+          Mom: 'My mom'
+        }
+      };
+
+      const labelToKeyMap = {
+        bribePoll: {
+          'Yes': 'Yes',
+          'No': 'No'
+        },
+        kidsPoll: {
+          'No way': 'Yes',
+          'I’ll buy one soon': 'No'
+        },
+        thoughtPoll: {
+          'All my friends': 'All',
+          '1 loyal bestie': 'One',
+          'My mom': 'Mom'
+        }
+      };
+
+      function getBarClass(percentage) {
+        if (percentage >= 50) return 'bar-highest';
+        if (percentage >= 30) return 'bar-high';
+        if (percentage >= 10) return 'bar-medium';
+        return 'bar-low';
       }
+
+      function animateBar(bar, targetWidth, duration = 300) {
+        let start = null;
+        const initialWidth = 0;
+
+        function step(timestamp) {
+          if (!start) start = timestamp;
+          const progress = timestamp - start;
+          const percent = Math.min(progress / duration, 1);
+          const currentWidth = initialWidth + (targetWidth - initialWidth) * percent;
+          bar.style.width = currentWidth + '%';
+          if (percent < 1) requestAnimationFrame(step);
+        }
+
+        bar.style.width = '0%';
+        requestAnimationFrame(step);
+      }
+
+      document.querySelectorAll('.styled-poll-options').forEach(optionContainer => {
+        const pollId = optionContainer.getAttribute('data-poll');
+        const resultsDiv = optionContainer.nextElementSibling;
+
+        optionContainer.querySelectorAll('button').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const choice = btn.getAttribute('data-option');
+            votes[pollId][choice] += 1;
+
+            const pollVotes = votes[pollId];
+            const total = Object.values(pollVotes).reduce((a, b) => a + b, 0);
+
+            const resultLines = resultsDiv.querySelectorAll('.result-line');
+
+            resultLines.forEach(line => {
+              const answer = line.querySelector('.answer-label');
+              const bar = line.querySelector('.bar');
+              const label = line.querySelector('.percentage-label');
+              const answerText = answer.textContent.trim();
+              const optionKey = labelToKeyMap[pollId][answerText];
+
+              // Reset visuals
+              const existingIndicator = answer.querySelector('.selected-indicator');
+              if (existingIndicator) existingIndicator.remove();
+              answer.classList.remove('selected-answer');
+
+              const count = pollVotes[optionKey];
+              const percent = Math.round((count / total) * 100);
+
+              // Animate + update visuals
+              bar.className = 'bar ' + getBarClass(percent);
+              animateBar(bar, percent);
+              label.innerHTML = `<strong>${percent}%</strong>`;
+
+              // Update label back to full format
+              answer.innerHTML = optionLabelMap[pollId][optionKey];
+
+              // Add indicator if selected
+              if (optionKey === choice) {
+                const indicator = document.createElement('span');
+                indicator.className = 'selected-indicator';
+                answer.classList.add('selected-answer');
+                answer.prepend(indicator);
+              }
+            });
+
+            optionContainer.style.display = 'none';
+            resultsDiv.style.display = 'block';
+          });
+        });
+      });
     </script>
+
+
+
+
+
+
   </main>
 </div>
 </body>

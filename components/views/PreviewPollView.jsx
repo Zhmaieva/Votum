@@ -1,29 +1,37 @@
 import React, { useEffect, useState } from 'react';
-import {View, Text, StyleSheet, Dimensions, TouchableOpacity, SafeAreaView, ScrollView, Image} from 'react-native';
-import {useRoute, useNavigation, useFocusEffect} from '@react-navigation/native';
+import {
+    View,
+    Text,
+    StyleSheet,
+    Dimensions,
+    TouchableOpacity,
+    SafeAreaView,
+    ScrollView,
+    Image
+} from 'react-native';
+import { useRoute, useNavigation, useFocusEffect } from '@react-navigation/native';
 import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from '../customComponents/AwesomeButton';
-import {createPoll, durationMap, fetchMyProfile, fetchUserPolls} from '../../shared/api/apiClient';
-import {getDataService, onShare} from '../../shared/common';
-import AwesomeUserHeader from '../customComponents/AwesomeUserHeader';
-import {Ionicons} from "@expo/vector-icons";
+import {
+    createPoll,
+    fetchMyProfile,
+    fetchUserPolls
+} from '../../shared/api/apiClient';
+import { getDataService } from '../../shared/common';
 import AwesomeUserHeaderPreview from "../customComponents/AwesomeUserHeaderPreview";
 import AwesomeLoadingHeader from "../customComponents/AwesomeLoadingHeader";
-
-const MIN_LOADING_TIME = 1000;
 
 const PreviewPollView = () => {
     const route = useRoute();
     const navigation = useNavigation();
     const { question, options, selectedDuration, resetAddViewForm } = route.params;
-    const [userDataLoaded, setUserDataLoaded] = useState(false);
 
+    const [userDataLoaded, setUserDataLoaded] = useState(false);
     const [user, setUser] = useState(null);
 
     useFocusEffect(
         React.useCallback(() => {
             let isMounted = true;
-            const startTime = Date.now();
 
             const loadUserData = async () => {
                 let userData = getDataService().getUser();
@@ -34,27 +42,22 @@ const PreviewPollView = () => {
                 if (isMounted) {
                     setUser(userData);
                     fetchUserPolls(userData.userId).then(res => {
-                        if (isMounted) setPolls(res);
+                        if (isMounted) {
+                            setUserDataLoaded(true);
+                        }
                     });
                 }
             };
 
-            loadUserData().then(() => {
-                setUserDataLoaded(true);
-                // const elapsed = Date.now() - startTime;
-                // const delay = Math.max(0, MIN_LOADING_TIME - elapsed);
-                // setTimeout(() => {
-                //     if (isMounted) setUserDataLoaded(true);
-                // }, delay);
-            });
+            loadUserData();
 
-            return () => { isMounted = false; }
+            return () => { isMounted = false; };
         }, [])
     );
 
     const handlePublish = async () => {
         try {
-            await createPoll(
+            const newPoll = await createPoll(
                 question,
                 options.map(o => o.text),
                 selectedDuration
@@ -64,10 +67,11 @@ const PreviewPollView = () => {
 
             navigation.navigate('Interm Page', {
                 userId: user?.userId,
+                pollId: newPoll?.id || newPoll?.readableId, // Adjust to your backend response
             });
         } catch (e) {
             console.error("Error publishing poll:", e);
-            // Optional: Show error feedback
+            // Optional: show a toast or modal
         }
     };
 
@@ -75,17 +79,24 @@ const PreviewPollView = () => {
         <SafeAreaView style={styles.safeArea}>
             <ScrollView style={styles.container}>
                 <View>
-                    {user && !userDataLoaded ? (
+                    {!user || !userDataLoaded ? (
                         <AwesomeLoadingHeader />
                     ) : (
                         <AwesomeUserHeaderPreview
                             userData={user}
-                            loggedInUserId={user?.userId}
-                            isInsideCard={true} />
+                            loggedInUserId={user.userId}
+                            isInsideCard={true}
+                        />
                     )}
                     <View style={[styles.questionContainer, styles.row]}>
                         <Text style={styles.qTextStyle}>Q: </Text>
-                        <Text style={styles.questionText} numberOfLines={3} ellipsizeMode="tail">{question}</Text>
+                        <Text
+                            style={styles.questionText}
+                            numberOfLines={3}
+                            ellipsizeMode="tail"
+                        >
+                            {question}
+                        </Text>
                     </View>
                     <View style={styles.pollBox}>
                         <View style={[styles.row, styles.alignToTheRight]}>
@@ -122,7 +133,7 @@ const PreviewPollView = () => {
                         </View>
                     </View>
                 </View>
-                <View style={{marginBottom: 5}}>
+                <View style={{ marginBottom: 5 }}>
                     <View style={styles.margin10}>
                         <AwesomeButton
                             color={Color.BLACK}
@@ -150,18 +161,15 @@ const styles = StyleSheet.create({
         padding: 15,
         flex: 1,
     },
-    headerContainer: {
-        marginBottom: 10,
-    },
     row: {
         flexDirection: 'row',
     },
     alignToTheRight: {
         justifyContent: 'flex-end',
-        marginBottom: 10
+        marginBottom: 10,
     },
     alignment: {
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
     },
     questionContainer: {
         marginBottom: 10,
@@ -170,13 +178,13 @@ const styles = StyleSheet.create({
     qTextStyle: {
         color: Colors.green,
         fontSize: 20,
-        fontFamily: Fonts.medium
+        fontFamily: Fonts.medium,
     },
     questionText: {
         fontSize: 20,
         color: Colors.black,
         width: '90%',
-        fontFamily: Fonts.medium
+        fontFamily: Fonts.medium,
     },
     pollBox: {
         borderWidth: 1,
@@ -199,37 +207,25 @@ const styles = StyleSheet.create({
     optionText: {
         color: Colors.black,
         fontSize: 14,
-        fontFamily: Fonts.regular
+        fontFamily: Fonts.regular,
     },
     endsIn: {
         marginTop: 10,
         fontSize: 14,
         color: Colors.black,
-        fontFamily: Fonts.regular
+        fontFamily: Fonts.regular,
     },
     voted: {
         marginTop: 10,
         fontSize: 14,
         color: Colors.black,
-        fontFamily: Fonts.regular
-    },
-    editButton: {
-        height: 40,
-        backgroundColor: Colors.white,
-        width: '49%',
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderBottomWidth: 1,
-        borderColor: Colors.grey
-    },
-    publishButton: {
-        width: '49%'
+        fontFamily: Fonts.regular,
     },
     margin10: {
-        marginBottom: 15
+        marginBottom: 15,
     },
     iconContainer: {
-        marginLeft: 10
+        marginLeft: 10,
     },
 });
 

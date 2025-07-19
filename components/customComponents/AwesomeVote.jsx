@@ -69,7 +69,13 @@ const AwesomeVote = ({
     const [pollExpired, setPollExpired] = useState(timeLeft <= 0);
     const percentMap = useRef(null);
     const prevPercentMap = useRef(null);
-
+    const getBarColor = (percent) => {
+        if (percent >= 76) return '#93a548';
+        if (percent >= 51) return '#b5c478';
+        if (percent >= 26) return '#dfe5bd';
+        if (percent === 0) return '#93a548';
+        return '#f2f5e7';
+    };
     useEffect(() => {
         if (selected) {
             Animated.timing(animation, {
@@ -270,25 +276,47 @@ const AwesomeVote = ({
                             <View key={option.id} style={styles.buttonContainer}>
                                 <View style={styles.resultBarContainer}>
                                     <Animated.View
-                                        style={[styles.resultBar, {
-                                            width: animatedWidth,
-                                            backgroundColor: selected === option.id ? Colors.green : Colors.lightGrey,
-                                        }]}
+                                        style={[
+                                            styles.resultBar,
+                                            {
+                                                width: animatedWidth,
+                                                backgroundColor: getBarColor(percent),
+                                            },
+                                        ]}
                                     />
                                     <View style={styles.answerStyle}>
-                                        <Text style={[styles.answerTextStyle,styles.fontFamilyStyle, {
-                                            color: Colors.black,
-                                            fontFamily: selected === option.id ? Fonts.medium : Fonts.regular
-                                        }]}>
-                                            {option.text}
-                                        </Text>
+                                        <View style={styles.answerRow}>
+                                            {selected === option.id && <View style={styles.selectionDot} />}
+                                            <Text
+                                                style={[
+                                                    styles.answerTextStyle,
+                                                    styles.fontFamilyStyle,
+                                                    {
+                                                        color: Colors.black,
+                                                        fontFamily:
+                                                            selected === option.id ? Fonts.medium : Fonts.regular,
+                                                    },
+                                                ]}
+                                            >
+                                                {option.text}
+                                            </Text>
+                                        </View>
                                     </View>
                                 </View>
                                 <View style={styles.resultsNumberContainer}>
-                                    <Text style={[styles.buttonText, styles.fontFamilyStyle, {
-                                        color: Colors.black,
-                                        fontFamily: selected === option.id ? Fonts.medium : Fonts.regular
-                                    }]}>{percentMap.current?.get(option.id) || 0}%</Text>
+                                    <Text
+                                        style={[
+                                            styles.buttonText,
+                                            styles.fontFamilyStyle,
+                                            {
+                                                color: Colors.black,
+                                                fontFamily:
+                                                    selected === option.id ? Fonts.medium : Fonts.regular,
+                                            },
+                                        ]}
+                                    >
+                                        {percentMap.current?.get(option.id) || 0}%
+                                    </Text>
                                 </View>
                             </View>
                         );
@@ -433,5 +461,18 @@ const styles = StyleSheet.create({
     questionContainer: {
         paddingRight: 25,
         marginBottom: 10
-    }
+    },
+    answerRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 0,
+        paddingLeft: 10,
+    },
+    selectionDot: {
+        width: 6,
+        height: 6,
+        backgroundColor: Colors.black,
+        borderRadius: 1,
+    },
+
 });

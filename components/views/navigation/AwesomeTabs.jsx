@@ -52,6 +52,7 @@ import searchBlack from '../../../assets/images/searchBlack.png';
 import addGreen from '../../../assets/images/addGreen.png';
 import addBlack from '../../../assets/images/addBlack.png';
 import IntermediatePage from '../IntermediatePage.jsx';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -270,6 +271,8 @@ export function AuthNavigator() {
 
 // 🔹 Main Tab Navigator
 export function AwesomeTabs() {
+    const insets = useSafeAreaInsets();
+
     return (
         <Tab.Navigator
             id="MainTabNavigator"
@@ -279,12 +282,12 @@ export function AwesomeTabs() {
                     fontSize: 10,
                 },
                 tabBarStyle: {
-                    backgroundColor: Colors.white,   // background color of the bar
+                    backgroundColor: Colors.white,
                     borderTopWidth: 1,
                     borderColor: Colors.lightGrey,
-                    height: 52,                      // adjust height
-                    elevation: 10,                   // shadow on Android
-                    shadowColor: '#000',            // shadow on iOS
+                    height: 52 + insets.bottom, // Add safe area at bottom
+                    elevation: 10,
+                    shadowColor: '#000',
                     shadowOffset: { width: 0, height: -7 },
                     shadowOpacity: 0.15,
                     shadowRadius: 5,

@@ -29,7 +29,7 @@ const FollowersView = () => {
             {follows.length === 0 ? (
                 <View style={styles.emptyContainer}>
                     <Text style={styles.emptyText}>
-                        No one’s following you yet. Create your first poll and start your journey.
+                        No one’s following you yet
                     </Text>
                 </View>
             ) : (
