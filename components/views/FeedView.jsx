@@ -20,7 +20,7 @@ const FeedView = ({ route }) => {
     const [polls, setPolls] = useState(null); // default to null for loading state
     const [trendingPolls, setTrendingPolls] = useState(null); // default to null for loading state
     const [loggedInUserId, setLoggedInUserId] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
 
     globalEventEmitter.on('sharedPoll', ({ pollId }) => {
         fetchPolls(pollId).then(res => {

@@ -1,6 +1,7 @@
-const {sweepPollIndexUpdateEvents, sweepPollDeleteEvents, sweepUserDeleteEvents, sweepUserIndexUpdateEvents,
+const {sweepPollIndexUpdateEvents,
     sweepUserCategoryUpdateEvents
 } = require ("../db/dal/eventQueries");
+const {increaseDemoVotesCount} = require("../db/dal/demoQueries");
 
 const run_interval = 1000;
 const sweep_batch_size = 1000;
@@ -24,6 +25,12 @@ const job = async function() {
 
     try {
         await sweepUserCategoryUpdateEvents(sweep_batch_size);
+    } catch (ex) {
+        console.log(ex);
+    }
+
+    try {
+        await increaseDemoVotesCount();
     } catch (ex) {
         console.log(ex);
     }

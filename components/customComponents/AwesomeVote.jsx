@@ -68,7 +68,6 @@ const AwesomeVote = ({
     const [remainingTime, setRemainingTime] = useState(timeLeft);
     const [pollExpired, setPollExpired] = useState(timeLeft <= 0);
     const percentMap = useRef(null);
-    const prevPercentMap = useRef(null);
     const getBarColor = (percent) => {
         if (percent >= 76) return '#93a548';
         if (percent >= 51) return '#b5c478';
@@ -76,6 +75,7 @@ const AwesomeVote = ({
         if (percent === 0) return '#93a548';
         return '#f2f5e7';
     };
+
     useEffect(() => {
         if (selected) {
             Animated.timing(animation, {
@@ -90,14 +90,14 @@ const AwesomeVote = ({
         refreshOptions(options);
     }, [options]);
 
-    const refreshOptions = (newOptions, { forceAnimation = false } = {}) => {
-        let optionsMapped = optionsData.map(o => {
-            const updated = newOptions.find(u => u.id === o.id);
-            return updated ? { ...o, votesCount: updated.votesCount } : o;
-        });
+    // At the top of component:
+    const animationMap = useRef(new Map()); // key: option.id, value: Animated.Value
 
-        const totalVotes = optionsMapped.reduce((sum, o) => sum + (o.votesCount || 0), 0);
-        let percentages = optionsMapped.map((o) => ({
+    // In your refreshOptions function:
+    const refreshOptions = (newOptions) => {
+        const totalVotes = newOptions.reduce((sum, o) => sum + o.votesCount, 0);
+
+        let percentages = newOptions.map((o) => ({
             id: o.id,
             percent: totalVotes ? (o.votesCount || 0) / totalVotes * 100 : 0
         }));
@@ -116,25 +116,27 @@ const AwesomeVote = ({
         if (percentages[maxIndex]?.rounded > 0)
             percentages[maxIndex].rounded += roundingError;
 
-        prevPercentMap.current = percentMap.current;
         percentMap.current = new Map(percentages.map(p => [p.id, p.rounded]));
 
-        const hasChange = forceAnimation || !percentMap.current || newOptions.some((opt) => {
-            const prev = prevPercentMap.current?.get(opt.id);
-            const curr = percentMap.current.get(opt.id);
-            return prev !== curr;
-        });
+        newOptions.forEach((opt) => {
+            const percent = totalVotes ? (opt.votesCount / totalVotes) * 100 : 0;
+            const rounded = Math.round(percent);
 
-        setOptionsData(optionsMapped); // Ensure UI updates
+            // Get or create Animated.Value
+            let anim = animationMap.current.get(opt.id);
+            if (!anim) {
+                anim = new Animated.Value(rounded);
+                animationMap.current.set(opt.id, anim);
+            }
 
-        if (hasChange) {
-            if (prevPercentMap.current) animation.setValue(0);
-            Animated.timing(animation, {
-                toValue: 1,
-                duration: 600,
+            Animated.timing(anim, {
+                toValue: rounded,
+                duration: 500,
                 useNativeDriver: false,
             }).start();
-        }
+        });
+
+        setOptionsData(newOptions.map(opt => ({ ...opt }))); // clone to trigger re-render
     };
 
     const handleVote = async (optionId) => {
@@ -257,21 +259,6 @@ const AwesomeVote = ({
                     ))
                 ) : (
                     optionsData?.map((option) => {
-                        let percent = percentMap.current?.get(option.id) || 1;
-                        let prevPercent = prevPercentMap.current?.get(option.id) || 1;
-
-                        if (percent < 1) {
-                            percent = 1;
-                        }
-
-                        if (prevPercent < 1) {
-                            prevPercent = 1;
-                        }
-                        const animatedWidth = animation.interpolate({
-                            inputRange: [0.01, 1],
-                            outputRange: [`${prevPercent}%`, `${percent}%`],
-                        });
-
                         return (
                             <View key={option.id} style={styles.buttonContainer}>
                                 <View style={styles.resultBarContainer}>
@@ -279,8 +266,11 @@ const AwesomeVote = ({
                                         style={[
                                             styles.resultBar,
                                             {
-                                                width: animatedWidth,
-                                                backgroundColor: getBarColor(percent),
+                                                width: animationMap.current.get(option.id)?.interpolate({
+                                                    inputRange: [0, 100],
+                                                    outputRange: ['0%', '100%'],
+                                                }) || '0%',
+                                                backgroundColor: getBarColor(percentMap.current?.get(option.id) || 1),
                                             },
                                         ]}
                                     />

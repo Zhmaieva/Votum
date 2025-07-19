@@ -18,6 +18,9 @@ import {useFocusEffect} from "@react-navigation/native";
 import {fetchMyProfile, getPollOptions, viewPoll, viewPollRequest} from "../../shared/api/apiClient";
 import AwesomeLoadingPoll from "./AwesomeLoadingPoll";
 
+const minimumOptionsUpdateInterval = 2000;//1500;
+const maximumOptionsUpdateIntervalIncrease = 0;//10000;
+
 const AwesomeFeed = ({
                          data,
                          onRefresh,
@@ -180,7 +183,7 @@ const AwesomeFeed = ({
                 setCurrentIndex(index);
 
                 clearTimeout(timeoutRef.current);
-                timeoutRef.current = setTimeout(() => updatePoll(lastIndexRef.current),1500 + Math.random() * 10000);
+                timeoutRef.current = setTimeout(() => updatePoll(lastIndexRef.current),minimumOptionsUpdateInterval + Math.random() * maximumOptionsUpdateIntervalIncrease);
 
                 if (preloadedData[index] && preloadedData[index].type !== 'placeholder' && preloadedData[index].user?.userId !== getDataService().getUser()?.userId) {
                     await viewPoll(preloadedData[index].id);
@@ -207,7 +210,7 @@ const AwesomeFeed = ({
     globalEventEmitter.on('vote', ({ pollId, options }) => {
         setPreloadedData(prevData => {
             clearTimeout(timeoutRef.current);
-            timeoutRef.current = setTimeout(() => updatePoll(lastIndexRef.current),1500 + Math.random() * 10000);
+            timeoutRef.current = setTimeout(() => updatePoll(lastIndexRef.current),minimumOptionsUpdateInterval + Math.random() * maximumOptionsUpdateIntervalIncrease);
 
             const updatedData = [...prevData];
             const poll = updatedData.find(x => x.id === pollId);
@@ -237,7 +240,7 @@ const AwesomeFeed = ({
         }
 
         clearTimeout(timeoutRef.current);
-        timeoutRef.current = setTimeout(() => updatePoll(lastIndexRef.current),1500 + Math.random() * 10000);
+        timeoutRef.current = setTimeout(() => updatePoll(lastIndexRef.current),minimumOptionsUpdateInterval + Math.random() * maximumOptionsUpdateIntervalIncrease);
     }
 
     useFocusEffect(React.useCallback(() => {

@@ -2,7 +2,7 @@ import {Alert, Share} from "react-native";
 import mitt from 'mitt';
 import {fetchMyProfile, fetchPolls, fetchTrendingPolls, getPollShareLink} from "./api/apiClient";
 
-export const MIN_LOADING_TIME = 200;
+export const MIN_LOADING_TIME = 1000;
 export const MIN_EXTRA_LOADING_TIME = 800;
 
 export const globalEventEmitter = new mitt();
@@ -56,10 +56,11 @@ export class Loader {
         if (delay > 0) {
             this.__setLoading(true);
             delay = MIN_EXTRA_LOADING_TIME;
+            setTimeout(() => {
+                this.__setLoading(false);
+            }, delay);
         }
-        setTimeout(() => {
-            this.__setLoading(false);
-        }, delay);
+        this.__setLoading(false);
     }
 
     __scheduleLoading = async () => {

@@ -46,11 +46,7 @@ async function insertNewFollowNotifications() {
                                      )
                   AND (
                     (NOW() AT TIME ZONE 'UTC' + (u.timezone_offset || ' hours')::INTERVAL)::TIME
-                        BETWEEN TIME '07:00' AND TIME '09:00'
-                        OR
-                    (NOW() AT TIME ZONE 'UTC' + (u.timezone_offset || ' hours')::INTERVAL)::TIME
-                        BETWEEN TIME '17:00' AND TIME '19:00'
-                    )
+                        BETWEEN TIME '09:00' AND TIME '21:00')
                 GROUP BY u.id
                 RETURNING 1
         )

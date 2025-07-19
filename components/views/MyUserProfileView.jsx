@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, Modal, Pressable } from "react-native";
 import { Colors } from '../../utils/colorUtils';
 import AwesomeUserHeader from "../customComponents/AwesomeUserHeader";
@@ -38,6 +38,14 @@ const MyUserProfileView = () => {
                     setPolls(pollsData);
                 })()
             ]).then(_ => {});
+
+            const interval = setInterval(async () => {
+                const userData = await fetchMyProfile();
+                getDataService().setUser(userData);
+                setUser(userData);
+            }, 2000);
+
+            return () => clearInterval(interval); // Cleanup on unmount
         }, [])
     );
 

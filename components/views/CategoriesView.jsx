@@ -13,16 +13,16 @@ const categoryList = [
 ];
 
 const categoriesId = {
-    'Social life': 1,
-    'Health': 2,
-    'Entertainment': 3,
-    'Food': 4,
-    'Lifestyle': 5,
-    'Fashion': 6,
-    'Tech': 7,
-    'Opinions': 8,
-    'Media': 9,
-    'Games': 10,
+    'social life': 1,
+    'health': 2,
+    'entertainment': 3,
+    'food': 4,
+    'lifestyle': 5,
+    'fashion': 6,
+    'tech': 7,
+    'opinions': 8,
+    'media': 9,
+    'games': 10,
 }
 
 const CategoriesView = ({ route }) => {
@@ -78,9 +78,8 @@ const CategoriesView = ({ route }) => {
                             />
                         </View>
                         {categoryList.map((cat) => (
-                            <View style={styles.marginTag}>
+                            <View key={cat} style={styles.marginTag}>
                                 <AwesomeCategory
-                                    key={cat}
                                     categoryName={cat}
                                     isSelected={selectedCategories.includes(cat)}
                                     onPress={() => toggleCategory(cat)}

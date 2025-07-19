@@ -837,3 +837,7 @@ BEGIN
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
+
+-- Sat Jul 19 1:34 PM
+ALTER TABLE user_profiles
+ALTER COLUMN image SET DEFAULT 'https://s3.us-east-1.amazonaws.com/storage.beampie.com/vote/default_avatar.PNG';

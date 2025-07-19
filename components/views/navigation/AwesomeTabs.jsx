@@ -285,7 +285,7 @@ export function AwesomeTabs() {
                     backgroundColor: Colors.white,
                     borderTopWidth: 1,
                     borderColor: Colors.lightGrey,
-                    height: 52 + insets.bottom, // Add safe area at bottom
+                    height: 42 + insets.bottom, // Add safe area at bottom
                     elevation: 10,
                     shadowColor: '#000',
                     shadowOffset: { width: 0, height: -7 },

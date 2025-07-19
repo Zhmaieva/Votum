@@ -18,7 +18,7 @@ const AddView = () => {
         { id: '1', text: '', label: 'Answer 1' },
         { id: '2', text: '', label: 'Answer 2' }
     ]);
-    const [selectedDuration, setSelectedDuration] = useState('1h');
+    const [selectedDuration, setSelectedDuration] = useState('1d');
     const [showModal, setShowModal] = useState(false);
     const navigation = useNavigation();
 
@@ -74,8 +74,6 @@ const AddView = () => {
         return option?.text.length || 0;
     };
 
-    const [selectedOption, setSelectedOption] = useState('1d');
-
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.container}>
@@ -125,12 +123,12 @@ const AddView = () => {
                     <View style={[styles.row, styles.endsInRow]}>
                         <View style={[styles.row]}>
                             <Text style={{fontFamily: Fonts.regular, alignSelf: 'center',}}>Ends in</Text>
-                            {["1h", "1d", "1w", "1m"].map((duration) => (
+                            {durations.map((duration) => (
                                 <View style={styles.marginCategory} key={duration}>
                                     <AwesomeCategory
                                         categoryName={duration}
-                                        isSelected={selectedOption === duration}
-                                        onPress={() => setSelectedOption(duration)}
+                                        isSelected={selectedDuration === duration}
+                                        onPress={() => setSelectedDuration(duration)}
                                         noShadow={true}
                                         size={14}
                                     />

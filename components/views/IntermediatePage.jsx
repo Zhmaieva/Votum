@@ -17,7 +17,7 @@ export default function IntermediatePage() {
         const timeout = setTimeout(() => {
             timeoutFired = true;
             navigation.replace('Profile', { userId });
-        }, 5000); // fallback max wait
+        }, 2500); // fallback max wait
 
         const interval = setInterval(async () => {
             try {
@@ -45,7 +45,6 @@ export default function IntermediatePage() {
             <LottieView
                 source={require('../../assets/animations/loader.json')}
                 autoPlay
-                loop
                 style={styles.lottie}
             />
         </View>
