@@ -638,11 +638,16 @@ async function recalculateCategoryScore({ userCategoryPair }) {
 }
 
 async function addInquiry({email, inquiryType}) {
-    await pool.query(`
+    try {
+        await pool.query(`
         INSERT INTO user_inquiries (email, inquiry_type)
         VALUES ($1,$2)
         ON CONFLICT DO NOTHING; 
     `, [email, inquiryType]);
+    } catch (e) {
+        console.error(e);
+        throw e;
+    }
 }
 
 module.exports = {

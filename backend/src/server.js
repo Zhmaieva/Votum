@@ -557,11 +557,12 @@ app.post('/users/inquiry', async (req, res, next) => {
     try {
         const { email, inquiryType } = req.body;
 
-        if (inquryType < 0 || inquiryType > 1) {
+        if (inquiryType < 0 || inquiryType > 1) {
             return res.status(200);
         }
 
         await addInquiry({email, inquiryType});
+        return res.json({ success: true });
     } catch (e) {
         next(e);
     }
