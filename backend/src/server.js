@@ -9,7 +9,9 @@ const {SECRET_KEY} = require("./constants");
 const {pool} = require("./db/dal/pool");
 const pollQueries = require("./db/dal/pollQueries");
 const userQueries = require("./db/dal/userQueries");
-const {getActivationCode, checkActivationCode, checkAndInsertUserWithProfile, getUserByLogin, getUser, getVerificationCode, changePassword} = require("./db/dal/userQueries");
+const {getActivationCode, checkActivationCode, checkAndInsertUserWithProfile, getUserByLogin, getUser, getVerificationCode, changePassword,
+    addInquiry
+} = require("./db/dal/userQueries");
 const sendEmail = require("./mail/mailing");
 const {validateEmail, validateUsername, validatePassword} = require("./validation");
 const {uploadMiddleware} = require("./middleware/fileUploadMiddleware");
@@ -547,6 +549,20 @@ app.post('/polls/options', authMiddleware, async (req, res, next) => {
             return res.status(500).json({ success: false });
     }
     catch (e) {
+        next(e);
+    }
+});
+
+app.post('user/inquiry', async (req, res, next) => {
+    try {
+        const { email, inquiryType } = req.body;
+
+        if (inquryType < 0 || inquiryType > 1) {
+            return res.status(200);
+        }
+
+        await addInquiry({email, inquiryType});
+    } catch (e) {
         next(e);
     }
 });

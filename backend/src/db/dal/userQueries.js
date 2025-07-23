@@ -637,7 +637,16 @@ async function recalculateCategoryScore({ userCategoryPair }) {
     await pool.query(query);
 }
 
+async function addInquiry({email, inquiryType}) {
+    await pool.query(`
+        INSERT INTO user_inquiries (email, inquiry_type)
+        VALUES ($1,$2)
+        ON CONFLICT DO NOTHING; 
+    `, [email, inquiryType]);
+}
+
 module.exports = {
+    addInquiry,
     checkActivationCode,
     checkAndInsertUserWithProfile,
     changePassword,

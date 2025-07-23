@@ -841,3 +841,14 @@ $$ LANGUAGE plpgsql;
 -- Sat Jul 19 1:34 PM
 ALTER TABLE user_profiles
 ALTER COLUMN image SET DEFAULT 'https://s3.us-east-1.amazonaws.com/storage.beampie.com/vote/default_avatar.PNG';
+
+-- Web Jul 23 10:14 AM
+/**
+  Inquiry type:
+  0 - public launch invite
+  1 - beta testing invite
+ */
+CREATE TABLE user_inquiries (
+    email varchar(255) NOT NULL PRIMARY KEY,
+    inquiry_type INT NOT NULL
+)
