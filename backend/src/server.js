@@ -553,7 +553,7 @@ app.post('/polls/options', authMiddleware, async (req, res, next) => {
     }
 });
 
-app.post('user/inquiry', async (req, res, next) => {
+app.post('/users/inquiry', async (req, res, next) => {
     try {
         const { email, inquiryType } = req.body;
 
