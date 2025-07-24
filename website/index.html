@@ -4,16 +4,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Votum – real public opinion</title>
-  <link rel="stylesheet" href="styles.css" />
-  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet" />
+  <link rel="stylesheet" type="text/css" href="styles.css" />
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" type="text/css"  rel="stylesheet" />
 </head>
 <body>
 <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
 <script>
-  AOS.init({
-    duration: 800, // animation duration in ms
-    once: true, // animate only once
-  });
+  document.onload = function () {
+    AOS.init({
+      duration: 800, // animation duration in ms
+      once: true, // animate only once
+    });
+  }
 </script>
 <div class="page-wrapper">
 
