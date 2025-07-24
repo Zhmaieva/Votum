@@ -33,42 +33,31 @@
 
         <!-- Right buttons -->
         <div style="
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 2rem;
-      font-family: monospace;
-      flex: 1;
-    ">
-          <a href="#what" style="text-decoration: none; font-size: 16px; color: #ffffff;">What is Votum?</a>
-          <a href="#who" style="text-decoration: none; font-size: 16px; color: #ffffff;">Who are we?</a>
-          <!--<a href="#contact" style="text-decoration: none; font-size: 16px; color: #000;">Contact</a>-->
-          <a href="#contact" style="text-decoration: none; font-size: 16px; color: #93a548; font-weight: bold;">We need you</a>
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  flex: 1;
+  align-items: center;
+  font-size: 16px;
+  color: #ffffff;
+">
+          <a href="#what" style="text-decoration: none; color: #ffffff; font-family: monospace; font-size: 18px;">What is Votum?</a>
+          <span>|</span>
+          <a href="#who" style="text-decoration: none; color: #ffffff; font-family: monospace; font-size: 18px;">Who are we?</a>
+          <span>|</span>
+          <a href="#contact" style="text-decoration: none; color: #93a548; font-weight: bold; font-family: monospace; font-size: 18px;">We need you</a>
         </div>
       </div>
     </section>
 
-    <section class="line"></section>
     <section class="line-green"></section>
     <section class="line"></section>
 
     <header style="display: flex; flex-direction: column; align-items: center; padding: 2rem; text-align: center;">
-      <div style="max-width: 600px; margin-bottom: 4rem;">
+      <div style="max-width: 700px;">
         <img src="logoVotum.png" alt="App Logo" style="width: 80%;">
-        <p style="color: black">Want to know what people <strong>really</strong> think? You’re in the right place.</p>
-      </div>
-      <div style="position: relative; width: 400px; max-width: 90%; margin-bottom: 10rem;">
-        <video
-                src="video.mov"
-                autoplay
-                muted
-                loop
-                playsinline
-                style="width: 78%; display: block; top: 20px; left: 47px; position: relative;">
-        </video>
-        <img src="frame.png"
-             alt="Device Frame"
-             style="position: absolute; top: -50px; left: -12px; width: 108%; height: 138%; pointer-events: none;">
+        <p style="color: black; font-size: 20px;">Want to know what people <strong>really</strong> think? You’re in the right place.</p>
       </div>
     </header>
 
@@ -85,20 +74,29 @@
     <section class="line"></section>
 
     <section id="what" style="display: flex; justify-content: center; align-items: center; flex-wrap: wrap; padding: 2rem; background: #ffffff;">
-      <div class="section-container" style="text-align: center; color: white;">
-        <h2 style="font-size: 1.25rem; font-family: monospace;">What is Votum?</h2>
-        <div style="max-width: 700px; margin: auto; text-align: left;">
-          <p>
-            <strong>It’s the app that asks the questions. Shows the answers.</strong>
-            Go on. Vote.
-            <img src="catInGlasses.jpg" alt="" width="75" height="75" class="floating-cat">
-          </p>
+      <div class="section-container" style="text-align: center; color: black;">
+        <h2 style="font-size: 24px; font-family: monospace;">What is Votum?</h2>
+        <div style="max-width: 700px; margin: 1rem auto 0; text-align: left;">
+          <div style="display: flex; align-items: center; gap: 1rem; ">
+            <strong style="font-size: 20px; flex: 1;">
+              It’s the app where you ask questions and see how others answer.
+            </strong>
+            <img
+                    src="avatar.PNG"
+                    alt="Floating Cat"
+                    width="100"
+                    height="100"
+                    class="floating-cat"
+                    style="margin-top: 10px; flex-shrink: 0; margin-bottom: 10px;"
+            >
+          </div>
+          <p style="font-size: 20px; margin-top: 1rem;">Try a few. Vote.</p>
         </div>
 
         <div class="styled-polls-wrapper">
           <!-- Poll Card 1 -->
           <div class="styled-poll-card">
-            <p class="styled-poll-question">Q: Would you delete Instagram for $25,000?</p>
+            <p class="styled-poll-question">Q: Would you delete Instagram for $5,000?</p>
             <div class="styled-poll-options" data-poll="bribePoll">
               <button data-option="Yes">Yes</button>
               <button data-option="No">No</button>
@@ -166,39 +164,96 @@
           </div>
 
           <!-- Votum Teaser -->
-          <div class="votum-teaser" style="margin: 2rem auto; max-width: 700px; text-align: center; font-family: monospace;">
-            <p style="font-size: 1.2rem; font-weight: bold;">Do you want more?</p>
-            <p>
-              <img src="logoVotum.png" alt="Votum logo" style="height: 86px; margin-bottom: -10px">
-              will let you
+          <div class="votum-teaser" style="max-width: 700px; text-align: left;">
+            <p style="font-size: 20px; font-weight: bold; ">Curious to explore more?</p>
+            <div>
+              <form style="display: flex; flex-direction: column; align-items: center;">
+                <input type="email" placeholder="you@example.com" style="box-sizing: border-box; width: 100%; border: 1px solid #000000; padding: 1rem; font-size: 18px;">
+                <button class="notify-button" type="submit" style="box-sizing: border-box; padding: 1rem; font-size: 1rem; width: 100%;"><strong style="font-family: monospace">Get Notified When Votum Goes Live</strong></button>
+              </form>
+            </div>
+            <p style="font-size: 20px; ">
+              With
+              <img src="logoVotum.png" alt="Votum logo" style="height: 86px; margin-bottom: -9px; margin-left: -12px; margin-right: -3px;">
+              you can...
             </p>
-
-            <div style="display: flex; flex-direction: column; gap: 1rem; align-items: center; margin-top: 1rem;">
+            <div style="display: flex; flex-direction: column; gap: 1rem; align-items: center;">
               <div style="text-align: left; width: 100%;">
-                <p><strong>1.</strong> Vote and instantly see how many think the same</p>
-                <div style="position: relative; width: 400px; max-width: 90%; margin-bottom: 10rem;">
-                  <video
-                          src="video1.mov"
-                          autoplay
-                          muted
-                          loop
-                          playsinline
-                          style="width: 78%; display: block; top: 20px; left: 47px; position: relative;">
-                  </video>
-                  <img src="frame1.png"
-                       alt="Device Frame"
-                       style="position: absolute; top: -50px; left: -12px; width: 108%; height: 138%; pointer-events: none;">
+                <p style="font-size: 20px; "><strong>1.</strong> Vote and instantly see how many think the same</p>
+                <div style="display: flex; justify-content: center;">
+                  <div style="position: relative; width: 100%; max-width: 550px; aspect-ratio: 9 / 16;">
+                    <video
+                            src="video1.mp4"
+                            autoplay
+                            muted
+                            loop
+                            playsinline
+                            style="
+                                position: absolute;
+                                top: 9%;
+                                left: 10%;
+                                width: 80%;
+                                height: 80%;
+                                object-fit: cover;
+                                z-index: 1;
+                    ">
+                    </video>
+                    <img
+                            src="frame1.png"
+                            alt="Device Frame"
+                            style="
+                                position: absolute;
+                                top: 0;
+                                left: 0;
+                                width: 100%;
+                                height: 97%;
+                                z-index: 2;
+                                pointer-events: none;
+                    ">
+                  </div>
                 </div>
-              <div style="text-align: left; width: 100%;">
-                <p><strong>2.</strong> Create polls and know real public opinion</p>
-                <img src="screen2.png" alt="Create polls" style="width: 100%; max-width: 700px; border: 1px solid #ccc;">
+
+                <div style="text-align: left; width: 100%;">
+                  <p style="font-size: 20px; "><strong>2.</strong> Create polls and know real public opinion</p>
+
+                  <!-- Wrapper that aligns content to the right -->
+                  <div style="display: flex; justify-content: center;">
+                    <div style="position: relative; width: 100%; max-width: 550px; aspect-ratio: 9 / 16;">
+                      <video
+                              src="video2.mov"
+                              autoplay
+                              muted
+                              loop
+                              playsinline
+                              style="
+                              position: absolute;
+                              top: 9%;
+                              left: 10%;
+                              width: 80%;
+                              height: 80%;
+                              object-fit: cover;
+                              z-index: 1;
+                            ">
+                      </video>
+                      <img
+                              src="frame2.png"
+                              alt="Device Frame"
+                              style="
+                              position: absolute;
+                              top: 0;
+                              left: 0;
+                              width: 100%;
+                              height: 97%;
+                              z-index: 2;
+                              pointer-events: none;
+                            ">
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-
-
         </div>
-
       </div>
     </section>
 
@@ -208,12 +263,12 @@
 
     <section id="who" style="padding: 3rem 1rem; display: flex; flex-direction: column; align-items: center;">
       <div class="section-container" style="max-width: 800px; text-align: center;">
-        <h2 style="font-size: 1.25rem; font-family: monospace;">Who are we?</h2>
+        <h2 style="font-size: 24px; font-family: monospace;">Who are we?</h2>
         <img src="photo2.png" alt="Votum creators" style="width: 100%; max-width: 800px; height: auto;">
       </div>
 
-      <div class="section-container" style="max-width: 800px; text-align: left;">
-        <p>Hi, we’re <strong>Julia</strong> and <strong>Artem</strong>, and we’ve been building <strong>Votum</strong> together since March 2025 — while also raising our one-year-old.</p>
+      <div class="section-container" style="max-width: 700px; text-align: left;">
+        <p>Hi, we’re <strong>Julia</strong> and <strong>Artem</strong>, and we’ve been building <strong>Votum</strong> together since March 2025 — while also raising our toddler.</p>
 
         <p><strong>Votum</strong> is a place where anyone can create polls and vote to see what others really think — about anything. From serious topics like politics or the cost of raising kids, to random stuff like “Do you brush your teeth before or after breakfast?”</p>
 
@@ -226,77 +281,50 @@
 
     <section class="line"></section>
     <section class="line-white"></section>
+    <section class="line-white"></section>
+    <section class="line-white"></section>
     <section class="line"></section>
 
     <section id="contact" style="padding: 3rem 1rem; background: #93a548; color: white; text-align: center;">
       <div class="section-container">
-        <h2 style="margin-bottom: 1rem; font-size: 16px">Want to help build Votum?</h2>
-        <p style="margin-bottom: 1.5rem; color: black">Join our early testers — leave your email and get your Tester badge</p>
-        <form style="display: flex; flex-direction: column; align-items: center;">
-          <input type="email" placeholder="you@example.com" style="box-sizing: border-box; width: 100%; border: 1px solid #000000; padding: 1rem; font-size: 1rem;">
-          <button class="cta-button" type="submit" style="box-sizing: border-box; padding: 1rem; font-size: 1rem; width: 100%;">Send Your Email</button>
+        <h2 style="margin-bottom: 1rem; font-size: 20px">Want to help build Votum?</h2>
+        <p style="margin-bottom: 1.5rem; color: black">
+          Join our early testers — leave your email and tell us what you think about Votum
+        </p>
+
+        <!-- FORM FIXED WIDTH -->
+        <form style="display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 700px; margin: 0 auto;">
+          <input
+                  type="email"
+                  placeholder="you@example.com"
+                  style="box-sizing: border-box; width: 100%; border: 1px solid #000000; padding: 1rem; font-size: 1rem; margin-bottom: 1rem;">
+          <button
+                  class="cta-button"
+                  type="submit"
+                  style="box-sizing: border-box; padding: 1rem; font-size: 1rem; width: 100%;">
+            <strong style="font-family: monospace">Send Your Email</strong>
+          </button>
         </form>
       </div>
     </section>
 
-    <section class="line"></section>
-    <section class="line-white"></section>
-    <section class="line"></section>
-
-    <!--<section id="support" style="padding: 3rem 1rem; background: #ffffff; color: #000;">
-      <div class="section-container" style="text-align: center;">
-        <h2 style="margin-bottom: 2rem; font-size: 1.25rem;">How to Support Us</h2>
-        <div style="font-size: 1rem; line-height: 1.6; text-align: left;">
-          <p><strong>1. Tag us or mention Votum on social media</strong><br>It really helps!</p>
-          <p><strong>2. Use the App</strong><br>Vote, create polls, share with friends.</p>
-          <p><strong>4. Support Financially</strong><br>
-            If you’d like, you can support us directly:
-            <a href="#" class="cta-button" style="display: inline-block; margin-right: 1rem;">Buy us a coffee</a>
-          </p>
-          <p><strong>5. Join the Community</strong><br>
-            <a href="https://instagram.com/votum.app" target="_blank" class="cta-button" style="display: inline-block;">Follow on Instagram</a>
-          </p>
-        </div>
-      </div>
-    </section>
 
     <section class="line"></section>
     <section class="line-white"></section>
-    <section class="line"></section>
-
-    <section style="padding: 3rem 1rem; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; background: #ffffff ">
-      <div class="section-container">
-        <h2 style="margin-bottom: 1rem;">Stay Updated</h2>
-        <p style="margin-bottom: 1.5rem; color: black">Be the first to know when we launch.</p>
-        <form style="display: flex; flex-direction: column; align-items: center;">
-          <input type="email" placeholder="you@example.com" style="width: 100%; border: 1px solid #000000; padding: 1rem; font-size: 1rem;">
-          <button class="cta-button" type="submit" style="padding: 1rem; font-size: 1rem; width: 100%;">Subscribe</button>
-        </form>
-      </div>
-    </section>
-
-    <section class="line"></section>
-    <section class="line-white"></section>-->
+    <section class="line-white"></section>
+    <section class="line-white"></section>
 
     <footer style="padding: 2rem 1rem; background: #000; text-align: center; color: white;">
       <div style="max-width: 700px; margin: 0 auto;">
         <h2 style="margin-bottom: 1.5rem; font-size: 1.25rem; font-family: monospace;">Contact us</h2>
 
-        <p style="margin-bottom: 1.5rem; font-size: 1rem; font-weight: bold; color: white">
+        <p style="margin-bottom: 1.5rem; font-weight: bold; font-size: 18px; color: white">
           Want to build something big with us? Reach out at
           <a href="mailto:votum.contact@gmail.com" style="color: #93a548; text-decoration: underline;">votum.contact@gmail.com</a>
         </p>
-
-       <!-- <a href="https://instagram.com/votum.app" target="_blank" style="display: inline-flex; align-items: center; gap: 0.5rem; font-size: 1rem; color: #93a548; text-decoration: none; font-weight: bold;">
-          Follow us on Instagram
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill=#93a548>
-            <path d="M12 2.2c3.2 0 3.6 0 4.9.1 1.2.1 2 .3 2.4.5.5.2.9.5 1.3.9s.7.8.9 1.3c.2.4.4 1.2.5 2.4.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c-.1 1.2-.3 2-.5 2.4-.2.5-.5.9-.9 1.3s-.8.7-1.3.9c-.4.2-1.2.4-2.4.5-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2-.1-2-.3-2.4-.5-.5-.2-.9-.5-1.3-.9s-.7-.8-.9-1.3c-.2-.4-.4-1.2-.5-2.4C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.9c.1-1.2.3-2 .5-2.4.2-.5.5-.9.9-1.3s.8-.7 1.3-.9c.4-.2 1.2-.4 2.4-.5C8.4 2.2 8.8 2.2 12 2.2zm0-2.2C8.7 0 8.3 0 7 .1 5.7.2 4.7.4 4 .7c-.9.4-1.6.9-2.3 1.6S.4 3.9 0 4.8c-.3.7-.5 1.7-.6 3C-.1 8.3 0 8.7 0 12s0 3.7.1 4.9c.1 1.3.3 2.3.6 3 .4.9.9 1.6 1.6 2.3s1.4 1.2 2.3 1.6c.7.3 1.7.5 3 .6C8.3 24 8.7 24 12 24s3.7 0 4.9-.1c1.3-.1 2.3-.3 3-.6.9-.4 1.6-.9 2.3-1.6s1.2-1.4 1.6-2.3c.3-.7.5-1.7.6-3 .1-1.2.1-1.6.1-4.9s0-3.7-.1-4.9c-.1-1.3-.3-2.3-.6-3-.4-.9-.9-1.6-1.6-2.3s-1.4-1.2-2.3-1.6c-.7-.3-1.7-.5-3-.6C15.7 0 15.3 0 12 0z"/>
-            <path d="M12 5.8a6.2 6.2 0 1 0 0 12.4A6.2 6.2 0 0 0 12 5.8zm0 10.3a4.1 4.1 0 1 1 0-8.2 4.1 4.1 0 0 1 0 8.2zm6.4-11.8a1.5 1.5 0 1 0 0 3.1 1.5 1.5 0 0 0 0-3.1z"/>
-          </svg>
-        </a>-->
       </div>
 
-      <p style="margin-top: 2rem; font-size: 1rem; color: white">&copy; 2025 Votum. All rights reserved.</p>
+      <p style="margin-top: 2rem; font-size: 18px; color: white">&copy; 2025 Votum. All rights reserved.</p>
     </footer>
 
 
@@ -426,10 +454,60 @@
       });
     </script>
 
+    <script>
+      document.querySelectorAll('form').forEach(form => {
+        form.addEventListener('submit', function (e) {
+          e.preventDefault();
 
+          const emailInput = form.querySelector('input[type="email"]');
+          const email = emailInput?.value.trim();
+          const button = form.querySelector('button');
 
+          const isValidEmail = email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
+          if (isValidEmail) {
+            const inquiryType = button.innerText.includes("Get Notified") ? 0 : 1;
 
+            // Disable the button to avoid duplicates
+            button.disabled = true;
+
+            fetch("https://api-voteapp.beampie.com/users/inquiry", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                email,
+                inquiryType
+              })
+            })
+                    .then(response => {
+                      if (response.ok) {
+                        button.innerHTML = "<strong>You’re in!</strong>";
+                      } else {
+                        button.innerHTML = "<strong>Try again later</strong>";
+                        button.style.color = "#AF2413";
+                      }
+                    })
+                    .catch(() => {
+                      button.innerHTML = "<strong>Something went wrong</strong>";
+                      button.style.color = "#AF2413";
+                    });
+
+          } else {
+            button.innerHTML = "<strong>Please enter a valid email</strong>";
+            button.style.color = "#AF2413";
+            emailInput.style.border = "1px solid #AF2413";
+
+            setTimeout(() => {
+              button.innerHTML = "<strong>Send Your Email</strong>";
+              button.style.color = "";
+              emailInput.style.border = "";
+            }, 2000);
+          }
+        });
+      });
+    </script>
 
   </main>
 </div>

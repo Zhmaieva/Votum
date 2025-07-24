@@ -7,7 +7,6 @@ html, body {
 }
 
 .section-container {
-    width: 700px;
     margin: 0 auto;
     padding: 0 1rem;
     box-sizing: border-box;
@@ -32,14 +31,11 @@ h1 {
 
 h2 {
     font-size: 1rem;
-    margin: 0.5rem 0;
     color: #000000;
 }
 
 p {
-    font-size: 1.15rem;
-    max-width: 800px;
-    margin: 1rem auto;
+    font-size: 20px;
     color: #000000;
 }
 
@@ -55,17 +51,31 @@ p {
     transition: box-shadow 0.3s ease;
 }
 
+.notify-button {
+    background-color: #93a548;
+    border-color: black;
+    color: black;
+    border-width: 1px;
+    padding: 1rem 2rem;
+    font-size: 1rem;
+    border-radius: 0px;
+    cursor: pointer;
+    margin-top: 1.5rem;
+    transition: box-shadow 0.3s ease;
+    box-shadow: 3px 3px 0 #000000;
+}
+
 .line {
     background-color: #000000;
-    height: 1px;
+    height: 2px;
 }
 .line-green {
     background-color: #93a548;
-    height: 3px;
+    height: 7px;
 }
 .line-white {
     background-color: #ffffff;
-    height: 3px;
+    height: 2px;
 }
 
 footer {
@@ -104,7 +114,6 @@ footer {
     flex-direction: column;
     gap: 2.5rem;
     margin-top: 2rem;
-    font-family: monospace;
     max-width: 700px;
     margin-inline: auto;
 }
@@ -123,6 +132,7 @@ footer {
     margin-bottom: 1rem;
     flex: 1;
     text-align: left;
+    font-family: monospace;
 }
 
 .styled-poll-options button {
@@ -233,4 +243,5 @@ footer {
     animation: appearFromBottom 1.5s ease-in-out infinite;
     display: inline-block;
     vertical-align: bottom;
+    margin-left: 10px;
 }
