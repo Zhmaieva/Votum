@@ -4,7 +4,256 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Votum – real public opinion</title>
-  <link rel="stylesheet" type="text/css" href="styles.css" />
+  <style>
+
+html, body {
+    margin: 0;
+    padding: 0;
+    background: #ffffff;
+    scroll-behavior: smooth;
+    font-family: "IBM Plex Mono";
+}
+
+.section-container {
+    margin: 0 auto;
+    padding: 0 1rem;
+    box-sizing: border-box;
+}
+
+.page-wrapper {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+header {
+    padding: 2rem;
+    background: #ffffff;
+}
+
+h1 {
+    font-size: 3rem;
+    margin: 0.5rem 0;
+    color: #000000;
+}
+
+h2 {
+    font-size: 1rem;
+    color: #000000;
+}
+
+p {
+    font-size: 20px;
+    color: #000000;
+}
+
+.cta-button {
+    background-color: #000000;
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    font-size: 1rem;
+    border-radius: 0px;
+    cursor: pointer;
+    margin-top: 1.5rem;
+    transition: box-shadow 0.3s ease;
+}
+
+.notify-button {
+    background-color: #93a548;
+    border-color: black;
+    color: black;
+    border-width: 1px;
+    padding: 1rem 2rem;
+    font-size: 1rem;
+    border-radius: 0px;
+    cursor: pointer;
+    margin-top: 1.5rem;
+    transition: box-shadow 0.3s ease;
+    box-shadow: 3px 3px 0 #000000;
+}
+
+.line {
+    background-color: #000000;
+    height: 2px;
+}
+.line-green {
+    background-color: #93a548;
+    height: 7px;
+}
+.line-white {
+    background-color: #ffffff;
+    height: 2px;
+}
+
+footer {
+    font-size: 1rem;
+    color: #000000;
+}
+
+.socials a {
+    color: #ccc;
+    margin: 0 1rem;
+    text-decoration: none;
+}
+
+.socials a:hover {
+    color: white;
+}
+
+@media (max-width: 600px) {
+    .nav-links {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+    }
+}
+
+.content {
+    width: 100%;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 0rem;
+    box-sizing: border-box;
+}
+
+.styled-polls-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+    margin-top: 2rem;
+    max-width: 700px;
+    margin-inline: auto;
+}
+
+.styled-poll-card {
+    border: 1px solid black;
+    background: white;
+    padding: 1.5rem;
+    border-radius: 0px;
+    box-shadow: 3px 3px 0 #93a548;
+}
+
+.styled-poll-question {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    flex: 1;
+    text-align: left;
+    font-family: monospace;
+}
+
+.styled-poll-options button {
+    display: block;
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+    background: white;
+    border: 1px solid black;
+    font-size: 1rem;
+    text-align: left;
+    box-shadow: 3px 3px 0 #93a548;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.styled-poll-options button:hover {
+    background: #f4f4f4;
+}
+
+.result-line {
+    position: relative;
+    height: 40px;
+    background: #ffffff;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+    border: 0px solid black;
+}
+
+.result-line .bar {
+    position: absolute;
+    height: 100%;
+    left: 0;
+    top: 0;
+    z-index: 1;
+    transition: width 0.6s ease-in-out;
+    width: 0;
+}
+
+.result-line span {
+    position: relative;
+    z-index: 2;
+    font-weight: 500;
+    color: black;
+}
+
+.posted-by {
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    color: #333;
+}
+
+.answer-label {
+    text-align: left;
+    font-size: 0.95rem;
+    flex: 1;
+}
+
+.percentage-label {
+    text-align: right;
+    font-size: 0.95rem;
+    font-weight: normal;
+    flex-shrink: 0;
+    min-width: 50px;
+}
+
+.percentage-label strong {
+    font-weight: 700;
+}
+
+.bar-highest { background: #93a548; }
+.bar-high    { background: #c3cf94; }
+.bar-medium  { background: #dfe5bd; }
+.bar-low     { background: #f2f5e7; }
+
+.selected-indicator {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    background-color: #000;
+    margin-right: 0.5rem;
+    vertical-align: middle;
+}
+
+.selected-answer {
+    font-weight: bold;
+}
+
+@keyframes appearFromBottom {
+    0% {
+        opacity: 1;
+        transform: translateY(20px);
+    }
+    50% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(20px);
+    }
+}
+
+.floating-cat {
+    animation: appearFromBottom 1.5s ease-in-out infinite;
+    display: inline-block;
+    vertical-align: bottom;
+    margin-left: 10px;
+}
+</style>
   <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" type="text/css"  rel="stylesheet" />
 </head>
 <body>
