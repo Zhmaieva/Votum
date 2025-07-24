@@ -852,3 +852,10 @@ CREATE TABLE user_inquiries (
     email varchar(255) NOT NULL PRIMARY KEY,
     inquiry_type INT NOT NULL
 )
+
+-- Thu Jul 24 2:26 PM
+-- Step 1: Drop current PK (on email)
+ALTER TABLE user_inquiries DROP CONSTRAINT user_inquiries_pkey;
+
+-- Step 2: Add new composite PK (on email + inquiry_type)
+ALTER TABLE user_inquiries ADD PRIMARY KEY (email, inquiry_type);
