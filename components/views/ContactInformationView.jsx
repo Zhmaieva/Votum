@@ -21,11 +21,11 @@ const ContactInformationView = () => {
     };
 
     const handleEmailPress = () => {
-        openLink('mailto:support@example.com', 'Email app opened successfully.');
+        openLink('mailto:votum.contact@gmail.com', 'Email app opened successfully.');
     };
 
     const handleWebsitePress = () => {
-        openLink('https://www.example.com', 'Website opened successfully.');
+        openLink('https://votum.beampie.com', 'Website opened successfully.');
     };
 
     const handlePrivacyPolicyPress = () => {
@@ -40,7 +40,7 @@ const ContactInformationView = () => {
 
                 <View style={styles.infoSection}>
                     <Text style={styles.label}>Email:</Text>
-                    <Text style={styles.value}>support@example.com</Text>
+                    <Text style={styles.value}>votum.contact@gmail.com</Text>
                     <View style={styles.buttonContainer}>
                         <AwesomeButton text="Send Email" color={Color.BLACK} additionalFunc={handleEmailPress} />
                     </View>
@@ -48,22 +48,14 @@ const ContactInformationView = () => {
 
                 <View style={styles.infoSection}>
                     <Text style={styles.label}>Website:</Text>
-                    <Text style={styles.value}>www.example.com</Text>
+                    <Text style={styles.value}>votum.beampie.com</Text>
                     <View style={styles.buttonContainer}>
                         <AwesomeButton text="Visit Website" color={Color.BLACK} additionalFunc={handleWebsitePress} />
                     </View>
                 </View>
 
-                <View style={styles.infoSection}>
-                    <Text style={styles.label}>Privacy Policy:</Text>
-                    <Text style={styles.value}>Read our Privacy Policy</Text>
-                    <View style={styles.buttonContainer}>
-                        <AwesomeButton text="Privacy Policy" color={Color.BLACK} additionalFunc={handlePrivacyPolicyPress} />
-                    </View>
-                </View>
-
                 <View style={styles.footer}>
-                    <Text style={styles.footerText}>© {new Date().getFullYear()} YourAppName. All rights reserved.</Text>
+                    <Text style={styles.footerText}>© {new Date().getFullYear()} Votum. All rights reserved.</Text>
                 </View>
 
                 <AwesomeModal
@@ -119,7 +111,7 @@ const styles = StyleSheet.create({
         width: '100%',
     },
     footer: {
-        marginTop: 30,
+        marginTop: 10,
         alignItems: 'center',
     },
     footerText: {

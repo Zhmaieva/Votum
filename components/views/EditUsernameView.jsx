@@ -57,7 +57,7 @@ const EditUsernameView = ({ navigation }) => {
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.container}>
-                <Text style={{ fontFamily: Fonts.regular, fontSize: 20, marginBottom: 10 }}>Username</Text>
+                <Text style={{ fontFamily: Fonts.bold, fontSize: 20, marginBottom: 10 }}>Username</Text>
                 <Text style={styles.subtittle}>update your username</Text>
                 <AwesomeUsernameInput />
                 <AwesomeButton

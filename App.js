@@ -12,6 +12,7 @@ import 'react-native-gesture-handler';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import {SafeAreaProvider} from "react-native-safe-area-context";
+import * as ScreenOrientation from 'expo-screen-orientation';
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -39,6 +40,7 @@ export default function App() {
     };
 
     useEffect(() => {
+        ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
         const loadFontAndInit = async () => {
             await Font.loadAsync({
                 'CourierPrime-Regular': require('./assets/fonts/CourierPrime-Regular.ttf'),
@@ -145,7 +147,7 @@ export default function App() {
     if (!fontLoaded || isLoading) {
         return (
             <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-                <ActivityIndicator size="large" color="#0000ff" />
+                <ActivityIndicator size="small" color="#93a548" />
             </View>
         );
     }

@@ -75,7 +75,7 @@ const AwesomePasswordInput = forwardRef(({ value, onChangeText, placeholder = '8
                     onPress={toggleShowPassword}
                 />
             </View>
-            {/*<Text style={styles.redFont}>{validationErrorMessage}</Text>*/}
+            <Text style={styles.redFont}>{validationErrorMessage}</Text>
         </View>
     );
 });

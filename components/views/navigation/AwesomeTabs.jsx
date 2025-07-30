@@ -53,6 +53,7 @@ import addGreen from '../../../assets/images/addGreen.png';
 import addBlack from '../../../assets/images/addBlack.png';
 import IntermediatePage from '../IntermediatePage.jsx';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import PrivacyPolicyView from "../PrivacyPolicyView";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -128,12 +129,6 @@ function UserStack() {
                           options={({ navigation }) => ({
                               headerShown: true,
                               gestureEnabled: true,
-                              headerRight: () => (
-                                  <HeaderRightButton
-                                      onPress={() => handleUpdateProfile('username', getDataService().getUser()?.username, setIsLoading, navigation)}
-                                      isLoading={isLoading}
-                                  />
-                              ),
                           })}
             />
             <Stack.Screen name="Edit bio"
@@ -141,12 +136,6 @@ function UserStack() {
                           options={({ navigation }) => ({
                               headerShown: true,
                               gestureEnabled: true,
-                              headerRight: () => (
-                                  <HeaderRightButton
-                                      onPress={() => handleUpdateProfile('bio', getDataService().getUser()?.bio, setIsLoading, navigation)}
-                                      isLoading={isLoading}
-                                  />
-                              ),
                           })}
             />
             <Stack.Screen name="Edit email"
@@ -154,12 +143,6 @@ function UserStack() {
                           options={({ navigation }) => ({
                               headerShown: true,
                               gestureEnabled: true,
-                              headerRight: () => (
-                                  <HeaderRightButton
-                                      onPress={() => handleUpdateProfile('email', getDataService().getUser()?.email, setIsLoading, navigation)}
-                                      isLoading={isLoading}
-                                  />
-                              ),
                           })}
             />
             <Stack.Screen name="Change Email"
@@ -167,23 +150,18 @@ function UserStack() {
                           options={({ navigation }) => ({
                               headerShown: true,
                               gestureEnabled: true,
-                              headerRight: () => (
-                                  <HeaderRightButton
-                                      onPress={() => handleUpdateProfile('email', getDataService().getUser()?.email, setIsLoading, navigation)}
-                                      isLoading={isLoading}
-                                  />
-                              ),
                           })}
             />
-            <AuthStack.Screen name="Current Password" component={PasswordView} initialParams={{ flowType: VERIFICATION_FLOW_TYPE.CHANGE_PASSWORD}} options={{ headerShown: true, gestureEnabled: true }}/>
+            <AuthStack.Screen name="Edit password" component={PasswordView} initialParams={{ flowType: VERIFICATION_FLOW_TYPE.CHANGE_PASSWORD}} options={{ headerShown: true, gestureEnabled: true }}/>
             <AuthStack.Screen name="Verification Code" component={VerificationCodeView} initialParams={{ flowType: VERIFICATION_FLOW_TYPE.CHANGE_EMAIL}} options={{ headerShown: true, gestureEnabled: true }}/>
             <AuthStack.Screen name="Verification Code Password" component={VerificationCodeView} initialParams={{ flowType: VERIFICATION_FLOW_TYPE.CHANGE_PASSWORD}} options={{ headerShown: true, gestureEnabled: true }}/>
             <AuthStack.Screen name="Log in" component={LogInView} options={{ headerShown: false, gestureEnabled: true }}/>
             <AuthStack.Screen name="Forgot password" component={ForgotPasswordView} options={{ headerShown: false, gestureEnabled: true }}/>
             <AuthStack.Screen name="Email Register" component={EmailRegisterView} options={{ headerShown: false, gestureEnabled: true }}/>
-            <AuthStack.Screen name="Report bug" component={ReportBugView} options={{ headerShown: true, gestureEnabled: true }}/>
+            <AuthStack.Screen name="Report a bug" component={ReportBugView} options={{ headerShown: true, gestureEnabled: true }}/>
             <AuthStack.Screen name="Contact Info" component={ContactInformationView} options={{ headerShown: true, gestureEnabled: true }}/>
-            <AuthStack.Screen name="Terms Conditions" component={TermsAndConditionsView} options={{ headerShown: true, gestureEnabled: true }}/>
+            <AuthStack.Screen name="Terms of service" component={TermsAndConditionsView} options={{ headerShown: true, gestureEnabled: true }}/>
+            <AuthStack.Screen name="Policy" component={PrivacyPolicyView} options={{ headerShown: true, gestureEnabled: true }}/>
             <AuthStack.Screen name="Notifications" component={NotificationsView} options={{ headerShown: true, gestureEnabled: true }}/>
             <AuthStack.Screen name="Notification Settings" component={NotificationSettingsView} options={{ headerShown: true, gestureEnabled: true }}/>
             <AuthStack.Screen name="Edit Birth" component={EditBirthDateView} options={{ headerShown: true, gestureEnabled: true }}/>
@@ -285,7 +263,8 @@ export function AwesomeTabs() {
                     backgroundColor: Colors.white,
                     borderTopWidth: 1,
                     borderColor: Colors.lightGrey,
-                    height: 42 + insets.bottom, // Add safe area at bottom
+                    height: 56,
+                    paddingBottom: insets.bottom,
                     elevation: 10,
                     shadowColor: '#000',
                     shadowOffset: { width: 0, height: -7 },

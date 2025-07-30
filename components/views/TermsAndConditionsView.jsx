@@ -7,7 +7,7 @@ const TermsAndConditionsView = ({ navigation }) => {
     return (
         <SafeAreaView style={styles.safeArea}>
             <ScrollView contentContainerStyle={styles.container}>
-                <Text style={styles.title}>Terms and Conditions</Text>
+                <Text style={styles.title}>Terms of Service</Text>
 
                 <Text style={styles.subtittle}>
                     Please read these terms carefully. They outline your rights, responsibilities, and how we handle your data.

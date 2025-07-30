@@ -20,7 +20,7 @@ import {useNavigation} from "@react-navigation/native";
 const UsernameView = ({}) => {
 
     const[error, setError] = useState('');
-
+    const privacyError = 'You must agree to the Privacy Policy and Terms of Service to continue';
     const usernameEmptyError = 'Username cannot be empty, try again';
     const usernameInvalidError = 'Invalid username, try again';
     const usernameTakenError = 'This username is already taken, try again';
@@ -28,6 +28,7 @@ const UsernameView = ({}) => {
     const [isModalVisible, setModalVisible] = useState(false);
 
     const navigation = useNavigation();
+    const [isChecked, setIsChecked] = useState(false);
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -36,50 +37,75 @@ const UsernameView = ({}) => {
                     <Text style={styles.headerStyle}>Username</Text>
                     <AwesomeUsernameInput/>
                     <View style={styles.nextButtonContainer}>
-                        <AwesomeButton text="Create account" color={Color.BLACK} additionalFunc={async () => {
-                            const username = getDataService()?.getUser()?.username;
-                            const password = getDataService()?.getUser()?.password ?? '';
+                        <TouchableOpacity onPress={() => setIsChecked(!isChecked)} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
+                            <View style={{
+                                width: 20,
+                                height: 20,
+                                borderRadius: 0,
+                                borderWidth: 1,
+                                borderColor: Colors.black,
+                                backgroundColor: isChecked ? Colors.black : Colors.white,
+                                marginRight: 10,
+                            }} />
+                            <Text style={{ fontSize: 13, fontFamily: Fonts.medium, color: Colors.black }}>
+                                I agree to the <Text style={{ textDecorationLine: 'underline' }} onPress={() => navigation.navigate('PrivacyPolicy')}>Privacy Policy</Text> and <Text style={{ textDecorationLine: 'underline' }} onPress={() => navigation.navigate('TermsOfService')}>Terms of Service</Text>
+                            </Text>
+                        </TouchableOpacity>
+                        <AwesomeButton
+                            text="Create account"
+                            color={Color.BLACK}
+                            additionalFunc={async () => {
+                                if (!isChecked) {
+                                    setError(privacyError);
+                                    setModalVisible(true);
+                                    return;
+                                }
 
-                            if (username === null) {
-                                setError(usernameTakenError);
-                                setModalVisible(true);
-                                return;
-                            }
+                                const username = getDataService()?.getUser()?.username;
+                                const password = getDataService()?.getUser()?.password ?? '';
 
-                            if (!username) {
-                                setError(usernameEmptyError);
-                                setModalVisible(true);
-                                return;
-                            }
+                                if (username === null) {
+                                    setError(usernameTakenError);
+                                    setModalVisible(true);
+                                    return;
+                                }
 
-                            if (!password) {
-                                navigation.navigate('Email Register')
-                            }
+                                if (!username) {
+                                    setError(usernameEmptyError);
+                                    setModalVisible(true);
+                                    return;
+                                }
 
-                            const response = await signUpFinish(username, password);
+                                if (!password) {
+                                    navigation.navigate('Email Register');
+                                    return;
+                                }
 
-                            console.log(response);
-                            if (response.success) {
-                                globalEventEmitter.emit('signup', {})
-                                return;
-                            }
+                                const response = await signUpFinish(username, password);
+                                console.log(response);
 
-                            if (response.code === 401) {
-                                navigation.navigate('Email Register')
-                                return;
-                            }
+                                if (response.success) {
+                                    globalEventEmitter.emit('signup', {});
+                                    return;
+                                }
 
-                            if (response.code === 409) {
-                                setError(usernameTakenError);
-                                setModalVisible(true);
-                                return;
-                            }
+                                if (response.code === 401) {
+                                    navigation.navigate('Email Register');
+                                    return;
+                                }
 
-                            if (response.code === 400) {
-                                setError(usernameInvalidError);
-                                setModalVisible(true);
-                            }
-                        }}/>
+                                if (response.code === 409) {
+                                    setError(usernameTakenError);
+                                    setModalVisible(true);
+                                    return;
+                                }
+
+                                if (response.code === 400) {
+                                    setError(usernameInvalidError);
+                                    setModalVisible(true);
+                                }
+                            }}
+                        />
                     </View>
                 </View>
                 <View style={styles.margin15}>
@@ -125,7 +151,7 @@ const styles = StyleSheet.create({
     questionStyle: {
         fontSize: 14,
         color: Colors.black,
-        fontFamily: Fonts.regular,
+        fontFamily: Fonts.medium,
     },
     nextButtonContainer: {
         marginBottom: 18

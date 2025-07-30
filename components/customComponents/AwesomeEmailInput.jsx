@@ -43,6 +43,7 @@ export default function AwesomeEmailInput({ value, bareStyle = false, onChangeTe
                 //placeholder='example@gmail.com'
                 value={email}
                 onChangeText={(text) => handleCheckEmail(text)}
+                placeholder={'example@example.com'}
                 placeholderTextColor='#aaa'
                 onFocus={() => setIsFocused(true)}
             />

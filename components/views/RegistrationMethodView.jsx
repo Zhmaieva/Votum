@@ -3,6 +3,8 @@ import {View, StyleSheet, TextInput, Text, SafeAreaView} from 'react-native';
 import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeButton, {Color} from "../customComponents/AwesomeButton";
 import AwesomeLink from "../customComponents/AwesomeLink";
+import { Image } from 'react-native';
+import logoVotum from '../../assets/images/logoVotum.png';
 
 const RegistrationMethodView = ({ navigation }) => {
 
@@ -26,24 +28,24 @@ const RegistrationMethodView = ({ navigation }) => {
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.container}>
+                <View style={styles.logoContainer}>
+                    <Image source={logoVotum} style={styles.logoImage} resizeMode="contain" />
+                </View>
                 <View>
-                    <View style={styles.logoContainer}>
-                        <Text style={styles.familyStyle}>Logo</Text>
+                    {/*<View style={styles.buttonContainer}>
+                        <AwesomeButton text="Google" color={Color.WHITE} />
                     </View>
+                    <View style={styles.buttonContainer}>
+                        <AwesomeButton text="Apple" color={Color.WHITE} />
+                    </View>*/}
+                </View>
+                <View>
                     <View style={styles.buttonContainer}>
                         <AwesomeButton
                             text="Register with email"
                             color={Color.BLACK}
                             screenName='Email Register' />
                     </View>
-                    <View style={styles.buttonContainer}>
-                        <AwesomeButton text="Google" color={Color.WHITE} />
-                    </View>
-                    <View style={styles.buttonContainer}>
-                        <AwesomeButton text="Apple" color={Color.WHITE} />
-                    </View>
-                </View>
-                <View style={styles.margin15}>
                     <View style={styles.questionContainer}>
                         <Text style={styles.questionStyle}>Already have an account?</Text>
                     </View>
@@ -61,7 +63,10 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        padding: 15,
+        paddingLeft: 15,
+        paddingRight: 15,
+        paddingBottom: 30,
+        paddingTop: 15,
         justifyContent: 'space-between'
     },
     buttonContainer: {
@@ -75,13 +80,10 @@ const styles = StyleSheet.create({
     questionStyle: {
         fontSize: 14,
         color: Colors.black,
-        fontFamily: Fonts.regular,
+        fontFamily: Fonts.medium,
+        marginBottom: 5
     },
     logoContainer: {
-        height: '50%',
-        borderColor: Colors.green,
-        borderWidth: 1.5,
-        marginBottom: 18,
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -93,11 +95,12 @@ const styles = StyleSheet.create({
         fontFamily: Fonts.medium,
         color: Colors.black
     },
-    margin15: {
-        marginBottom: 15
-    },
     familyStyle: {
         fontFamily: Fonts.regular,
+    },
+    logoImage: {
+        width: '75%',
+        height: '75%',
     }
 });
 

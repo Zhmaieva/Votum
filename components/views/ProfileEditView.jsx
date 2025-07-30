@@ -153,19 +153,22 @@ const ProfileEditView = ({ route }) => {
                 </View>
                 <Text style={[styles.sectionName, styles.marginTop15]}>Privacy & Security</Text>
                 <View style={styles.margin15}>
-                    <AwesomeButton text='Change Password' color={Color.WHITE} settingButton={true} screenName='Current Password'/>
+                    <AwesomeButton text='Change password' color={Color.WHITE} settingButton={true} screenName='Edit password'/>
                 </View>
                 <View style={styles.margin15}>
                     <AwesomeButton text='Notifications settings' color={Color.WHITE} settingButton={true} screenName='Notification Settings'/>
                 </View>
                 <View style={styles.margin15}>
-                    <AwesomeButton text='Terms and conditions' color={Color.WHITE} settingButton={true} screenName='Terms Conditions' />
+                    <AwesomeButton text='Terms of service' color={Color.WHITE} settingButton={true} screenName='Terms of service' />
+                </View>
+                <View style={styles.margin15}>
+                    <AwesomeButton text='Privacy policy' color={Color.WHITE} settingButton={true} screenName='Policy' />
                 </View>
                 <View style={styles.margin15}>
                     <AwesomeButton text='Contact information' color={Color.WHITE} settingButton={true} screenName='Contact Info' />
                 </View>
                 <View style={styles.margin25}>
-                    <AwesomeButton text='Report a bug' color={Color.WHITE} settingButton={true} screenName='Report bug'/>
+                    <AwesomeButton text='Report a bug' color={Color.WHITE} settingButton={true} screenName='Report a bug'/>
                 </View>
                 <View style={styles.margin15}>
                     <AwesomeButton text='Log out' color={Color.BLACK} additionalFunc={() => setLogoutModalVisible(true)} />

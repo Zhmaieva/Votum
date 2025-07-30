@@ -105,41 +105,37 @@ export default function AwesomeButton({
 
     return (
         <TouchableWithoutFeedback onPress={animateButton} disabled={isDisabled || loading}>
-            {loading ? (
-                <View style={styles.spinnerContainer}>
-                    <ActivityIndicator size="small" color={color === Color.BLACK ? Colors.white : Colors.black} />
+            <Animated.View
+                style={[
+                    {
+                        transform: [{ scale: scaleValue }],
+                    },
+                    styles.buttonMain,
+                    buttonStyle,
+                    isDisabled && styles.buttonDisabled,
+                ]}
+            >
+                <View style={[styles.contentWrapper, settingButton && styles.settingWrapper]}>
+                    {loading ? (
+                        <ActivityIndicator size="small" color={color === Color.BLACK ? Colors.white : Colors.black} />
+                    ) : textElement ? (
+                        <Text style={[styles.buttonMainText, textStyle, settingButton && styles.leftAlignedText]}>
+                            {textElement}
+                        </Text>
+                    ) : (
+                        <Text style={[styles.buttonMainText, textStyle, settingButton && styles.leftAlignedText]}>
+                            {buttonName}
+                        </Text>
+                    )}
+                    {settingButton && (
+                        <Image
+                            source={require('../../assets/images/arrowBlack.png')}
+                            style={{ width: 14, height: 14 }}
+                            resizeMode="contain"
+                        />
+                    )}
                 </View>
-            ) : (
-                <Animated.View
-                    style={[
-                        {
-                            transform: [{ scale: scaleValue }],
-                        },
-                        styles.buttonMain,
-                        buttonStyle,
-                        isDisabled && styles.buttonDisabled,
-                    ]}
-                >
-                    <View style={[styles.contentWrapper, settingButton && styles.settingWrapper]}>
-                        {textElement ? (
-                            <Text style={[styles.buttonMainText, textStyle, settingButton && styles.leftAlignedText]}>
-                                {textElement}
-                            </Text>
-                        ) : (
-                            <Text style={[styles.buttonMainText, textStyle, settingButton && styles.leftAlignedText]}>
-                                {buttonName}
-                            </Text>
-                        )}
-                        {settingButton && (
-                            <Image
-                                source={require('../../assets/images/arrowBlack.png')}
-                                style={{ width: 14, height: 14 }}
-                                resizeMode="contain"
-                            />
-                        )}
-                    </View>
-                </Animated.View>
-            )}
+            </Animated.View>
         </TouchableWithoutFeedback>
     );
 }
@@ -189,7 +185,7 @@ const styles = StyleSheet.create({
         shadowColor: Colors.green,
     },
     buttonDisabled: {
-        opacity: 0.5,
+        backgroundColor: Colors.grey,
     },
     buttonMainText: {
         fontSize: 15,

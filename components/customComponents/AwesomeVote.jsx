@@ -70,10 +70,9 @@ const AwesomeVote = ({
     const percentMap = useRef(null);
     const getBarColor = (percent) => {
         if (percent >= 76) return '#93a548';
-        if (percent >= 51) return '#b5c478';
-        if (percent >= 26) return '#dfe5bd';
-        if (percent === 0) return '#93a548';
-        return '#f2f5e7';
+        if (percent >= 51) return '#93a548';
+        if (percent >= 26) return '#b5c478';
+        return '#dfe5bd';
     };
 
     useEffect(() => {

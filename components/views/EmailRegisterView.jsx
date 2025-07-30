@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
     questionStyle: {
         fontSize: 14,
         color: Colors.black,
-        fontFamily: Fonts.regular,
+        fontFamily: Fonts.medium,
     },
     nextButtonContainer: {
         marginBottom: 18
