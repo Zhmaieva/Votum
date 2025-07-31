@@ -4,7 +4,7 @@ import { WebView } from 'react-native-webview';
 
 const TermsOfServiceWebView = () => (
     <SafeAreaView style={{ flex: 1 }}>
-        <WebView source={{ uri: 'https://yourdomain.com/terms-of-service' }} />
+        <WebView source={{ uri: 'https://votum.beampie.com/terms-of-service' }} />
     </SafeAreaView>
 );
 
