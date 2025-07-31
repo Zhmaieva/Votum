@@ -353,21 +353,22 @@ footer {
 
         <div class="styled-polls-wrapper">
           <!-- Poll Card 1 -->
+          <!-- Poll Card 1 -->
           <div class="styled-poll-card">
-            <p class="styled-poll-question">Q: Would you delete Instagram for $5,000?</p>
-            <div class="styled-poll-options" data-poll="bribePoll">
-              <button data-option="Yes">Yes</button>
-              <button data-option="No">No</button>
+            <p class="styled-poll-question">Q: Should social media platforms ban political ads?</p>
+            <div class="styled-poll-options" data-poll="adsPoll">
+              <button data-option="Yes">Yes, they spread misinformation</button>
+              <button data-option="No">No, it’s a free speech issue</button>
             </div>
             <div class="styled-poll-results" style="display:none;">
               <div class="result-line">
                 <div class="bar"></div>
-                <span class="answer-label">Yes</span>
+                <span class="answer-label">Yes, they spread misinformation</span>
                 <span class="percentage-label"></span>
               </div>
               <div class="result-line">
                 <div class="bar"></div>
-                <span class="answer-label">No</span>
+                <span class="answer-label">No, it’s a free speech issue</span>
                 <span class="percentage-label"></span>
               </div>
             </div>
@@ -396,26 +397,26 @@ footer {
 
           <!-- Poll Card 3 -->
           <div class="styled-poll-card">
-            <p class="styled-poll-question">Q: If your thoughts were audible, who’d stick around?</p>
-            <div class="styled-poll-options" data-poll="thoughtPoll">
-              <button data-option="All">All my friends</button>
-              <button data-option="One">1 loyal bestie</button>
-              <button data-option="Mom">My mom</button>
+            <p class="styled-poll-question">Q: If you borrow a pen and never return it, is it stealing?</p>
+            <div class="styled-poll-options" data-poll="penPoll">
+              <button data-option="Yes">Yes</button>
+              <button data-option="No">No</button>
+              <button data-option="Circle">It’s the circle of life for pens</button>
             </div>
             <div class="styled-poll-results" style="display:none;">
               <div class="result-line">
                 <div class="bar"></div>
-                <span class="answer-label">All my friends</span>
+                <span class="answer-label">Yes</span>
                 <span class="percentage-label"></span>
               </div>
               <div class="result-line">
                 <div class="bar"></div>
-                <span class="answer-label">1 loyal bestie</span>
+                <span class="answer-label">No</span>
                 <span class="percentage-label"></span>
               </div>
               <div class="result-line">
                 <div class="bar"></div>
-                <span class="answer-label">My mom</span>
+                <span class="answer-label">It’s the circle of life for pens</span>
                 <span class="percentage-label"></span>
               </div>
             </div>
@@ -584,54 +585,42 @@ footer {
 
       <p style="margin-top: 2rem; font-size: 18px; color: white">&copy; 2025 Votum. All rights reserved.</p>
     </footer>
-
-
-
-
-
-
-
-
-
-
-
-
     <script>
       const votes = {
-        bribePoll: { Yes: 1045, No: 309 },
+        adsPoll: { Yes: 150, No: 90 },
         kidsPoll: { Yes: 780, No: 200 },
-        thoughtPoll: { All: 80, One: 190, Mom: 730 },
+        penPoll: { Yes: 140, No: 90, Circle: 270 },
       };
 
       const optionLabelMap = {
-        bribePoll: {
-          Yes: 'Yes',
-          No: 'No'
+        adsPoll: {
+          Yes: 'Yes, they spread misinformation',
+          No: 'No, it’s a free speech issue'
         },
         kidsPoll: {
           Yes: 'No way',
           No: 'I’ll buy one soon'
         },
-        thoughtPoll: {
-          All: 'All my friends',
-          One: '1 loyal bestie',
-          Mom: 'My mom'
+        penPoll: {
+          Yes: 'Yes',
+          No: 'No',
+          Circle: 'It’s the circle of life for pens'
         }
       };
 
       const labelToKeyMap = {
-        bribePoll: {
-          'Yes': 'Yes',
-          'No': 'No'
+        adsPoll: {
+          'Yes, they spread misinformation': 'Yes',
+          'No, it’s a free speech issue': 'No'
         },
         kidsPoll: {
           'No way': 'Yes',
           'I’ll buy one soon': 'No'
         },
-        thoughtPoll: {
-          'All my friends': 'All',
-          '1 loyal bestie': 'One',
-          'My mom': 'Mom'
+        penPoll: {
+          'Yes': 'Yes',
+          'No': 'No',
+          'It’s the circle of life for pens': 'Circle'
         }
       };
 
