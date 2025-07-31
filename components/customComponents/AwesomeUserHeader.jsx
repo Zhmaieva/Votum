@@ -114,7 +114,7 @@ const AwesomeUserHeader = ({
                 </View>
             </View>
 
-            <View style={{ marginTop: 8, marginBottom: 6 }}>
+            <View style={{ marginTop: 5 }}>
                 <Text style={[styles.font14, styles.usernameBold, styles.fontFamilyBold]} numberOfLines={1}>
                     {user.username}
                 </Text>
@@ -220,19 +220,19 @@ const styles = StyleSheet.create({
     },
     aligned: {
         width: '100%',
-        justifyContent: 'space-between',
+        justifyContent: 'space-between'
     },
     userContainer: {
         width: '100%',
         paddingRight: 2,
     },
     avatarContainer: {
-        height: 50,
-        width: 50,
+        height: 70,
+        width: 70,
     },
     avatar: {
-        height: 50,
-        width: 50,
+        height: 70,
+        width: 70,
     },
     font14: {
         fontSize: 14,

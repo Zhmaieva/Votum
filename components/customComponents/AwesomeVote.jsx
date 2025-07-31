@@ -69,6 +69,7 @@ const AwesomeVote = ({
     const [pollExpired, setPollExpired] = useState(timeLeft <= 0);
     const percentMap = useRef(null);
     const getBarColor = (percent) => {
+        if (percent === 0) return '#93a548';
         if (percent >= 76) return '#93a548';
         if (percent >= 51) return '#93a548';
         if (percent >= 26) return '#b5c478';
@@ -267,9 +268,9 @@ const AwesomeVote = ({
                                             {
                                                 width: animationMap.current.get(option.id)?.interpolate({
                                                     inputRange: [0, 100],
-                                                    outputRange: ['0%', '100%'],
-                                                }) || '0%',
-                                                backgroundColor: getBarColor(percentMap.current?.get(option.id) || 1),
+                                                    outputRange: ['1.5%', '100%'], // 👈 Minimum 2% bar width for visibility
+                                                }) || '1.5%',
+                                                backgroundColor: getBarColor(percentMap.current?.get(option.id) || 0),
                                             },
                                         ]}
                                     />
@@ -461,7 +462,6 @@ const styles = StyleSheet.create({
         width: 6,
         height: 6,
         backgroundColor: Colors.black,
-        borderRadius: 1,
     },
 
 });

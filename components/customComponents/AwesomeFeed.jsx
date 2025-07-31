@@ -46,10 +46,12 @@ const AwesomeFeed = ({
     });
 
     useEffect(() => {
-        setPreloadedData(!data?.length || data.length === 0
+        const cleanData = data?.filter(p => p.type !== 'placeholder') ?? [];
+
+        setPreloadedData(cleanData.length === 0
             ? [{ id: 'no-more-polls', type: 'placeholder' }]
-            : data);
-    }, [data])
+            : cleanData);
+    }, [data]);
 
     useEffect(() => {
         if (!getDataService().getUser())
@@ -70,20 +72,35 @@ const AwesomeFeed = ({
         return () => globalEventEmitter.off('deletePoll', onDeletePoll); // cleanup
     },[preloadedData])
 
-    const loadMorePolls = () => {
-        const nextBatch = data?.slice(preloadedData.length, preloadedData.length + 5);
-        if (!nextBatch || nextBatch?.length === 0) {
+    const loadMorePolls = async () => {
+        const realItems = preloadedData.filter(p => p.type !== 'placeholder');
+
+        // Check if we've already reached the end
+        if (data && realItems.length >= data.length) {
             if (!preloadedData.find(item => item?.type === 'placeholder')) {
-                setPreloadedData(prevData => [
-                    ...prevData,
-                    { id: 'no-more-polls-end', type: 'placeholder' }
-                ]);
+                setPreloadedData(prev => [...realItems, { id: 'no-more-polls', type: 'placeholder' }]);
             }
+            return;
+        }
+
+        // Pull next batch from `data`
+        const nextBatch = data?.slice(realItems.length, realItems.length + 5) ?? [];
+
+        if (nextBatch.length > 0) {
+            setPreloadedData(prev => [...realItems, ...nextBatch]);
         } else {
-            setPreloadedData(prevData => [
-                ...prevData,
-                ...nextBatch
-            ]);
+            // ✅ Safeguard: fallback to appendFunction
+            if (appendFunction) {
+                const newPolls = await appendFunction([]);
+
+                const uniquePolls = (newPolls ?? []).filter(p => !realItems.find(r => r.id === p.id));
+
+                if (uniquePolls.length > 0) {
+                    setPreloadedData(prev => [...realItems, ...uniquePolls]);
+                } else if (!preloadedData.find(item => item?.type === 'placeholder')) {
+                    setPreloadedData(prev => [...realItems, { id: 'no-more-polls', type: 'placeholder' }]);
+                }
+            }
         }
     };
 
@@ -158,7 +175,7 @@ const AwesomeFeed = ({
             return (
                 <View style={[styles.placeholderContainer, styles.row]}>
                     <Text style={styles.placeholderText}>
-                        No new polls, try later or{' '}
+                        No new polls, try later or{''}
                     </Text>
                     <AwesomeLink text="create one." screenName='Add Poll' />
                 </View>
@@ -199,7 +216,10 @@ const AwesomeFeed = ({
                         const uniquePolls = newPolls.filter(p => !existingIds.has(p.id));
 
                         if (uniquePolls.length > 0) {
-                            setPreloadedData(existingPolls.concat(uniquePolls));
+                            setPreloadedData([
+                                ...existingPolls.filter(p => p.type !== 'placeholder'),
+                                ...uniquePolls
+                            ]);
                         }
                     }
                 }

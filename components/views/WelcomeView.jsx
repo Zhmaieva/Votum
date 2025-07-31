@@ -1,8 +1,9 @@
-import {Text, View, StyleSheet } from 'react-native';
+import {Text, View, StyleSheet, Image, SafeAreaView} from 'react-native';
 import React, {useEffect} from 'react';
 import {Colors, Fonts} from "../../utils/colorUtils";
 import AwesomeButton, { Color } from "../customComponents/AwesomeButton";
 import {getDataService} from "../../shared/common";
+import logoVotum from '../../assets/images/logoVotum.png';
 
 export default function WelcomeView () {
 
@@ -11,34 +12,45 @@ export default function WelcomeView () {
     },[])
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.messageStyle}>Welcome to VOTUM</Text>
-            <View style={styles.logoStyle}/>
-            <View style={{width: '100%'}}>
+        <SafeAreaView style={styles.safeArea}>
+            <View style={styles.container}>
+                <View style={{height: '18%'}}/>
+                <View>
+                    <Text style={styles.messageStyle}>Hey there!</Text>
+                    <View style={styles.logoContainer}>
+                        <Image source={logoVotum} style={styles.logoStyle} resizeMode="contain" />
+                    </View>
+                </View>
                 <AwesomeButton text='Continue' color={Color.BLACK} screenName='Profile photo'/>
             </View>
-        </View>
+        </SafeAreaView>
     );
-}
+};
 
 const styles = StyleSheet.create({
-    container: {
-        backgroundColor: Colors.white,
-        padding: 15,
+    safeArea: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center'
+        backgroundColor: Colors.white,
+    },
+    container: {
+        flex: 1,
+        paddingLeft: 15,
+        paddingRight: 15,
+        paddingBottom: 30,
+        paddingTop: 15,
+        justifyContent: 'space-between',
     },
     messageStyle: {
         fontSize: 22,
         fontFamily: Fonts.medium,
-        marginBottom: 20
+    },
+    logoContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '62%',
     },
     logoStyle: {
-        height: '40%',
         width: '100%',
-        borderWidth: 2,
-        borderColor: Colors.green,
-        marginBottom: 20
-    }
+        height: '100%',
+    },
 });

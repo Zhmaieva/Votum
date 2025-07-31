@@ -52,12 +52,12 @@ const NewPasswordView = ({ route }) => {
                 <Text style={[styles.margin10, { fontFamily: Fonts.medium, fontSize: 20 }]}>New Password</Text>
 
                 <Text style={styles.subtittle}>enter new password</Text>
-                <View style={styles.margin10}>
+                <View style={{marginBottom: 5}}>
                     <AwesomePasswordInput value={password} onChangeText={setPassword} />
                 </View>
 
                 <Text style={styles.subtittle}>confirm new password</Text>
-                <View style={{marginBottom: 20}}>
+                <View style={{marginBottom: 10}}>
                     <AwesomePasswordInput value={confirmPassword} onChangeText={setConfirmPassword} />
                 </View>
 

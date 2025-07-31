@@ -48,7 +48,7 @@ const UsernameView = ({}) => {
                                 marginRight: 10,
                             }} />
                             <Text style={{ fontSize: 13, fontFamily: Fonts.medium, color: Colors.black }}>
-                                I agree to the <Text style={{ textDecorationLine: 'underline' }} onPress={() => navigation.navigate('PrivacyPolicy')}>Privacy Policy</Text> and <Text style={{ textDecorationLine: 'underline' }} onPress={() => navigation.navigate('TermsOfService')}>Terms of Service</Text>
+                                I agree to the <Text style={{ textDecorationLine: 'underline' }} onPress={() => navigation.navigate('Policy Web')}>Privacy Policy</Text> and <Text style={{ textDecorationLine: 'underline' }} onPress={() => navigation.navigate('Terms Web')}>Terms of Service</Text>
                             </Text>
                         </TouchableOpacity>
                         <AwesomeButton

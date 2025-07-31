@@ -54,6 +54,8 @@ import addBlack from '../../../assets/images/addBlack.png';
 import IntermediatePage from '../IntermediatePage.jsx';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import PrivacyPolicyView from "../PrivacyPolicyView";
+import PrivacyPolicyWebView from "../PrivacyPolicyWebView";
+import TermsOfServiceWebView from "../TermsOfServiceWebView";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -69,7 +71,8 @@ function AuthFlow() {
             <AuthStack.Screen name="Log in" component={LogInView} options={{ headerShown: false, gestureEnabled: true }}/>
             <AuthStack.Screen name="Username" component={UsernameView} options={{ headerShown: false, gestureEnabled: true }}/>
             <AuthStack.Screen name="Forgot password" component={ForgotPasswordView} options={{ headerShown: false, gestureEnabled: true }}/>
-            <AuthStack.Screen name="New Password" component={NewPasswordView} options={{ headerShown: true, gestureEnabled: true }} initialParams={{ flowType: VERIFICATION_FLOW_TYPE.FORGOT_PASSWORD}}/>
+            <AuthStack.Screen name="Policy Web" component={PrivacyPolicyWebView} options={{ headerShown: false, gestureEnabled: true }} />
+            <AuthStack.Screen name="Terms Web" component={TermsOfServiceWebView} options={{ headerShown: false, gestureEnabled: true }} />
         </AuthStack.Navigator>
     );
 }
