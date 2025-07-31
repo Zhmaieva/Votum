@@ -1,18 +1,18 @@
 import { TextInput, View, StyleSheet } from 'react-native';
 import { Fonts } from '../../utils/colorUtils';
 
-export default function AwesomeCodeContainer ({value, onTextInput, refOutlet}) {
-
+export default function AwesomeCodeContainer({ value, onTextInput, refOutlet, onKeyPress }) {
     return (
         <View style={styles.codeInputContainer}>
             <TextInput
                 editable
                 value={value}
-                ref = {refOutlet}
+                ref={refOutlet}
                 numberOfLines={1}
                 maxLength={1}
                 style={styles.codeInputField}
                 onChangeText={onTextInput}
+                onKeyPress={onKeyPress}
                 keyboardType='numeric'
             />
         </View>

@@ -14,12 +14,9 @@ export default function WelcomeView () {
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.container}>
-                <View style={{height: '18%'}}/>
-                <View>
-                    <Text style={styles.messageStyle}>Hey there!</Text>
-                    <View style={styles.logoContainer}>
-                        <Image source={logoVotum} style={styles.logoStyle} resizeMode="contain" />
-                    </View>
+                <Text style={styles.messageStyle}>Hey there!</Text>
+                <View style={styles.logoContainer}>
+                    <Image source={logoVotum} style={styles.logoStyle} resizeMode="contain" />
                 </View>
                 <AwesomeButton text='Continue' color={Color.BLACK} screenName='Profile photo'/>
             </View>
@@ -38,16 +35,17 @@ const styles = StyleSheet.create({
         paddingRight: 15,
         paddingBottom: 30,
         paddingTop: 15,
-        justifyContent: 'space-between',
+        justifyContent: 'center',
     },
     messageStyle: {
         fontSize: 22,
         fontFamily: Fonts.medium,
+        alignSelf: 'center',
     },
     logoContainer: {
         alignItems: 'center',
         justifyContent: 'center',
-        height: '62%',
+        height: '46%'
     },
     logoStyle: {
         width: '100%',

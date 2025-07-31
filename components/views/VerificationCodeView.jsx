@@ -146,6 +146,19 @@ export default function VerificationCodeView({route}) {
         }
     };
 
+    const handleBackspace = (index) => {
+        if (inputs[index] === '' && index > 0) {
+            const updated = [...inputs];
+            updated[index - 1] = '';
+            setInputs(updated);
+            inputRefs.current[index - 1]?.focus();
+        } else {
+            const updated = [...inputs];
+            updated[index] = '';
+            setInputs(updated);
+        }
+    };
+
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.container}>
@@ -158,6 +171,11 @@ export default function VerificationCodeView({route}) {
                                 <AwesomeCodeContainer
                                     key={i}
                                     onTextInput={val => handleInput(i, val)}
+                                    onKeyPress={({ nativeEvent }) => {
+                                        if (nativeEvent.key === 'Backspace') {
+                                            handleBackspace(i);
+                                        }
+                                    }}
                                     refOutlet={ref => inputRefs.current[i] = ref}
                                 />
                             ))}

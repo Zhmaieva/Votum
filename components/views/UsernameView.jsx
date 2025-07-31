@@ -47,7 +47,7 @@ const UsernameView = ({}) => {
                                 backgroundColor: isChecked ? Colors.black : Colors.white,
                                 marginRight: 10,
                             }} />
-                            <Text style={{ fontSize: 13, fontFamily: Fonts.medium, color: Colors.black }}>
+                            <Text style={{ fontSize: 14, fontFamily: Fonts.medium, color: Colors.black }}>
                                 I agree to the <Text style={{ textDecorationLine: 'underline' }} onPress={() => navigation.navigate('Policy Web')}>Privacy Policy</Text> and <Text style={{ textDecorationLine: 'underline' }} onPress={() => navigation.navigate('Terms Web')}>Terms of Service</Text>
                             </Text>
                         </TouchableOpacity>
