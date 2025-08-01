@@ -266,7 +266,7 @@ export function AwesomeTabs() {
                     backgroundColor: Colors.white,
                     borderTopWidth: 1,
                     borderColor: Colors.lightGrey,
-                    height: 56,
+                    height: 53,
                     paddingBottom: insets.bottom,
                     elevation: 10,
                     shadowColor: '#000',

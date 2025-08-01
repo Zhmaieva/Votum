@@ -24,7 +24,6 @@ const AwesomeCard = ({ item, handleVote, loggedInUserId, loading = false, hideHe
 
     return (
         <View>
-
             {!hideHeader && (
                 <View style={styles.margin15}>
                     {loading ? (
@@ -62,6 +61,6 @@ export default AwesomeCard;
 
 const styles = StyleSheet.create({
     margin15: {
-        marginBottom: 8
+        marginBottom: 5
     }
 });

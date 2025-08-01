@@ -227,12 +227,12 @@ const styles = StyleSheet.create({
         paddingRight: 2,
     },
     avatarContainer: {
-        height: 70,
-        width: 70,
+        height: 60,
+        width: 60,
     },
     avatar: {
-        height: 70,
-        width: 70,
+        height: 60,
+        width: 60,
     },
     font14: {
         fontSize: 14,

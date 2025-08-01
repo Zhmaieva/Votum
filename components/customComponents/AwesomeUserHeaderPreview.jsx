@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
     container: {
         flexDirection: "row",
         alignItems: "center",
-        paddingVertical: 6,
+        paddingVertical: 3,
         width: "100%",
     },
     avatar: {

@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
         overflow: "hidden",
     },
     tab: {
-        height: 38,
+        height: 36,
         flex: 1,
         justifyContent: 'center',
         alignItems: "center",

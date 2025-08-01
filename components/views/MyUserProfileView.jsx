@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useRef} from "react";
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, Modal, Pressable } from "react-native";
 import { Colors } from '../../utils/colorUtils';
 import AwesomeUserHeader from "../customComponents/AwesomeUserHeader";
@@ -6,7 +6,7 @@ import AwesomeFeed from "../customComponents/AwesomeFeed";
 import AwesomeLoadingPoll from "../customComponents/AwesomeLoadingPoll";
 import AwesomeLoadingHeader from "../customComponents/AwesomeLoadingHeader";
 import {fetchMyProfile, fetchUserPolls, fetchUserProfile} from "../../shared/api/apiClient";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
 import {
     calculateTimeDifference,
     getDataService,
@@ -22,6 +22,9 @@ const MyUserProfileView = () => {
     const [user, setUser] = useState(null);
     const [polls, setPolls] = useState(null);
     const [refreshing, setRefreshing] = useState(false);
+    const feedRef = useRef();
+    const route = useRoute();
+    const navigation = useNavigation();
 
     useFocusEffect(
         React.useCallback(() => {
@@ -48,6 +51,15 @@ const MyUserProfileView = () => {
             return () => clearInterval(interval); // Cleanup on unmount
         }, [])
     );
+
+    useEffect(() => {
+        if (route.params?.scrollToTop) {
+            feedRef.current?.scrollToTop?.();
+
+            // Remove the param so it doesn't repeat on tab switch
+            navigation.setParams({ scrollToTop: undefined });
+        }
+    }, [route.params?.scrollToTop]);
 
     globalEventEmitter.on('deletePoll', async ({ pollId }) => {
         let userData = await fetchMyProfile();
@@ -85,6 +97,7 @@ const MyUserProfileView = () => {
                     </View>
                     {user && polls ? (
                         <AwesomeFeed
+                            ref={feedRef}
                             data={polls}
                             onRefresh={onRefresh}
                             refreshing={refreshing}

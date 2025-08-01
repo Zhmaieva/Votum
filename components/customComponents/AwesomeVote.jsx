@@ -254,7 +254,11 @@ const AwesomeVote = ({
                 {!selected && !pollExpired && !createdByUser ? (
                     optionsData?.map((option) => (
                         <TouchableOpacity key={option.id} style={styles.button} onPress={() => handleVote(option.id)}>
-                            <Text style={[styles.buttonText, styles.fontFamilyStyle]} numberOfLines={2} ellipsizeMode="tail">{option.text}</Text>
+                            <View style={styles.resultBarContainer}>
+                                <View style={styles.suggestedAnswerContainer}>
+                                    <Text style={[styles.buttonText, styles.fontFamilyStyle]} numberOfLines={2}>{option.text}</Text>
+                                </View>
+                            </View>
                         </TouchableOpacity>
                     ))
                 ) : (
@@ -287,6 +291,8 @@ const AwesomeVote = ({
                                                             selected === option.id ? Fonts.medium : Fonts.regular,
                                                     },
                                                 ]}
+                                                numberOfLines={2}
+                                                ellipsizeMode='tail'
                                             >
                                                 {option.text}
                                             </Text>
@@ -350,7 +356,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: Colors.black,
         backgroundColor: Colors.white,
-        padding: 14,
+        padding: 13,
     },
     button: {
         backgroundColor: Colors.white,
@@ -366,11 +372,12 @@ const styles = StyleSheet.create({
         shadowOpacity: 1,
         shadowRadius: 0,
         shadowColor: Colors.green,
+        //flexWrap: 'wrap',
     },
     buttonText: {
         color: Colors.black,
         fontSize: 16,
-        marginLeft: 10,
+        marginLeft: 8,
     },
     countStyle: {
         justifyContent: 'space-between',
@@ -432,6 +439,13 @@ const styles = StyleSheet.create({
         fontFamily: Fonts.medium,
         color: Colors.black,
     },
+    suggestedAnswerContainer: {
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        flexDirection: 'row',
+        width: '100%',
+        height: 40,
+    },
     answerStyle: {
         position: 'absolute',
         justifyContent: 'center',
@@ -450,7 +464,7 @@ const styles = StyleSheet.create({
     },
     questionContainer: {
         paddingRight: 25,
-        marginBottom: 10
+        marginBottom: 5
     },
     answerRow: {
         flexDirection: 'row',

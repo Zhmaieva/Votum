@@ -172,11 +172,11 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
     },
     questionContainer: {
-        marginBottom: 10,
+        marginBottom: 5,
         width: '100%',
     },
     qTextStyle: {
-        color: Colors.green,
+        color: Colors.black,
         fontSize: 20,
         fontFamily: Fonts.medium,
     },
@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         backgroundColor: Colors.white,
         borderColor: Colors.black,
-        padding: 11,
+        padding: 10,
         marginBottom: 10,
         shadowOffset: { width: 2, height: 2 },
         shadowOpacity: 1,

@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
         paddingRight: 15,
     },
     switcherContainer: {
-        marginBottom: 2,
+        marginBottom: 5,
         marginLeft: 15,
         marginRight: 15
     },

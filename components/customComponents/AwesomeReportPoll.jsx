@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         color: Colors.black,
         marginLeft: 9,
-        fontFamily: Fonts.regular
+        fontFamily: Fonts.medium
     },
     reasonButton: {
         padding: 10,
