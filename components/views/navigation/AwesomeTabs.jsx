@@ -71,8 +71,8 @@ function AuthFlow() {
             <AuthStack.Screen name="Log in" component={LogInView} options={{ headerShown: false, gestureEnabled: true }}/>
             <AuthStack.Screen name="Username" component={UsernameView} options={{ headerShown: false, gestureEnabled: true }}/>
             <AuthStack.Screen name="Forgot password" component={ForgotPasswordView} options={{ headerShown: false, gestureEnabled: true }}/>
-            <AuthStack.Screen name="Policy Web" component={PrivacyPolicyWebView} options={{ headerShown: false, gestureEnabled: true }} />
-            <AuthStack.Screen name="Terms Web" component={TermsOfServiceWebView} options={{ headerShown: false, gestureEnabled: true }} />
+            <AuthStack.Screen name="Policy Web" component={PrivacyPolicyWebView} options={{ headerShown: true, gestureEnabled: true }} />
+            <AuthStack.Screen name="Terms Web" component={TermsOfServiceWebView} options={{ headerShown: true, gestureEnabled: true }} />
         </AuthStack.Navigator>
     );
 }
@@ -322,7 +322,21 @@ export function AwesomeTabs() {
         >
             <Tab.Screen name="FEED" component={FeedStack} options={{ headerShown: false, gestureEnabled: true }} />
             <Tab.Screen name="SEARCH" component={SearchStack} options={{ headerShown: false, gestureEnabled: true }} />
-            <Tab.Screen name="ADD POLL" component={AddStack} options={{ headerShown: false, gestureEnabled: true }} />
+            <Tab.Screen
+                name="ADD POLL"
+                component={AddStack}
+                options={{ headerShown: false, gestureEnabled: true }}
+                listeners={({ navigation }) => ({
+                    tabPress: (e) => {
+                        e.preventDefault(); // stop default tab behavior
+
+                        // Reset AddStack to show AddMain (the form screen)
+                        navigation.navigate('ADD POLL', {
+                            screen: 'AddMain',
+                        });
+                    },
+                })}
+            />
             <Tab.Screen name="VOTED" component={VotedStack} options={{ headerShown: false, gestureEnabled: true }} />
             <Tab.Screen name="MY PROFILE" component={UserStack} options={{ headerShown: false, gestureEnabled: true }} />
         </Tab.Navigator>

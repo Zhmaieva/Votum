@@ -16,7 +16,7 @@ export default function IntermediatePage() {
 
         const timeout = setTimeout(() => {
             timeoutFired = true;
-            navigation.replace('Profile', { userId });
+            navigation.getParent()?.navigate('MY PROFILE');
         }, 2500); // fallback max wait
 
         const interval = setInterval(async () => {
@@ -27,7 +27,7 @@ export default function IntermediatePage() {
                 if (pollReady && !timeoutFired) {
                     clearInterval(interval);
                     clearTimeout(timeout);
-                    navigation.replace('Profile', { userId });
+                    navigation.getParent()?.navigate('MY PROFILE');
                 }
             } catch (e) {
                 console.warn("Poll check failed:", e);

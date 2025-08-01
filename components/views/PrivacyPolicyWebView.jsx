@@ -3,7 +3,7 @@ import { SafeAreaView } from 'react-native';
 import { WebView } from 'react-native-webview';
 
 const PrivacyPolicyWebView = () => (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
         <WebView source={{ uri: 'https://votum.beampie.com/policy' }} />
     </SafeAreaView>
 );

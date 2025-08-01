@@ -108,14 +108,6 @@ const MyUserProfileView = () => {
                     )}
                 </View>
             </SafeAreaView>
-            <Modal
-                animationType="fade"
-                transparent={true}
-                visible={modalVisible}
-                onRequestClose={() => setModalVisible(false)}
-            >
-                <Text>TEST TEST</Text>
-            </Modal>
         </View>
     );
 };

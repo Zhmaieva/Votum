@@ -265,7 +265,7 @@ const styles = StyleSheet.create({
     buttonsContainer: {
         justifyContent: "space-between",
         alignItems: "center",
-        marginBottom: 3,
+        marginBottom: 0,
         marginTop: 5,
     },
     editButton: {

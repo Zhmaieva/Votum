@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import {
     View, TextInput, Dimensions, Text, StyleSheet,
     Pressable, SafeAreaView, Image
@@ -62,7 +63,8 @@ const AddView = () => {
         navigation.navigate('Preview Poll', {
             question,
             options: filteredOptions,
-            selectedDuration
+            selectedDuration,
+            resetAddViewForm
         });
     };
 
@@ -73,6 +75,24 @@ const AddView = () => {
         const option = options.find(o => o.id === focusedField);
         return option?.text.length || 0;
     };
+
+    const resetAddViewForm = () => {
+        setQuestion('');
+        setOptions([
+            { id: '1', text: '', label: 'Answer 1' },
+            { id: '2', text: '', label: 'Answer 2' }
+        ]);
+    };
+
+    useFocusEffect(
+        React.useCallback(() => {
+            setQuestion('');
+            setOptions([
+                { id: '1', text: '', label: 'Answer 1' },
+                { id: '2', text: '', label: 'Answer 2' }
+            ]);
+        }, [])
+    );
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -86,7 +106,7 @@ const AddView = () => {
                             placeholderTextColor='#ababab'
                             value={question}
                             onChangeText={setQuestion}
-                            maxLength={40}
+                            maxLength={50}
                             onFocus={() => setFocusedField('question')}
                         />
                     </View>
@@ -137,7 +157,7 @@ const AddView = () => {
                         </View>
                         {focusedField && (
                             <Text style={styles.charCounter}>
-                                {getFocusedLength()}/40
+                                {getFocusedLength()}/{focusedField === 'question' ? 50 : 40}
                             </Text>
                         )}
                     </View>
