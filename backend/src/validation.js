@@ -24,11 +24,11 @@ async function validateEmail(email) {
 }
 
 function validateUsername(value) {
-    return value.length >= 4 && value.length <= 16;
+    return value.length >= 1 && value.length <= 16;
 }
 
 function validatePassword(value) {
-    return value.length >= 6 && value.length <= 32;
+    return value.length >= 6 && value.length <= 20;
 }
 
 module.exports = {

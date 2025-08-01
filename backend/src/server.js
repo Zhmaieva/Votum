@@ -275,6 +275,37 @@ app.post('/users/sign-in', async (req, res, next) => {
     }
 });
 
+// Password check endpoint
+app.post('/users/security/verify', authMiddleware, async (req, res, next) => {
+    try {
+        const { password } = req.body;
+
+        const errorCode = 200;
+        const errorMessage = { isSuccess: false, message: 'Invalid credentials' };
+
+        // Check if username and password are valid
+        if (!password || password.length > 20) {
+            console.log(req.body);
+            return res.status(errorCode).json(errorMessage);
+        }
+
+        const existingUser = await getUser(req.user.id);
+
+        if (!existingUser) {
+            return res.status(errorCode).json(errorMessage);
+        }
+
+        if (!await bcrypt.compare(password, existingUser.password)) {
+            return res.status(errorCode).json(errorMessage);
+        }
+
+        return res.json({ isSuccess:true, message: 'Security check successful' });
+    }
+    catch (e) {
+        next(e);
+    }
+});
+
 app.get('/profile/:id?', authMiddleware, async (req, res, next) => {
     try {
         const userId = req.params.id;

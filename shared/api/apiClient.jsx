@@ -80,6 +80,22 @@ export const signIn = async (usernameOrEmail, password) => {
     }
 };
 
+export const securityCheck = async (password) => {
+    try {
+        const response = await apiClient.post(`/users/security/verify`, {
+            password: password,
+        }, {
+            headers: {
+                Authorization: `Bearer ${await getToken()}`,
+            },
+        });
+        return response.data.isSuccess;
+    } catch (err) {
+        console.log('Login failed', err);
+        return false;
+    }
+};
+
 /**
  *
  * @param email

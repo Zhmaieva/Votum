@@ -7,6 +7,7 @@ import AwesomePasswordInput from "../customComponents/AwesomePasswordInput";
 import { AwesomeModal } from "../customComponents/AwesomeModal";
 import { VERIFICATION_FLOW_TYPE } from "../views/VerificationCodeView";
 import { getDataService } from '../../shared/common';
+import {securityCheck} from "../../shared/api/apiClient";
 
 const PasswordView = ({ route }) => {
     const navigation = useNavigation();
@@ -15,16 +16,17 @@ const PasswordView = ({ route }) => {
     const [password, setPassword] = useState('');
     const [showInvalidModal, setShowInvalidModal] = useState(false);
 
-    const handleNext = () => {
-        const isValid = password?.length > 0 && password.length < 20;
+    const handleNext = async () => {
+        let isValid = password?.length > 0 && password.length < 20;
+
+        if (isValid)
+            isValid = await securityCheck(password);
 
         if (!isValid) {
             getDataService().getUser().password = '';
             setShowInvalidModal(true);
             return;
         }
-        //
-        // getDataService().getUser().password = password;
 
         if (flowType === VERIFICATION_FLOW_TYPE.CHANGE_PASSWORD) {
             navigation.navigate('New Password');
