@@ -5,7 +5,7 @@ import {Colors, Fonts} from '../../utils/colorUtils';
 import { getDataService } from "../../shared/common";
 import { debounce } from 'lodash';
 
-const AwesomePasswordInput = forwardRef(({ value, onChangeText, placeholder = '8 - 20 characters' }, ref) => {
+const AwesomePasswordInput = forwardRef(({ value, onChangeText, placeholder = '8 - 20 characters', isVerification = false }, ref) => {
     const [localPassword, setLocalPassword] = useState(value || '');
     const [showPassword, setShowPassword] = useState(false);
     const [validationErrorMessage, setValidationErrorMessage] = useState('');
@@ -20,6 +20,11 @@ const AwesomePasswordInput = forwardRef(({ value, onChangeText, placeholder = '8
     }, 400);
 
     const validate = (text) => {
+        if (isVerification) {
+            onChangeText(text);
+            return;
+        }
+
         // Remove emoji
         const cleanedText = text.replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '');
 
@@ -56,17 +61,21 @@ const AwesomePasswordInput = forwardRef(({ value, onChangeText, placeholder = '8
                     placeholder={placeholder}
                     placeholderTextColor="#aaa"
                 />
-                <View style={styles.validationIcon}>
-                    {isChecking ? (
-                        <ActivityIndicator size="small" color={Colors.grey} />
-                    ) : isValid !== null && (
-                        <Ionicons
-                            name={isValid ? "checkmark" : "close"}
-                            size={16}
-                            color={isValid ? Colors.green : Colors.red}
-                        />
-                    )}
-                </View>
+                {
+                    isVerification ? <></> :
+                        <View style={styles.validationIcon}>
+                            {isChecking ? (
+                                <ActivityIndicator size="small" color={Colors.grey} />
+                            ) : isValid !== null && (
+                                <Ionicons
+                                    name={isValid ? "checkmark" : "close"}
+                                    size={16}
+                                    color={isValid ? Colors.green : Colors.red}
+                                />
+                            )}
+                        </View>
+                }
+
                 <Ionicons
                     name={showPassword ? 'eye-off-outline' : 'eye-outline'}
                     size={20}

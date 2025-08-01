@@ -16,18 +16,15 @@ const PasswordView = ({ route }) => {
     const [showInvalidModal, setShowInvalidModal] = useState(false);
 
     const handleNext = () => {
-        const isValid =
-            password.length >= 8 &&
-            password.length <= 20 &&
-            !/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu.test(password);
+        const isValid = password?.length > 0 && password.length < 20;
 
         if (!isValid) {
             getDataService().getUser().password = '';
             setShowInvalidModal(true);
             return;
         }
-
-        getDataService().getUser().password = password;
+        //
+        // getDataService().getUser().password = password;
 
         if (flowType === VERIFICATION_FLOW_TYPE.CHANGE_PASSWORD) {
             navigation.navigate('New Password');
@@ -40,16 +37,18 @@ const PasswordView = ({ route }) => {
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.container}>
                 {flowType === VERIFICATION_FLOW_TYPE.CHANGE_PASSWORD ? (
-                    <Text style={[styles.margin10, styles.header]}>Change Password</Text>
+                    <Text style={[styles.margin10, styles.header]}>Security Check</Text>
                 ) : flowType === VERIFICATION_FLOW_TYPE.CHANGE_EMAIL ? (
-                    <Text style={[styles.margin10, styles.header]}>Change Email</Text>
+                    <Text style={[styles.margin10, styles.header]}>Security Check</Text>
                 ) : null}
 
-                <Text style={styles.subtittle}>Enter current password</Text>
+                <Text style={styles.subtittle}>Enter password</Text>
                 <View style={{ marginBottom: 18 }}>
                     <AwesomePasswordInput
                         value={password}
                         onChangeText={(text) => setPassword(text)}
+                        placeholder={'Your current password'}
+                        isVerification={true}
                     />
                 </View>
 
@@ -62,7 +61,7 @@ const PasswordView = ({ route }) => {
                 <AwesomeModal
                     visible={showInvalidModal}
                     text="INVALID PASSWORD"
-                    subtext="Password must be 8–20 characters and cannot include emojis"
+                    subtext="The password does not match, please try again"
                     buttons={[
                         { label: "OK", onPress: () => setShowInvalidModal(false) },
                     ]}

@@ -12,13 +12,13 @@ export default function AwesomeEmailInput({ value, bareStyle = false, onChangeTe
         let re = /\S+@\S+\.\S+/;
         let regex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
 
-        setEmail(text);
+        setEmail(text.toLowerCase());
 
         if (re.test(text) || regex.test(text)) {
             setValidationErrorMessage('');
 
             if (onChangeText)
-                onChangeText(text);
+                onChangeText(text.toLowerCase());
 
             try {
                 getDataService().getUser().email = text;
