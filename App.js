@@ -5,8 +5,8 @@ import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
 import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import { AwesomeTabs, AuthNavigator } from "./components/views/navigation/AwesomeTabs";
-import { getDataService, globalEventEmitter } from "./shared/common";
-import {fetchMyProfile, isTokenAvailable, updatePushToken} from "./shared/api/apiClient";
+import {getDataService, globalEventEmitter, Loader} from "./shared/common";
+import {fetchMyProfile, fetchPolls, isTokenAvailable, updatePushToken} from "./shared/api/apiClient";
 import { ActivityIndicator, View, Platform } from "react-native";
 import 'react-native-gesture-handler';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -23,10 +23,13 @@ Notifications.setNotificationHandler({
 });
 
 export default function App() {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(true);
+    const [isLoadingVisible, setIsLoadingVisible] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [fontLoaded, setFontLoaded] = useState(false);
     const navigationRef = useNavigationContainerRef();
+
+    const loader = new Loader(setIsLoadingVisible);
 
     const handleUrl = ({ url }) => {
         if (!url) return;
@@ -78,7 +81,9 @@ export default function App() {
             await registerForPushNotificationsAsync();
         };
 
-        loadFontAndInit().then(_ => {});
+        loader.load([new Promise(resolve => resolve()).then(async () => {
+            await loadFontAndInit();
+        })]).then(() => {});
 
         const subscription = Linking.addEventListener('url', handleUrl);
 
@@ -146,15 +151,15 @@ export default function App() {
 
     if (!fontLoaded || isLoading) {
         return (
-            <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-                <ActivityIndicator size="small" color="#93a548" />
+            <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#ffffff" }}>
+                {!isLoadingVisible ? <></> : <ActivityIndicator size="large" color="#93a548" />}
             </View>
         );
     }
 
     return (
-        <SafeAreaProvider>
-            <GestureHandlerRootView style={{ flex: 1 }}>
+        <SafeAreaProvider style={{backgroundColor: '#ffffff'}}>
+            <GestureHandlerRootView style={{ flex: 1}}>
                 <BottomSheetModalProvider>
                     <NavigationContainer ref={navigationRef}>
                         {isAuthenticated ? <AwesomeTabs /> : <AuthNavigator />}

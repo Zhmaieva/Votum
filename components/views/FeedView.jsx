@@ -13,6 +13,7 @@ import {
     MIN_LOADING_TIME
 } from "../../shared/common";
 import AwesomeLoadingPoll from "../customComponents/AwesomeLoadingPoll";
+import {isLoading} from "expo-font";
 
 const FeedView = ({ route }) => {
     const [selectedOption, setSelectedOption] = useState("my feed");
@@ -54,8 +55,6 @@ const FeedView = ({ route }) => {
         if (selectedOption.toLowerCase() === 'my feed') {
             await loader.load([
                 fetchPolls().then(async res => {
-                    //await new Promise(resolve => setTimeout(resolve, 1000)); //to test delay
-
                     setPolls(res);
                     setRefreshing(false);
                 })
@@ -70,19 +69,29 @@ const FeedView = ({ route }) => {
             ]);
     };
 
-    if (polls === null) {
-        return <ActivityIndicator size="large" color="#0000ff" />;
-    }
+    // if (polls === null) {
+    //     return <ActivityIndicator size="large" color="#0000ff" />;
+    // }
 
-    if (!polls?.length) {
-        return (
-            <View style={styles.emptyContainer}>
-                <Text style={styles.emptyText}>
-                    Something went wrong, check your network connection.
-                </Text>
-            </View>
-        );
-    }
+    // if (polls?.length === 0 && !loading) {
+    //     return (
+    //         <View style={styles.emptyContainer}>
+    //             <Text style={styles.emptyText}>
+    //                 No polls here yet. Why don't create one?
+    //             </Text>
+    //         </View>
+    //     );
+    // }
+    //
+    // if (!polls?.length && !loading) {
+    //     return (
+    //         <View style={styles.emptyContainer}>
+    //             <Text style={styles.emptyText}>
+    //                 Something went wrong, check your network connection.
+    //             </Text>
+    //         </View>
+    //     );
+    // }
 
     return (
         <SafeAreaView style={styles.safeArea}>

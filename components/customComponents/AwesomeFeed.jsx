@@ -34,9 +34,9 @@ const AwesomeFeed = ({
                          searchQuery = null,
 }) => {
     const scrollY = useRef(new Animated.Value(0)).current;
-    const [preloadedData, setPreloadedData] = useState(!data?.length || data.length === 0
-        ? [{ id: 'no-more-polls', type: 'placeholder' }]
-        : data);
+
+    const [preloadedData, setPreloadedData] = useState(data);
+
 
     const flatListRef = useRef(null);
     const timeoutRef = useRef(setTimeout(() => {}, 100));
@@ -46,11 +46,11 @@ const AwesomeFeed = ({
     });
 
     useEffect(() => {
-        const cleanData = data?.filter(p => p.type !== 'placeholder') ?? [];
-
-        setPreloadedData(cleanData.length === 0
-            ? [{ id: 'no-more-polls', type: 'placeholder' }]
-            : cleanData);
+        if (data?.length === 0) {
+            setPreloadedData([{ id: 'no-more-polls', type: 'placeholder' }]);
+        }
+        else
+            setPreloadedData(data);
     }, [data]);
 
     useEffect(() => {
@@ -60,7 +60,7 @@ const AwesomeFeed = ({
             });
 
         if (
-            preloadedData.length > 0 &&
+            preloadedData?.length > 0 &&
             preloadedData[0]?.user?.userId === getDataService().getUser()?.userId
         ) {
             requestAnimationFrame(() => {
@@ -93,10 +93,10 @@ const AwesomeFeed = ({
             if (appendFunction) {
                 const newPolls = await appendFunction([]);
 
-                const uniquePolls = (newPolls ?? []).filter(p => !realItems.find(r => r.id === p.id));
+                // const uniquePolls = (newPolls ?? []).filter(p => !realItems.find(r => r.id === p.id));
 
                 if (uniquePolls.length > 0) {
-                    setPreloadedData(prev => [...realItems, ...uniquePolls]);
+                    setPreloadedData(prev => [...realItems, ...newPolls]);
                 } else if (!preloadedData.find(item => item?.type === 'placeholder')) {
                     setPreloadedData(prev => [...realItems, { id: 'no-more-polls', type: 'placeholder' }]);
                 }
@@ -117,12 +117,14 @@ const AwesomeFeed = ({
 
     const renderWithPlaceholder = (item) => {
         if (item?.type === 'placeholder') {
+            const wereOtherPolls = data.length > 1;
+
             if (isUserProfileView) {
                 const isCurrentUser = data && getDataService().getUser()?.userId === data[0]?.user?.userId;
 
                 if (item?.id === 'no-more-polls') {
                     return (
-                        <View style={styles.placeholderContainerUserProfile}>
+                        <View style={wereOtherPolls ? styles.placeholderContainerFeed : styles.placeholderContainerUserProfile}>
                             <Text style={styles.placeholderText}>
                                 {isCurrentUser
                                     ? 'Create your first poll now'
@@ -132,7 +134,7 @@ const AwesomeFeed = ({
                     );
                 } else {
                     return (
-                        <View style={styles.placeholderContainerUserProfile}>
+                        <View style={wereOtherPolls ? styles.placeholderContainerFeed : styles.placeholderContainerUserProfile}>
                             <Text style={styles.placeholderText}>
                                 {isCurrentUser
                                     ? 'No more polls here, time to create a new one'
@@ -145,7 +147,7 @@ const AwesomeFeed = ({
 
             if (isVotedPollsView) {
                 return (
-                    <View style={styles.placeholderContainerLikes}>
+                    <View style={wereOtherPolls ? styles.placeholderContainerFeed : styles.placeholderContainerLikes}>
                         <Text style={styles.placeholderText}>
                             You haven't voted yet. Jump in and share your opinion!
                         </Text>
@@ -156,7 +158,7 @@ const AwesomeFeed = ({
             if (isSearchView) {
                 if (searchQuery) {
                     return (
-                        <View style={styles.placeholderContainerSearch}>
+                        <View style={wereOtherPolls ? styles.placeholderContainerFeed : styles.placeholderContainerSearch}>
                             <Text style={styles.placeholderText}>
                                 No polls found for "{searchQuery}"
                             </Text>
@@ -164,7 +166,7 @@ const AwesomeFeed = ({
                     )
                 }
                 return (
-                    <View style={styles.placeholderContainerSearch}>
+                    <View style={wereOtherPolls ? styles.placeholderContainerFeed : styles.placeholderContainerSearch}>
                         <Text style={styles.placeholderText}>
                             Start your search
                         </Text>
@@ -173,7 +175,7 @@ const AwesomeFeed = ({
             }
 
             return (
-                <View style={[styles.placeholderContainer, styles.row]}>
+                <View style={wereOtherPolls ? [styles.placeholderContainerFeed, styles.row] : [styles.placeholderContainer, styles.row]}>
                     <Text style={styles.placeholderText}>
                         No new polls, try later or{''}
                     </Text>
@@ -281,9 +283,9 @@ const AwesomeFeed = ({
                 ) : (
                     <SafeAreaView style={styles.container}>
                         <Animated.FlatList
-                            data={preloadedData.filter((item, index, self) =>
+                            data={preloadedData?.filter((item, index, self) =>
                                 index === self.findIndex((t) => t.id === item.id)
-                            )}
+                            ) ?? []}
                             ref={flatListRef}
                             keyExtractor={(item) => item?.id ?? String(Math.random())}
                             pagingEnabled
@@ -331,6 +333,13 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.white,
         marginBottom: -NEXT_POLL_OFFSET,
         justifyContent: 'flex-start',
+    },
+    placeholderContainerFeed: {
+        height: POLL_HEIGHT,
+        backgroundColor: Colors.white,
+        marginBottom: -NEXT_POLL_OFFSET,
+        justifyContent: 'center',
+
     },
     placeholderContainer: {
         flex: 1,

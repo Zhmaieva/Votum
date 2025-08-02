@@ -571,13 +571,13 @@ async function fetchPolls(userId, featuredId) {
             pool.query(topEngagingNotChosen, [userId]),
         ]);
 
-        console.log('1. Top popular polls:', topPopularQuery.rows);
-        console.log('2. Follow engaging polls:', followEngagingQuery.rows);
-        console.log('3. Newly created polls:', newlyCreatedQuery.rows);
-        console.log('4. Top engaging polls:', topEngagingQuery.rows);
-        console.log('5. Follow popular polls:', followPopularQuery.rows);
-        console.log('6. Top popular polls (other categories):', topPopularNotChosenQuery.rows);
-        console.log('9. Top engaging polls (other categories):', topEngagingNotChosenQuery.rows);
+        // console.log('1. Top popular polls:', topPopularQuery.rows);
+        // console.log('2. Follow engaging polls:', followEngagingQuery.rows);
+        // console.log('3. Newly created polls:', newlyCreatedQuery.rows);
+        // console.log('4. Top engaging polls:', topEngagingQuery.rows);
+        // console.log('5. Follow popular polls:', followPopularQuery.rows);
+        // console.log('6. Top popular polls (other categories):', topPopularNotChosenQuery.rows);
+        // console.log('9. Top engaging polls (other categories):', topEngagingNotChosenQuery.rows);
 
         const finalFeedTracks = buildFinalFeedTracks({
             topPopularQuery,
@@ -617,7 +617,7 @@ function buildFinalFeedTracks(trackResults) {
     let streakDur = 0;
 
     // Helper to try adding a poll from a track with constraints
-    const tryAdd = (polls) => {
+    const tryAdd = (polls, force = false) => {
         for (const poll of polls) {
             if (usedIds.has(poll.id)) continue;
 
@@ -627,11 +627,12 @@ function buildFinalFeedTracks(trackResults) {
             const sameCat = category_id === lastCat;
             const sameDur = duration_type === lastDur;
 
-            if ((sameUser && streakUser >= 2) ||
-                (sameCat && streakCat >= 2) ||
-                (sameDur && streakDur >= 2)) {
-                continue;
-            }
+            if (!force)
+                if ((sameUser && streakUser >= 2) ||
+                    (sameCat && streakCat >= 2) ||
+                    (sameDur && streakDur >= 2)) {
+                    continue;
+                }
 
             finalFeed.push(poll);
             usedIds.add(poll.id);
@@ -677,7 +678,7 @@ function buildFinalFeedTracks(trackResults) {
     // Fill remaining if underfilled
     let fallback = 0;
     while (finalFeed.length < 11 && fallback < tracks.length * 2) {
-        tryAdd(tracks[fallback % tracks.length].rows);
+        tryAdd(tracks[fallback % tracks.length].rows, true);
         fallback++;
     }
 

@@ -91,36 +91,6 @@ function OnboardingFlow() {
 // 🔹 Stack Navigator for "User" tab
 function UserStack() {
 
-    const [isLoading, setIsLoading] = useState(false);
-
-    const handleUpdateProfile = async (field, value, setIsLoading, navigation) => {
-        setIsLoading(true);
-        try {
-            console.log('value', `-${value}-`);
-            if (value === null) {
-                getDataService().setUserNameTakenError();
-                return;
-            }
-
-            if (!value?.trim()) {
-                getDataService().setUserNameEmptyError();
-                return;
-            }
-
-            const updatedData = { [field]: value };
-
-            // Update the user's profile with the dynamic field and value
-            await updateUserProfile(updatedData);
-            console.log('saving to DS' + JSON.stringify(getDataService().getUser()));
-            getDataService().commitUserChanges();
-            getDataService().resetErrors();
-            navigation.goBack();
-        } catch (error) {}
-        finally {
-            setIsLoading(false);
-        }
-    };
-
     return (
         <Stack.Navigator id="Test">
             <Stack.Screen name="Profile" component={MyUserProfileView} options={{ headerShown: false, gestureEnabled: true }} />

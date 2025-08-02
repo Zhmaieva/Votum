@@ -292,6 +292,7 @@ export const uploadProfileImage = async (image) => {
 export const fetchMyProfile = async () => {
     try {
         console.log('fetching my profile');
+
         const response = await apiClient.get(`/profile`, {
             headers: {
                 Authorization: `Bearer ${await getToken()}`,
