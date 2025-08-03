@@ -42,8 +42,19 @@ const NewPasswordView = ({ route }) => {
                 setGenericErrorVisible(true);
                 return;
             }
-            globalEventEmitter.emit('signup', {})
+            globalEventEmitter.emit('signup', {});
+            return;
         }
+
+        if (flowType === VERIFICATION_FLOW_TYPE.CHANGE_PASSWORD) {
+            const { success } = await resetPassword(password);
+            if (!success) {
+                setGenericErrorVisible(true);
+                return;
+            }
+            navigation.navigate('Success password settings');
+        }
+
     };
 
     return (

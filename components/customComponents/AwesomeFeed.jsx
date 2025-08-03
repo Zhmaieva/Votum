@@ -125,11 +125,15 @@ const AwesomeFeed = ({
                 if (item?.id === 'no-more-polls') {
                     return (
                         <View style={wereOtherPolls ? styles.placeholderContainerFeed : styles.placeholderContainerUserProfile}>
-                            <Text style={styles.placeholderText}>
-                                {isCurrentUser
-                                    ? 'Create your first poll now'
-                                    : "This user hasn't created any polls yet"}
-                            </Text>
+                            {isCurrentUser ? (
+                                <Text style={styles.placeholderText}>
+                                    Create a new poll
+                                </Text>
+                            ) : (
+                                <Text style={styles.placeholderText}>
+                                    No polls have been created yet
+                                </Text>
+                            )}
                         </View>
                     );
                 } else {
@@ -177,9 +181,8 @@ const AwesomeFeed = ({
             return (
                 <View style={wereOtherPolls ? [styles.placeholderContainerFeed, styles.row] : [styles.placeholderContainer, styles.row]}>
                     <Text style={styles.placeholderText}>
-                        No new polls, try later or{''}
+                        No new polls, try later or create one
                     </Text>
-                    <AwesomeLink text="create one." screenName='Add Poll' />
                 </View>
             );
         }

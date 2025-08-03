@@ -22,6 +22,7 @@ const FeedView = ({ route }) => {
     const [trendingPolls, setTrendingPolls] = useState(null); // default to null for loading state
     const [loggedInUserId, setLoggedInUserId] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     globalEventEmitter.on('sharedPoll', ({ pollId }) => {
         fetchPolls(pollId).then(res => {
@@ -38,15 +39,21 @@ const FeedView = ({ route }) => {
                     setLoggedInUserId(res.userId);
                 }
             }),
-            fetchPolls().then(res => {
-                setPolls(res);
-            }),
-            fetchTrendingPolls().then(res => {
-                if (!res)
-                    return;
-                setTrendingPolls(res);
-            })
-        ]).then(_=>{});
+            fetchPolls()
+                .then(res => {
+                    setPolls(res);
+                    setError(null);
+                })
+                .catch(() => {
+                    setPolls([]);
+                    setError('network'); // custom flag for error
+                }),
+            fetchTrendingPolls()
+                .then(res => {
+                    if (!res) return;
+                    setTrendingPolls(res);
+                })
+        ]).then(_ => {});
     }, []);
 
     const onRefresh = async () => {
@@ -69,25 +76,21 @@ const FeedView = ({ route }) => {
             ]);
     };
 
-    // if (polls === null) {
-    //     return <ActivityIndicator size="large" color="#0000ff" />;
-    // }
+    if (error === 'network') {
+        return (
+            <View style={styles.emptyContainer}>
+                <Text style={styles.emptyText}>
+                    Something went wrong, check your network connection.
+                </Text>
+            </View>
+        );
+    }
 
-    // if (polls?.length === 0 && !loading) {
+    // if (polls?.length === 0) {
     //     return (
     //         <View style={styles.emptyContainer}>
     //             <Text style={styles.emptyText}>
-    //                 No polls here yet. Why don't create one?
-    //             </Text>
-    //         </View>
-    //     );
-    // }
-    //
-    // if (!polls?.length && !loading) {
-    //     return (
-    //         <View style={styles.emptyContainer}>
-    //             <Text style={styles.emptyText}>
-    //                 Something went wrong, check your network connection.
+    //                 No polls to show right now — check back later!
     //             </Text>
     //         </View>
     //     );
