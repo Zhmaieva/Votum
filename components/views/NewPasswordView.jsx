@@ -42,7 +42,7 @@ const NewPasswordView = ({ route }) => {
                 setGenericErrorVisible(true);
                 return;
             }
-            globalEventEmitter.emit('signup', {});
+            navigation.navigate('Success password');
             return;
         }
 

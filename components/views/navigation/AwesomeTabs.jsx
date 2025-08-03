@@ -82,6 +82,7 @@ function AuthFlow() {
             <AuthStack.Screen
                 name="Success password"
                 component={SuccessPasswordView}
+                initialParams={{flowType: VERIFICATION_FLOW_TYPE.FORGOT_PASSWORD}}
                 options={{ headerShown: false, gestureEnabled: true }}
             />
         </AuthStack.Navigator>
@@ -155,6 +156,7 @@ function UserStack() {
             <Stack.Screen
                 name="Success password settings"
                 component={SuccessPasswordView}
+                initialParams={{flowType: VERIFICATION_FLOW_TYPE.CHANGE_PASSWORD}}
                 options={{ headerShown: false }}
             />
         </Stack.Navigator>
@@ -213,11 +215,13 @@ export function AuthNavigator() {
 
     useEffect(() => {
         isTokenAvailable().then(result => {
+            console.log('isTokenAvailable', result);
             setAuthenticated(result);
         })
     }, []);
 
     globalEventEmitter.on('signup', () => {
+        console.log('signup event');
         setAuthenticated(true);
     });
 
