@@ -29,15 +29,8 @@ const AwesomeUsernameInput = ({ route }) => {
             setModalVisible(false);
             setModalMessage('');
 
-            setTimeout(() => {
-                debouncedCheck(actualUsername);
-            }, 0);
         }, [])
     );
-
-    useEffect(() => {
-        debouncedCheck(username);
-    }, [username]);
 
     const debouncedCheck = debounce(async (name) => {
         setIsChecking(true);
@@ -74,6 +67,7 @@ const AwesomeUsernameInput = ({ route }) => {
             .toLowerCase()
             .replace(/[^a-z0-9._]/g, '');
         setUsername(cleanedText);
+        debouncedCheck(cleanedText);
     };
 
     useEffect(() => {

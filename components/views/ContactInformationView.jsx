@@ -35,8 +35,8 @@ const ContactInformationView = () => {
     return (
         <SafeAreaView style={styles.safeArea}>
             <ScrollView contentContainerStyle={styles.container}>
-                <Text style={styles.title}>Contact Us</Text>
-                <Text style={styles.subtitle}>We'd love to hear from you!</Text>
+                <Text style={styles.title}>We'd love to hear from you!</Text>
+                <Text style={styles.subtitle}></Text>
 
                 <View style={styles.infoSection}>
                     <Text style={styles.label}>Email:</Text>

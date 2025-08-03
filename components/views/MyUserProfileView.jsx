@@ -30,11 +30,12 @@ const MyUserProfileView = () => {
         React.useCallback(() => {
             new Loader(setUserDataLoading).load([
                 (async () => {
-                    //await new Promise(resolve => setTimeout(resolve, 1000)); //to test delay
+                    let userData = getDataService().getUser();
+                    if (!userData) {
+                        userData = await fetchMyProfile();
 
-                    let userData = await fetchMyProfile();
-
-                    getDataService().setUser(userData);
+                        getDataService().setUser(userData);
+                    }
                     setUser(userData);
 
                     const pollsData = await fetchUserPolls(userData.userId);
