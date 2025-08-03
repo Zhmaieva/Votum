@@ -315,10 +315,10 @@ export const fetchMyProfile = async () => {
     }
 };
 
-export const searchPolls = async (query) => {
+export const searchPolls = async (query, searchFlags) => {
     try {
         console.log('searching polls...');
-        const response = await apiClient.get(`/polls/search?query=${query ?? ''}`, {
+        const response = await apiClient.get(`/polls/search?query=${query ?? ''}&searchFlags=${searchFlags}`, {
             headers: {
                 Authorization: `Bearer ${await getToken()}`,
             },

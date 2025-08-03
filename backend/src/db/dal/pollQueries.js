@@ -718,14 +718,45 @@ async function fetchUserPolls(requestingUserId, targetUserId) {
     return attachOptionsToPolls(requestingUserId, result.rows);
 }
 
+const SEARCH_FLAGS = {
+    QUESTION: 1,
+    ANSWER: 2,
+    USERNAME: 4,
+    ALL: 7, // QUESTION | ANSWER | USERNAME
+};
+
 /**
  * Fetch all polls by filter criteria
  *
  * @param {string} requestingUserId - ID of the current user (used for like/follow state)
  * @param {string} filterQuery - filter criteria
+ * @param searchFlags 1, 2, 4 or 7 for all
  * @returns {Promise<Array>} - List of polls created by the user
  */
-async function searchPolls(requestingUserId, filterQuery) {
+async function searchPolls(requestingUserId, filterQuery, searchFlags) {
+    const values = [requestingUserId];
+    let conditions = [];
+
+    if (searchFlags & 1) { // QUESTION
+        values.push(`%${filterQuery}%`);
+        conditions.push(`p.question ILIKE $${values.length}`);
+    }
+
+    if (searchFlags & 2) { // ANSWER
+        values.push(`%${filterQuery}%`);
+        conditions.push(`pao.text ILIKE $${values.length}`);
+    }
+
+    if (searchFlags & 4) { // USERNAME
+        values.push(`%${filterQuery}%`);
+        conditions.push(`u.username ILIKE $${values.length}`);
+    }
+
+    const whereClause =
+        conditions.length > 0
+            ? `AND (${conditions.join(' OR ')})`
+            : '';
+
     const query = `
         SELECT DISTINCT p.id, p.question, p.ends_in, p.readable_id, u.username, up.user_id, up.image,
                up.followers_number,
@@ -739,13 +770,12 @@ async function searchPolls(requestingUserId, filterQuery) {
         LEFT JOIN user_follows uf ON u.id = uf.user_follow_id AND uf.user_follower_id = $1
         LEFT JOIN poll_answer_options pao ON pao.poll_id = p.id
         WHERE p.is_deleted = false
-          AND (
-                p.question ILIKE '%' || $2 || '%' OR
-                pao.text ILIKE '%' || $2 || '%'
-          )
-        ORDER BY p.ends_in DESC;
+          AND p.ends_in > (NOW() AT TIME ZONE 'UTC') 
+          ${whereClause}
+        ORDER BY p.ends_in DESC
+        LIMIT 100;
     `;
-    const result = await pool.query(query, [requestingUserId, filterQuery]);
+    const result = await pool.query(query, values);
     return attachOptionsToPolls(requestingUserId, result.rows);
 }
 
@@ -1073,6 +1103,7 @@ module.exports = {
     getPollOptionResults,
     likePoll,
     recalculatePollsScore,
+    SEARCH_FLAGS,
     searchPolls,
     sharePoll,
     unlikePoll,

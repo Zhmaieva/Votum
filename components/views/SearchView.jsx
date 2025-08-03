@@ -7,6 +7,13 @@ import AwesomeSearch from "../customComponents/AwesomeSearch";
 import {fetchMyProfile, searchPolls} from "../../shared/api/apiClient";
 import {calculateTimeDifference, Loader, MIN_LOADING_TIME} from "../../shared/common";
 
+const SEARCH_FLAGS = {
+    question: 1,
+    answer: 2,
+    username: 4,
+    all: 7, // QUESTION | ANSWER | USERNAME
+};
+
 const SearchView = () => {
     const [polls, setPolls] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
@@ -40,14 +47,20 @@ const SearchView = () => {
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.container}>
                 <View style={styles.searchContainer}>
-                    <AwesomeSearch onSearchPress={async (query) => {
-                        if (query)
+                    <AwesomeSearch onSearchPress={async (query, selectedCategories) => {
+                        if (query) {
+                            let searchFlags = 0;
+                            selectedCategories.forEach((category) => {
+                                searchFlags += SEARCH_FLAGS[category.toLowerCase()];
+                            })
+
                             await loader.load([
-                                searchPolls(query).then(async res => {
+                                searchPolls(query, searchFlags).then(async res => {
                                     setPolls(res.slice());
                                     setRefreshing(false);
                                 })
                             ]);
+                        }
                         setTimeout(() => {
                             setSearchQuery(query);
                         }, MIN_LOADING_TIME)

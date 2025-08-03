@@ -516,13 +516,13 @@ app.get('/polls', authMiddleware, async (req, res) => {
 
 app.get('/polls/search', authMiddleware, async (req, res, next) => {
     try {
-        const { query } = req.query;
+        const { query, searchFlags } = req.query;
         if (!query) {
             res.json([]);
             return;
         }
 
-        const result = await pollQueries.searchPolls(req.user.id, query);
+        const result = await pollQueries.searchPolls(req.user.id, query, searchFlags);
         res.json(result);
     } catch (e) {
         next(e);
