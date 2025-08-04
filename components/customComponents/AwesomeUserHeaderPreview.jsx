@@ -66,7 +66,7 @@ const AwesomeUserHeaderPreview = ({ userData, loggedInUserId }) => {
         if (isOwnProfile) {
             navigation.navigate("Profile");
         } else {
-            navigation.navigate("Somebodys Profile", { userId: user.userId });
+            navigation.navigate("User Profile", { userId: user.userId });
         }
     };
 

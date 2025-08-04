@@ -24,6 +24,8 @@ const sendCodeEmail = require("./mail/mailing");
 
 const app = express();
 // Manual CORS header
+app.set('view engine', 'ejs');
+app.set('views', __dirname + '/views');
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*'); // allow any origin
     res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
@@ -36,6 +38,12 @@ app.use((req, res, next) => {
     //setTimeout(next, 6000);
     next();
 });
+
+// Catch-all handler for undefined routes
+app.use(async (req, res) => {
+    res.status(404).json({ message: 'Route not found' });
+});
+
 app.use(express.json());
 
 // Grab the port from CLI args
@@ -643,30 +651,52 @@ app.get('/polls/:id?/links', authMiddleware, async (req, res, next) => {
     }
 });
 
-app.get('/polls/share/:id', async (req, res) => {
+app.get('/polls/share/:id', async (req, res, next) => {
     try {
-        const pollId = req.params.id;
-        const poll = await getPollById(pollId, true);
+        const pollId = <req className="params id"></req>;
 
-        if (!poll) return res.status(404).send('Poll not found');
+        // Example: fetch poll data from DB by readableId (e.g. "abc123")
+        const poll = await getPollById(pollId, true); // `true` = allow unauthenticated
 
-        const html = `
-          <html>
-            <head>
-              <meta property="og:title" content="${poll.question}" />
-              <meta property="og:description" content="${poll.options.map(o => o.text).join(' | ')}" />
-              <meta property="og:image" content="${poll.user.image}" />
-              <meta http-equiv="refresh" content="1; url=voteapp://poll/${poll.readableId}" /> 
-            </head>
-            <body>Welcome to Voteapp</body>
-          </html>
-        `;
-        res.send(html);
-    }
-    catch (e) {
+        if (!poll || !poll.options) return res.status(404).send('Poll not found');
+
+        const question = poll.question;
+        const answers = poll.options.map(option => option.text);
+
+        return res.render('poll-preview', {
+            pollId,
+            question,
+            answers,
+        });
+    } catch (e) {
         next(e);
     }
 });
+
+// app.get('/polls/share/:id', async (req, res) => {
+//     try {
+//         const pollId = req.params.id;
+//         const poll = await getPollById(pollId, true);
+//
+//         if (!poll) return res.status(404).send('Poll not found');
+//
+//         const html = `
+//           <html>
+//             <head>
+//               <meta property="og:title" content="${poll.question}" />
+//               <meta property="og:description" content="${poll.options.map(o => o.text).join(' | ')}" />
+//               <meta property="og:image" content="${poll.user.image}" />
+//               <meta http-equiv="refresh" content="1; url=voteapp://poll/${poll.readableId}" />
+//             </head>
+//             <body>Welcome to Voteapp</body>
+//           </html>
+//         `;
+//         res.send(html);
+//     }
+//     catch (e) {
+//         next(e);
+//     }
+// });
 
 app.post('/polls/view', authMiddleware, async (req, res, next) => {
     try {

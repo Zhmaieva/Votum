@@ -131,7 +131,7 @@ const AwesomeFeed = ({
                                 </Text>
                             ) : (
                                 <Text style={styles.placeholderText}>
-                                    No polls have been created yet
+                                    No new polls
                                 </Text>
                             )}
                         </View>

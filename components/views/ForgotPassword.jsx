@@ -59,7 +59,10 @@ const ForgotPasswordView = ({ navigation, route }) => {
                     <View style={styles.margin15}>
                         <AwesomeButton text="Create new account" color={Color.BLACK} screenName='Email Register' />
                     </View>
-                    <AwesomeButton text='Log in' color={Color.WHITE} screenName='Log in' />
+                    <AwesomeButton text='Log in'
+                                   color={Color.WHITE}
+                                   additionalFunc={() => navigation.goBack()}
+                    />
                 </View>
 
                 <AwesomeModal

@@ -272,8 +272,8 @@ const AwesomeVote = ({
                                             {
                                                 width: animationMap.current.get(option.id)?.interpolate({
                                                     inputRange: [0, 100],
-                                                    outputRange: ['1.5%', '100%'], // 👈 Minimum 2% bar width for visibility
-                                                }) || '1.5%',
+                                                    outputRange: ['1.2%', '100%'], // 👈 Minimum 2% bar width for visibility
+                                                }) || '1.2%',
                                                 backgroundColor: getBarColor(percentMap.current?.get(option.id) || 0),
                                             },
                                         ]}

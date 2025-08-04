@@ -147,13 +147,13 @@ const AwesomeUserHeader = ({
                                 textColor={isFollowing ? Colors.black : Colors.white}
                             />
                         </View>
-                        <View style={styles.editButton}>
+                        {/*<View style={styles.editButton}>
                             <AwesomeButton
                                 text={isBlocked ? "Unblock" : "Block"}
                                 color={Color.BLACK}
                                 additionalFunc={handleBlockPress}
                             />
-                        </View>
+                        </View>*/}
                         <View style={styles.iconContainer}>
                             <Image
                                 source={require('../../assets/images/shareWhite.png')}
@@ -171,7 +171,7 @@ const AwesomeUserHeader = ({
         <>
             {isInsideCard ? (
                 <TouchableOpacity onPress={() => {
-                    navigation.navigate(isOwnProfile ? "Profile" : "Somebodys Profile", { userId: user.userId });
+                    navigation.navigate(isOwnProfile ? "Profile" : "User Profile", { userId: user.userId });
                 }}>
                     {content}
                 </TouchableOpacity>

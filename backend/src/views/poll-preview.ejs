@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta property="og:image" content="https://storage.beampie.com/vote/V_Votum.png" />
+    <meta http-equiv="refresh" content="1; url=voteapp://poll/<%= pollId %>" />
+
+    <title>Votum — Poll Preview</title>
+    <link rel="icon" href="https://storage.beampie.com/vote/V_Votum.png" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "IBM Plex Mono", monospace;
+            background: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            padding: 2rem;
+        }
+
+        .styled-poll-card {
+            border: 1px solid black;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0;
+            box-shadow: 3px 3px 0 #93a548;
+            margin-bottom: 1.5rem;
+        }
+
+        .styled-poll-question {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            text-align: left;
+        }
+
+        .styled-poll-options button {
+            display: block;
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 0.75rem;
+            background: white;
+            border: 1px solid black;
+            color: black;
+            font-size: 1rem;
+            text-align: left;
+            box-shadow: 3px 3px 0 #93a548;
+            cursor: default;
+        }
+
+        .open-app-button {
+            width: 100%;
+            background-color: black;
+            color: white;
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            border: none;
+            cursor: pointer;
+            font-family: monospace;
+            box-shadow: 3px 3px 0 #93a548;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="styled-poll-card">
+        <p class="styled-poll-question">Q: <%= question %></p>
+        <div class="styled-poll-options">
+            <% answers.forEach(answer => { %>
+                <button><%= answer %></button>
+            <% }); %>
+        </div>
+    </div>
+
+    <button class="open-app-button" onclick="openApp()">Download Votum</button>
+</div>
+
+<script>
+    const deepLink = 'voteapp://poll/<%= pollId %>';
+    const storeLink = /android/i.test(navigator.userAgent)
+        ? 'https://play.google.com/store/apps/details?id=com.votum.app'
+        : 'https://apps.apple.com/app/id6736363458'; // Replace with your actual iOS ID
+
+    function openApp() {
+        window.location = deepLink;
+        setTimeout(() => {
+            window.location = storeLink;
+        }, 1500);
+    }
+</script>
+</body>
+</html>

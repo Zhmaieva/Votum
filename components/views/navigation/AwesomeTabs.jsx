@@ -167,8 +167,8 @@ function UserStack() {
 function FeedStack() {
     return (
         <Stack.Navigator id="Test2">
-            <Stack.Screen name="FeedMain" component={FeedView} options={{ headerShown: false, gestureEnabled: true }} />
-            <Stack.Screen name="Somebodys Profile" component={SomebodysProfileView} options={{ headerShown: true, gestureEnabled: true }} />
+            <Stack.Screen name="Feed" component={FeedView} options={{ headerShown: false, gestureEnabled: true }} />
+            <Stack.Screen name="User Profile" component={SomebodysProfileView} options={{ headerShown: true, gestureEnabled: true }} />
             <Stack.Screen name="Profile" component={MyUserProfileView} options={{ headerShown: false, gestureEnabled: true }} />
 
         </Stack.Navigator>
@@ -180,7 +180,7 @@ function VotedStack() {
     return (
         <Stack.Navigator id="Test3">
             <Stack.Screen name="VotedMain" component={VotedView} options={{ headerShown: false, gestureEnabled: true }} />
-            <Stack.Screen name="Somebodys Profile" component={SomebodysProfileView} options={{ headerShown: false, gestureEnabled: true }} />
+            <Stack.Screen name="User Profile" component={SomebodysProfileView} options={{ headerShown: false, gestureEnabled: true }} />
             <Stack.Screen name="Profile" component={MyUserProfileView} options={{ headerShown: false, gestureEnabled: true }} />
         </Stack.Navigator>
     );
@@ -203,7 +203,7 @@ function SearchStack() {
     return (
         <Stack.Navigator id="Test5">
             <Stack.Screen name="SearchMain" component={SearchView} options={{ headerShown: false, gestureEnabled: true }} />
-            <Stack.Screen name="Somebodys Profile" component={SomebodysProfileView} options={{ headerShown: false, gestureEnabled: true }} />
+            <Stack.Screen name="User Profile" component={SomebodysProfileView} options={{ headerShown: false, gestureEnabled: true }} />
             <Stack.Screen name="Profile" component={MyUserProfileView} options={{ headerShown: false, gestureEnabled: true }} />
         </Stack.Navigator>
     );
@@ -242,28 +242,28 @@ export function AuthNavigator() {
 // 🔹 Main Tab Navigator
 export function AwesomeTabs() {
     const insets = useSafeAreaInsets();
-    let tabBarHeight = 60;
+    let tabBarHeight = 68;
     if (height < 670) {
         // iPhone SE (1st & 2nd gen), older Androids
-        tabBarHeight = 50;
+        tabBarHeight = 58;
     } else if (height >= 670 && height < 740) {
         // iPhone 8, small Androids
-        tabBarHeight = 55;
+        tabBarHeight = 63;
     } else if (height >= 740 && height < 800) {
         // iPhone 11 Pro, 12 Mini
-        tabBarHeight = 60;
+        tabBarHeight = 68;
     } else if (height >= 800 && height < 850) {
         // iPhone 13, 14, Pixel 6a
-        tabBarHeight = 65;
+        tabBarHeight = 73;
     } else if (height >= 850 && height < 900) {
         // iPhone 13 Pro Max, 14 Plus
-        tabBarHeight = 70;
+        tabBarHeight = 78;
     } else if (height >= 900 && height < 1000) {
         // Large Androids, Pixel 7 Pro
-        tabBarHeight = 75;
+        tabBarHeight = 83;
     } else {
         // Tablets or foldables
-        tabBarHeight = 80;
+        tabBarHeight = 88;
     }
 
     return (

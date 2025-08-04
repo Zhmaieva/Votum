@@ -181,6 +181,9 @@ export default function VerificationCodeView({route}) {
                             ))}
                         </View>
                     </View>
+                    <View style={styles.margin15}>
+                        <AwesomeButton text='Next' color={Color.BLACK} additionalFunc={handleSubmit} />
+                    </View>
                     <View style={[styles.margin15, styles.centered]}>
                         <View style={styles.resendButtonContainer}>
                             <AwesomeButton
@@ -190,9 +193,6 @@ export default function VerificationCodeView({route}) {
                                 disabled={!canResend}
                             />
                         </View>
-                    </View>
-                    <View style={styles.margin40}>
-                        <AwesomeButton text='Next' color={Color.BLACK} additionalFunc={handleSubmit} />
                     </View>
                 </View>
                 <View>
@@ -207,7 +207,11 @@ export default function VerificationCodeView({route}) {
                             ) : (
                             flowType === VERIFICATION_FLOW_TYPE.FORGOT_PASSWORD ? (
                                 <View style={styles.margin15}>
-                                    <AwesomeButton text='Back' color={Color.WHITE} screenName='Forgot password' />
+                                    <AwesomeButton
+                                        text='Back'
+                                        color={Color.WHITE}
+                                        additionalFunc={() => navigation.goBack()}
+                                    />
                                 </View>
                             ) : (<></>)
                         )
