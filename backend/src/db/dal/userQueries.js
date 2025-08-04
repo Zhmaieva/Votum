@@ -151,7 +151,7 @@ async function getActivationCode(email) {
                          email
                      FROM activation_codes
                      WHERE email = LOWER($1)
-                       AND created_at >= (NOW() AT TIME ZONE 'UTC') - INTERVAL '15 minutes'
+                       AND created_at >= (NOW() AT TIME ZONE 'UTC') - INTERVAL '10 minutes'
                  ),
                  update_sent_on AS (
                      UPDATE activation_codes
@@ -219,7 +219,7 @@ async function getVerificationCode(email) {
                          email
                      FROM activation_codes
                      WHERE email = LOWER($1)
-                       AND created_at >= (NOW() AT TIME ZONE 'UTC') - INTERVAL '15 minutes'
+                       AND created_at >= (NOW() AT TIME ZONE 'UTC') - INTERVAL '10 minutes'
                  ),
                  update_sent_on AS (
                      UPDATE activation_codes
@@ -269,16 +269,18 @@ async function getVerificationCode(email) {
 async function checkActivationCode(email, code) {
     try {
         const query = `
-            WITH matched_email AS (
-                SELECT * FROM activation_codes
+            WITH matched_code AS (
+                DELETE FROM activation_codes
                 WHERE email = LOWER($1)
-                  AND created_at >= (NOW() AT TIME ZONE 'UTC') - INTERVAL '15 minutes'
+                      AND code = $2
+                      AND created_at >= (NOW() AT TIME ZONE 'UTC') - INTERVAL '10 minutes'
+                      RETURNING 1
             ),
              updated_attempts AS (
                  UPDATE activation_codes
                      SET attempts_made = attempts_made + 1
                      WHERE email = LOWER($1)
-                         AND created_at >= (NOW() AT TIME ZONE 'UTC') - INTERVAL '15 minutes'
+                         AND created_at >= (NOW() AT TIME ZONE 'UTC') - INTERVAL '10 minutes'
                          AND code <> $2
                      RETURNING attempts_made
              ),
@@ -286,18 +288,16 @@ async function checkActivationCode(email, code) {
                  SELECT 1 AS expired FROM activation_codes
                  WHERE email = LOWER($1)
                    AND code = $2
-                   AND created_at < (NOW() AT TIME ZONE 'UTC') - INTERVAL '15 minutes'
+                   AND created_at < (NOW() AT TIME ZONE 'UTC') - INTERVAL '10 minutes'
              )
             SELECT
                 CASE
                     WHEN NOT EXISTS (SELECT 1 FROM activation_codes WHERE email = LOWER($1)) THEN 0
                     WHEN (SELECT attempts_made FROM updated_attempts LIMIT 1) > 3 THEN -1
                     WHEN (SELECT COUNT(*) FROM expired_code) > 0 THEN 2
-                    WHEN (SELECT attempts_made FROM matched_email) > 3 THEN -1
-                    WHEN (SELECT COUNT(*) FROM matched_email WHERE code = $2) > 0 THEN 1
+                    WHEN (SELECT COUNT(*) FROM matched_code) > 0 THEN 1
                     ELSE 0
                     END AS result;
-
         `;
 
         const result = await pool.query(query, [email, code]);

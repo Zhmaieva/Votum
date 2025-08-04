@@ -2,11 +2,11 @@ const nodemailer = require('nodemailer');
 const {MAIL_PASS} = require("../constants");
 
 const transporter = nodemailer.createTransport({
-    host: 'smtp.mail.me.com',
+    host: 'smtp.gmail.com',
     port: 587, // Use 465 for SSL
     secure: false, // Set to true for port 465
     auth: {
-        user: 'artem.ovechko@icloud.com', // Your custom domain email on iCloud
+        user: 'votum.contact@gmail.com', // Your custom domain email on iCloud
         pass: MAIL_PASS, // App-specific password
     },
     socketTimeout: 10000,
@@ -18,7 +18,7 @@ const transporter = nodemailer.createTransport({
 
 const sendMail = async function (to, subject, text) {
     const mailOptions = {
-        from: 'artem.ovechko@icloud.com',
+        from: 'votum.contact@gmail.com',
         to,
         subject,
         text
@@ -32,8 +32,14 @@ const sendMail = async function (to, subject, text) {
     }
 }
 
-function sendEmail(to, subject, text) {
-    sendMail(to, subject, text).then(_ => {})
+function sendCodeEmail(to, code) {
+    return sendMail(to, 'Your Votum code', `Your code: ${code} (Expires in 10 minutes)
+                
+                Skip it if you’re not sure what this is.
+                
+                Need help? Just reply to this email.
+                
+                Votum`);
 }
 
-module.exports = sendEmail;
+module.exports = sendCodeEmail;

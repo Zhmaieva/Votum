@@ -20,6 +20,7 @@ const {getPollById, sharePoll} = require("./db/dal/pollQueries");
 const {next} = require("lodash/seq");
 const {sendExpoPushNotification} = require("./services/notificationService");
 const {getUserNotifications, deleteAllUserNotifications, markNotificationsAsRead} = require("./db/dal/notificationQueries");
+const sendCodeEmail = require("./mail/mailing");
 
 const app = express();
 // Manual CORS header
@@ -92,7 +93,7 @@ app.post("/users/passwords/forgot", async (req, res, next) => {
 
         if (code) {
             if (canSend) {
-                sendEmail(email, 'Poll App password reset', 'Forgot your password? Please enter this code in Poll App to set a new one: ' + code + ' This code is valid for 15 minutes.');
+                sendCodeEmail(email, code).then();
             }
         }
         return res.json({});
@@ -132,7 +133,7 @@ app.post("/users/register", async (req, res, next) => {
 
         if (code) {
             if (canSend) {
-                sendEmail(email, 'Poll App email verification', 'Welcome to Poll App, please enter this code in Poll App to continue registration: ' + code + ' This code is valid for 15 minutes.');
+                sendCodeEmail(email, code).then();
             }
 
             return res.json({});
@@ -289,7 +290,7 @@ app.post('/users/security/verify', authMiddleware, async (req, res, next) => {
             return res.status(errorCode).json(errorMessage);
         }
 
-        const existingUser = await getUser(req.user.id);
+        const existingUser = await getUserByLogin(req.user.username);
 
         if (!existingUser) {
             return res.status(errorCode).json(errorMessage);

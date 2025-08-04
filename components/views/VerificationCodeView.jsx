@@ -24,7 +24,7 @@ export const VERIFICATION_FLOW_TYPE = {
 export default function VerificationCodeView({route}) {
     const { flowType } = route.params ?? {};
 
-    const retryInterval = 61;
+    const retryInterval = 60;
     const navigation = useNavigation();
 
     const [inputs, setInputs] = useState(Array(6).fill(''));
