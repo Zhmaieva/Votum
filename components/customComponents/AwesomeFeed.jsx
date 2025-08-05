@@ -46,11 +46,16 @@ const AwesomeFeed = ({
     });
 
     useEffect(() => {
-        if (data?.length === 0) {
-            setPreloadedData([{ id: 'no-more-polls', type: 'placeholder' }]);
+        if (data === null || data === undefined) {
+            // Don't update yet — wait for actual data to arrive
+            return;
         }
-        else
+
+        if (data.length === 0) {
+            setPreloadedData([{ id: 'no-more-polls', type: 'placeholder' }]);
+        } else {
             setPreloadedData(data);
+        }
     }, [data]);
 
     useEffect(() => {
@@ -116,6 +121,9 @@ const AwesomeFeed = ({
     };
 
     const renderWithPlaceholder = (item) => {
+        if (item?.type === 'placeholder' && (data === null || data === undefined)) {
+            return null; // or loading spinner
+        }
         if (item?.type === 'placeholder') {
             const wereOtherPolls = data.length > 1;
 

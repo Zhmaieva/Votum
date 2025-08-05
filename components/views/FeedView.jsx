@@ -104,6 +104,8 @@ const FeedView = ({ route }) => {
                     rightOption='TRENDING'
                     onDisplayModeChangedHandler={(value) => {
                         setSelectedOption(value);
+                        setLoading(true); // will show <AwesomeLoadingPoll /> in AwesomeFeed
+                        setTimeout(() => setLoading(false), 300); // short delay to smoothen UI
                     }}
                 />
             </View>
