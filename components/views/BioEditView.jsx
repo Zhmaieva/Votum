@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, SafeAreaView } from 'react-native';
 import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from "../customComponents/AwesomeButton";
-import { getDataService } from "../../shared/common";
+import {getDataService, Logger} from "../../shared/common";
 import { updateUserProfile } from "../../shared/api/apiClient";
 
 const BioEditView = ({ navigation, route }) => {
@@ -25,7 +25,7 @@ const BioEditView = ({ navigation, route }) => {
             getDataService().commitUserChanges();
             navigation.goBack();
         } catch (error) {
-            console.error('Error saving bio:', error);
+            Logger.error('Error saving bio:', error);
         } finally {
             setLoading(false);
         }

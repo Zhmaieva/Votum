@@ -1,7 +1,7 @@
 import { Text, TextInput, StyleSheet, View } from 'react-native';
 import React, { useState } from 'react';
 import {Colors, Fonts} from '../../utils/colorUtils';
-import { getDataService } from "../../shared/common";
+import {getDataService, Logger} from "../../shared/common";
 
 export default function AwesomeEmailInput({ value, bareStyle = false, onChangeText }) {
     const [email, setEmail] = useState(value);
@@ -23,7 +23,7 @@ export default function AwesomeEmailInput({ value, bareStyle = false, onChangeTe
             try {
                 getDataService().getUser().email = text;
             } catch (error) {
-                console.error('Error saving email:', error);
+                Logger.error('Error saving email:', error);
             }
 
             return;

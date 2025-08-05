@@ -4,7 +4,7 @@ import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeCategory from "../customComponents/AwesomeCategory";
 import AwesomeButton, { Color } from "../customComponents/AwesomeButton";
 import { AwesomeModal } from "../customComponents/AwesomeModal";
-import {globalEventEmitter} from "../../shared/common";
+import {globalEventEmitter, Logger} from "../../shared/common";
 import {setUserCategories} from "../../shared/api/apiClient"; // Assuming path is correct
 
 const categoryList = [
@@ -55,7 +55,7 @@ const CategoriesView = ({ route }) => {
 
             await setUserCategories(selectedCategoryIds);;
 
-            console.log("Proceeding with:", selectedCategories);
+            Logger.log("Proceeding with:", selectedCategories);
             globalEventEmitter.emit('signIn', {});
         }
     };

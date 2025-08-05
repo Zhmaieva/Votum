@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, StyleSheet, SafeAreaView, Text } from 'react-native';
 import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from "../customComponents/AwesomeButton";
-import { getDataService } from "../../shared/common";
+import {getDataService, Logger} from "../../shared/common";
 import { updateUserProfile } from "../../shared/api/apiClient";
 import AwesomeUsernameInput from "../customComponents/AwesomeUsernameInput";
 import { AwesomeModal } from "../customComponents/AwesomeModal";
@@ -46,7 +46,7 @@ const EditUsernameView = ({ navigation }) => {
             getDataService().commitUserChanges();
             navigation.goBack();
         } catch (error) {
-            console.error('Error saving username:', error);
+            Logger.error('Error saving username:', error);
             setModalMessage("An error occurred, please try again later");
             setModalVisible(true);
         } finally {

@@ -89,6 +89,17 @@ async function getFollows(userId) {
     }
 }
 
+async function writeDebugLog(userId, log) {
+    const query = `
+        INSERT INTO user_logs (user_id, log)
+        SELECT $1::uuid, $2
+        WHERE EXISTS (
+            SELECT 1 FROM users WHERE id = $1::uuid AND is_debug = true
+        )
+    `;
+    await pool.query(query, [userId, log]);
+}
+
 
 async function getUser(userId) {
     const query = `
@@ -102,7 +113,8 @@ async function getUser(userId) {
             COUNT(p.id)::integer as "pollsNumber",
             COALESCE(SUM(p.votes_count), 0)::integer as "totalVotesNumber",
             up.bio,
-            uc."onboardingComplete"
+            uc."onboardingComplete",
+            u.is_debug
         FROM users u
                  JOIN user_profiles up ON u.id = up.user_id
                  LEFT JOIN polls p ON p.created_by = u.id AND p.is_deleted = false
@@ -668,4 +680,5 @@ module.exports = {
     unfollowUser,
     updateProfileImage,
     updatePushToken,
+    writeDebugLog
 }

@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { Colors, Fonts } from '../../utils/colorUtils';
 import ReportPoll from "./AwesomeReportPoll";
-import {globalEventEmitter, onShare} from "../../shared/common";
+import {globalEventEmitter, Logger, onShare} from "../../shared/common";
 import AwesomeLikeButton from "./AwesomeLikeButton";
 import { AwesomeModal } from './AwesomeModal'
 import {voteOnPoll} from "../../shared/api/apiClient";
@@ -153,9 +153,9 @@ const AwesomeVote = ({
         const result = await voteOnPoll(optionId);
 
         if (result.success) {
-            console.log('Voted successfully!');
+            Logger.log('Voted successfully!');
         } else {
-            console.error('Vote failed:', result.error);
+            Logger.error('Vote failed:', result.error);
         }
 
         globalEventEmitter.emit('vote', { pollId: id, options: newOptions, optionId, cardId: voteCardId});

@@ -14,7 +14,7 @@ import AwesomeButton, {Color} from "../customComponents/AwesomeButton";
 import AwesomeUsernameInput from "../customComponents/AwesomeUsernameInput";
 import {signUpFinish} from "../../shared/api/apiClient";
 import {AwesomeModal} from "../customComponents/AwesomeModal";
-import {getDataService, globalEventEmitter} from "../../shared/common";
+import {getDataService, globalEventEmitter, Logger} from "../../shared/common";
 import {useNavigation} from "@react-navigation/native";
 
 const UsernameView = ({}) => {
@@ -82,7 +82,7 @@ const UsernameView = ({}) => {
                                 }
 
                                 const response = await signUpFinish(username, password);
-                                console.log(response);
+                                Logger.log(response);
 
                                 if (response.success) {
                                     globalEventEmitter.emit('signup', {});

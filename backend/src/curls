@@ -1,0 +1,20 @@
+curl -X POST http://localhost:3000/test/push \
+  -H "Content-Type: application/json" \
+  -d '{
+    "token": "your_device_token_here",
+    "title": "Test Title",
+    "body": "This is the body of the push notification.",
+    "screenName": "TargetScreen",
+    "code": "KAkmfm320ALZ939lLZNdmd0i8Mkm3kmzx0zkMALl0--21332xz0xz0..j21mxc.v3.33343xvcij8329rundsbdb z73"
+  }'
+
+
+curl -X POST https://api-voteapp.beampie.com/test/push \
+  -H "Content-Type: application/json" \
+  -d '{
+    "token": "your_device_token_here",
+    "title": "Test Title",
+    "body": "This is the body of the push notification.",
+    "screenName": "TargetScreen",
+    "code": "KAkmfm320ALZ939lLZNdmd0i8Mkm3kmzx0zkMALl0--21332xz0xz0..j21mxc.v3.33343xvcij8329rundsbdb z73"
+  }'

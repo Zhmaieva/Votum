@@ -10,7 +10,8 @@ const {pool} = require("./db/dal/pool");
 const pollQueries = require("./db/dal/pollQueries");
 const userQueries = require("./db/dal/userQueries");
 const {getActivationCode, checkActivationCode, checkAndInsertUserWithProfile, getUserByLogin, getUser, getVerificationCode, changePassword,
-    addInquiry
+    addInquiry,
+    writeDebugLog
 } = require("./db/dal/userQueries");
 const sendEmail = require("./mail/mailing");
 const {validateEmail, validateUsername, validatePassword} = require("./validation");
@@ -80,10 +81,6 @@ if (isDebug) {
     });
 }
 
-app.post("/login", async (req, res) => {
-
-});
-
 app.post("/users/passwords/forgot", async (req, res, next) => {
     try {
         const { email } = req.body;
@@ -104,6 +101,16 @@ app.post("/users/passwords/forgot", async (req, res, next) => {
         next(e);
     }
 });
+
+app.post('/debug/log', authMiddleware, async (req, res, next) => {
+    try {
+        const { log } = req.body;
+
+        await writeDebugLog(req.user.id, log);
+    } catch (e) {
+        next(e);
+    }
+})
 
 app.post("/users/passwords", signupAuthMiddleware, async (req, res, next) => {
     try {

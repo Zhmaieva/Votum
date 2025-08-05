@@ -859,3 +859,13 @@ ALTER TABLE user_inquiries DROP CONSTRAINT user_inquiries_pkey;
 
 -- Step 2: Add new composite PK (on email + inquiry_type)
 ALTER TABLE user_inquiries ADD PRIMARY KEY (email, inquiry_type);
+
+--Tue Aug 5 3:01 PM
+CREATE TABLE user_logs (
+    user_id     uuid,
+    log         varchar,
+    created_at  TIMESTAMPTZ default (now() AT TIME ZONE 'UTC')
+);
+
+ALTER TABLE users ADD COLUMN
+    is_debug boolean default false;

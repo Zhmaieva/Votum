@@ -4,6 +4,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from '../customComponents/AwesomeButton';
 import AwesomeBirthPicker from '../customComponents/AwesomeBirthPicker';
+import {Logger} from "../../shared/common";
 
 export default function EditBirthDateView() {
     const navigation = useNavigation();
@@ -14,7 +15,7 @@ export default function EditBirthDateView() {
 
     const handleSave = () => {
         // TODO: Add actual save logic (API call or context/store update)
-        console.log('Saved birth date:', dateOfBirth);
+        Logger.log('Saved birth date:', dateOfBirth);
         navigation.goBack();
     };
 

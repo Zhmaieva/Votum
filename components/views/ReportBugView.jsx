@@ -4,6 +4,7 @@ import AwesomeButton, { Color } from '../customComponents/AwesomeButton';
 import { AwesomeModal } from '../customComponents/AwesomeModal';
 import { Colors, Fonts } from '../../utils/colorUtils';
 import { Keyboard } from 'react-native';
+import {Logger} from "../../shared/common";
 
 const ReportBugView = () => {
     const [description, setDescription] = useState('');
@@ -28,13 +29,13 @@ const ReportBugView = () => {
 
         try {
             // Simulate sending to server
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            console.log('Bug report submitted:', description);
+            await new Promise(resolve => setTimeout(resolve, 200));
+            Logger.log('Bug report submitted:', description);
 
             setDescription(''); // Clear input
             Keyboard.dismiss(); // 👈 Dismiss keyboard after submit
         } catch (error) {
-            console.error('Failed to submit bug report:', error);
+            Logger.error('Failed to submit bug report:', error);
         } finally {
             setLoading(false);
         }

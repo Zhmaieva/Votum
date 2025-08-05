@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity, Pressable } from "react-native";
 import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from "./AwesomeButton";
-import {globalEventEmitter, onShare} from "../../shared/common";
+import {globalEventEmitter, Logger, onShare} from "../../shared/common";
 import {fetchUserNotifications, followProfile, unfollowProfile} from "../../shared/api/apiClient";
 import {useFocusEffect, useNavigation} from "@react-navigation/native";
 import { AwesomeModal } from "./AwesomeModal";
@@ -40,9 +40,9 @@ const AwesomeUserHeader = ({
         fetchUserNotifications().then((res) => {
             if (res) {
                 setNotifications(res);
-                console.log(res);
+                Logger.log(res);
                 const hasNotifications = res.find(x => !x.isViewed);
-                console.log(hasNotifications);
+                Logger.log(hasNotifications);
                 if (hasNotifications)
                     setHasNewNotifications(true)
                 else

@@ -11,7 +11,7 @@ import ProfileEditView from "../ProfileEditView";
 import BioEditView from "../BioEditView";
 import EmailEditView from "../EmailEditView";
 import {isTokenAvailable, updateUserProfile} from "../../../shared/api/apiClient";
-import {getDataService, globalEventEmitter} from "../../../shared/common";
+import {getDataService, globalEventEmitter, Logger} from "../../../shared/common";
 import HeaderRightButton from "../../customComponents/HeaderRightButton";
 import FollowingView from "../FollowingView";
 import RegistrationMethodView from "../RegistrationMethodView";
@@ -215,13 +215,13 @@ export function AuthNavigator() {
 
     useEffect(() => {
         isTokenAvailable().then(result => {
-            console.log('isTokenAvailable', result);
+            Logger.log('isTokenAvailable', result);
             setAuthenticated(result);
         })
     }, []);
 
     globalEventEmitter.on('signup', () => {
-        console.log('signup event');
+        Logger.log('signup event');
         setAuthenticated(true);
     });
 

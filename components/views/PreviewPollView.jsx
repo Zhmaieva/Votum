@@ -17,7 +17,7 @@ import {
     fetchMyProfile,
     fetchUserPolls
 } from '../../shared/api/apiClient';
-import { getDataService } from '../../shared/common';
+import {getDataService, Logger} from '../../shared/common';
 import AwesomeUserHeaderPreview from "../customComponents/AwesomeUserHeaderPreview";
 import AwesomeLoadingHeader from "../customComponents/AwesomeLoadingHeader";
 
@@ -70,7 +70,7 @@ const PreviewPollView = () => {
                 pollId: newPoll?.id || newPoll?.readableId, // Adjust to your backend response
             });
         } catch (e) {
-            console.error("Error publishing poll:", e);
+            Logger.error("Error publishing poll:", e);
             // Optional: show a toast or modal
         }
     };

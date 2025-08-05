@@ -4,7 +4,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { Colors } from '../../utils/colorUtils';
 import { uploadProfileImage } from "../../shared/api/apiClient";
 import { AwesomeModal } from "./AwesomeModal";
-import {getDataService, globalEventEmitter} from "../../shared/common";
+import {getDataService, globalEventEmitter, Logger} from "../../shared/common";
 
 const AwesomeProfilePhoto = ({ profileImage, setProfileImage }) => {
     const [isModalVisible, setModalVisible] = useState(false);
@@ -35,7 +35,7 @@ const AwesomeProfilePhoto = ({ profileImage, setProfileImage }) => {
                 await uploadProfileImage(result.assets[0]);
             }
         } catch (err) {
-            console.log('image upload fail', err);
+            Logger.log('image upload fail', err);
             setProfileImage(oldImage);
             getDataService().getUser().image = oldImage;
             getDataService().commitUserChanges();

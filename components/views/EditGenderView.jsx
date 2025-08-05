@@ -4,6 +4,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from '../customComponents/AwesomeButton';
 import AwesomeSegmentedControls from '../customComponents/AwesomeSegmentedControls';
+import {Logger} from "../../shared/common";
 
 const GENDER_OPTIONS = ['male', 'female', 'non-binary', 'no answer'];
 
@@ -16,7 +17,7 @@ export default function EditGenderView() {
 
     const handleSave = () => {
         // TODO: Save gender (e.g., API call or context update)
-        console.log('Saved gender:', gender);
+        Logger.log('Saved gender:', gender);
         navigation.goBack();
     };
 

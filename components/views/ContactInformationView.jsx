@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Linking, SafeAreaView, ScrollView } from 'react
 import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from '../customComponents/AwesomeButton';
 import { AwesomeModal } from '../customComponents/AwesomeModal';
+import {Logger} from "../../shared/common";
 
 const ContactInformationView = () => {
     const [isModalVisible, setModalVisible] = useState(false);
@@ -14,7 +15,7 @@ const ContactInformationView = () => {
             setModalText(successMessage);
             setModalVisible(true);
         } catch (error) {
-            console.error('Failed to open link:', error);
+            Logger.error('Failed to open link:', error);
             setModalText('Something went wrong, please try again');
             setModalVisible(true);
         }
