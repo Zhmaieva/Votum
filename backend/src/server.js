@@ -39,11 +39,6 @@ app.use((req, res, next) => {
     next();
 });
 
-// Catch-all handler for undefined routes
-app.use(async (req, res) => {
-    res.status(404).json({ message: 'Route not found' });
-});
-
 app.use(express.json());
 
 // Grab the port from CLI args
@@ -653,7 +648,7 @@ app.get('/polls/:id?/links', authMiddleware, async (req, res, next) => {
 
 app.get('/polls/share/:id', async (req, res, next) => {
     try {
-        const pollId = <req className="params id"></req>;
+        const pollId = req.params.id;
 
         // Example: fetch poll data from DB by readableId (e.g. "abc123")
         const poll = await getPollById(pollId, true); // `true` = allow unauthenticated
