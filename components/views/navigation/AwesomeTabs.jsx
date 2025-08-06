@@ -1,4 +1,5 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef } from 'react';
+import { useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Fonts } from "../../../utils/colorUtils.js";
@@ -177,9 +178,24 @@ function FeedStack() {
 
 // 🔹 Stack Navigator for "Liked" tab
 function VotedStack() {
+    const feedRef = useRef(null);
+    const navigation = useNavigation();
+
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('tabPress', () => {
+            globalEventEmitter.emit('scrollToTopVoted');
+        });
+
+        return unsubscribe;
+    }, [navigation]);
+
     return (
         <Stack.Navigator id="Test3">
-            <Stack.Screen name="VotedMain" component={VotedView} options={{ headerShown: false, gestureEnabled: true }} />
+            <Stack.Screen
+                name="VotedMain"
+                component={VotedView}
+                options={{ headerShown: false, gestureEnabled: true }}
+            />
             <Stack.Screen name="User Profile" component={SomebodysProfileView} options={{ headerShown: false, gestureEnabled: true }} />
             <Stack.Screen name="Profile" component={MyUserProfileView} options={{ headerShown: false, gestureEnabled: true }} />
         </Stack.Navigator>
@@ -349,7 +365,16 @@ export function AwesomeTabs() {
                     },
                 })}
             />
-            <Tab.Screen name="VOTED" component={VotedStack} options={{ headerShown: false, gestureEnabled: true }} />
+            <Tab.Screen
+                name="VOTED"
+                component={VotedStack}
+                options={{ headerShown: false }}
+                listeners={({ navigation }) => ({
+                    tabPress: (e) => {
+                        globalEventEmitter.emit('scrollToTopVoted');
+                    },
+                })}
+            />
             <Tab.Screen name="MY PROFILE" component={UserStack} options={{ headerShown: false, gestureEnabled: true }} />
         </Tab.Navigator>
     );

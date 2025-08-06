@@ -14,6 +14,8 @@ import {
 } from "../../shared/common";
 import AwesomeLoadingPoll from "../customComponents/AwesomeLoadingPoll";
 import {isLoading} from "expo-font";
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { useScrollToTop } from '@react-navigation/native'; // optional hook
 
 const FeedView = ({ route }) => {
     const [selectedOption, setSelectedOption] = useState("my feed");
@@ -23,7 +25,19 @@ const FeedView = ({ route }) => {
     const [loggedInUserId, setLoggedInUserId] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const navigation = useNavigation();
+    const feedRef = useRef(null);
 
+    // Scroll to top when tab is pressed again
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('tabPress', e => {
+            if (feedRef.current?.scrollToOffset) {
+                feedRef.current.scrollToOffset({ offset: 0, animated: true });
+            }
+        });
+
+        return unsubscribe;
+    }, [navigation]);
     globalEventEmitter.on('sharedPoll', ({ pollId }) => {
         fetchPolls(pollId).then(res => {
             setPolls(res);
@@ -110,6 +124,7 @@ const FeedView = ({ route }) => {
                 />
             </View>
             <AwesomeFeed
+                ref={feedRef}
                 data={selectedOption.toLowerCase() === 'my feed' ? polls : trendingPolls}
                 onRefresh={onRefresh}
                 refreshing={refreshing}

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Image, TouchableOpacity, Alert, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, Alert, StyleSheet } from 'react-native';
+import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
 import { Colors } from '../../utils/colorUtils';
 import { uploadProfileImage } from "../../shared/api/apiClient";
@@ -49,13 +50,17 @@ const AwesomeProfilePhoto = ({ profileImage, setProfileImage }) => {
                 <Image
                     source={profileImage ? { uri: profileImage } : require('../../assets/images/default-avatar.png')}
                     style={styles.image}
-                    resizeMode="cover"
+                    contentFit="cover"
+                    transition={100}
+                    cachePolicy="disk"
                 />
                 <View style={styles.iconOverlay}>
                     <Image
                         source={require('../../assets/images/photoWhite.png')}
                         style={styles.icon}
-                        resizeMode="contain"
+                        contentFit="cover"
+                        transition={100}
+                        cachePolicy="disk"
                     />
                 </View>
             </TouchableOpacity>
@@ -89,6 +94,7 @@ const styles = StyleSheet.create({
     image: {
         width: '100%',
         height: '100%',
+        backgroundColor: Colors.lightGrey
     },
     iconOverlay: {
         position: 'absolute',

@@ -166,18 +166,9 @@ const AwesomeVote = ({
     };
 
     useEffect(() => {
-        const onVote = ({ pollId, options, optionId, cardId }) => {
-            if (pollId !== id || cardId === voteCardId) return;
-
-            refreshOptions(options, { forceAnimation: true });
-
-            setSelected(optionId);
-            onVote?.(optionId);
-        };
-
         globalEventEmitter.on('vote', onVote);
-        return () => globalEventEmitter.off('vote', onVote); // cleanup
-    }, [id, voteCardId]);
+        return () => globalEventEmitter.off('vote', onVote); // cleanup!
+    }, []);
 
     useEffect(() => {
         if (remainingTime <= 0) {

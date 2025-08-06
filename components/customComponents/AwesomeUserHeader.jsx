@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity, Pressable } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Pressable } from "react-native";
+import { Image } from "expo-image";
 import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from "./AwesomeButton";
 import {globalEventEmitter, Logger, onShare} from "../../shared/common";
@@ -95,7 +96,9 @@ const AwesomeUserHeader = ({
         <View style={styles.userContainer}>
             <View style={[styles.row, styles.aligned]}>
                 <View style={styles.avatarContainer}>
-                    <Image source={{ uri: user.image }} style={styles.avatar} />
+                    <Image source={{ uri: user.image }} style={styles.avatar} contentFit="cover"
+                           transition={100}
+                           cachePolicy="disk" />
                 </View>
                 <View>
                     <View style={[styles.followersContainer, styles.row]}>
@@ -134,13 +137,13 @@ const AwesomeUserHeader = ({
                             />
                         </View>
                         <View style={styles.row}>
-                            <Pressable style={styles.iconContainer} onPress={() => onShare(user)}>
+                            {/*<Pressable style={styles.iconContainer} onPress={() => onShare(user)}>
                                 <Image
                                     source={require('../../assets/images/shareWhite.png')}
                                     style={{ width: 26, height: 26 }}
                                     resizeMode="contain"
                                 />
-                            </Pressable>
+                            </Pressable>*/}
                             <Pressable
                                 style={styles.notificationWrapper}
                                 onPress={() => navigation.navigate("Notifications", notifications)}
@@ -172,14 +175,14 @@ const AwesomeUserHeader = ({
                                 color={Color.BLACK}
                                 additionalFunc={handleBlockPress}
                             />
-                        </View>*/}
+                        </View>
                         <View style={styles.iconContainer}>
                             <Image
                                 source={require('../../assets/images/shareWhite.png')}
                                 style={{ width: 26, height: 26 }}
                                 resizeMode="contain"
                             />
-                        </View>
+                        </View>*/}
                     </>
                 )}
             </View>
@@ -233,6 +236,7 @@ const styles = StyleSheet.create({
     avatar: {
         height: 60,
         width: 60,
+        backgroundColor: Colors.lightGrey,
     },
     font14: {
         fontSize: 14,
@@ -270,7 +274,7 @@ const styles = StyleSheet.create({
     },
     editButton: {
         flex: 1,
-        marginRight: 10,
+        marginRight: 0,
     },
     iconContainer: {
         width: 40,

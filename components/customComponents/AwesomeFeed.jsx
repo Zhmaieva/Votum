@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { forwardRef, useRef, useEffect, useState } from 'react';
 import {
     View,
     Animated,
@@ -17,33 +17,41 @@ import AwesomeLink from "./AwesomeLink";
 import {useFocusEffect} from "@react-navigation/native";
 import {fetchMyProfile, getPollOptions, viewPoll, viewPollRequest} from "../../shared/api/apiClient";
 import AwesomeLoadingPoll from "./AwesomeLoadingPoll";
+import { useImperativeHandle } from 'react';
 
 const minimumOptionsUpdateInterval = 2000;//1500;
 const maximumOptionsUpdateIntervalIncrease = 0;//10000;
+const AnimatedFlatList = Animated.createAnimatedComponent(Animated.FlatList);
 
-const AwesomeFeed = ({
-                         data,
-                         onRefresh,
-                         refreshing,
-                         renderItem,
-                         appendFunction,
-                         isUserProfileView = false,
-                         isVotedPollsView = false,
-                         isSearchView = false,
-                         isLoading = false,
-                         searchQuery = null,
-}) => {
+const AwesomeFeed = forwardRef(({
+                                    data,
+                                    onRefresh,
+                                    refreshing,
+                                    renderItem,
+                                    appendFunction,
+                                    isUserProfileView = false,
+                                    isVotedPollsView = false,
+                                    isSearchView = false,
+                                    isLoading = false,
+                                    searchQuery = null,
+                                }, externalRef) => {
     const scrollY = useRef(new Animated.Value(0)).current;
 
     const [preloadedData, setPreloadedData] = useState(data);
 
 
-    const flatListRef = useRef(null);
+    const flatListRef = externalRef || useRef(null);
     const timeoutRef = useRef(setTimeout(() => {}, 100));
 
     globalEventEmitter.on('sharedPoll', () => {
         flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
     });
+
+    useImperativeHandle(externalRef, () => ({
+        scrollToOffset: (args) => {
+            flatListRef.current?.scrollToOffset?.(args);
+        },
+    }));
 
     useEffect(() => {
         if (data === null || data === undefined) {
@@ -279,8 +287,11 @@ const AwesomeFeed = ({
     useFocusEffect(React.useCallback(() => {
         lastIndexRef.current = -1;
         setCurrentIndex(-1);
-        onSnapChange(0);
-    }, []));
+
+        if (preloadedData?.length > 0) {
+            onSnapChange(0);
+        }
+    }, [preloadedData]));
 
     return (
         <>
@@ -293,11 +304,11 @@ const AwesomeFeed = ({
                     </View>
                 ) : (
                     <SafeAreaView style={styles.container}>
-                        <Animated.FlatList
+                        <AnimatedFlatList
+                            ref={flatListRef}
                             data={preloadedData?.filter((item, index, self) =>
                                 index === self.findIndex((t) => t.id === item.id)
                             ) ?? []}
-                            ref={flatListRef}
                             keyExtractor={(item) => item?.id ?? String(Math.random())}
                             pagingEnabled
                             scrollEventThrottle={16}
@@ -331,8 +342,7 @@ const AwesomeFeed = ({
         </>
 
     )
-
-};
+});
 
 const styles = StyleSheet.create({
     container: {

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { Image } from "expo-image";
 import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from "./AwesomeButton";
 import { followProfile, unfollowProfile } from "../../shared/api/apiClient";
@@ -74,7 +75,9 @@ const AwesomeUserHeaderPreview = ({ userData, loggedInUserId }) => {
 
     return (
         <TouchableOpacity onPress={handlePress} style={styles.container}>
-            <Image source={{ uri: user.image }} style={styles.avatar} />
+            <Image source={{ uri: user.image }} style={styles.avatar} contentFit="cover"
+                   transition={100}
+                   cachePolicy="disk" />
             <View style={styles.textContainer}>
                 <Text style={styles.username}>{user.username}</Text>
                 <Text style={styles.subText}>
@@ -109,6 +112,7 @@ const styles = StyleSheet.create({
         width: 50,
         height: 50,
         marginRight: 10,
+        backgroundColor: Colors.lightGrey
     },
     textContainer: {
         flex: 1,
