@@ -82,7 +82,17 @@ if (isDebug) {
     });
 }
 
-app.use('/.well-known', express.static(join(__dirname, 'public/.well-known')));
+// Custom middleware to force content-type
+app.use('/.well-known/apple-app-site-association', (req, res, next) => {
+    const filePath = join(__dirname, 'public/.well-known/apple-app-site-association');
+
+    try {
+        res.setHeader('Content-Type', 'application/json');
+        res.sendFile(filePath);
+    } catch (err) {
+        next(err);
+    }
+});
 
 app.post("/users/passwords/forgot", async (req, res, next) => {
     try {
