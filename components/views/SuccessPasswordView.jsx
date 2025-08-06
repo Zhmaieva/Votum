@@ -17,7 +17,7 @@ export default function SuccessPasswordView({ navigation, route }) {
                     color={Color.BLACK}
                     additionalFunc={() => {
                         if (flowType === VERIFICATION_FLOW_TYPE.FORGOT_PASSWORD) {
-                            globalEventEmitter.emit('signup');
+                            globalEventEmitter.emit('passwordReset');
                             return;
                         }
 

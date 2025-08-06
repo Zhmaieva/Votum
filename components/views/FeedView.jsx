@@ -25,8 +25,9 @@ const FeedView = ({ route }) => {
     const loader = new Loader(setLoading);
 
     useEffect(() => {
+        let handler = () => {};
         try {
-            const handler = ({ pollId }) => {
+            handler = ({ pollId }) => {
                 Logger.log('Feed view: shared poll', pollId);
                 fetchPolls(pollId).then(res => {
                     setPolls(res);
@@ -43,6 +44,7 @@ const FeedView = ({ route }) => {
             });
         } catch {
             loadAll();
+            handler = () => {};
         }
 
         return () => {

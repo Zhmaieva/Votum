@@ -135,7 +135,28 @@ export default function App() {
         setIsAuthenticated(false);
     });
 
-    globalEventEmitter.on('signup', async () => {
+    globalEventEmitter.on('passwordReset', async () => {
+        const tokenAvailable = await isTokenAvailable();
+        let isOnboardingDone = false;
+        if (tokenAvailable) {
+            const profile = await fetchMyProfile();
+            if (profile) {
+                getDataService().setUser(profile);
+                isOnboardingDone = profile.onboardingComplete;
+            }
+        }
+        if (tokenAvailable) {
+            if (!isOnboardingDone)
+                globalEventEmitter.emit('signup', { skipMainLoading: true});
+            else
+                setIsAuthenticated(true );
+        }
+    });
+
+    globalEventEmitter.on('signup', async ({skipMainLoading}) => {
+        if (skipMainLoading)
+            return;
+
         const tokenAvailable = await isTokenAvailable();
         let isOnboardingDone = false;
         if (tokenAvailable) {
