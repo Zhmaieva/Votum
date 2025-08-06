@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import AwesomeFeed from "../customComponents/AwesomeFeed";
 import AwesomeCard from "../customComponents/AwesomeCard";
 import {View, StyleSheet, Text, SafeAreaView} from 'react-native';
@@ -20,7 +20,6 @@ const FeedView = ({ route }) => {
     const [loggedInUserId, setLoggedInUserId] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const navigation = useNavigation();
     const feedRef = useRef(null);
 
     const loader = new Loader(setLoading);
