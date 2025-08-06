@@ -120,6 +120,8 @@ app.post('/debug/log', authMiddleware, async (req, res, next) => {
         const { log } = req.body;
 
         await writeDebugLog(req.user.id, log);
+
+        return res.sendStatus(200);
     } catch (e) {
         next(e);
     }
