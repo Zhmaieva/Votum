@@ -575,7 +575,7 @@ app.get('/user/:id?/polls', authMiddleware, async (req, res, next) => {
     try {
         const userId = req.params.id;
 
-        const result = await pollQueries.fetchUserPolls(req.user.id, userId);
+        const result = await pollQueries.fetchUserPolls(req.user.id, userId ?? req.user.id);
         res.json(result);
     } catch (e) {
         next(e);
