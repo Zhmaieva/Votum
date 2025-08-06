@@ -657,7 +657,7 @@ app.get('/polls/:id?/links', authMiddleware, async (req, res, next) => {
 });
 
 app.get('/polls/share/:id', async (req, res, next) => {
-    return res.status(204);
+    return res.status(204).contentType('application/json');
 });
 
 
