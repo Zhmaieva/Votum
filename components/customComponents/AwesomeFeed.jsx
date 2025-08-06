@@ -34,6 +34,7 @@ const AwesomeFeed = forwardRef(({
                                     isSearchView = false,
                                     isLoading = false,
                                     searchQuery = null,
+                                    isPollCreatedScrollTop = false,
                                 }, externalRef) => {
     const scrollY = useRef(new Animated.Value(0)).current;
 
@@ -47,8 +48,17 @@ const AwesomeFeed = forwardRef(({
         const handler = () => {
             flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
         };
+        const pollCreatedHandler = () => {
+            if (!isPollCreatedScrollTop)
+                return;
+
+            flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
+        };
 
         globalEventEmitter.on('sharedPoll', handler);
+
+
+        globalEventEmitter.on('pollCreated', pollCreatedHandler);
         if (data === null || data === undefined) {
             // Don't update yet — wait for actual data to arrive
             return;
@@ -62,6 +72,7 @@ const AwesomeFeed = forwardRef(({
 
         return () => {
             globalEventEmitter.off('sharedPoll', handler);
+            globalEventEmitter.off('pollCreated', pollCreatedHandler);
         };
     }, [data]);
 

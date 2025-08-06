@@ -104,6 +104,7 @@ const MyUserProfileView = () => {
                             refreshing={refreshing}
                             isUserProfileView={true}
                             isLoading={userDataLoading}
+                            isPollCreatedScrollTop = {true}
                             renderItem={(item) => {
                                 item.timeLeft = calculateTimeDifference(item.endsIn);
                                 return (

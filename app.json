@@ -24,7 +24,9 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.beampie.voteapp",
-      "associatedDomains": ["applinks:api-voteapp.beampie.com"],
+      "associatedDomains": [
+        "applinks:api-voteapp.beampie.com"
+      ],
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
@@ -36,7 +38,8 @@
       },
       "splash": {
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.beampie.voteapp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
