@@ -1,6 +1,6 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {getDataService, globalEventEmitter} from "../common";
+import {getDataService, globalEventEmitter, Logger} from "../common";
 import {BASE_URL} from "./api-constants";
 
 let tokenValue = null;
@@ -26,7 +26,7 @@ export async function signOut() {
 // Create an Axios instance
 const apiClient = axios.create({
     baseURL: BASE_URL,
-    //timeout: 10000, // Set timeout (optional)
+    timeout: 1000, // Set timeout (optional)
     headers: { "Content-Type": "application/json" },
 });
 
@@ -291,7 +291,7 @@ export const uploadProfileImage = async (image) => {
 
 export const fetchMyProfile = async () => {
     try {
-        console.log('fetching my profile');
+        Logger.log('fetching my profile');
 
         const response = await apiClient.get(`/profile`, {
             headers: {
@@ -311,13 +311,13 @@ export const fetchMyProfile = async () => {
             bio: userProfile.bio || "bio here", // Fallback if bio is null or undefined
         };
     } catch (err) {
-        console.log('My profile failed', err);
+        Logger.log('My profile failed', err);
     }
 };
 
 export const searchPolls = async (query, searchFlags) => {
     try {
-        console.log('searching polls...');
+        Logger.log('searching polls...');
         const response = await apiClient.get(`/polls/search?query=${query ?? ''}&searchFlags=${searchFlags}`, {
             headers: {
                 Authorization: `Bearer ${await getToken()}`,
@@ -325,27 +325,27 @@ export const searchPolls = async (query, searchFlags) => {
         });
         return response?.data;
     } catch (err) {
-        console.log('Fetch failed', err);
+        Logger.log('Fetch failed', err);
     }
 };
 
-export const fetchPolls = async (postId) => {
+export const fetchPolls = async (pollId) => {
     try {
-        console.log('fetching polls...');
-        const response = await apiClient.get(`/polls?featuredId=${postId ?? ''}`, {
+        Logger.log('fetching polls...', pollId);
+        const response = await apiClient.get(`/polls?featuredId=${pollId ?? ''}`, {
             headers: {
                 Authorization: `Bearer ${await getToken()}`,
             },
         });
         return response?.data;
     } catch (err) {
-        console.log('Fetch failed', err);
+        Logger.log('Fetch failed', err);
     }
 };
 
 export const fetchVotedPolls = async () => {
     try {
-        console.log('fetching voted polls...');
+        Logger.log('fetching voted polls...');
         const response = await apiClient.get(`/polls/voted`, {
             headers: {
                 Authorization: `Bearer ${await getToken()}`,
@@ -353,13 +353,13 @@ export const fetchVotedPolls = async () => {
         });
         return response?.data;
     } catch (err) {
-        console.log('Fetch failed', err);
+        Logger.log('Fetch failed', err);
     }
 };
 
 export const fetchTrendingPolls = async () => {
     try {
-        console.log('fetching trending polls...');
+        Logger.log('fetching trending polls...');
         const response = await apiClient.get(`/polls/trending`, {
             headers: {
                 Authorization: `Bearer ${await getToken()}`,
@@ -367,13 +367,13 @@ export const fetchTrendingPolls = async () => {
         });
         return response?.data;
     } catch (err) {
-        console.log('Fetch failed', err);
+        Logger.log('Fetch failed', err);
     }
 };
 
 export const fetchUserPolls = async (userId) => {
     try {
-        console.log('fetching polls...');
+        Logger.log('fetching user polls...');
         const response = await apiClient.get(`user/${userId}/polls`, {
             headers: {
                 Authorization: `Bearer ${await getToken()}`,
@@ -381,7 +381,7 @@ export const fetchUserPolls = async (userId) => {
         });
         return response?.data;
     } catch (err) {
-        console.log('Fetch failed', err);
+        Logger.log('Fetch user failed', err);
     }
 };
 
@@ -394,17 +394,17 @@ export const getPollShareLink = async (pollId) => {
         });
 
         const { link } = response?.data || {};
-        console.log('Poll share link:', link);
+        Logger.log('Poll share link:', link);
         return link;
     } catch (err) {
-        console.log('Failed to fetch poll share link:', err.response?.data || err.message);
+        Logger.log('Failed to fetch poll share link:', err.response?.data || err.message);
         return null;
     }
 };
 
 export const viewPoll = async (id) => {
     try {
-        console.log(`viewing poll ${id}`);
+        Logger.log(`viewing poll ${id}`);
         const response = await apiClient.post(`/polls/view`, {
             pollId: id
         }, {
@@ -414,13 +414,13 @@ export const viewPoll = async (id) => {
         });
         return response?.data;
     } catch (err) {
-        console.log('Like failed', err);
+        Logger.log('View poll failed', err);
     }
 };
 
 export const likePoll = async (id) => {
     try {
-        console.log(`liking poll ${id}`);
+        Logger.log(`liking poll ${id}`);
         const response = await apiClient.post(`/polls/like`, {
             pollId: id
         }, {
@@ -428,25 +428,25 @@ export const likePoll = async (id) => {
                 Authorization: `Bearer ${await getToken()}`,
             },
         });
-        console.log('like polls response: ' + JSON.stringify(response.data));
+        Logger.log('like polls response: ' + JSON.stringify(response.data));
         return response?.data;
     } catch (err) {
-        console.log('Like failed', err);
+        Logger.log('Like failed', err);
     }
 };
 
 export const unlikePoll = async (id) => {
     try {
-        console.log(`liking poll ${id}`);
+        Logger.log(`unliking poll ${id}`);
         const response = await apiClient.delete(`/polls/like?pollId=${id}`,{
             headers: {
                 Authorization: `Bearer ${await getToken()}`,
             },
         });
-        console.log('unlike polls response: ' + JSON.stringify(response.data));
+        Logger.log('unlike polls response: ' + JSON.stringify(response.data));
         return response?.data;
     } catch (err) {
-        console.log('Like failed', err);
+        Logger.log('unlike failed', err);
     }
 };
 
@@ -466,7 +466,7 @@ export const durationMap = {
  */
 export const createPoll = async (question, options, duration) => {
     try {
-        console.log(`creating poll`);
+        Logger.log(`creating poll`);
         const response = await apiClient.post(`/polls`,{
             question,
             options,
@@ -476,10 +476,10 @@ export const createPoll = async (question, options, duration) => {
                 Authorization: `Bearer ${await getToken()}`,
             },
         });
-        console.log('create poll response: ' + JSON.stringify(response.data));
+        Logger.log('create poll response: ' + JSON.stringify(response.data));
         return response?.data;
     } catch (err) {
-        console.log('create failed', err);
+        Logger.log('create failed', err);
     }
 };
 
@@ -498,10 +498,10 @@ export const voteOnPoll = async (optionId) => {
             },
         });
 
-        console.log('vote on poll response:', response.data);
+        Logger.log('vote on poll response:', response.data);
         return { success: true };
     } catch (err) {
-        console.log('vote failed:', err.response?.data || err.message);
+        Logger.log('vote failed:', err.response?.data || err.message);
         return {
             success: false,
             error: err.response?.data?.error || err.message,
@@ -523,7 +523,7 @@ export const getPollOptions = async (pollId) => {
         });
         return response?.data ?? null;
     } catch (err) {
-        console.log('Failed to fetch poll options:', err);
+        Logger.log('Failed to fetch poll options:', err);
         return null;
     }
 };
@@ -531,22 +531,22 @@ export const getPollOptions = async (pollId) => {
 
 export const deletePoll = async (id) => {
     try {
-        console.log(`deleting poll ${id}`);
+        Logger.log(`deleting poll ${id}`);
         const response = await apiClient.delete(`/polls?pollId=${id}`,{
             headers: {
                 Authorization: `Bearer ${await getToken()}`,
             },
         });
-        console.log('delete poll response: ' + JSON.stringify(response.data));
+        Logger.log('delete poll response: ' + JSON.stringify(response.data));
         return response?.data;
     } catch (err) {
-        console.log('delete failed', err);
+        Logger.log('delete failed', err);
     }
 };
 
 export const setUserCategories = async (categoryIds) => {
     try {
-        console.log(`Setting categories: ${categoryIds.join(', ')}`);
+        Logger.log(`Setting categories: ${categoryIds.join(', ')}`);
         const response = await apiClient.post(`/profile/categories`, {
             categories: categoryIds,
         }, {
@@ -554,16 +554,16 @@ export const setUserCategories = async (categoryIds) => {
                 Authorization: `Bearer ${await getToken()}`,
             },
         });
-        console.log('Set categories response: ' + JSON.stringify(response.data));
+        Logger.log('Set categories response: ' + JSON.stringify(response.data));
         return response?.data;
     } catch (err) {
-        console.log('Setting categories failed', err);
+        Logger.log('Setting categories failed', err);
     }
 };
 
 export const followProfile = async (id) => {
     try {
-        console.log(`following profile ${id}`);
+        Logger.log(`following profile ${id}`);
         const response = await apiClient.post(`/profile/followers`, {
             userId: id
         }, {
@@ -571,31 +571,31 @@ export const followProfile = async (id) => {
                 Authorization: `Bearer ${await getToken()}`,
             },
         });
-        console.log('following profile response: ' + JSON.stringify(response.data));
+        Logger.log('following profile response: ' + JSON.stringify(response.data));
         return response?.data;
     } catch (err) {
-        console.log('follow failed', err);
+        Logger.log('follow failed', err);
     }
 };
 
 export const unfollowProfile = async (id) => {
     try {
-        console.log(`following profile ${id}`);
+        Logger.log(`unfollowing profile ${id}`);
         const response = await apiClient.delete(`/profile/followers?userId=${id}`, {
             headers: {
                 Authorization: `Bearer ${await getToken()}`,
             },
         });
-        console.log('unfollowing profile response: ' + JSON.stringify(response.data));
+        Logger.log('unfollowing profile response: ' + JSON.stringify(response.data));
         return response?.data;
     } catch (err) {
-        console.log('follow failed', err);
+        Logger.log('unfollow failed', err);
     }
 };
 
 export const fetchFollowers = async (userId) => {
     try {
-        console.log('fetching followers...');
+        Logger.log('fetching followers...');
         const response = await apiClient.get(`/profile/followers?userId=${userId}`, {
             headers: {
                 Authorization: `Bearer ${await getToken()}`,
@@ -603,13 +603,13 @@ export const fetchFollowers = async (userId) => {
         });
         return response?.data;
     } catch (err) {
-        console.log('Fetch followers failed', err);
+        Logger.log('Fetch followers failed', err);
     }
 };
 
 export const fetchFollows = async (userId) => {
     try {
-        console.log('fetching follows...');
+        Logger.log('fetching follows...');
         const response = await apiClient.get(`/profile/follows?userId=${userId}`, {
             headers: {
                 Authorization: `Bearer ${await getToken()}`,
@@ -617,13 +617,13 @@ export const fetchFollows = async (userId) => {
         });
         return response?.data;
     } catch (err) {
-        console.log('Fetch follows failed', err);
+        Logger.log('Fetch follows failed', err);
     }
 };
 
 export const fetchUserProfile = async (userId) => {
     try {
-        console.log(`Fetching profile for user ${userId}...`);
+        Logger.log(`Fetching profile for user ${userId}...`);
         const response = await apiClient.get(`/profile/${userId}`, {
             headers: {
                 Authorization: `Bearer ${await getToken()}`,
@@ -631,13 +631,34 @@ export const fetchUserProfile = async (userId) => {
         });
         return response?.data;
     } catch (err) {
-        console.log("Failed to fetch user profile", err);
+        Logger.log("Failed to fetch user profile", err);
     }
 };
 
-export const updatePushToken = async (token) => {
+export const writeDebugLog = async (log) => {
     try {
         if (!(await isTokenAvailable())) {
+            return;
+        }
+
+        const response = await apiClient.post(`/debug/log`, {
+            log: log,
+        }, {
+            headers: {
+                Authorization: `Bearer ${await getToken()}`,
+            },
+        });
+    } catch (err) {
+        console.log("Failed to write debug log", err);
+    }
+}
+
+export const updatePushToken = async (token) => {
+    try {
+        Logger.log('update push token', token);
+
+        if (!(await isTokenAvailable())) {
+            Logger.log('token is not available', token);
             return;
         }
 
@@ -652,7 +673,7 @@ export const updatePushToken = async (token) => {
         });
         return response?.data;
     } catch (err) {
-        console.log("Failed to update push token", err);
+        Logger.log("Failed to update push token", err);
     }
 };
 
@@ -662,6 +683,7 @@ export const updatePushToken = async (token) => {
  */
 export const fetchUserNotifications = async () => {
     try {
+        Logger.log('fetching user notifications');
         const response = await apiClient.get(`/profile/notifications`, {
             headers: {
                 Authorization: `Bearer ${await getToken()}`,
@@ -669,7 +691,7 @@ export const fetchUserNotifications = async () => {
         });
         return response?.data?.notifications || [];
     } catch (err) {
-        console.log("Failed to fetch user notifications", err);
+        Logger.log("Failed to fetch user notifications", err);
         return [];
     }
 };
@@ -681,6 +703,7 @@ export const fetchUserNotifications = async () => {
  */
 export const markNotificationsAsRead = async (notificationIds) => {
     try {
+        Logger.log('Marking notifications read...');
         await apiClient.put(`/profile/notifications`, {
             notificationIds,
         }, {
@@ -689,7 +712,7 @@ export const markNotificationsAsRead = async (notificationIds) => {
             },
         });
     } catch (err) {
-        console.log("Failed to mark notifications as read", err);
+        Logger.log("Failed to mark notifications as read", err);
     }
 };
 
@@ -699,25 +722,27 @@ export const markNotificationsAsRead = async (notificationIds) => {
  */
 export const deleteAllUserNotifications = async () => {
     try {
+        Logger.log('deleting all notifications...');
+
         await apiClient.delete(`/profile/notifications`, {
             headers: {
                 Authorization: `Bearer ${await getToken()}`,
             },
         });
     } catch (err) {
-        console.log("Failed to delete notifications", err);
+        Logger.log("Failed to delete notifications", err);
     }
 };
 
 export const updateUserProfile = async (updatedData) => {
     try {
-        console.log(`updating profile data ${JSON.stringify(updatedData)}`);
+        Logger.log(`updating profile data ${JSON.stringify(updatedData)}`);
         const response = await apiClient.put(`/profile`, updatedData, {
             headers: {
                 Authorization: `Bearer ${await getToken()}`,
             },
         });
-        console.log('update profile response: ' + JSON.stringify(response.data));
+        Logger.log('update profile response: ' + JSON.stringify(response.data));
         return response?.data;
     } catch (error) {
         switch (error.response.status) {
@@ -729,24 +754,24 @@ export const updateUserProfile = async (updatedData) => {
                 break;
             }
         }
-        console.log(error);
+        Logger.log(error);
         throw error;
     }
 };
 
 export const deleteUserProfile = async (password) => {
     try {
-        console.log(`deleting user`);
+        Logger.log(`deleting user`);
         const response = await apiClient.delete(`/user?password=${password}`, {
             headers: {
                 Authorization: `Bearer ${await getToken()}`,
             },
         });
-        console.info('delete user response: ' + JSON.stringify(response.data));
+        Logger.log('delete user response: ' + JSON.stringify(response.data));
 
         return true;
     } catch (error) {
-        console.log(error);
+        Logger.log(error);
         return false;
     }
 };

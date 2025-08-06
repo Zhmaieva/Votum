@@ -4,14 +4,17 @@
   },
   "build": {
     "development": {
-      "developmentClient": false,
+      "developmentClient": true,
       "distribution": "internal"
     },
     "preview": {
-      "distribution": "internal"
+      "distribution": "internal",
+      "ios": {
+        "enterpriseProvisioning": "adhoc"
+      }
     },
     "production": {
-      "distribution": "store"
+      "autoIncrement": false
     }
   }
 }

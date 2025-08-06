@@ -12,7 +12,7 @@ const { height, width } = Dimensions.get('window');
 const POLL_HEIGHT = height * 0.83;
 const NEXT_POLL_OFFSET = height * 0.17;
 import {Colors, Fonts} from '../../utils/colorUtils';
-import {getDataService, globalEventEmitter} from "../../shared/common";
+import {getDataService, globalEventEmitter, Logger} from "../../shared/common";
 import AwesomeLink from "./AwesomeLink";
 import {useFocusEffect} from "@react-navigation/native";
 import {fetchMyProfile, getPollOptions, viewPoll, viewPollRequest} from "../../shared/api/apiClient";
@@ -43,17 +43,12 @@ const AwesomeFeed = forwardRef(({
     const flatListRef = externalRef || useRef(null);
     const timeoutRef = useRef(setTimeout(() => {}, 100));
 
-    globalEventEmitter.on('sharedPoll', () => {
-        flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
-    });
-
-    useImperativeHandle(externalRef, () => ({
-        scrollToOffset: (args) => {
-            flatListRef.current?.scrollToOffset?.(args);
-        },
-    }));
-
     useEffect(() => {
+        const handler = () => {
+            flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
+        };
+
+        globalEventEmitter.on('sharedPoll', handler);
         if (data === null || data === undefined) {
             // Don't update yet — wait for actual data to arrive
             return;
@@ -64,6 +59,10 @@ const AwesomeFeed = forwardRef(({
         } else {
             setPreloadedData(data);
         }
+
+        return () => {
+            globalEventEmitter.off('sharedPoll', handler);
+        };
     }, [data]);
 
     useEffect(() => {

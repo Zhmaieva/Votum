@@ -1,21 +1,16 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect} from 'react';
 import AwesomeFeed from "../customComponents/AwesomeFeed";
 import AwesomeCard from "../customComponents/AwesomeCard";
-import {View, StyleSheet, ActivityIndicator, Text, SafeAreaView} from 'react-native';
-import {fetchPolls, fetchMyProfile, voteOnPoll, fetchTrendingPolls} from "../../shared/api/apiClient";
+import {View, StyleSheet, Text, SafeAreaView} from 'react-native';
+import {fetchPolls, fetchMyProfile, fetchTrendingPolls} from "../../shared/api/apiClient";
 import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeSwitcher from "../customComponents/AwesomeSwitcher";
 import {
     calculateTimeDifference,
     getDataService,
-    globalEventEmitter, Loader,
-    MIN_EXTRA_LOADING_TIME,
-    MIN_LOADING_TIME
+    globalEventEmitter, Loader, Logger,
 } from "../../shared/common";
-import AwesomeLoadingPoll from "../customComponents/AwesomeLoadingPoll";
-import {isLoading} from "expo-font";
-import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import { useScrollToTop } from '@react-navigation/native'; // optional hook
+import * as Linking from 'expo-linking';
 
 const FeedView = ({ route }) => {
     const [selectedOption, setSelectedOption] = useState("my feed");
@@ -28,32 +23,42 @@ const FeedView = ({ route }) => {
     const navigation = useNavigation();
     const feedRef = useRef(null);
 
-    // Scroll to top when tab is pressed again
-    useEffect(() => {
-        const unsubscribe = navigation.addListener('tabPress', e => {
-            if (feedRef.current?.scrollToOffset) {
-                feedRef.current.scrollToOffset({ offset: 0, animated: true });
-            }
-        });
-
-        return unsubscribe;
-    }, [navigation]);
-    globalEventEmitter.on('sharedPoll', ({ pollId }) => {
-        fetchPolls(pollId).then(res => {
-            setPolls(res);
-        });
-    })
-
     const loader = new Loader(setLoading);
 
     useEffect(() => {
+        try {
+            const handler = ({ pollId }) => {
+                Logger.log('Feed view: shared poll', pollId);
+                fetchPolls(pollId).then(res => {
+                    setPolls(res);
+                });
+                setSelectedOption('my feed');
+            };
+            globalEventEmitter.on('sharedPoll', handler);
+
+            Linking.getInitialURL().then(url => {
+                const { path } = Linking.parse(url);
+                loadAll(path);
+            }).catch(() => {
+                loadAll();
+            });
+        } catch {
+            loadAll();
+        }
+
+        return () => {
+            globalEventEmitter.off('sharedPoll', handler);
+        };
+    }, []);
+
+    const loadAll = function(featuredPoll = '') {
         loader.load([
             fetchMyProfile().then(async res => {
                 if (res?.userId) {
                     setLoggedInUserId(res.userId);
                 }
             }),
-            fetchPolls()
+            fetchPolls(featuredPoll)
                 .then(res => {
                     setPolls(res);
                     setError(null);
@@ -68,7 +73,7 @@ const FeedView = ({ route }) => {
                     setTrendingPolls(res);
                 })
         ]).then(_ => {});
-    }, []);
+    }
 
     const onRefresh = async () => {
         setRefreshing(true);

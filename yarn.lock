@@ -3334,11 +3334,6 @@ expo-notifications@~0.31.1:
     expo-application "~6.1.4"
     expo-constants "~17.1.6"
 
-expo-screen-orientation@~8.1.7:
-  version "8.1.7"
-  resolved "https://registry.npmjs.org/expo-screen-orientation/-/expo-screen-orientation-8.1.7.tgz"
-  integrity sha512-nYwadYtdU6mMDk0MCHMPPPQtBoeFYJ2FspLRW+J35CMLqzE4nbpwGeiImfXzkvD94fpOCfI4KgLj5vGauC3pfA==
-
 expo-status-bar@~2.2.3:
   version "2.2.3"
   resolved "https://registry.npmjs.org/expo-status-bar/-/expo-status-bar-2.2.3.tgz"

@@ -1,11 +1,35 @@
 import {Alert, Share} from "react-native";
 import mitt from 'mitt';
-import {fetchMyProfile, fetchPolls, fetchTrendingPolls, getPollShareLink} from "./api/apiClient";
+import {fetchMyProfile, fetchPolls, fetchTrendingPolls, getPollShareLink, writeDebugLog} from "./api/apiClient";
 
 export const MIN_LOADING_TIME = 1000;
 export const MIN_EXTRA_LOADING_TIME = 800;
 
 export const globalEventEmitter = new mitt();
+
+export const Logger = {
+    warn: (log) => {
+        console.warn(log);
+        if (getDataService().getUser()?.is_debug ?? false)
+            writeDebugLog(log).then(_ => {});
+    },
+    error: (log, templateValue = '') => {
+        if (templateValue)
+            console.error(log, templateValue);
+        else
+            console.error(log);
+        if (getDataService().getUser()?.is_debug ?? false)
+            writeDebugLog(`${log} ${templateValue}`).then(_ => {});
+    },
+    log: (log, templateValue = '') => {
+        if (templateValue)
+            console.log(log, templateValue);
+        else
+            console.log(log);
+        if (getDataService().getUser()?.is_debug ?? false)
+            writeDebugLog(`${log} ${templateValue}`).then(_ => {});
+    }
+}
 
 export const onShare = async (pollId) => {
     try {

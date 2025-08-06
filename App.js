@@ -1,18 +1,17 @@
 import * as Font from 'expo-font';
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import * as Linking from 'expo-linking';
 import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
 import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import { AwesomeTabs, AuthNavigator } from "./components/views/navigation/AwesomeTabs";
-import {getDataService, globalEventEmitter, Loader} from "./shared/common";
-import {fetchMyProfile, fetchPolls, isTokenAvailable, updatePushToken} from "./shared/api/apiClient";
-import { ActivityIndicator, View, Platform } from "react-native";
+import {getDataService, globalEventEmitter, Loader, Logger} from "./shared/common";
+import {fetchMyProfile, isTokenAvailable, updatePushToken} from "./shared/api/apiClient";
+import { ActivityIndicator, View } from "react-native";
 import 'react-native-gesture-handler';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import {SafeAreaProvider} from "react-native-safe-area-context";
-import * as ScreenOrientation from 'expo-screen-orientation';
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -34,16 +33,16 @@ export default function App() {
     const handleUrl = ({ url }) => {
         if (!url) return;
 
-        console.info('Received deep link:', url);
+        Logger.log('Received deep link:', url);
         const { path } = Linking.parse(url);
+        Logger.log('Deep link path', path);
         if (path) {
-            navigationRef.navigate('Feed', {});
+            navigationRef.navigate('FEED', {});
             globalEventEmitter.emit('sharedPoll', { pollId: path });
         }
     };
 
     useEffect(() => {
-        ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
         const loadFontAndInit = async () => {
             await Font.loadAsync({
                 'CourierPrime-Regular': require('./assets/fonts/CourierPrime-Regular.ttf'),
@@ -88,7 +87,7 @@ export default function App() {
         const subscription = Linking.addEventListener('url', handleUrl);
 
         const notificationReceivedListener = Notifications.addNotificationReceivedListener(notification => {
-            console.log('Notification received:', notification);
+            Logger.log('Notification received:', notification);
         });
 
         const notificationResponseReceivedListener = Notifications.addNotificationResponseReceivedListener(response => {
@@ -96,7 +95,7 @@ export default function App() {
             if (!data?.screenName)
                 return;
 
-            console.log('Current routes:', navigationRef.getRootState());
+            Logger.log('Current routes:', navigationRef.getRootState());
 
             if (data?.screenName === 'Notifications') {
                 navigationRef.reset({
@@ -107,7 +106,7 @@ export default function App() {
                             state: {
                                 index: 1,
                                 routes: [
-                                    { name: 'Profile' }, // this matches your <Stack.Screen name="Profile" ... />
+                                    { name: 'Profile' },
                                     { name: 'Notifications' },
                                 ]
                             }
@@ -186,7 +185,7 @@ async function registerForPushNotificationsAsync() {
         }
 
         if (finalStatus !== 'granted') {
-            console.warn('Failed to get push token for push notification!');
+            Logger.warn('Failed to get push token for push notification!');
             return;
         }
 
@@ -194,15 +193,6 @@ async function registerForPushNotificationsAsync() {
 
         await updatePushToken(token);
     } else {
-        console.warn('Must use physical device for Push Notifications');
-    }
-
-    if (Platform.OS === 'android') {
-        Notifications.setNotificationChannelAsync('default', {
-            name: 'default',
-            importance: Notifications.AndroidImportance.MAX,
-            vibrationPattern: [0, 250, 250, 250],
-            lightColor: '#FF231F7C',
-        });
+        Logger.warn('Must use physical device for Push Notifications');
     }
 }

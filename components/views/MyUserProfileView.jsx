@@ -47,7 +47,7 @@ const MyUserProfileView = () => {
                 const userData = await fetchMyProfile();
                 getDataService().setUser(userData);
                 setUser(userData);
-            }, 2000);
+            }, 20000);
 
             return () => clearInterval(interval); // Cleanup on unmount
         }, [])
