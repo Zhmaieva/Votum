@@ -657,26 +657,31 @@ app.get('/polls/:id?/links', authMiddleware, async (req, res, next) => {
 });
 
 app.get('/polls/share/:id', async (req, res, next) => {
-    try {
-        const pollId = req.params.id;
-
-        // Example: fetch poll data from DB by readableId (e.g. "abc123")
-        const poll = await getPollById(pollId, true); // `true` = allow unauthenticated
-
-        if (!poll || !poll.options) return res.status(404).send('Poll not found');
-
-        const question = poll.question;
-        const answers = poll.options.map(option => option.text);
-
-        return res.render('poll-preview', {
-            pollId,
-            question,
-            answers,
-        });
-    } catch (e) {
-        next(e);
-    }
+    return res.status(204);
 });
+
+
+// app.get('/polls/share/:id', async (req, res, next) => {
+//     try {
+//         const pollId = req.params.id;
+//
+//         // Example: fetch poll data from DB by readableId (e.g. "abc123")
+//         const poll = await getPollById(pollId, true); // `true` = allow unauthenticated
+//
+//         if (!poll || !poll.options) return res.status(404).send('Poll not found');
+//
+//         const question = poll.question;
+//         const answers = poll.options.map(option => option.text);
+//
+//         return res.render('poll-preview', {
+//             pollId,
+//             question,
+//             answers,
+//         });
+//     } catch (e) {
+//         next(e);
+//     }
+// });
 
 // app.get('/polls/share/:id', async (req, res) => {
 //     try {
