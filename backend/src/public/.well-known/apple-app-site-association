@@ -1,0 +1,11 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "8X894Q6SX7.com.beampie.voteapp",
+        "paths": ["/poll/*"]
+      }
+    ]
+  }
+}

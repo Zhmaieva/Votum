@@ -22,6 +22,7 @@ const {next} = require("lodash/seq");
 const {sendExpoPushNotification} = require("./services/notificationService");
 const {getUserNotifications, deleteAllUserNotifications, markNotificationsAsRead} = require("./db/dal/notificationQueries");
 const sendCodeEmail = require("./mail/mailing");
+const {join} = require("node:path");
 
 const app = express();
 // Manual CORS header
@@ -80,6 +81,8 @@ if (isDebug) {
         next();
     });
 }
+
+app.use('/.well-known', express.static(join(__dirname, 'public/.well-known')));
 
 app.post("/users/passwords/forgot", async (req, res, next) => {
     try {
