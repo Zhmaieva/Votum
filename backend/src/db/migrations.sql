@@ -869,3 +869,8 @@ CREATE TABLE user_logs (
 
 ALTER TABLE users ADD COLUMN
     is_debug boolean default false;
+
+
+--Thu Aug 7 1:12 PM
+ALTER TABLE users ADD COLUMN
+    is_new_followers_notification_enabled boolean default true;

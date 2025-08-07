@@ -12,7 +12,7 @@ curl -X POST http://localhost:3000/test/push \
 curl -X POST https://api-voteapp.beampie.com/test/push \
   -H "Content-Type: application/json" \
   -d '{
-    "token": "your_device_token_here",
+    "token": "ExponentPushToken[dPzEc-LUSEG1b97biqeZ2D]",
     "title": "Test Title",
     "body": "This is the body of the push notification.",
     "screenName": "TargetScreen",

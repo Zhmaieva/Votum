@@ -36,6 +36,7 @@ async function insertNewFollowNotifications() {
                     n.created_at IS NULL
                         OR n.created_at < NOW() AT TIME ZONE 'UTC' - INTERVAL '22 hours'
                     )
+                  AND u.is_new_followers_notification_enabled = true
                   AND f.created_at > COALESCE(
                         (
                             SELECT MAX(n2.created_at)

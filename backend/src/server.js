@@ -444,6 +444,20 @@ app.put('/user/token', authMiddleware, async (req, res, next) => {
     }
 });
 
+app.put('/user/notifications', authMiddleware, async (req, res, next) => {
+    try {
+        const { is_new_followers_notification_enabled } = req.body;
+
+        await userQueries.updateNotificationSettings({is_new_followers_notification_enabled}, req.user.id);
+
+        return res.json({ message: 'Push token set successfully' });
+    }
+    catch (e) {
+        next(e);
+    }
+});
+
+
 app.post('/profile/followers', authMiddleware, async (req, res, next) => {
     try {
         const { userId } = req.body;

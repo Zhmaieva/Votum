@@ -75,7 +75,12 @@ export default function App() {
             }
 
             const url = await Linking.getInitialURL();
-            if (url) handleUrl({ url });
+
+            try {
+                if (url) handleUrl({ url });
+            } catch (e) {
+                Logger.error('Error handling deep link: ', e);
+            }
 
             await registerForPushNotificationsAsync();
         };
@@ -196,24 +201,30 @@ async function deregisterForPushNotificationsAsync() {
 
 // Helper function
 async function registerForPushNotificationsAsync() {
-    if (Device.isDevice) {
-        const { status: existingStatus } = await Notifications.getPermissionsAsync();
-        let finalStatus = existingStatus;
+    try {
+        Logger.log('Register for Push Notifications');
+        if (Device.isDevice) {
+            Logger.log('Register for Push Notifications: Device.isDevice true');
+            const { status: existingStatus } = await Notifications.getPermissionsAsync();
+            let finalStatus = existingStatus;
 
-        if (existingStatus !== 'granted') {
-            const { status } = await Notifications.requestPermissionsAsync();
-            finalStatus = status;
+            if (existingStatus !== 'granted') {
+                const { status } = await Notifications.requestPermissionsAsync();
+                finalStatus = status;
+            }
+
+            if (finalStatus !== 'granted') {
+                Logger.warn('Failed to get push token for push notification!');
+                return;
+            }
+
+            const token = (await Notifications.getExpoPushTokenAsync()).data;
+
+            await updatePushToken(token);
+        } else {
+            Logger.warn('Must use physical device for Push Notifications');
         }
-
-        if (finalStatus !== 'granted') {
-            Logger.warn('Failed to get push token for push notification!');
-            return;
-        }
-
-        const token = (await Notifications.getExpoPushTokenAsync()).data;
-
-        await updatePushToken(token);
-    } else {
-        Logger.warn('Must use physical device for Push Notifications');
+    } catch (e) {
+        Logger.error('Register for Push Notifications error', e);
     }
 }

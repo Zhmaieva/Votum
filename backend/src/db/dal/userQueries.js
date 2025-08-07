@@ -114,7 +114,8 @@ async function getUser(userId) {
             COALESCE(SUM(p.votes_count), 0)::integer as "totalVotesNumber",
             up.bio,
             uc."onboardingComplete",
-            u.is_debug
+            u.is_debug,
+            u.is_new_followers_notification_enabled
         FROM users u
                  JOIN user_profiles up ON u.id = up.user_id
                  LEFT JOIN polls p ON p.created_by = u.id AND p.is_deleted = false
@@ -473,6 +474,21 @@ async function updatePushToken(pushToken, timezoneOffset, userId) {
     );
 }
 
+/**
+ * Update notification preferences
+ * @param is_new_followers_notification_enabled
+ * @param userId
+ */
+async function updateNotificationSettings({is_new_followers_notification_enabled}, userId) {
+    await pool.query(
+        `UPDATE users
+         SET is_new_followers_notification_enabled = $2
+         WHERE id = $1;
+        `,
+        [userId, is_new_followers_notification_enabled]
+    );
+}
+
 
 /**
  * Update profile categories interests
@@ -679,6 +695,7 @@ module.exports = {
     setCategories,
     unfollowUser,
     updateProfileImage,
+    updateNotificationSettings,
     updatePushToken,
     writeDebugLog
 }
