@@ -14,12 +14,14 @@ const AwesomeProfilePhoto = ({ profileImage, setProfileImage }) => {
         const oldImage = profileImage;
 
         try {
+            Logger.log('Requesting media library permission...');
             const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
             if (!permission.granted) {
                 Alert.alert('Permission required', 'We need permission to access your gallery');
                 return;
             }
 
+            Logger.log('Launching media library...');
             const result = await ImagePicker.launchImageLibraryAsync({
                 mediaTypes: ImagePicker.MediaTypeOptions.Images,
                 allowsEditing: true,
@@ -27,16 +29,20 @@ const AwesomeProfilePhoto = ({ profileImage, setProfileImage }) => {
                 quality: 1,
             });
 
+            Logger.log('Reading image picker results...');
             if (!result.canceled) {
+                Logger.log('Image result available');
                 const uri = result.assets[0].uri;
                 getDataService().getUser().image = uri;
                 getDataService().commitUserChanges();
                 setProfileImage(uri);
                 globalEventEmitter.emit('imagePicked', {imageUri: uri, userId: getDataService().getUser().userId});
+
+                Logger.log('Uploading image...');
                 await uploadProfileImage(result.assets[0]);
             }
         } catch (err) {
-            Logger.log('image upload fail', err);
+            Logger.error('image upload fail', err);
             setProfileImage(oldImage);
             getDataService().getUser().image = oldImage;
             getDataService().commitUserChanges();
