@@ -45,7 +45,7 @@ const TermsAndConditionsView = ({ navigation }) => {
 
                 <View style={styles.buttonContainer}>
                     <AwesomeButton
-                        text="I Agree"
+                        text="Go back"
                         color={Color.BLACK}
                         additionalFunc={() => navigation.goBack()}
                     />

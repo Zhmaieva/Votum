@@ -12,6 +12,7 @@ import 'react-native-gesture-handler';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import {SafeAreaProvider} from "react-native-safe-area-context";
+import NoInternetWrapper from './components/views/NoInternetWrapper';
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -184,14 +185,16 @@ export default function App() {
 
     return (
         <SafeAreaProvider style={{backgroundColor: '#ffffff'}}>
-            <GestureHandlerRootView style={{ flex: 1}}>
-                <BottomSheetModalProvider>
-                    <NavigationContainer ref={navigationRef}>
-                        {isAuthenticated ? <AwesomeTabs /> : <AuthNavigator />}
-                    </NavigationContainer>
-                </BottomSheetModalProvider>
-            </GestureHandlerRootView>
-            </SafeAreaProvider>
+            <NoInternetWrapper>
+                <GestureHandlerRootView style={{ flex: 1}}>
+                    <BottomSheetModalProvider>
+                        <NavigationContainer ref={navigationRef}>
+                            {isAuthenticated ? <AwesomeTabs /> : <AuthNavigator />}
+                        </NavigationContainer>
+                    </BottomSheetModalProvider>
+                </GestureHandlerRootView>
+            </NoInternetWrapper>
+        </SafeAreaProvider>
     );
 }
 

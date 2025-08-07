@@ -61,6 +61,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Platform } from 'react-native';
 import { Dimensions } from 'react-native';
 import SuccessPasswordView from "../SuccessPasswordView";
+import NoInternetWrapper from "../NoInternetWrapper";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();

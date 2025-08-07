@@ -851,7 +851,7 @@ ALTER COLUMN image SET DEFAULT 'https://s3.us-east-1.amazonaws.com/storage.beamp
 CREATE TABLE user_inquiries (
     email varchar(255) NOT NULL PRIMARY KEY,
     inquiry_type INT NOT NULL
-)
+);
 
 -- Thu Jul 24 2:26 PM
 -- Step 1: Drop current PK (on email)

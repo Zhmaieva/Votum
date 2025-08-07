@@ -149,36 +149,36 @@ INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) V
     ('1cdba704-066f-4325-a8c4-1179acc4a64d', 'ddde2de1-3ebe-42c8-8bc8-78f5ac280499', 'No', 1, 62);
 INSERT INTO poll_views (user_id, poll_id) VALUES ('281d5a04-f29e-4f9c-b0cc-323bb9f02308', 'ddde2de1-3ebe-42c8-8bc8-78f5ac280499');
 
-INSERT INTO user_profiles (user_id, bio, followers_number, following_number) VALUES
+INSERT INTO user_profiles (user_id, image, bio, followers_number, following_number) VALUES
 -- user1 (ID: 8a3ddccb...): follows demo (1), followed by demo (1)
-('8a3ddccb-be98-4998-a541-54a475148b91',  'Data over drama.', 1, 1),
+('8a3ddccb-be98-4998-a541-54a475148b91', 'https://s3.us-east-1.amazonaws.com/storage.beampie.com/vote/default_avatar.PNG',  'Data over drama.', 1, 1),
 
 -- user2 (no follows or followers)
-('99d5cbae-6473-41ec-a9ca-2852b246029d', 'Just here for the vibes.', 0, 0),
+('99d5cbae-6473-41ec-a9ca-2852b246029d', 'https://s3.us-east-1.amazonaws.com/storage.beampie.com/vote/default_avatar.PNG','Just here for the vibes.', 0, 0),
 
 -- user3 (no follows or followers)
-('401220fc-d55c-44eb-8b11-d164f73baf3e', 'Opinions? I’ve got plenty.', 0, 0),
+('401220fc-d55c-44eb-8b11-d164f73baf3e', 'https://s3.us-east-1.amazonaws.com/storage.beampie.com/vote/default_avatar.PNG','Opinions? I’ve got plenty.', 0, 0),
 
 -- user4: follows demo (1), followed by demo (1)
-('8ae538d3-b3d2-46f4-adac-d54262f8cd4b', 'I vote, therefore I am.', 1, 1),
+('8ae538d3-b3d2-46f4-adac-d54262f8cd4b', 'https://s3.us-east-1.amazonaws.com/storage.beampie.com/vote/default_avatar.PNG','I vote, therefore I am.', 1, 1),
 
 -- user5 (no follows or followers)
-('ef784bea-010d-4491-8394-01d368531948', 'Floating between hot takes.', 0, 0),
+('ef784bea-010d-4491-8394-01d368531948', 'https://s3.us-east-1.amazonaws.com/storage.beampie.com/vote/default_avatar.PNG','Floating between hot takes.', 0, 0),
 
 -- user6: follows demo (1), followed by demo (1)
-('cb507ccb-2b07-4166-ad08-79072e2a115a', 'Scared of silence? Try polls.', 1, 1),
+('cb507ccb-2b07-4166-ad08-79072e2a115a', 'https://s3.us-east-1.amazonaws.com/storage.beampie.com/vote/default_avatar.PNG','Scared of silence? Try polls.', 1, 1),
 
 -- user7 (no follows or followers)
-('dceb8c5e-b929-4d68-a1ac-4987e9b7b6f2', 'Swipe. Vote. Repeat.', 0, 0),
+('dceb8c5e-b929-4d68-a1ac-4987e9b7b6f2', 'https://s3.us-east-1.amazonaws.com/storage.beampie.com/vote/default_avatar.PNG','Swipe. Vote. Repeat.', 0, 0),
 
 -- user8 (no follows or followers)
-('b988678a-1393-4f92-a263-0eba6c2cebbb', 'Rarely wrong. Always opinionated.', 0, 0),
+('b988678a-1393-4f92-a263-0eba6c2cebbb', 'https://s3.us-east-1.amazonaws.com/storage.beampie.com/vote/default_avatar.PNG','Rarely wrong. Always opinionated.', 0, 0),
 
 -- user9 (no follows or followers)
-('31ac6d3d-d304-4b77-8e2b-4aa621a98515', 'Professional opinion-haver.', 0, 0),
+('31ac6d3d-d304-4b77-8e2b-4aa621a98515', 'https://s3.us-east-1.amazonaws.com/storage.beampie.com/vote/default_avatar.PNG','Professional opinion-haver.', 0, 0),
 
 -- user10 (no follows or followers)
-('609c6602-6305-4b44-b13b-a5daee3bd84b',  'Just here to judge.', 0, 0),
+('609c6602-6305-4b44-b13b-a5daee3bd84b',  'https://s3.us-east-1.amazonaws.com/storage.beampie.com/vote/default_avatar.PNG','Just here to judge.', 0, 0),
 
 -- demo: follows user1, user4, user6 (3), followed by user1, user4, user6 (3)
-('281d5a04-f29e-4f9c-b0cc-323bb9f02308', 'Yes, I’m that demo user.', 3, 3);
+('281d5a04-f29e-4f9c-b0cc-323bb9f02308', 'https://s3.us-east-1.amazonaws.com/storage.beampie.com/vote/default_avatar.PNG','Yes, I’m that demo user.', 3, 3);

@@ -9,11 +9,9 @@ const ContactInformationView = () => {
     const [isModalVisible, setModalVisible] = useState(false);
     const [modalText, setModalText] = useState('');
 
-    const openLink = async (url, successMessage) => {
+    const openLink = async (url) => {
         try {
             await Linking.openURL(url);
-            setModalText(successMessage);
-            setModalVisible(true);
         } catch (error) {
             Logger.error('Failed to open link:', error);
             setModalText('Something went wrong, please try again');
@@ -22,15 +20,15 @@ const ContactInformationView = () => {
     };
 
     const handleEmailPress = () => {
-        openLink('mailto:votum.contact@gmail.com', 'Email app opened successfully.');
+        openLink('mailto:votum.contact@gmail.com');
     };
 
     const handleWebsitePress = () => {
-        openLink('https://votum.beampie.com', 'Website opened successfully.');
+        openLink('https://votum.beampie.com');
     };
 
     const handlePrivacyPolicyPress = () => {
-        openLink('https://www.example.com/privacy-policy', 'Privacy Policy opened successfully.');
+        openLink('https://www.example.com/privacy-policy');
     };
 
     return (

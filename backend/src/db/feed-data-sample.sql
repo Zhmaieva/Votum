@@ -2,18 +2,7 @@
 TRUNCATE TABLE polls CASCADE;
 DELETE FROM users WHERE "email" LIKE '%autotest.com';
 */
-INSERT INTO users (id, username, email, password_hash, created_at) VALUES ('b996cfb0-4e3b-422e-9dc8-a2aa75ea661e', 'user00', 'user00@autotest.com', 'hashedpassword', NOW() AT TIME ZONE 'UTC');
-INSERT INTO users (id, username, email, password_hash, created_at) VALUES ('b0665052-b151-403c-9863-fa95d226648d', 'user01', 'user01@autotest.com', 'hashedpassword', NOW() AT TIME ZONE 'UTC');
-INSERT INTO users (id, username, email, password_hash, created_at) VALUES ('0f2b9714-b95f-4f43-8993-13b416ca8867', 'user02', 'user02@autotest.com', 'hashedpassword', NOW() AT TIME ZONE 'UTC');
-INSERT INTO users (id, username, email, password_hash, created_at) VALUES ('42a4db3b-953f-4746-870e-577a0b5e8e13', 'user03', 'user03@autotest.com', 'hashedpassword', NOW() AT TIME ZONE 'UTC');
-INSERT INTO users (id, username, email, password_hash, created_at) VALUES ('08b20c12-9593-461d-b7c7-e31471097853', 'user04', 'user04@autotest.com', 'hashedpassword', NOW() AT TIME ZONE 'UTC');
-INSERT INTO users (id, username, email, password_hash, created_at) VALUES ('2a860eb8-d81e-4503-919c-37101587eef5', 'user05', 'user05@autotest.com', 'hashedpassword', NOW() AT TIME ZONE 'UTC');
-INSERT INTO users (id, username, email, password_hash, created_at) VALUES ('dfe2c953-2ee7-49c9-9f05-44a507150ea1', 'user06', 'user06@autotest.com', 'hashedpassword', NOW() AT TIME ZONE 'UTC');
-INSERT INTO users (id, username, email, password_hash, created_at) VALUES ('fe1bff2d-40ea-48c0-8e94-1116b8c3d385', 'user07', 'user07@autotest.com', 'hashedpassword', NOW() AT TIME ZONE 'UTC');
-INSERT INTO users (id, username, email, password_hash, created_at) VALUE/*
-TRUNCATE TABLE polls CASCADE;
-DELETE FROM users WHERE "email" LIKE '%autotest.com';
-*/
+
 INSERT INTO users (id, username, email, password_hash, created_at) VALUES ('b996cfb0-4e3b-422e-9dc8-a2aa75ea661e', 'user00', 'user00@autotest.com', 'hashedpassword', NOW() AT TIME ZONE 'UTC');
 INSERT INTO users (id, username, email, password_hash, created_at) VALUES ('b0665052-b151-403c-9863-fa95d226648d', 'user01', 'user01@autotest.com', 'hashedpassword', NOW() AT TIME ZONE 'UTC');
 INSERT INTO users (id, username, email, password_hash, created_at) VALUES ('0f2b9714-b95f-4f43-8993-13b416ca8867', 'user02', 'user02@autotest.com', 'hashedpassword', NOW() AT TIME ZONE 'UTC');
@@ -24,16 +13,16 @@ INSERT INTO users (id, username, email, password_hash, created_at) VALUES ('dfe2
 INSERT INTO users (id, username, email, password_hash, created_at) VALUES ('fe1bff2d-40ea-48c0-8e94-1116b8c3d385', 'user07', 'user07@autotest.com', 'hashedpassword', NOW() AT TIME ZONE 'UTC');
 INSERT INTO users (id, username, email, password_hash, created_at) VALUES ('cde05456-6457-45a7-aa4c-fbfe1f4bd81a', 'user08', 'user08@autotest.com', 'hashedpassword', NOW() AT TIME ZONE 'UTC');
 INSERT INTO users (id, username, email, password_hash, created_at) VALUES ('8ef0020b-ca16-4cc9-959c-b73e91ff716e', 'user09', 'user09@autotest.com', 'hashedpassword', NOW() AT TIME ZONE 'UTC');
-INSERT INTO user_profiles (user_id, bio, image) VALUES ('b996cfb0-4e3b-422e-9dc8-a2aa75ea661e', 'This is user00''s bio.', 'https://example.com/default-avatar.jpg');
-INSERT INTO user_profiles (user_id, bio, image) VALUES ('b0665052-b151-403c-9863-fa95d226648d', 'This is user01''s bio.', 'https://example.com/default-avatar.jpg');
-INSERT INTO user_profiles (user_id, bio, image) VALUES ('0f2b9714-b95f-4f43-8993-13b416ca8867', 'This is user02''s bio.', 'https://example.com/default-avatar.jpg');
-INSERT INTO user_profiles (user_id, bio, image) VALUES ('42a4db3b-953f-4746-870e-577a0b5e8e13', 'This is user03''s bio.', 'https://example.com/default-avatar.jpg');
-INSERT INTO user_profiles (user_id, bio, image) VALUES ('08b20c12-9593-461d-b7c7-e31471097853', 'This is user04''s bio.', 'https://example.com/default-avatar.jpg');
-INSERT INTO user_profiles (user_id, bio, image) VALUES ('2a860eb8-d81e-4503-919c-37101587eef5', 'This is user05''s bio.', 'https://example.com/default-avatar.jpg');
-INSERT INTO user_profiles (user_id, bio, image) VALUES ('dfe2c953-2ee7-49c9-9f05-44a507150ea1', 'This is user06''s bio.', 'https://example.com/default-avatar.jpg');
-INSERT INTO user_profiles (user_id, bio, image) VALUES ('fe1bff2d-40ea-48c0-8e94-1116b8c3d385', 'This is user07''s bio.', 'https://example.com/default-avatar.jpg');
-INSERT INTO user_profiles (user_id, bio, image) VALUES ('cde05456-6457-45a7-aa4c-fbfe1f4bd81a', 'This is user08''s bio.', 'https://example.com/default-avatar.jpg');
-INSERT INTO user_profiles (user_id, bio, image) VALUES ('8ef0020b-ca16-4cc9-959c-b73e91ff716e', 'This is user09''s bio.', 'https://example.com/default-avatar.jpg');
+INSERT INTO user_profiles (user_id, bio, image) VALUES ('b996cfb0-4e3b-422e-9dc8-a2aa75ea661e', 'This is user00''s bio.', 'https://s3.us-east-1.amazonaws.com/storage.beampie.com/vote/default_avatar.PNG');
+INSERT INTO user_profiles (user_id, bio, image) VALUES ('b0665052-b151-403c-9863-fa95d226648d', 'This is user01''s bio.', 'https://s3.us-east-1.amazonaws.com/storage.beampie.com/vote/default_avatar.PNG');
+INSERT INTO user_profiles (user_id, bio, image) VALUES ('0f2b9714-b95f-4f43-8993-13b416ca8867', 'This is user02''s bio.', 'https://s3.us-east-1.amazonaws.com/storage.beampie.com/vote/default_avatar.PNG');
+INSERT INTO user_profiles (user_id, bio, image) VALUES ('42a4db3b-953f-4746-870e-577a0b5e8e13', 'This is user03''s bio.', 'https://s3.us-east-1.amazonaws.com/storage.beampie.com/vote/default_avatar.PNG');
+INSERT INTO user_profiles (user_id, bio, image) VALUES ('08b20c12-9593-461d-b7c7-e31471097853', 'This is user04''s bio.', 'https://s3.us-east-1.amazonaws.com/storage.beampie.com/vote/default_avatar.PNG');
+INSERT INTO user_profiles (user_id, bio, image) VALUES ('2a860eb8-d81e-4503-919c-37101587eef5', 'This is user05''s bio.', 'https://s3.us-east-1.amazonaws.com/storage.beampie.com/vote/default_avatar.PNG');
+INSERT INTO user_profiles (user_id, bio, image) VALUES ('dfe2c953-2ee7-49c9-9f05-44a507150ea1', 'This is user06''s bio.', 'https://s3.us-east-1.amazonaws.com/storage.beampie.com/vote/default_avatar.PNG');
+INSERT INTO user_profiles (user_id, bio, image) VALUES ('fe1bff2d-40ea-48c0-8e94-1116b8c3d385', 'This is user07''s bio.', 'https://s3.us-east-1.amazonaws.com/storage.beampie.com/vote/default_avatar.PNG');
+INSERT INTO user_profiles (user_id, bio, image) VALUES ('cde05456-6457-45a7-aa4c-fbfe1f4bd81a', 'This is user08''s bio.', 'https://s3.us-east-1.amazonaws.com/storage.beampie.com/vote/default_avatar.PNG');
+INSERT INTO user_profiles (user_id, bio, image) VALUES ('8ef0020b-ca16-4cc9-959c-b73e91ff716e', 'This is user09''s bio.', 'https://s3.us-east-1.amazonaws.com/storage.beampie.com/vote/default_avatar.PNG');
 
 INSERT INTO user_follows (user_follower_id, user_follow_id) VALUES ('b996cfb0-4e3b-422e-9dc8-a2aa75ea661e', 'dfe2c953-2ee7-49c9-9f05-44a507150ea1') ON CONFLICT DO NOTHING;
 INSERT INTO user_follows (user_follower_id, user_follow_id) VALUES ('b996cfb0-4e3b-422e-9dc8-a2aa75ea661e', 'cde05456-6457-45a7-aa4c-fbfe1f4bd81a') ON CONFLICT DO NOTHING;
@@ -2976,16 +2965,16 @@ FROM poll_answer_options o
          JOIN original_to_new m ON o.poll_id = m.original_id;
 S ('cde05456-6457-45a7-aa4c-fbfe1f4bd81a', 'user08', 'user08@autotest.com', 'hashedpassword', NOW() AT TIME ZONE 'UTC');
 INSERT INTO users (id, username, email, password_hash, created_at) VALUES ('8ef0020b-ca16-4cc9-959c-b73e91ff716e', 'user09', 'user09@autotest.com', 'hashedpassword', NOW() AT TIME ZONE 'UTC');
-INSERT INTO user_profiles (user_id, bio, image) VALUES ('b996cfb0-4e3b-422e-9dc8-a2aa75ea661e', 'This is user00''s bio.', 'https://example.com/default-avatar.jpg');
-INSERT INTO user_profiles (user_id, bio, image) VALUES ('b0665052-b151-403c-9863-fa95d226648d', 'This is user01''s bio.', 'https://example.com/default-avatar.jpg');
-INSERT INTO user_profiles (user_id, bio, image) VALUES ('0f2b9714-b95f-4f43-8993-13b416ca8867', 'This is user02''s bio.', 'https://example.com/default-avatar.jpg');
-INSERT INTO user_profiles (user_id, bio, image) VALUES ('42a4db3b-953f-4746-870e-577a0b5e8e13', 'This is user03''s bio.', 'https://example.com/default-avatar.jpg');
-INSERT INTO user_profiles (user_id, bio, image) VALUES ('08b20c12-9593-461d-b7c7-e31471097853', 'This is user04''s bio.', 'https://example.com/default-avatar.jpg');
-INSERT INTO user_profiles (user_id, bio, image) VALUES ('2a860eb8-d81e-4503-919c-37101587eef5', 'This is user05''s bio.', 'https://example.com/default-avatar.jpg');
-INSERT INTO user_profiles (user_id, bio, image) VALUES ('dfe2c953-2ee7-49c9-9f05-44a507150ea1', 'This is user06''s bio.', 'https://example.com/default-avatar.jpg');
-INSERT INTO user_profiles (user_id, bio, image) VALUES ('fe1bff2d-40ea-48c0-8e94-1116b8c3d385', 'This is user07''s bio.', 'https://example.com/default-avatar.jpg');
-INSERT INTO user_profiles (user_id, bio, image) VALUES ('cde05456-6457-45a7-aa4c-fbfe1f4bd81a', 'This is user08''s bio.', 'https://example.com/default-avatar.jpg');
-INSERT INTO user_profiles (user_id, bio, image) VALUES ('8ef0020b-ca16-4cc9-959c-b73e91ff716e', 'This is user09''s bio.', 'https://example.com/default-avatar.jpg');
+INSERT INTO user_profiles (user_id, bio, image) VALUES ('b996cfb0-4e3b-422e-9dc8-a2aa75ea661e', 'This is user00''s bio.', 'https://s3.us-east-1.amazonaws.com/storage.beampie.com/vote/default_avatar.PNG');
+INSERT INTO user_profiles (user_id, bio, image) VALUES ('b0665052-b151-403c-9863-fa95d226648d', 'This is user01''s bio.', 'https://s3.us-east-1.amazonaws.com/storage.beampie.com/vote/default_avatar.PNG');
+INSERT INTO user_profiles (user_id, bio, image) VALUES ('0f2b9714-b95f-4f43-8993-13b416ca8867', 'This is user02''s bio.', 'https://s3.us-east-1.amazonaws.com/storage.beampie.com/vote/default_avatar.PNG');
+INSERT INTO user_profiles (user_id, bio, image) VALUES ('42a4db3b-953f-4746-870e-577a0b5e8e13', 'This is user03''s bio.', 'https://s3.us-east-1.amazonaws.com/storage.beampie.com/vote/default_avatar.PNG');
+INSERT INTO user_profiles (user_id, bio, image) VALUES ('08b20c12-9593-461d-b7c7-e31471097853', 'This is user04''s bio.', 'https://s3.us-east-1.amazonaws.com/storage.beampie.com/vote/default_avatar.PNG');
+INSERT INTO user_profiles (user_id, bio, image) VALUES ('2a860eb8-d81e-4503-919c-37101587eef5', 'This is user05''s bio.', 'https://s3.us-east-1.amazonaws.com/storage.beampie.com/vote/default_avatar.PNG');
+INSERT INTO user_profiles (user_id, bio, image) VALUES ('dfe2c953-2ee7-49c9-9f05-44a507150ea1', 'This is user06''s bio.', 'https://s3.us-east-1.amazonaws.com/storage.beampie.com/vote/default_avatar.PNG');
+INSERT INTO user_profiles (user_id, bio, image) VALUES ('fe1bff2d-40ea-48c0-8e94-1116b8c3d385', 'This is user07''s bio.', 'https://s3.us-east-1.amazonaws.com/storage.beampie.com/vote/default_avatar.PNG');
+INSERT INTO user_profiles (user_id, bio, image) VALUES ('cde05456-6457-45a7-aa4c-fbfe1f4bd81a', 'This is user08''s bio.', 'https://s3.us-east-1.amazonaws.com/storage.beampie.com/vote/default_avatar.PNG');
+INSERT INTO user_profiles (user_id, bio, image) VALUES ('8ef0020b-ca16-4cc9-959c-b73e91ff716e', 'This is user09''s bio.', 'https://s3.us-east-1.amazonaws.com/storage.beampie.com/vote/default_avatar.PNG');
 
 INSERT INTO user_follows (user_follower_id, user_follow_id) VALUES ('b996cfb0-4e3b-422e-9dc8-a2aa75ea661e', 'dfe2c953-2ee7-49c9-9f05-44a507150ea1') ON CONFLICT DO NOTHING;
 INSERT INTO user_follows (user_follower_id, user_follow_id) VALUES ('b996cfb0-4e3b-422e-9dc8-a2aa75ea661e', 'cde05456-6457-45a7-aa4c-fbfe1f4bd81a') ON CONFLICT DO NOTHING;

@@ -26,7 +26,7 @@ const NotificationSettingsView = () => {
                     />
                 </View>
 
-                <View style={styles.settingRow}>
+                {/*<View style={styles.settingRow}>
                     <Text style={styles.settingText}>Polls from people you follow</Text>
                     <AwesomeSquareSwitch
                         value={pushNewPolls}
@@ -66,11 +66,11 @@ const NotificationSettingsView = () => {
                         value={emailEnabled}
                         onValueChange={setEmailEnabled}
                     />
-                </View>
+                </View>*/}
 
                 <View style={styles.infoContainer}>
                     <Text style={styles.infoText}>
-                        Manage how you get updates about your polls, followers, and trends. You can change these settings anytime.
+                        Manage how you get updates about your followers. You can change the setting anytime.
                     </Text>
                 </View>
             </ScrollView>
