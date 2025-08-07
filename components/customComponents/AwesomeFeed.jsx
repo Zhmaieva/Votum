@@ -8,16 +8,11 @@ import {
     SafeAreaView,
     Text
 } from 'react-native';
-const { height, width } = Dimensions.get('window');
-const POLL_HEIGHT = height * 0.83;
-const NEXT_POLL_OFFSET = height * 0.17;
 import {Colors, Fonts} from '../../utils/colorUtils';
 import {getDataService, globalEventEmitter, Logger} from "../../shared/common";
-import AwesomeLink from "./AwesomeLink";
 import {useFocusEffect} from "@react-navigation/native";
 import {fetchMyProfile, getPollOptions, viewPoll, viewPollRequest} from "../../shared/api/apiClient";
 import AwesomeLoadingPoll from "./AwesomeLoadingPoll";
-import { useImperativeHandle } from 'react';
 
 const minimumOptionsUpdateInterval = 2000;//1500;
 const maximumOptionsUpdateIntervalIncrease = 0;//10000;
@@ -37,6 +32,68 @@ const AwesomeFeed = forwardRef(({
                                     isPollCreatedScrollTop = false,
                                 }, externalRef) => {
     const scrollY = useRef(new Animated.Value(0)).current;
+
+    const { height, width } = Dimensions.get('window');
+    const NEXT_POLL_OFFSET = height * 0.17;
+    const POLL_HEIGHT = isUserProfileView ? height * .6 : height * 0.83;
+
+    const styles = StyleSheet.create({
+        container: {
+            flex: 1,
+            backgroundColor: Colors.white,
+        },
+        pollContainer: {
+            height: POLL_HEIGHT,
+            backgroundColor: Colors.white,
+            marginBottom: -NEXT_POLL_OFFSET,
+            justifyContent: 'flex-start',
+        },
+        placeholderContainerFeed: {
+            height: POLL_HEIGHT,
+            backgroundColor: Colors.white,
+            marginBottom: -NEXT_POLL_OFFSET,
+            justifyContent: 'center',
+
+        },
+        placeholderContainer: {
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: Colors.white,
+        },
+        placeholderContainerUserProfile: {
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            paddingBottom: 100,
+            backgroundColor: Colors.white,
+        },
+        placeholderContainerSearch: {
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: Colors.white,
+            paddingBottom: 50
+        },
+        placeholderContainerLikes: {
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            paddingLeft: 20,
+            paddingRight: 20,
+            paddingTop: 60,
+            backgroundColor: Colors.white,
+        },
+        placeholderText: {
+            fontSize: 16,
+            color: Colors.grey,
+            textAlign: 'center',
+            fontFamily: Fonts.regular
+        },
+        row: {
+            flexDirection: 'row'
+        }
+    });
 
     const [preloadedData, setPreloadedData] = useState(data);
 
@@ -352,64 +409,6 @@ const AwesomeFeed = forwardRef(({
         </>
 
     )
-});
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: Colors.white,
-    },
-    pollContainer: {
-        height: POLL_HEIGHT,
-        backgroundColor: Colors.white,
-        marginBottom: -NEXT_POLL_OFFSET,
-        justifyContent: 'flex-start',
-    },
-    placeholderContainerFeed: {
-        height: POLL_HEIGHT,
-        backgroundColor: Colors.white,
-        marginBottom: -NEXT_POLL_OFFSET,
-        justifyContent: 'center',
-
-    },
-    placeholderContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: Colors.white,
-    },
-    placeholderContainerUserProfile: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        paddingBottom: 100,
-        backgroundColor: Colors.white,
-    },
-    placeholderContainerSearch: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: Colors.white,
-        paddingBottom: 50
-    },
-    placeholderContainerLikes: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        paddingLeft: 20,
-        paddingRight: 20,
-        paddingTop: 60,
-        backgroundColor: Colors.white,
-    },
-    placeholderText: {
-        fontSize: 16,
-        color: Colors.grey,
-        textAlign: 'center',
-        fontFamily: Fonts.regular
-    },
-    row: {
-        flexDirection: 'row'
-    }
 });
 
 export default AwesomeFeed;

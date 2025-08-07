@@ -54,20 +54,29 @@ const MyUserProfileView = () => {
     );
 
     useEffect(() => {
+        globalEventEmitter.on('deletePoll', onDeletePollHandler);
+
         if (route.params?.scrollToTop) {
             feedRef.current?.scrollToTop?.();
 
             // Remove the param so it doesn't repeat on tab switch
             navigation.setParams({ scrollToTop: undefined });
         }
+
+        return () => {
+            globalEventEmitter.off('deletePoll', onDeletePollHandler);
+        }
     }, [route.params?.scrollToTop]);
 
-    globalEventEmitter.on('deletePoll', async ({ pollId }) => {
+    const onDeletePollHandler = async ({ pollId }) => {
         let userData = await fetchMyProfile();
         getDataService().setUser(userData);
 
+        const pollsData = await fetchUserPolls(userData.userId);
+        setPolls(pollsData);
+
         setUser(userData);
-    });
+    }
 
     const onRefresh = () => {
         setRefreshing(true);

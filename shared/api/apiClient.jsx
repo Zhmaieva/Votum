@@ -653,6 +653,23 @@ export const writeDebugLog = async (log) => {
     }
 }
 
+export const updateNotificationPreferences = async () => {
+    try {
+        Logger.log('update notification preferences');
+
+        const response = await apiClient.put(`/user/notifications`, {
+            is_new_followers_notification_enabled: getDataService()?.getUser()?.is_new_followers_notification_enabled ?? false
+        }, {
+            headers: {
+                Authorization: `Bearer ${await getToken()}`,
+            },
+        });
+        return response?.data;
+    } catch (err) {
+        Logger.log("Failed to update notification settings", err);
+    }
+};
+
 export const updatePushToken = async (token) => {
     try {
         Logger.log('update push token', token);
