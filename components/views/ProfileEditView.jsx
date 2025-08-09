@@ -193,7 +193,7 @@ const ProfileEditView = ({ route }) => {
                     { label: "DELETE", onPress: async () => {
                             setDeleteModalVisible(false);
                             //set another modal visible and after password input, execute the logic below passing input password
-                            const result = await deleteUserProfile('hardcoded_password');
+                            const result = await deleteUserProfile();
                             if (result) {
                                 await signOut();
                                 return;

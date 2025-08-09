@@ -794,8 +794,8 @@ app.delete('/users', authMiddleware, async (req, res, next) => {
         if (!existingUser)
             return res.json({ success: true });
 
-        if (!await bcrypt.compare(password, existingUser?.password))
-            return res.status(403).json({ message: 'Invalid password' });
+        // if (!await bcrypt.compare(password, existingUser?.password))
+        //     return res.status(403).json({ message: 'Invalid password' });
 
         await userQueries.deleteUser(req.user.id);
 

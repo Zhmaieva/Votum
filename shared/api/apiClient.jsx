@@ -797,7 +797,7 @@ export const updateUserProfile = async (updatedData) => {
 export const deleteUserProfile = async (password) => {
     try {
         Logger.log(`deleting user`);
-        const response = await apiClient.delete(`/user?password=${password}`, {
+        const response = await apiClient.delete(`/users?password=${password}`, {
             headers: {
                 Authorization: `Bearer ${await getToken()}`,
             },
