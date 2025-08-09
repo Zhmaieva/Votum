@@ -43,7 +43,31 @@ export default function App() {
         }
     };
 
+    const checkOnboardingReadiness = async () => {
+        const tokenAvailable = await isTokenAvailable();
+        let isOnboardingDone = false;
+        let profile = null;
+        if (tokenAvailable) {
+            profile = await fetchMyProfile();
+            if (profile) {
+                getDataService().setUser(profile);
+                isOnboardingDone = profile.onboardingComplete;
+            }
+        }
+        setIsAuthenticated(tokenAvailable && isOnboardingDone);
+        if (tokenAvailable && profile || !tokenAvailable)
+            setIsLoading(false);
+
+        if (!tokenAvailable || !isOnboardingDone) {
+            return false;
+        }
+
+        return true;
+    }
+
     useEffect(() => {
+        globalEventEmitter.on('signup', onSignup);
+
         const loadFontAndInit = async () => {
             await Font.loadAsync({
                 'CourierPrime-Regular': require('./assets/fonts/CourierPrime-Regular.ttf'),
@@ -58,19 +82,9 @@ export default function App() {
 
             setFontLoaded(true);
 
-            const tokenAvailable = await isTokenAvailable();
-            let isOnboardingDone = false;
-            if (tokenAvailable) {
-                const profile = await fetchMyProfile();
-                if (profile) {
-                    getDataService().setUser(profile);
-                    isOnboardingDone = profile.onboardingComplete;
-                }
-            }
-            setIsAuthenticated(tokenAvailable && isOnboardingDone);
-            setIsLoading(false);
+            const isFullyOnboarded = await checkOnboardingReadiness();
 
-            if (!tokenAvailable || !isOnboardingDone) {
+            if (!isFullyOnboarded) {
                 await deregisterForPushNotificationsAsync();
                 return;
             }
@@ -126,6 +140,7 @@ export default function App() {
             subscription?.remove();
             notificationReceivedListener?.remove();
             notificationResponseReceivedListener?.remove();
+            globalEventEmitter.off('signup', onSignup);
         };
     }, []);
 
@@ -159,21 +174,12 @@ export default function App() {
         }
     });
 
-    globalEventEmitter.on('signup', async ({skipMainLoading}) => {
+    const onSignup = async ({skipMainLoading}) => {
         if (skipMainLoading)
             return;
 
-        const tokenAvailable = await isTokenAvailable();
-        let isOnboardingDone = false;
-        if (tokenAvailable) {
-            const profile = await fetchMyProfile();
-            if (profile) {
-                getDataService().setUser(profile);
-                isOnboardingDone = profile.onboardingComplete;
-            }
-        }
-        setIsAuthenticated(tokenAvailable && isOnboardingDone);
-    });
+        await checkOnboardingReadiness();
+    }
 
     if (!fontLoaded || isLoading) {
         return (

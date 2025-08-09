@@ -280,7 +280,7 @@ const AwesomeFeed = forwardRef(({
         await onSnapChange(index ?? 0);
     }, [preloadedData]);
 
-    const onSnapChange = async (index) => {
+    const onSnapChange = async (index, view = true) => {
         if (lastIndexRef.current !== index) {
             const snappedItem = preloadedData[index];
             if (snappedItem && snappedItem.id) {
@@ -290,7 +290,7 @@ const AwesomeFeed = forwardRef(({
                 clearTimeout(timeoutRef.current);
                 timeoutRef.current = setTimeout(() => updatePoll(lastIndexRef.current),minimumOptionsUpdateInterval + Math.random() * maximumOptionsUpdateIntervalIncrease);
 
-                if (preloadedData[index] && preloadedData[index].type !== 'placeholder' && preloadedData[index].user?.userId !== getDataService().getUser()?.userId) {
+                if (view && preloadedData[index] && preloadedData[index].type !== 'placeholder' && preloadedData[index].user?.userId !== getDataService().getUser()?.userId) {
                     await viewPoll(preloadedData[index].id);
                 }
 
@@ -356,7 +356,7 @@ const AwesomeFeed = forwardRef(({
         setCurrentIndex(-1);
 
         if (preloadedData?.length > 0) {
-            onSnapChange(0);
+            onSnapChange(0, false);
         }
     }, [preloadedData]));
 

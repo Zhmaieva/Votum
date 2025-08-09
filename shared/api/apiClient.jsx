@@ -26,7 +26,7 @@ export async function signOut() {
 // Create an Axios instance
 const apiClient = axios.create({
     baseURL: BASE_URL,
-    timeout: 1000, // Set timeout (optional)
+    timeout: 10000, // Set timeout (optional)
     headers: { "Content-Type": "application/json" },
 });
 
@@ -35,6 +35,13 @@ apiClient.interceptors.response.use(
     (response) => response, // Return the response if successful
     async (error) => {
         console.log("API Error:", error);
+
+        if (error.code === 'ECONNABORTED') {
+            console.log("Request timed out");
+
+            globalEventEmitter.emit('requestTimeout');
+            return Promise.reject(error);
+        }
 
         if (error.response) {
             // The request was made and the server responded with a status code outside 2xx
@@ -354,6 +361,17 @@ export const fetchVotedPolls = async () => {
         return response?.data;
     } catch (err) {
         Logger.log('Fetch failed', err);
+    }
+};
+
+export const pingServer = async () => {
+    try {
+        Logger.log('pinging server...');
+        const res = await apiClient.get(`/ping`);
+        return  res.status >= 200 && res.status < 300;
+    } catch (err) {
+        Logger.log('Fetch failed', err);
+        return false;
     }
 };
 

@@ -1,23 +1,68 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
+import React, {useEffect, useRef, useState} from 'react';
+import { Text, StyleSheet, SafeAreaView } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 import { Colors, Fonts } from '../../utils/colorUtils';
-import AwesomeButton, { Color } from '../customComponents/AwesomeButton'; // adjust path
+import AwesomeButton, { Color } from '../customComponents/AwesomeButton';
+import {globalEventEmitter} from "../../shared/common";
+import {pingServer} from "../../shared/api/apiClient"; // adjust path
 
 export default function NoInternetWrapper({ children }) {
     const [isConnected, setIsConnected] = useState(true);
+    const lastRef = useRef({ isConnected: undefined, isInternetReachable: undefined });
+
+    const changeOnlineState = (isOnline) => {
+        if (isOnline) {
+            console.log('going online...');
+            globalEventEmitter.emit('signup', {});
+            setIsConnected(true);
+        } else {
+            console.log('going offline...')
+            setIsConnected(false);
+        }
+    }
+
+    const handleNetState = async (state, force = false) => {
+        const next = {
+            isConnected: state.isConnected,
+            isInternetReachable: state.isInternetReachable,
+        };
+
+        if (!force && lastRef.current.isConnected === next.isConnected && lastRef.current.isInternetReachable === next.isInternetReachable)
+            return;
+
+        lastRef.current = next;
+
+        try {
+            if (state.isConnected && state.isInternetReachable !== false) {
+                console.log(JSON.stringify(state));
+                const pingResult = await pingServer();
+                changeOnlineState(pingResult ?? false);
+            } else {
+                changeOnlineState(false);
+            }
+        } catch (err) {
+            changeOnlineState(false);
+        }
+    }
 
     const checkConnection = async () => {
         const state = await NetInfo.fetch();
-        setIsConnected(state.isConnected && state.isInternetReachable !== false);
+        await handleNetState(state, true);
     };
 
+    const handleTimeout = () => {
+        changeOnlineState(false);
+    }
+
     useEffect(() => {
-        checkConnection(); // initial check on mount
-        const unsubscribe = NetInfo.addEventListener(state => {
-            setIsConnected(state.isConnected && state.isInternetReachable !== false);
-        });
-        return () => unsubscribe();
+        const unsubscribe = NetInfo.addEventListener(handleNetState);
+
+        globalEventEmitter.on('requestTimeout', handleTimeout);
+
+        return () => {
+            unsubscribe()
+            globalEventEmitter.off('requestTimeout', handleTimeout);
+        };
     }, []);
 
     if (!isConnected) {
@@ -29,6 +74,7 @@ export default function NoInternetWrapper({ children }) {
                     text="Try Again"
                     color={Color.BLACK}
                     additionalFunc={checkConnection}
+                    disableNavigation={true}
                 />
             </SafeAreaView>
         );

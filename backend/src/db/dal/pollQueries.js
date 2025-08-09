@@ -709,13 +709,18 @@ async function fetchVotedPolls(userId) {
  * @returns {Promise<Array>} - List of polls created by the user
  */
 async function fetchUserPolls(requestingUserId, targetUserId) {
-    const query = `
+    try {
+        const query = `
         ${pollSelect}
         WHERE p.is_deleted = false AND p.created_by = $2
         ORDER BY p.created_at DESC
     `;
     const result = await pool.query(query, [requestingUserId, targetUserId]);
     return attachOptionsToPolls(requestingUserId, result.rows);
+    } catch (error) {
+        console.error(`error fetching profile: ${requestingUserId} / ${targetUserId}`);
+        throw error;
+    }
 }
 
 const SEARCH_FLAGS = {

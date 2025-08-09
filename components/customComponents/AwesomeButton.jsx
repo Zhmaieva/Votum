@@ -21,10 +21,11 @@ export default function AwesomeButton({
                                           isInChangedTextMode = false,
                                           disabled = false,
                                           settingButton = false,
-                                          loading: externalLoading = false, // 👈 NEW
-                                          manual = false, // 👈 NEW
+                                          loading: externalLoading = false,
+                                          manual = false,
+                                          disableNavigation = false,
                                       }) {
-    const navigation = useNavigation();
+    const navigation = disableNavigation ? null : useNavigation();
     const [buttonName, setButtonName] = useState(text);
     const [internalLoading, setInternalLoading] = useState(false);
     const [isDisabled, setIsDisabled] = useState(disabled);
@@ -47,7 +48,7 @@ export default function AwesomeButton({
         }
 
         try {
-            if (screenName) {
+            if (screenName && !disableNavigation) {
                 navigation.navigate(screenName, params);
             }
             if (additionalFunc) {

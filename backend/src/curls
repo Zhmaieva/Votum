@@ -18,3 +18,5 @@ curl -X POST https://api-voteapp.beampie.com/test/push \
     "screenName": "TargetScreen",
     "code": "KAkmfm320ALZ939lLZNdmd0i8Mkm3kmzx0zkMALl0--21332xz0xz0..j21mxc.v3.33343xvcij8329rundsbdb z73"
   }'
+
+curl -X GET http://192.168.1.119:3000/ping

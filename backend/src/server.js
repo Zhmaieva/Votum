@@ -94,6 +94,10 @@ app.use('/.well-known/apple-app-site-association', (req, res, next) => {
     }
 });
 
+app.get("/ping", (req, res, next) => {
+    res.json({});
+});
+
 app.post("/users/passwords/forgot", async (req, res, next) => {
     try {
         const { email } = req.body;
