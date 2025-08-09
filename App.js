@@ -55,7 +55,7 @@ export default function App() {
             }
         }
         setIsAuthenticated(tokenAvailable && isOnboardingDone);
-        if (tokenAvailable && profile || !tokenAvailable)
+        if (profile || !tokenAvailable)
             setIsLoading(false);
 
         if (!tokenAvailable || !isOnboardingDone) {
