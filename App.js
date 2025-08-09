@@ -65,41 +65,76 @@ export default function App() {
         return true;
     }
 
-    useEffect(() => {
-        globalEventEmitter.on('signup', onSignup);
+    const onSignup = async ({skipMainLoading}) => {
+        if (skipMainLoading)
+            return;
 
-        const loadFontAndInit = async () => {
-            await Font.loadAsync({
-                'CourierPrime-Regular': require('./assets/fonts/CourierPrime-Regular.ttf'),
-                'CourierPrime-Bold': require('./assets/fonts/CourierPrime-Bold.ttf'),
-                'Ubuntu-Regular': require('./assets/fonts/UbuntuMono-Regular.ttf'),
-                'Ubuntu-Bold': require('./assets/fonts/UbuntuMono-Bold.ttf'),
-                'Fira': require('./assets/fonts/FiraSans-Regular.ttf'),
-                'Fira-Bold': require('./assets/fonts/FiraSans-Bold.ttf'),
-                'Fira-Medium': require('./assets/fonts/FiraSans-Medium.ttf'),
-                'Pixel': require('./assets/fonts/PressStart2P-Regular.ttf'),
-            });
+        await checkOnboardingReadiness();
+    }
 
-            setFontLoaded(true);
-
-            const isFullyOnboarded = await checkOnboardingReadiness();
-
-            if (!isFullyOnboarded) {
-                await deregisterForPushNotificationsAsync();
-                return;
-            }
-
-            const url = await Linking.getInitialURL();
-
-            try {
-                if (url) handleUrl({ url });
-            } catch (e) {
-                Logger.error('Error handling deep link: ', e);
-            }
-
+    const signIn = async () => {
+        if (isAuthenticated)
             await registerForPushNotificationsAsync();
-        };
+        setIsAuthenticated(true);
+    }
 
+    const signOut = async () => {
+        if (isAuthenticated)
+            await deregisterForPushNotificationsAsync();
+        setIsAuthenticated(false);
+    }
+
+    const onPasswordReset = async () => {
+        const tokenAvailable = await isTokenAvailable();
+        let isOnboardingDone = false;
+        if (tokenAvailable) {
+            const profile = await fetchMyProfile();
+            if (profile) {
+                getDataService().setUser(profile);
+                isOnboardingDone = profile.onboardingComplete;
+            }
+        }
+        if (tokenAvailable) {
+            if (!isOnboardingDone)
+                globalEventEmitter.emit('signup', { skipMainLoading: true});
+            else
+                setIsAuthenticated(true );
+        }
+    }
+
+    const loadFontAndInit = async () => {
+        await Font.loadAsync({
+            'CourierPrime-Regular': require('./assets/fonts/CourierPrime-Regular.ttf'),
+            'CourierPrime-Bold': require('./assets/fonts/CourierPrime-Bold.ttf'),
+            'Ubuntu-Regular': require('./assets/fonts/UbuntuMono-Regular.ttf'),
+            'Ubuntu-Bold': require('./assets/fonts/UbuntuMono-Bold.ttf'),
+            'Fira': require('./assets/fonts/FiraSans-Regular.ttf'),
+            'Fira-Bold': require('./assets/fonts/FiraSans-Bold.ttf'),
+            'Fira-Medium': require('./assets/fonts/FiraSans-Medium.ttf'),
+            'Pixel': require('./assets/fonts/PressStart2P-Regular.ttf'),
+        });
+
+        setFontLoaded(true);
+
+        const isFullyOnboarded = await checkOnboardingReadiness();
+
+        if (!isFullyOnboarded) {
+            await deregisterForPushNotificationsAsync();
+            return;
+        }
+
+        const url = await Linking.getInitialURL();
+
+        try {
+            if (url) handleUrl({ url });
+        } catch (e) {
+            Logger.error('Error handling deep link: ', e);
+        }
+
+        await registerForPushNotificationsAsync();
+    };
+
+    useEffect(() => {
         loader.load([new Promise(resolve => resolve()).then(async () => {
             await loadFontAndInit();
         })]).then(() => {});
@@ -136,69 +171,43 @@ export default function App() {
             }
         });
 
+        globalEventEmitter.on('signup', onSignup);
+        globalEventEmitter.on('online', checkOnboardingReadiness);
+        globalEventEmitter.on('signIn', signIn);
+        globalEventEmitter.on('signOut', signOut);
+        globalEventEmitter.on('passwordReset', onPasswordReset);
+
         return () => {
             subscription?.remove();
             notificationReceivedListener?.remove();
             notificationResponseReceivedListener?.remove();
             globalEventEmitter.off('signup', onSignup);
+            globalEventEmitter.off('online', checkOnboardingReadiness);
+            globalEventEmitter.off('signIn', signIn);
+            globalEventEmitter.off('signOut', signOut);
+            globalEventEmitter.off('passwordReset', onPasswordReset);
+
         };
     }, []);
-
-    globalEventEmitter.on('signIn', async () => {
-        if (isAuthenticated)
-            await registerForPushNotificationsAsync();
-        setIsAuthenticated(true);
-    });
-
-    globalEventEmitter.on('signOut', async () => {
-        if (isAuthenticated)
-            await deregisterForPushNotificationsAsync();
-        setIsAuthenticated(false);
-    });
-
-    globalEventEmitter.on('passwordReset', async () => {
-        const tokenAvailable = await isTokenAvailable();
-        let isOnboardingDone = false;
-        if (tokenAvailable) {
-            const profile = await fetchMyProfile();
-            if (profile) {
-                getDataService().setUser(profile);
-                isOnboardingDone = profile.onboardingComplete;
-            }
-        }
-        if (tokenAvailable) {
-            if (!isOnboardingDone)
-                globalEventEmitter.emit('signup', { skipMainLoading: true});
-            else
-                setIsAuthenticated(true );
-        }
-    });
-
-    const onSignup = async ({skipMainLoading}) => {
-        if (skipMainLoading)
-            return;
-
-        await checkOnboardingReadiness();
-    }
-
-    if (!fontLoaded || isLoading) {
-        return (
-            <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#ffffff" }}>
-                {!isLoadingVisible ? <></> : <ActivityIndicator size="large" color="#93a548" />}
-            </View>
-        );
-    }
 
     return (
         <SafeAreaProvider style={{backgroundColor: '#ffffff'}}>
             <NoInternetWrapper>
-                <GestureHandlerRootView style={{ flex: 1}}>
-                    <BottomSheetModalProvider>
-                        <NavigationContainer ref={navigationRef}>
-                            {isAuthenticated ? <AwesomeTabs /> : <AuthNavigator />}
-                        </NavigationContainer>
-                    </BottomSheetModalProvider>
-                </GestureHandlerRootView>
+                {
+                    (!fontLoaded || isLoading) ?
+                        <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#ffffff" }}>
+                            {!isLoadingVisible ? <></> : <ActivityIndicator size="large" color="#93a548" />}
+                        </View>
+                        :
+                        <GestureHandlerRootView style={{ flex: 1}}>
+                            <BottomSheetModalProvider>
+                                <NavigationContainer ref={navigationRef}>
+                                    {isAuthenticated ? <AwesomeTabs /> : <AuthNavigator />}
+                                </NavigationContainer>
+                            </BottomSheetModalProvider>
+                        </GestureHandlerRootView>
+                }
+
             </NoInternetWrapper>
         </SafeAreaProvider>
     );

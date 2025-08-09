@@ -4,12 +4,13 @@ import {Colors, Fonts} from "../../utils/colorUtils";
 import AwesomeButton, { Color } from "../customComponents/AwesomeButton";
 import {getDataService} from "../../shared/common";
 import logoVotum from '../../assets/images/logoVotum.png';
+import {useFocusEffect} from "@react-navigation/native";
 
-export default function WelcomeView () {
+export default function WelcomeView(callback, deps) {
 
-    useEffect(() => {
+    useFocusEffect(React.useCallback(() => {
         getDataService().setUser(null);
-    },[])
+    }, deps));
 
     return (
         <SafeAreaView style={styles.safeArea}>

@@ -4,6 +4,7 @@ import AwesomeCard from "../customComponents/AwesomeCard";
 import AwesomeFeed from "../customComponents/AwesomeFeed";
 import {calculateTimeDifference, globalEventEmitter, Loader} from "../../shared/common";
 import {fetchVotedPolls, fetchMyProfile} from "../../shared/api/apiClient";
+import {useFocusEffect} from "@react-navigation/native";
 
 const VotedView = () => {
 
@@ -15,6 +16,10 @@ const VotedView = () => {
     const loader = new Loader((value) => {
         setLoading(value);
     });
+
+    useFocusEffect(React.useCallback(() => {
+        globalEventEmitter.emit('feedSwitch', {});
+    }, []))
 
     useEffect(() => {
         loader.load([

@@ -1,7 +1,6 @@
 import React, {useEffect, useState, useRef } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { Ionicons } from '@expo/vector-icons';
 import { Colors, Fonts } from "../../../utils/colorUtils.js";
 import MyUserProfileView from "../MyUserProfileView";
 import VotedView from '../VotedView';
@@ -11,9 +10,8 @@ import FeedView from "../FeedView";
 import ProfileEditView from "../ProfileEditView";
 import BioEditView from "../BioEditView";
 import EmailEditView from "../EmailEditView";
-import {isTokenAvailable, updateUserProfile} from "../../../shared/api/apiClient";
-import {getDataService, globalEventEmitter, Logger} from "../../../shared/common";
-import HeaderRightButton from "../../customComponents/HeaderRightButton";
+import {isTokenAvailable} from "../../../shared/api/apiClient";
+import {globalEventEmitter, Logger} from "../../../shared/common";
 import FollowingView from "../FollowingView";
 import RegistrationMethodView from "../RegistrationMethodView";
 import EmailRegisterView from "../EmailRegisterView";
@@ -25,7 +23,6 @@ import AgeView from "../AgeView";
 import LogInView from "../LogInView"
 import ForgotPasswordView from "../ForgotPassword";
 import FollowersView from "../FollowersView";
-import AwesomeUsernameInput from "../../customComponents/AwesomeUsernameInput";
 import SomebodysProfileView from "../SomebodysProfileView"
 import PreviewPollView from "../PreviewPollView";
 import EditUsernameView from "../EditUsernameView";
@@ -56,12 +53,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import PrivacyPolicyView from "../PrivacyPolicyView";
 import PrivacyPolicyWebView from "../PrivacyPolicyWebView";
 import TermsOfServiceWebView from "../TermsOfServiceWebView";
-import * as Device from 'expo-device';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Platform } from 'react-native';
 import { Dimensions } from 'react-native';
 import SuccessPasswordView from "../SuccessPasswordView";
-import NoInternetWrapper from "../NoInternetWrapper";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -182,14 +176,6 @@ function VotedStack() {
     const feedRef = useRef(null);
     const navigation = useNavigation();
 
-    useEffect(() => {
-        const unsubscribe = navigation.addListener('tabPress', () => {
-            globalEventEmitter.emit('scrollToTopVoted');
-        });
-
-        return unsubscribe;
-    }, [navigation]);
-
     return (
         <Stack.Navigator id="Test3">
             <Stack.Screen
@@ -230,17 +216,29 @@ function SearchStack() {
 export function AuthNavigator() {
     const [authenticated, setAuthenticated] = useState(false)
 
-    useEffect(() => {
+    const checkAuthenticated = async () => {
         isTokenAvailable().then(result => {
-            Logger.log('isTokenAvailable', result);
+            Logger.log('isTokenAvailable ' + result);
             setAuthenticated(result);
         })
-    }, []);
+    }
 
-    globalEventEmitter.on('signup', () => {
+    const signUp = () => {
         Logger.log('signup event');
         setAuthenticated(true);
-    });
+    }
+
+    useEffect(() => {
+        checkAuthenticated().then(result => {});
+
+        globalEventEmitter.on('online', checkAuthenticated);
+        globalEventEmitter.on('signup', signUp);
+
+        return () => {
+            globalEventEmitter.off('online', checkAuthenticated);
+            globalEventEmitter.off('signup', signUp);
+        }
+    }, []);
 
     return authenticated ? (
             <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -349,8 +347,20 @@ export function AwesomeTabs() {
                 tabBarInactiveTintColor: Colors.black,
             })}
         >
-            <Tab.Screen name="FEED" component={FeedStack} options={{ headerShown: false, gestureEnabled: true }} />
-            <Tab.Screen name="SEARCH" component={SearchStack} options={{ headerShown: false, gestureEnabled: true }} />
+            <Tab.Screen name="FEED" component={FeedStack} options={{ headerShown: false, gestureEnabled: true }}
+                    listeners={({ navigation }) => ({
+                        tabPress: (e) => {
+                            globalEventEmitter.emit('feedSwitch');
+                        },
+                    })}
+            />
+            <Tab.Screen name="SEARCH" component={SearchStack} options={{ headerShown: false, gestureEnabled: true }}
+                    listeners={({ navigation }) => ({
+                        tabPress: (e) => {
+                            globalEventEmitter.emit('feedSwitch');
+                        },
+                    })}
+            />
             <Tab.Screen
                 name="ADD POLL"
                 component={AddStack}
@@ -372,11 +382,17 @@ export function AwesomeTabs() {
                 options={{ headerShown: false }}
                 listeners={({ navigation }) => ({
                     tabPress: (e) => {
-                        globalEventEmitter.emit('scrollToTopVoted');
+                        globalEventEmitter.emit('feedSwitch');
                     },
                 })}
             />
-            <Tab.Screen name="MY PROFILE" component={UserStack} options={{ headerShown: false, gestureEnabled: true }} />
+            <Tab.Screen name="MY PROFILE" component={UserStack} options={{ headerShown: false, gestureEnabled: true }}
+                listeners={({ navigation }) => ({
+                    tabPress: (e) => {
+                        globalEventEmitter.emit('feedSwitch');
+                    },
+                })}
+            />
         </Tab.Navigator>
     );
 }

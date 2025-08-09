@@ -37,7 +37,9 @@ apiClient.interceptors.response.use(
         console.log("API Error:", error);
 
         if (error.code === 'ECONNABORTED') {
-            console.log("Request timed out");
+            const paramsStr = error.config?.params ? `?${qs.stringify(error.config.params)}` : '';
+            const fullUrl = `${error.config?.baseURL ?? ''}${error.config?.url ?? ''}${paramsStr}`;
+            console.log("Request timed out:", fullUrl);
 
             globalEventEmitter.emit('requestTimeout');
             return Promise.reject(error);

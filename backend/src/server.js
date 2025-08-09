@@ -399,7 +399,7 @@ app.post('/profile/image', authMiddleware, uploadMiddleware.single('file'), asyn
 
         updateUserImage(file, req.user.id).then(_ => {});
 
-        return res.status(200);
+        return res.json({});
     }
     catch (e) {
         next(e);
@@ -504,7 +504,7 @@ app.put('/profile/notifications', authMiddleware, async (req, res, next) => {
         const { notificationIds } = req.body;
         await markNotificationsAsRead(req.user.id, notificationIds);
 
-        return res.status(200);
+        return res.json({});
     }
     catch (e) {
         next(e);
@@ -515,7 +515,7 @@ app.delete('/profile/notifications', authMiddleware, async (req, res, next) => {
     try {
         await deleteAllUserNotifications(req.user.id);
 
-        return res.status(200);
+        return res.json({});
     }
     catch (e) {
         next(e);
@@ -646,7 +646,7 @@ app.post('/users/inquiry', async (req, res, next) => {
         const { email, inquiryType } = req.body;
 
         if (inquiryType < 0 || inquiryType > 1) {
-            return res.status(200);
+            return res.json({});
         }
 
         await addInquiry({email, inquiryType});

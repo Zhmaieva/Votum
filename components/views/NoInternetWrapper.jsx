@@ -13,7 +13,7 @@ export default function NoInternetWrapper({ children }) {
     const changeOnlineState = (isOnline) => {
         if (isOnline) {
             console.log('going online...');
-            globalEventEmitter.emit('signup', {});
+            globalEventEmitter.emit('online', {});
             setIsConnected(true);
         } else {
             console.log('going offline...')
