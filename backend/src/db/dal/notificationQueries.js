@@ -26,7 +26,7 @@ async function insertNewFollowNotifications() {
                             COUNT(f.*),
                             CASE WHEN COUNT(f.*) = 1 THEN '' ELSE 's' END
                     ) AS message_body,
-                    '{ "screenName": "Notifications" }' AS message_data
+                    FORMAT('{ "screenName": "Notifications", "userId": "%s" }', u.id) AS message_data
                 FROM users u
                          JOIN user_follows f ON f.user_follow_id = u.id
                          LEFT JOIN notifications n

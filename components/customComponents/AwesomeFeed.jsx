@@ -336,22 +336,26 @@ const AwesomeFeed = forwardRef(({
     const updatePoll = async (index) => {
         index = index > -1 ? index : 0;
 
-        if (preloadedData[index]?.options.some(x => x.voted) || preloadedData[index]?.user?.userId === getDataService().getUser()?.userId) {
-            const pollOptions = await getPollOptions(preloadedData[index].id);
-            if (pollOptions) {
-                setPreloadedData(prevData => {
-                    const updatedData = [...prevData]; // Create a copy of the data
-                    updatedData[index] = {
-                        ...updatedData[index],
-                        options: pollOptions, // Update the specific poll's options
-                    };
-                    return updatedData; // Return the updated data
-                });
+        try {
+            if (preloadedData[index]?.options.some(x => x.voted) || preloadedData[index]?.user?.userId === getDataService().getUser()?.userId) {
+                const pollOptions = await getPollOptions(preloadedData[index].id);
+                if (pollOptions) {
+                    setPreloadedData(prevData => {
+                        const updatedData = [...prevData]; // Create a copy of the data
+                        updatedData[index] = {
+                            ...updatedData[index],
+                            options: pollOptions, // Update the specific poll's options
+                        };
+                        return updatedData; // Return the updated data
+                    });
+                }
             }
-        }
 
-        clearTimeout(timeoutRef.current);
-        timeoutRef.current = setTimeout(() => updatePoll(lastIndexRef.current),minimumOptionsUpdateInterval + Math.random() * maximumOptionsUpdateIntervalIncrease);
+            clearTimeout(timeoutRef.current);
+            timeoutRef.current = setTimeout(() => updatePoll(lastIndexRef.current),minimumOptionsUpdateInterval + Math.random() * maximumOptionsUpdateIntervalIncrease);
+        } catch (e) {
+            console.log(e);
+        }
     }
 
     useFocusEffect(React.useCallback(() => {

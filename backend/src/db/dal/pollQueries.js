@@ -709,20 +709,21 @@ async function fetchVotedPolls(userId) {
  * @returns {Promise<Array>} - List of polls created by the user
  */
 async function fetchUserPolls(requestingUserId, targetUserId) {
+    const isValid = (v) => typeof v === 'string' && v.trim() && v !== 'undefined' && v !== 'null';
+    const resolvedTarget = isValid(targetUserId) ? targetUserId : null;
+    const userId = resolvedTarget ?? requestingUserId;
+
     try {
         const query = `
         ${pollSelect}
-        WHERE p.is_deleted = false AND p.created_by = $2
+        WHERE p.is_deleted = false AND p.created_by = COALESCE($2, $1)
         ORDER BY p.created_at DESC
     `;
 
-    if (!targetUserId)
-        targetUserId = requestingUserId;
-
-    const result = await pool.query(query, [requestingUserId, targetUserId]);
+    const result = await pool.query(query, [requestingUserId, userId ?? requestingUserId]);
     return attachOptionsToPolls(requestingUserId, result.rows);
     } catch (error) {
-        console.error(`error fetching profile: ${requestingUserId} / ${targetUserId}`);
+        console.error(`error fetching profile: ${requestingUserId} / ${userId}`);
         throw error;
     }
 }

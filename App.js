@@ -6,7 +6,7 @@ import * as Device from 'expo-device';
 import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import { AwesomeTabs, AuthNavigator } from "./components/views/navigation/AwesomeTabs";
 import {getDataService, globalEventEmitter, Loader, Logger} from "./shared/common";
-import {fetchMyProfile, isTokenAvailable, updatePushToken} from "./shared/api/apiClient";
+import {fetchMyProfile, isTokenAvailable, resetToken, updatePushToken} from "./shared/api/apiClient";
 import { ActivityIndicator, View } from "react-native";
 import 'react-native-gesture-handler';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -78,10 +78,13 @@ export default function App() {
         setIsAuthenticated(true);
     }
 
-    const signOut = async () => {
+    const signOut = async (force) => {
+        Logger.log('Sign Out', force);
         if (isAuthenticated)
-            await deregisterForPushNotificationsAsync();
-        setIsAuthenticated(false);
+            if (force || await deregisterForPushNotificationsAsync()) {
+                await resetToken();
+                setIsAuthenticated(false);
+            }
     }
 
     const onPasswordReset = async () => {
@@ -214,7 +217,7 @@ export default function App() {
 }
 
 async function deregisterForPushNotificationsAsync() {
-    await updatePushToken(null);
+    return await updatePushToken(null);
 }
 
 // Helper function

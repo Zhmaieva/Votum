@@ -13,14 +13,13 @@ export const isTokenAvailable = async function() {
     return !!(tokenValue || await AsyncStorage.getItem('auth_token'));
 }
 
-const resetToken = async function() {
+export const resetToken = async function() {
     tokenValue = null;
     await AsyncStorage.removeItem('auth_token');
 }
 
-export async function signOut() {
-    globalEventEmitter.emit('signOut');
-    await resetToken();
+export async function signOut(force = false) {
+    globalEventEmitter.emit('signOut', {force});
 }
 
 // Create an Axios instance
@@ -51,7 +50,7 @@ apiClient.interceptors.response.use(
             console.log("Status Code:", error.response.status);
 
             if (error.response.status === 401) {
-                await signOut();
+                await signOut(true);
             }
 
             if (error.response.status >= 500) {
@@ -536,6 +535,9 @@ export const voteOnPoll = async (optionId) => {
  */
 export const getPollOptions = async (pollId) => {
     try {
+        if (!await getToken())
+            return null;
+
         const response = await apiClient.get(`/polls/${pollId}/options`, {
             headers: {
                 Authorization: `Bearer ${await getToken()}`,
@@ -544,7 +546,7 @@ export const getPollOptions = async (pollId) => {
         return response?.data ?? null;
     } catch (err) {
         Logger.log('Failed to fetch poll options:', err);
-        return null;
+        throw err;
     }
 };
 
@@ -708,9 +710,10 @@ export const updatePushToken = async (token) => {
                 Authorization: `Bearer ${await getToken()}`,
             },
         });
-        return response?.data;
+        return !!response?.data;
     } catch (err) {
         Logger.log("Failed to update push token", err);
+        return false;
     }
 };
 
