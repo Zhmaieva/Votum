@@ -692,6 +692,41 @@ export const updateNotificationPreferences = async () => {
     }
 };
 
+export const updateBirthdate = async () => {
+    try {
+        Logger.log('update birthdate');
+
+        const response = await apiClient.put(`/profile/birthdate`, {
+            birthdate: getDataService()?.getUser()?.birthdate
+        }, {
+            headers: {
+                Authorization: `Bearer ${await getToken()}`,
+            },
+        });
+        return !!response?.data;
+    } catch (err) {
+        Logger.log("Failed to update birthdate", err);
+        return false;
+    }
+};
+
+export const updateGender = async () => {
+    try {
+        Logger.log('update gender');
+
+        const response = await apiClient.put(`/profile/gender`, {
+            gender: getDataService()?.getUser()?.gender ?? 0
+        }, {
+            headers: {
+                Authorization: `Bearer ${await getToken()}`,
+            },
+        });
+        return response?.data;
+    } catch (err) {
+        Logger.log("Failed to update gender", err);
+    }
+};
+
 export const updatePushToken = async (token) => {
     try {
         Logger.log('update push token', token);

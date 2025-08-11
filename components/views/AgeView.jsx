@@ -1,12 +1,20 @@
 import {Text, View, StyleSheet, SafeAreaView} from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Colors, Fonts} from "../../utils/colorUtils";
 import AwesomeButton, { Color } from "../customComponents/AwesomeButton";
 import AwesomeBirthPicker from "../customComponents/AwesomeBirthPicker";
+import {getDataService} from "../../shared/common";
+import {useNavigation, useNavigationContainerRef} from "@react-navigation/native";
+import {updateBirthdate} from "../../shared/api/apiClient";
 
 export default function AgeView () {
 
     const [dateOfBirth, setDateOfBirth] = useState(null);
+    const navigation = useNavigation();
+
+    useEffect(() => {
+        setDateOfBirth(new Date(getDataService()?.getUser()?.birthdate));
+    }, []);
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -18,7 +26,15 @@ export default function AgeView () {
                         <AwesomeBirthPicker dateOfBirth={dateOfBirth} setDateOfBirth={setDateOfBirth} />
                     </View>
                     <View style={styles.subContainer}>
-                        <AwesomeButton text='Next' color={Color.BLACK} screenName='Categories' />
+                        <AwesomeButton text='Next' color={Color.BLACK} additionalFunc={async () => {
+                            if (await updateBirthdate()) {
+                                getDataService().commitUserChanges();
+                            } else {
+                                getDataService().resetUserChanges();
+                            }
+
+                            navigation.navigate('Categories', {});
+                        }}/>
                     </View>
                 </View>
                 <View style={styles.secondSubContainer}>

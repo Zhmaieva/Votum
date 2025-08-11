@@ -343,7 +343,9 @@ app.get('/profile/:id?', authMiddleware, async (req, res, next) => {
         if (
             userId === 'followers' ||
             userId === 'notifications' ||
-            userId === 'follows'
+            userId === 'follows' ||
+            userId === 'birthdate' ||
+            userId === 'gender'
         ) return next(); // Forward to next matching route
 
         const user = await userQueries.getUser(userId ?? req.user.id);
@@ -461,6 +463,37 @@ app.put('/user/notifications', authMiddleware, async (req, res, next) => {
     }
 });
 
+app.put('/profile/birthdate', authMiddleware, async (req, res, next) => {
+    try {
+        const { birthdate } = req.body;
+
+        await userQueries.updateBirthDate({birthDate: birthdate}, req.user.id);
+
+        return res.json({ message: 'Birth date set successfully' });
+    }
+    catch (e) {
+        next(e);
+    }
+});
+
+/**
+ * 1 - male
+ * 2 - female
+ * 3 - non-binary
+ * null/0 - no answer
+ */
+app.put('/profile/gender', authMiddleware, async (req, res, next) => {
+    try {
+        const { gender } = req.body;
+
+        await userQueries.updateGender({gender}, req.user.id);
+
+        return res.json({ message: 'Gender set successfully' });
+    }
+    catch (e) {
+        next(e);
+    }
+});
 
 app.post('/profile/followers', authMiddleware, async (req, res, next) => {
     try {

@@ -1,23 +1,54 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { SafeAreaView, View, Text, StyleSheet } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import {useFocusEffect, useNavigation, useRoute} from '@react-navigation/native';
 import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from '../customComponents/AwesomeButton';
 import AwesomeSegmentedControls from '../customComponents/AwesomeSegmentedControls';
-import {Logger} from "../../shared/common";
+import {getDataService, Logger} from "../../shared/common";
+import {updateGender} from "../../shared/api/apiClient";
 
-const GENDER_OPTIONS = ['male', 'female', 'non-binary', 'no answer'];
+const defaultGender = 'no answer';
+
+const GENDER_OPTIONS = {
+    'male': 1,
+    'female': 2,
+    'non-binary': 3,
+    'no answer': 0,
+}
+
+const GENDER_OPTION_VALUES = {
+    1: 'male',
+    2: 'female',
+    3: 'non-binary',
+    0: 'no answer'
+}
 
 export default function EditGenderView() {
     const navigation = useNavigation();
-    const route = useRoute();
 
-    const initialGender = route?.params?.currentGender || '';
-    const [gender, setGender] = useState(initialGender);
+    const [gender, setGender] = useState(defaultGender);
 
-    const handleSave = () => {
-        // TODO: Save gender (e.g., API call or context update)
-        Logger.log('Saved gender:', gender);
+    useFocusEffect(React.useCallback(() => {
+        const genderValue = GENDER_OPTION_VALUES[getDataService()?.getUser()?.gender ?? 0];
+        Logger.log('View gender', genderValue);
+        setGender(genderValue);
+    }, []));
+
+    const handleSave = async () => {
+        if (!(getDataService()?.getUser() ?? null)) {
+            getDataService().resetUserChanges();
+            navigation.goBack();
+            return;
+        }
+
+        getDataService().getUser().gender = GENDER_OPTIONS[gender];
+
+        if (await updateGender()) {
+            getDataService().commitUserChanges();
+        } else {
+            getDataService().resetUserChanges();
+        }
+
         navigation.goBack();
     };
 
@@ -29,7 +60,7 @@ export default function EditGenderView() {
                     <Text style={styles.subtittle}>choose your gender</Text>
                     <View style={{marginBottom: 20, width: '100%'}}>
                         <AwesomeSegmentedControls
-                            options={GENDER_OPTIONS}
+                            options={Object.keys(GENDER_OPTIONS)}
                             selectedOption={gender}
                             onSelect={setGender}
                         />

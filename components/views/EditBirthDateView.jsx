@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { SafeAreaView, View, Text, StyleSheet } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from '../customComponents/AwesomeButton';
 import AwesomeBirthPicker from '../customComponents/AwesomeBirthPicker';
-import {Logger} from "../../shared/common";
+import {getDataService, Logger} from "../../shared/common";
+import {updateBirthdate} from "../../shared/api/apiClient";
 
 export default function EditBirthDateView() {
     const navigation = useNavigation();
@@ -13,9 +14,17 @@ export default function EditBirthDateView() {
     const initialDate = route?.params?.currentBirthDate ? new Date(route.params.currentBirthDate) : null;
     const [dateOfBirth, setDateOfBirth] = useState(initialDate);
 
-    const handleSave = () => {
-        // TODO: Add actual save logic (API call or context/store update)
-        Logger.log('Saved birth date:', dateOfBirth);
+    useEffect(() => {
+        setDateOfBirth(new Date(getDataService()?.getUser()?.birthdate));
+    }, []);
+
+    const handleSave = async () => {
+        if (await updateBirthdate()) {
+            getDataService().commitUserChanges();
+        } else {
+            getDataService().resetUserChanges();
+        }
+
         navigation.goBack();
     };
 
@@ -29,7 +38,7 @@ export default function EditBirthDateView() {
                         <AwesomeBirthPicker dateOfBirth={dateOfBirth} setDateOfBirth={setDateOfBirth} />
                     </View>
                     <View style={styles.subContainer}>
-                        <AwesomeButton text="Save" color={Color.BLACK} onPress={handleSave} />
+                        <AwesomeButton text="Save" color={Color.BLACK} additionalFunc={handleSave} />
                     </View>
                 </View>
             </View>

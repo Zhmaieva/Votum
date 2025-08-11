@@ -874,3 +874,10 @@ ALTER TABLE users ADD COLUMN
 --Thu Aug 7 1:12 PM
 ALTER TABLE users ADD COLUMN
     is_new_followers_notification_enabled boolean default true;
+
+--Sun Aug 10 10:35 PM
+ALTER TABLE user_profiles ADD COLUMN
+    birth_date varchar NULL;
+
+ALTER TABLE user_profiles ADD COLUMN
+    gender INTEGER NULL;

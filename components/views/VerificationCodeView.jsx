@@ -12,7 +12,7 @@ import { Colors, Fonts } from '../../utils/colorUtils';
 import { AwesomeModal } from '../customComponents/AwesomeModal';
 import { signUpStart, signUpVerify, forgotPassword } from '../../shared/api/apiClient';
 import { getDataService } from '../../shared/common';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 
 export const VERIFICATION_FLOW_TYPE = {
     REGISTRATION: 'REGISTRATION',

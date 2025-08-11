@@ -2,15 +2,20 @@ import React, { useState, useEffect } from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import { Colors, Fonts } from '../../utils/colorUtils';
 
-const AwesomeSegmentedControls = ({ options = [], onSelect }) => {
+const AwesomeSegmentedControls = ({ options = [], onSelect, selectedOption }) => {
     const defaultOption = options.includes("1d") ? "1d" : options[0];
-    const [selected, setSelected] = useState(defaultOption);
+    const [selected, setSelected] = useState(selectedOption ?? defaultOption);
 
     useEffect(() => {
+        if (selectedOption) {
+            setSelected(selectedOption);
+            return;
+        }
+
         if (defaultOption) {
             onSelect?.(defaultOption);
         }
-    }, [defaultOption]);
+    }, [defaultOption, selectedOption]);
 
     const handlePress = (option) => {
         setSelected(option);

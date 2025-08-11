@@ -337,7 +337,7 @@ const AwesomeFeed = forwardRef(({
         index = index > -1 ? index : 0;
 
         try {
-            if (preloadedData[index]?.options.some(x => x.voted) || preloadedData[index]?.user?.userId === getDataService().getUser()?.userId) {
+            if (preloadedData[index]?.options?.some(x => x.voted) || preloadedData[index]?.user?.userId === getDataService().getUser()?.userId) {
                 const pollOptions = await getPollOptions(preloadedData[index].id);
                 if (pollOptions) {
                     setPreloadedData(prevData => {

@@ -115,7 +115,9 @@ async function getUser(userId) {
             up.bio,
             uc."onboardingComplete",
             u.is_debug,
-            u.is_new_followers_notification_enabled
+            u.is_new_followers_notification_enabled,
+            up.birth_date AS "birthdate",
+            up.gender AS "gender"
         FROM users u
                  JOIN user_profiles up ON u.id = up.user_id
                  LEFT JOIN polls p ON p.created_by = u.id AND p.is_deleted = false
@@ -128,7 +130,7 @@ async function getUser(userId) {
             WHERE user_id = u.id AND is_chosen = true
             ) uc ON true
         WHERE u.id = $1::uuid
-        GROUP BY u.id, u.username, u.email, up.image, up.followers_number, up.following_number, up.bio, uc."onboardingComplete";
+        GROUP BY u.id, u.username, u.email, up.image, up.birth_date, up.gender, up.followers_number, up.following_number, up.bio, uc."onboardingComplete";
   `;
 
     try {
@@ -489,6 +491,35 @@ async function updateNotificationSettings({is_new_followers_notification_enabled
     );
 }
 
+/**
+ * Update birthdate
+ * @param birthDate
+ * @param userId
+ */
+async function updateBirthDate({birthDate}, userId) {
+    await pool.query(
+        `UPDATE user_profiles
+         SET birth_date = $2
+         WHERE user_id = $1;
+        `,
+        [userId, birthDate]
+    );
+}
+
+/**
+ * Update gender
+ * @param gender
+ * @param userId
+ */
+async function updateGender({gender}, userId) {
+    await pool.query(
+        `UPDATE user_profiles
+         SET gender = $2
+         WHERE user_id = $1;
+        `,
+        [userId, gender]
+    );
+}
 
 /**
  * Update profile categories interests
@@ -694,8 +725,10 @@ module.exports = {
     recalculateCategoryScore,
     setCategories,
     unfollowUser,
-    updateProfileImage,
+    updateBirthDate,
+    updateGender,
     updateNotificationSettings,
+    updateProfileImage,
     updatePushToken,
     writeDebugLog
 }
