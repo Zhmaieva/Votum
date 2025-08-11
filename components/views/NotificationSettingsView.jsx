@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
 import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeSquareSwitch from '../customComponents/AwesomeSquareSwitch';
+import {getDataService} from "../../shared/common";
+import {updateNotificationPreferences} from "../../shared/api/apiClient";
 
 const NotificationSettingsView = () => {
     const [pushFollowers, setPushFollowers] = useState(true);
@@ -10,6 +12,11 @@ const NotificationSettingsView = () => {
     const [pushTrending, setPushTrending] = useState(true);
     const [pushSuggested, setPushSuggested] = useState(true);
     const [emailEnabled, setEmailEnabled] = useState(false);
+
+    useEffect(() => {
+       const isEnabled = getDataService()?.getUser()?.is_new_followers_notification_enabled;
+       setPushFollowers(isEnabled);
+    });
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -22,7 +29,14 @@ const NotificationSettingsView = () => {
                     <Text style={styles.settingText}>New followers</Text>
                     <AwesomeSquareSwitch
                         value={pushFollowers}
-                        onValueChange={setPushFollowers}
+                        onValueChange={async (value) => {
+                            if (getDataService()?.getUser())
+                                getDataService().getUser().is_new_followers_notification_enabled = value;
+                            setPushFollowers(value);
+                            getDataService().commitUserChanges();
+
+                            await updateNotificationPreferences();
+                        }}
                     />
                 </View>
 
