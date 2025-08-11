@@ -657,6 +657,40 @@ export const fetchUserProfile = async (userId) => {
     }
 };
 
+export const REPORT_TYPE = {
+    BUG: 0,
+    POLL: 1
+}
+
+/**
+ * Report an activity
+ * @param description
+ * @param relatedEntityId
+ * @param reportType REPORT_TYPE
+ * @returns {Promise<void>}
+ */
+export const reportActivity = async (description, relatedEntityId, reportType) => {
+    try {
+        if (!(await isTokenAvailable())) {
+            return;
+        }
+
+        Logger.log(`reportActivity: ${description}`);
+
+        await apiClient.post(`/activity-reports`, {
+            description: description,
+            reportType: reportType,
+            relatedEntityId: relatedEntityId
+        }, {
+            headers: {
+                Authorization: `Bearer ${await getToken()}`,
+            },
+        });
+    } catch (err) {
+        Logger.log(`Failed to report activity ${JSON.stringify({description, relatedEntityId, reportType})}`, err);
+    }
+}
+
 export const writeDebugLog = async (log) => {
     try {
         if (!(await isTokenAvailable())) {
