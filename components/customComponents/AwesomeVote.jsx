@@ -13,7 +13,7 @@ import ReportPoll from "./AwesomeReportPoll";
 import {globalEventEmitter, Logger, onShare} from "../../shared/common";
 import AwesomeLikeButton from "./AwesomeLikeButton";
 import { AwesomeModal } from './AwesomeModal'
-import {voteOnPoll} from "../../shared/api/apiClient";
+import {REPORT_TYPE, reportActivity, voteOnPoll} from "../../shared/api/apiClient";
 
 const formatFollowers = (num) => {
 
@@ -223,8 +223,12 @@ const AwesomeVote = ({
                             <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.iconContainer}>
                                 {isReportVisible && (
                                     <ReportPoll
-                                        pollId={1}
-                                        onReportSubmit={(reason) => setIsReportVisible(false)}
+                                        pollId={id}
+                                        onReport={(reason) => {
+                                            reportActivity(reason, id, REPORT_TYPE.POLL).then(() => {});
+                                            setIsReportVisible(false);
+                                            globalEventEmitter.emit("deletePoll", { pollId: id });
+                                        }}
                                         onCancel={() => setIsReportVisible(false)}
                                     />
                                 )}

@@ -48,7 +48,9 @@ const ReportPoll = ({ onReport }) => {
         }
         closeSheet();
         onReport?.(selectedReason);
-        setModalVisible(true);
+        setTimeout(() => {
+            setModalVisible(true);
+        }, 200);
     };
 
     const renderReason = ({ item }) => (

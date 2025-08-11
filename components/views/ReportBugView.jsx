@@ -5,6 +5,7 @@ import { AwesomeModal } from '../customComponents/AwesomeModal';
 import { Colors, Fonts } from '../../utils/colorUtils';
 import { Keyboard } from 'react-native';
 import {Logger} from "../../shared/common";
+import {REPORT_TYPE, reportActivity} from "../../shared/api/apiClient";
 
 const ReportBugView = () => {
     const [description, setDescription] = useState('');
@@ -29,7 +30,7 @@ const ReportBugView = () => {
 
         try {
             // Simulate sending to server
-            await new Promise(resolve => setTimeout(resolve, 200));
+            await reportActivity(description, null, REPORT_TYPE.BUG);
             Logger.log('Bug report submitted:', description);
 
             setDescription(''); // Clear input

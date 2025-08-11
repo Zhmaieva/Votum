@@ -881,3 +881,20 @@ ALTER TABLE user_profiles ADD COLUMN
 
 ALTER TABLE user_profiles ADD COLUMN
     gender INTEGER NULL;
+
+--Mon Aug 11 9:39 PM
+CREATE TABLE reported_activity (
+    entity_id           uuid NULL,
+    reporter_user_id    uuid,
+    description         varchar,
+    report_type         int,
+    created_at          TIMESTAMP default (now() AT TIME ZONE 'UTC')
+);
+
+DROP TABLE user_logs;
+
+CREATE TABLE user_logs (
+       user_id     uuid,
+       log         varchar,
+       created_at  TIMESTAMP default (now() AT TIME ZONE 'UTC')
+);

@@ -10,8 +10,7 @@ const {pool} = require("./db/dal/pool");
 const pollQueries = require("./db/dal/pollQueries");
 const userQueries = require("./db/dal/userQueries");
 const {getActivationCode, checkActivationCode, checkAndInsertUserWithProfile, getUserByLogin, getUser, getVerificationCode, changePassword,
-    addInquiry,
-    writeDebugLog
+    addInquiry
 } = require("./db/dal/userQueries");
 const {validateEmail, validateUsername, validatePassword} = require("./validation");
 const {uploadMiddleware} = require("./middleware/fileUploadMiddleware");
@@ -22,6 +21,7 @@ const {sendExpoPushNotification} = require("./services/notificationService");
 const {getUserNotifications, deleteAllUserNotifications, markNotificationsAsRead} = require("./db/dal/notificationQueries");
 const sendCodeEmail = require("./mail/mailing");
 const {join} = require("node:path");
+const {writeDebugLog, writeActivityReport} = require("./db/dal/activityQueries");
 
 const app = express();
 // Manual CORS header
@@ -118,6 +118,23 @@ app.post("/users/passwords/forgot", async (req, res, next) => {
     }
 });
 
+/**
+ * reportType:
+ * 0 - bug
+ * 1 - poll
+ */
+app.post('/activity-reports', authMiddleware, async (req, res, next) => {
+    try {
+        const { description, reportType, relatedEntityId } = req.body;
+
+        await writeActivityReport(req.user.id, description, reportType, relatedEntityId ?? null);
+
+        return res.sendStatus(200);
+    } catch (e) {
+        next(e);
+    }
+});
+
 app.post('/debug/log', authMiddleware, async (req, res, next) => {
     try {
         const { log } = req.body;
@@ -128,7 +145,7 @@ app.post('/debug/log', authMiddleware, async (req, res, next) => {
     } catch (e) {
         next(e);
     }
-})
+});
 
 app.post("/users/passwords", signupAuthMiddleware, async (req, res, next) => {
     try {
