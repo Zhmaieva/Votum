@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { View, TouchableOpacity, Alert, StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
@@ -10,8 +10,15 @@ import {getDataService, globalEventEmitter, Logger} from "../../shared/common";
 const AwesomeProfilePhoto = ({ profileImage, setProfileImage }) => {
     const [isModalVisible, setModalVisible] = useState(false);
 
+    const [image, setImage] = useState(profileImage);
+
+    useEffect(() => {
+        console.log('applying image...', profileImage);
+        setImage(profileImage);
+    }, [profileImage])
+
     const handleImagePick = async () => {
-        const oldImage = profileImage;
+        const oldImage = image;
 
         try {
             Logger.log('Requesting media library permission...');
@@ -54,7 +61,7 @@ const AwesomeProfilePhoto = ({ profileImage, setProfileImage }) => {
         <View style={styles.container}>
             <TouchableOpacity style={styles.touchable} onPress={handleImagePick} activeOpacity={0.8}>
                 <Image
-                    source={profileImage ? { uri: profileImage } : require('../../assets/images/default-avatar.png')}
+                    source={image ? { uri: image } : require('../../assets/images/default-avatar.png')}
                     style={styles.image}
                     contentFit="cover"
                     transition={100}

@@ -15,13 +15,17 @@ export default function ProfilePhotoView () {
     useFocusEffect(() => {
         getDataService().resetUserChanges();
 
-        if (!getDataService().getUser())
+        if (!getDataService()?.getUser())
             fetchMyProfile().then(res => {
                 if (res?.username) {
                     setProfileImage(res.image);
                     getDataService().setUser(res);
+                    console.log('got user data for profile photo');
                 }
             });
+        else {
+            setProfileImage(getDataService()?.getUser()?.image ?? '');
+        }
     });
 
     return (
