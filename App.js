@@ -69,17 +69,28 @@ export default function App() {
         if (skipMainLoading)
             return;
 
+        getDataService().setUser(null);
+        getDataService().commitUserChanges();
+
         await checkOnboardingReadiness();
     }
 
     const signIn = async () => {
         if (isAuthenticated)
             await registerForPushNotificationsAsync();
+
+        getDataService().setUser(null);
+        getDataService().commitUserChanges();
+
         setIsAuthenticated(true);
     }
 
     const signOut = async (force) => {
         Logger.log('Sign Out', force);
+
+        getDataService().setUser(null);
+        getDataService().commitUserChanges();
+
         if (isAuthenticated)
             if (force || await deregisterForPushNotificationsAsync()) {
                 await resetToken();
