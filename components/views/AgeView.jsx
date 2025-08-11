@@ -27,11 +27,8 @@ export default function AgeView () {
                     </View>
                     <View style={styles.subContainer}>
                         <AwesomeButton text='Next' color={Color.BLACK} additionalFunc={async () => {
-                            if (await updateBirthdate()) {
-                                getDataService().commitUserChanges();
-                            } else {
-                                getDataService().resetUserChanges();
-                            }
+                            getDataService().commitUserChanges();
+                            updateBirthdate().then(_ => {});
 
                             navigation.navigate('Categories', {});
                         }}/>

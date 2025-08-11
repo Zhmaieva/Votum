@@ -13,7 +13,6 @@ const {getActivationCode, checkActivationCode, checkAndInsertUserWithProfile, ge
     addInquiry,
     writeDebugLog
 } = require("./db/dal/userQueries");
-const sendEmail = require("./mail/mailing");
 const {validateEmail, validateUsername, validatePassword} = require("./validation");
 const {uploadMiddleware} = require("./middleware/fileUploadMiddleware");
 const {updateUserImage} = require("./services/userService");

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import {View, StyleSheet, Text, SafeAreaView} from 'react-native';
+import {View, StyleSheet, Text, SafeAreaView, ActivityIndicator} from 'react-native';
 import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeCategory from "../customComponents/AwesomeCategory";
 import AwesomeButton, { Color } from "../customComponents/AwesomeButton";
 import { AwesomeModal } from "../customComponents/AwesomeModal";
-import {globalEventEmitter, Logger} from "../../shared/common";
+import {globalEventEmitter, Loader, Logger} from "../../shared/common";
 import {setUserCategories} from "../../shared/api/apiClient"; // Assuming path is correct
 
 const categoryList = [
@@ -28,6 +28,10 @@ const categoriesId = {
 const CategoriesView = ({ route }) => {
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [showError, setShowError] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isFinished, setIsFinished] = useState(false);
+
+    const loader = new Loader(setIsLoading);
 
     const toggleCategory = (category) => {
         setSelectedCategories(prev =>
@@ -53,12 +57,27 @@ const CategoriesView = ({ route }) => {
         } else {
             const selectedCategoryIds = selectedCategories.map(name => categoriesId[name]);
 
-            await setUserCategories(selectedCategoryIds);;
+            setIsFinished(true);
 
-            Logger.log("Proceeding with:", selectedCategories);
-            globalEventEmitter.emit('signIn', {});
+            loader.load([new Promise(resolve => resolve()).then(async () => {
+                await setUserCategories(selectedCategoryIds);
+            })]).then(() => {
+                Logger.log("Proceeding with:", selectedCategories);
+                globalEventEmitter.emit('signIn', {});
+            });
         }
     };
+
+    if (isLoading) {
+        return (
+            <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#ffffff" }}>
+                <ActivityIndicator size="large" color="#93a548" />
+            </View>
+    )}
+
+    if (isFinished) {
+        return (<></>)
+    }
 
     return (
         <SafeAreaView style={styles.safeArea}>
