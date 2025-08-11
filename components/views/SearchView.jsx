@@ -50,7 +50,7 @@ const SearchView = () => {
                     <AwesomeSearch onSearchPress={async (query, selectedCategories) => {
                         if (query) {
                             let searchFlags = 0;
-                            selectedCategories.forEach((category) => {
+                            selectedCategories.filter(x => x !== 'all').forEach((category) => {
                                 searchFlags += SEARCH_FLAGS[category.toLowerCase()];
                             })
 
