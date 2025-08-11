@@ -33,13 +33,7 @@ const sendMail = async function (to, subject, text) {
 }
 
 function sendCodeEmail(to, code) {
-    return sendMail(to, 'Your Votum code', `Your code: ${code} (Expires in 10 minutes)
-                
-                Skip it if you’re not sure what this is.
-                
-                Need help? Just reply to this email.
-                
-                Votum`);
+    return sendMail(to, 'Your Votum code', `Your code: ${code} (Expires in 10 minutes)\n\nSkip it if you’re not sure what this is.\nNeed help? Just reply to this email.\n\nVotum`);
 }
 
 module.exports = sendCodeEmail;
