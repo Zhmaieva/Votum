@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute, StackActions } from '@react-navigation/native';
 import LottieView from 'lottie-react-native';
 import { Colors } from '../../utils/colorUtils';
 import { checkIfPollExists } from '../../shared/api/apiClient';
+import { globalEventEmitter } from '../../shared/common';
 
 export default function IntermediatePage() {
     const navigation = useNavigation();
@@ -12,25 +13,46 @@ export default function IntermediatePage() {
     const userId = route.params?.userId;
 
     useEffect(() => {
-        let timeoutFired = false;
+        let done = false;
+
+        const finish = (success = false) => {
+            // Reset the Add tab stack so returning to ADD POLL shows the form, not this loader
+            navigation.dispatch(StackActions.popToTop());
+            // Clear AddView only on confirmed success
+            if (success) globalEventEmitter.emit('pollCreated');
+            // Move to profile tab
+            navigation.getParent()?.navigate('MY PROFILE');
+        };
 
         const timeout = setTimeout(() => {
-            timeoutFired = true;
-            navigation.getParent()?.navigate('MY PROFILE');
-        }, 2500); // fallback max wait
+            if (done) return;
+            done = true;
+            finish(false); // fallback: do NOT clear the form
+        }, 2500);
 
         const interval = setInterval(async () => {
             try {
-                if (!pollId) return;
+                if (done) return;
 
-                const pollReady = await checkIfPollExists(pollId); // return true/false
-                if (pollReady && !timeoutFired) {
+                if (!pollId) {
+                    // Safety: if the screen opened without a pollId, bail gracefully
+                    done = true;
                     clearInterval(interval);
                     clearTimeout(timeout);
-                    navigation.getParent()?.navigate('MY PROFILE');
+                    finish(false);
+                    return;
+                }
+
+                const pollReady = await checkIfPollExists(pollId);
+                if (pollReady) {
+                    done = true;
+                    clearInterval(interval);
+                    clearTimeout(timeout);
+                    finish(true); // success: clear AddView form
                 }
             } catch (e) {
-                console.warn("Poll check failed:", e);
+                console.warn('Poll check failed:', e);
+                // optional: you could decide to finish(false) here after N errors
             }
         }, 500);
 
@@ -38,7 +60,7 @@ export default function IntermediatePage() {
             clearTimeout(timeout);
             clearInterval(interval);
         };
-    }, [pollId, userId]);
+    }, [pollId, userId, navigation]);
 
     return (
         <View style={styles.container}>

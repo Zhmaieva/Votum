@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useFocusEffect } from '@react-navigation/native';
+import React, { useState, useEffect } from 'react';
+import { getDataService, globalEventEmitter } from '../../shared/common';
 import {
     View, TextInput, Dimensions, Text, StyleSheet,
     Pressable, SafeAreaView, Image
@@ -10,6 +10,7 @@ import AwesomeButton, { Color } from "../customComponents/AwesomeButton";
 import { AwesomeModal } from "../customComponents/AwesomeModal";
 import { useNavigation } from '@react-navigation/native';
 import AwesomeCategory from "../customComponents/AwesomeCategory";
+
 
 const { width } = Dimensions.get('window');
 
@@ -82,17 +83,15 @@ const AddView = () => {
             { id: '1', text: '', label: 'Answer 1' },
             { id: '2', text: '', label: 'Answer 2' }
         ]);
+        setSelectedDuration('1d');
     };
 
-    useFocusEffect(
-        React.useCallback(() => {
-            setQuestion('');
-            setOptions([
-                { id: '1', text: '', label: 'Answer 1' },
-                { id: '2', text: '', label: 'Answer 2' }
-            ]);
-        }, [])
-    );
+    useEffect(() => {
+        const off = globalEventEmitter.on('pollCreated', () => {
+            resetAddViewForm();
+            });
+        return () => off();
+        }, []);
 
     return (
         <SafeAreaView style={styles.safeArea}>

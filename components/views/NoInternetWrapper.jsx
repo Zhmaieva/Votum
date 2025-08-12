@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import { Text, StyleSheet, SafeAreaView } from 'react-native';
+import {Text, StyleSheet, SafeAreaView, View} from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from '../customComponents/AwesomeButton';
@@ -67,15 +67,17 @@ export default function NoInternetWrapper({ children }) {
 
     if (!isConnected) {
         return (
-            <SafeAreaView style={styles.container}>
-                <Text style={styles.title}>No Internet</Text>
-                <Text style={styles.message}>You’re offline. Please reconnect and try again.</Text>
-                <AwesomeButton
-                    text="Try Again"
-                    color={Color.BLACK}
-                    additionalFunc={checkConnection}
-                    disableNavigation={true}
-                />
+            <SafeAreaView style={styles.safeArea}>
+                <View style={styles.container}>
+                    <Text style={styles.title}>No Internet</Text>
+                    <Text style={styles.message}>You’re offline. Please reconnect and try again.</Text>
+                    <AwesomeButton
+                        text="Try Again"
+                        color={Color.BLACK}
+                        additionalFunc={checkConnection}
+                        disableNavigation={true}
+                    />
+                </View>
             </SafeAreaView>
         );
     }
@@ -84,12 +86,14 @@ export default function NoInternetWrapper({ children }) {
 }
 
 const styles = StyleSheet.create({
-    container: {
+    safeArea: {
         flex: 1,
         backgroundColor: Colors.white,
-        justifyContent: 'center',
-        alignItems: 'center',
+    },
+    container: {
+        flex: 1,
         padding: 20,
+        justifyContent: "center"
     },
     title: {
         fontSize: 22,

@@ -34,8 +34,8 @@ const AwesomeFeed = forwardRef(({
     const scrollY = useRef(new Animated.Value(0)).current;
 
     const { height, width } = Dimensions.get('window');
-    const NEXT_POLL_OFFSET = height * 0.17;
-    const POLL_HEIGHT = isUserProfileView ? height * .6 : height * 0.83;
+    const NEXT_POLL_OFFSET = height * 0.16;
+    const POLL_HEIGHT = isUserProfileView ? height * .72 : height * 0.84;
 
     const styles = StyleSheet.create({
         container: {
@@ -217,7 +217,7 @@ const AwesomeFeed = forwardRef(({
                                 </Text>
                             ) : (
                                 <Text style={styles.placeholderText}>
-                                    No new polls
+                                    No polls
                                 </Text>
                             )}
                         </View>

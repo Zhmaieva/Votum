@@ -56,6 +56,7 @@ import TermsOfServiceWebView from "../TermsOfServiceWebView";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Dimensions } from 'react-native';
 import SuccessPasswordView from "../SuccessPasswordView";
+import NoInternetWrapper from '../NoInternetWrapper';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -195,7 +196,7 @@ function AddStack() {
         <Stack.Navigator id="Test4">
             <Stack.Screen name="AddMain" component={AddView} options={{ headerShown: false, gestureEnabled: true }} />
             <Stack.Screen name="Preview Poll" component={PreviewPollView} options={{ headerShown: false, gestureEnabled: true }} />
-            <Stack.Screen name="Interm Page" component={IntermediatePage} options={{ headerShown: false, gestureEnabled: true }} />
+            <Stack.Screen name="Interm Page" component={IntermediatePage} options={{ headerShown: false, gestureEnabled: true, unmountOnBlur: true }} />
             <Stack.Screen name="Profile" component={MyUserProfileView} options={{ headerShown: false, gestureEnabled: true }} />
         </Stack.Navigator>
     );
@@ -371,7 +372,7 @@ export function AwesomeTabs() {
 
                         // Reset AddStack to show AddMain (the form screen)
                         navigation.navigate('ADD POLL', {
-                            screen: 'AddMain',
+                            screen: 'NoInternetWrapper',
                         });
                     },
                 })}

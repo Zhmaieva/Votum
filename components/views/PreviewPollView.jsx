@@ -63,14 +63,11 @@ const PreviewPollView = () => {
                 selectedDuration
             );
 
-            if (resetAddViewForm) resetAddViewForm();
-
             navigation.navigate('Interm Page', {
                 userId: user?.userId,
                 pollId: newPoll?.id || newPoll?.readableId, // Adjust to your backend response
             });
 
-            globalEventEmitter.emit('pollCreated', {});
         } catch (e) {
             Logger.error("Error publishing poll:", e);
             // Optional: show a toast or modal
