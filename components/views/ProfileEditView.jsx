@@ -159,10 +159,10 @@ const ProfileEditView = ({ route }) => {
                     <AwesomeButton text='Notifications settings' color={Color.WHITE} settingButton={true} screenName='Notification Settings'/>
                 </View>
                 <View style={styles.margin15}>
-                    <AwesomeButton text='Terms of service' color={Color.WHITE} settingButton={true} screenName='Terms of service' />
+                    <AwesomeButton text='Terms of service' color={Color.WHITE} settingButton={true} screenName='Terms Of Service' />
                 </View>
                 <View style={styles.margin15}>
-                    <AwesomeButton text='Privacy policy' color={Color.WHITE} settingButton={true} screenName='Policy' />
+                    <AwesomeButton text='Privacy policy' color={Color.WHITE} settingButton={true} screenName='Privacy Policy' />
                 </View>
                 <View style={styles.margin15}>
                     <AwesomeButton text='Contact information' color={Color.WHITE} settingButton={true} screenName='Contact Info' />

@@ -74,8 +74,8 @@ function AuthFlow() {
             <AuthStack.Screen name="Log in" component={LogInView} options={{ headerShown: false, gestureEnabled: true }}/>
             <AuthStack.Screen name="Forgot password" component={ForgotPasswordView} options={{ headerShown: false, gestureEnabled: true }}/>
             <AuthStack.Screen name="New Password" component={NewPasswordView} options={{ headerShown: false, gestureEnabled: true }} initialParams={{ flowType: VERIFICATION_FLOW_TYPE.CHANGE_PASSWORD}}/>
-            <AuthStack.Screen name="Policy Web" component={PrivacyPolicyWebView} options={{ headerShown: true, gestureEnabled: true }} />
-            <AuthStack.Screen name="Terms Web" component={TermsOfServiceWebView} options={{ headerShown: true, gestureEnabled: true }} />
+            <AuthStack.Screen name="Privacy Policy" component={PrivacyPolicyWebView} options={{ headerShown: true, gestureEnabled: true }} />
+            <AuthStack.Screen name="Terms Of Service" component={TermsOfServiceWebView} options={{ headerShown: true, gestureEnabled: true }} />
             <AuthStack.Screen
                 name="Success password"
                 component={SuccessPasswordView}
@@ -156,6 +156,9 @@ function UserStack() {
                 initialParams={{flowType: VERIFICATION_FLOW_TYPE.CHANGE_PASSWORD}}
                 options={{ headerShown: false }}
             />
+            <Stack.Screen name="Privacy Policy" component={PrivacyPolicyWebView} options={{ headerShown: true, gestureEnabled: true }} />
+            <Stack.Screen name="Terms Of Service" component={TermsOfServiceWebView} options={{ headerShown: true, gestureEnabled: true }} />
+
         </Stack.Navigator>
     );
 }
