@@ -1,5 +1,5 @@
 import {Text, StyleSheet, Animated, TouchableWithoutFeedback, ActivityIndicator, View, Image} from 'react-native';
-import React, { useState, useEffect, useMemo } from 'react';
+import React, {useState, useEffect, useMemo, useRef} from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { Colors, Fonts } from '../../utils/colorUtils';
 import { Ionicons } from '@expo/vector-icons';
@@ -31,7 +31,11 @@ export default function AwesomeButton({
     const [isDisabled, setIsDisabled] = useState(disabled);
     const scaleValue = useState(new Animated.Value(1))[0];
 
-    const loading = manual ? externalLoading : internalLoading;
+    const loading = useRef( manual ? externalLoading : internalLoading);
+
+    useEffect(() => {
+        loading.current = manual ? externalLoading : internalLoading;
+    }, [externalLoading, manual]);
 
     useEffect(() => {
         const newName = isInChangedTextMode ? changedText : text;
@@ -41,10 +45,11 @@ export default function AwesomeButton({
     }, [isInChangedTextMode, changedText, text, buttonName]);
 
     const onPressHandler = async () => {
-        if (isDisabled || loading) return;
+        if (isDisabled || loading.current) return;
 
         if (!manual) {
             setInternalLoading(true);
+            loading.current = true;
         }
 
         try {
@@ -57,12 +62,13 @@ export default function AwesomeButton({
         } finally {
             if (!manual) {
                 setInternalLoading(false);
+                loading.current = false;
             }
         }
     };
 
     const animateButton = () => {
-        if (isDisabled || loading) return;
+        if (isDisabled || loading.current) return;
 
         Animated.sequence([
             Animated.timing(scaleValue, {
@@ -105,7 +111,7 @@ export default function AwesomeButton({
     }, [buttonName, changedText, color]);
 
     return (
-        <TouchableWithoutFeedback onPress={animateButton} disabled={isDisabled || loading}>
+        <TouchableWithoutFeedback onPress={animateButton} disabled={isDisabled || loading.current}>
             <Animated.View
                 style={[
                     {
@@ -117,7 +123,7 @@ export default function AwesomeButton({
                 ]}
             >
                 <View style={[styles.contentWrapper, settingButton && styles.settingWrapper]}>
-                    {loading ? (
+                    {loading.current ? (
                         <ActivityIndicator size="small" color={color === Color.BLACK ? Colors.white : Colors.black} />
                     ) : textElement ? (
                         <Text style={[styles.buttonMainText, textStyle, settingButton && styles.leftAlignedText]}>

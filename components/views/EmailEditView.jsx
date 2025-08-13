@@ -1,12 +1,24 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {View, StyleSheet, SafeAreaView, Text} from 'react-native';
 import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeEmailInput from "../customComponents/AwesomeEmailInput";
-import AwesomeButton, {Color} from "../customComponents/AwesomeButton"; // Reuse your AwesomeButton component
+import AwesomeButton, {Color} from "../customComponents/AwesomeButton";
+import {emailVerify, emailVerifyStart, signUpStart} from "../../shared/api/apiClient";
+import {getDataService} from "../../shared/common";
+import {useNavigation} from "@react-navigation/native";
+import {AwesomeModal} from "../customComponents/AwesomeModal"; // Reuse your AwesomeButton component
 
 const EmailEditView = ({route }) => {
 
     const { text } = route.params || {};
+
+    const [isModalVisible, setModalVisible] = useState(false);
+    const [error, setError] = useState('');
+
+    const emailIsAlreadyTakenError = 'Email is already taken';
+    const invalidEmailError = 'Invalid email';
+
+    const navigation = useNavigation();
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -16,7 +28,41 @@ const EmailEditView = ({route }) => {
                 <View style={styles.margin10}>
                     <AwesomeEmailInput value={text} bareStyle={true}/>
                 </View>
-                <AwesomeButton text='Send verification code' color={Color.BLACK} screenName='Verification Code' />
+                <AwesomeButton text='Send verification code' color={Color.BLACK} additionalFunc={async () => {
+                    const email = getDataService()?.getUser()?.email;
+
+                    if (!email) {
+                        setError(invalidEmailError);
+                        setModalVisible(true);
+                        return;
+                    }
+
+                    const response = await emailVerifyStart(email);
+
+                    if (response.success) {
+                        navigation.navigate("Verification Code");
+                        return;
+                    }
+
+                    if (response.code === 409) {
+                        setError(emailIsAlreadyTakenError);
+                        setModalVisible(true);
+                        return;
+                    }
+
+                    if (response.code === 400) {
+                        setError(invalidEmailError);
+                        setModalVisible(true);
+                    }
+                }}/>
+                <AwesomeModal
+                    visible={isModalVisible}
+                    text="EMAIL ERROR"
+                    subtext={error}
+                    buttons={[
+                        { label: "OK", onPress: () => setModalVisible(false) },
+                    ]}
+                    onBackPress={() => setModalVisible(false)} />
             </View>
         </SafeAreaView>
     );

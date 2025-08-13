@@ -150,6 +150,61 @@ export const forgotPassword = async (email) => {
 
 /**
  *
+ * @param email
+ * @returns {Promise<{success: boolean, code: number?}>}
+ */
+export const emailVerifyStart = async (email) => {
+    try {
+        await apiClient.post(`/users/email/verify`, {
+            email: email
+        }, {
+            headers: {
+                Authorization: `Bearer ${await getToken()}`,
+            },
+        });
+
+        console.log('email verification requested');
+
+        return { success: true, code: 200 };
+    } catch (err) {
+        if (err.response && err.response.status) {
+            return { success: false, code: err.response.status };
+        }
+        return { success: false };
+    }
+};
+
+/**
+ *
+ * @param {string} email
+ * @param {string} code
+ * @returns {Promise<{success: boolean, code: number?}>}
+ */
+export const emailVerifyCheck = async (email, code) => {
+    try {
+        const response = await apiClient.put(`/users/email/change/`, {
+            email: email,
+            code: code
+        }, {
+            headers: {
+                Authorization: `Bearer ${await getToken()}`,
+            },
+        });
+
+        if (response?.data?.success)
+            return { success: true, code: 200 };
+
+        return { success: false };
+    } catch (err) {
+        if (err.response && err.response.status) {
+            return { success: false, code: err.response.status };
+        }
+        return { success: false };
+    }
+};
+
+/**
+ *
  * @returns {Promise<{success: boolean, code: number?}>}
  */
 export const resetPassword = async (password) => {

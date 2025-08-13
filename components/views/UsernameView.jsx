@@ -53,9 +53,9 @@ const UsernameView = ({}) => {
                                     style={{ textDecorationLine: 'underline' }}
                                     onPress={() => navigation.navigate('Privacy Policy')}
                                 >
-                                    Privacy Policy
+                                    {' '}Privacy Policy
                                 </Text>
-                                and
+                                {' '}and{' '}
                                 <Text
                                     style={{ textDecorationLine: 'underline' }}
                                     onPress={() => navigation.navigate('Terms Of Service')}

@@ -10,9 +10,9 @@ import AwesomeButton, { Color } from '../customComponents/AwesomeButton';
 import AwesomeCodeContainer from '../customComponents/AwesomeCodeContainer';
 import { Colors, Fonts } from '../../utils/colorUtils';
 import { AwesomeModal } from '../customComponents/AwesomeModal';
-import { signUpStart, signUpVerify, forgotPassword } from '../../shared/api/apiClient';
+import {signUpStart, signUpVerify, forgotPassword, emailVerifyCheck} from '../../shared/api/apiClient';
 import { getDataService } from '../../shared/common';
-import { useNavigation } from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 
 export const VERIFICATION_FLOW_TYPE = {
     REGISTRATION: 'REGISTRATION',
@@ -34,9 +34,13 @@ export default function VerificationCodeView({route}) {
     const [seconds, setSeconds] = useState(retryInterval);
     const [canResend, setCanResend] = useState(true);
 
+    useFocusEffect(React.useCallback(() => {
+        inputRefs.current[0]?.focus();
+    }, []))
+
     const handleInput = (index, value) => {
         const updated = [...inputs];
-        updated[index] = value;
+        updated[index] = value === '.' ? updated[index] : value;
         setInputs(updated);
         if (value && inputRefs.current[index + 1]) {
             inputRefs.current[index + 1].focus();
@@ -92,9 +96,10 @@ export default function VerificationCodeView({route}) {
         }
 
         if (flowType === VERIFICATION_FLOW_TYPE.CHANGE_EMAIL) {
-            const response = await signUpVerify(email, code);
+            const response = await emailVerifyCheck(email, code);
 
             if (response.success) {
+                getDataService().commitUserChanges();
                 navigation.navigate('Success email');
                 return;
             }
@@ -152,6 +157,7 @@ export default function VerificationCodeView({route}) {
             updated[index - 1] = '';
             setInputs(updated);
             inputRefs.current[index - 1]?.focus();
+            inputRefs.current[index - 1]?.setNativeProps({ selection: { start: 0, end: 0 } });
         } else {
             const updated = [...inputs];
             updated[index] = '';
@@ -177,6 +183,7 @@ export default function VerificationCodeView({route}) {
                                         }
                                     }}
                                     refOutlet={ref => inputRefs.current[i] = ref}
+                                    value = {inputs[i]}
                                 />
                             ))}
                         </View>
