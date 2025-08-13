@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const {sweepPollIndexUpdateEvents,
     sweepUserCategoryUpdateEvents
 } = require ("../db/dal/eventQueries");

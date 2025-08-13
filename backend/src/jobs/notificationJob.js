@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const {insertNewFollowNotifications} = require("../db/dal/notificationQueries");
 const {sendExpoPushNotification, sendPendingNotifications} = require("../services/notificationService");
 
