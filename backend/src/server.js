@@ -10,7 +10,8 @@ const {pool} = require("./db/dal/pool");
 const pollQueries = require("./db/dal/pollQueries");
 const userQueries = require("./db/dal/userQueries");
 const {getActivationCode, checkActivationCode, checkAndInsertUserWithProfile, getUserByLogin, getUser, getVerificationCode, changePassword,
-    addInquiry
+    addInquiry,
+    changeEmail
 } = require("./db/dal/userQueries");
 const {validateEmail, validateUsername, validatePassword} = require("./validation");
 const {uploadMiddleware} = require("./middleware/fileUploadMiddleware");
@@ -185,6 +186,53 @@ app.post("/users/register", async (req, res, next) => {
         }
         else
             throw "invalid code";
+    } catch (e) {
+        next(e);
+    }
+});
+
+app.post("/users/email/verify", authMiddleware, async (req, res, next) => {
+    try {
+        const { email } = req.body;
+
+        if (!await validateEmail(email)) {
+            return res.status(400).send("invalid email");
+        }
+
+        const { code, canSend } = await getActivationCode(email);
+
+        if (parseInt(code) === -1) {
+            return res.status(409).json({ error: "user registered" });
+        }
+
+        if (code) {
+            if (canSend) {
+                sendCodeEmail(email, code).then();
+            }
+        }
+        return res.json({});
+    } catch (e) {
+        next(e);
+    }
+});
+
+app.put("/users/email/change", authMiddleware, async (req, res, next) => {
+    try {
+        const { email, code } = req.body;
+
+        const result = await checkActivationCode(email, code);
+        switch (result) {
+            default:
+            case 0:
+                return res.status(404).json({ error: "invalid code" });
+            case 1:
+                await changeEmail(req.user.id, email);
+                return res.json({ success: true, message: "email changed" });
+            case 2:
+                return res.status(410).json({ error: "code expired" });
+            case -1:
+                return res.status(403).json({ error: "too many attempts - request another code" });
+        }
     } catch (e) {
         next(e);
     }

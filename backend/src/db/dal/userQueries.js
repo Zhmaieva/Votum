@@ -371,6 +371,31 @@ async function checkAndInsertUserWithProfile(username, email, passwordHash) {
 }
 
 /**
+ * Changes user's email
+ * @param userId
+ * @param email
+ * @returns {Promise<any>}
+ */
+async function changeEmail(userId, email) {
+    console.log('userId', userId);
+    console.log('email', email);
+
+    const query = `
+        UPDATE users
+        SET email = $2
+        WHERE id = $1::uuid
+        RETURNING id, username;
+    `;
+
+    const result = await pool.query(query, [userId, email.toLowerCase()]);
+    if (result.rows.length > 0) {
+        return { id: result.rows[0].id, username: result.rows[0].username };
+    }
+    throw new Error('No such user in the database');
+}
+
+
+/**
  * Changes user's password
  * @param email
  * @param passwordHash
@@ -702,6 +727,7 @@ module.exports = {
     addInquiry,
     checkActivationCode,
     checkAndInsertUserWithProfile,
+    changeEmail,
     changePassword,
     deleteUser,
     followUser,
