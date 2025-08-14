@@ -13,6 +13,9 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import {SafeAreaProvider} from "react-native-safe-area-context";
 import NoInternetWrapper from './components/views/NoInternetWrapper';
+import * as SplashScreen from 'expo-splash-screen';
+
+SplashScreen.preventAutoHideAsync().then(_ => {});
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -28,6 +31,20 @@ export default function App() {
     const [isLoading, setIsLoading] = useState(true);
     const [fontLoaded, setFontLoaded] = useState(false);
     const navigationRef = useNavigationContainerRef();
+    const [appReady, setAppReady] = useState(false);
+
+    useEffect(() => {
+        // Simulate loading or fetch
+        setTimeout(() => {
+            setAppReady(true);
+        }, 1000);
+    }, []);
+
+    useEffect(() => {
+        if (appReady) {
+            SplashScreen.hideAsync().then(_ => {}); // Manually hide
+        }
+    }, [appReady]);
 
     const loader = new Loader(setIsLoadingVisible);
 
