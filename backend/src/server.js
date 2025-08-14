@@ -58,6 +58,8 @@ function generateSignUpToken({email}) {
 }
 
 if (isDebug) {
+    console.log("process.env.VOTE_APP_MAIL_PASS", process.env.VOTE_APP_MAIL_PASS);
+
     app.use((req, res, next) => {
         const start = Date.now();
         const originalJson = res.json;
