@@ -660,7 +660,7 @@ app.get('/polls', authMiddleware, async (req, res) => {
 app.get('/polls/search', authMiddleware, async (req, res, next) => {
     try {
         const { query, searchFlags } = req.query;
-        if (!query) {
+        if (!query || searchFlags === "0") {
             res.json([]);
             return;
         }

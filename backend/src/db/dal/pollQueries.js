@@ -747,6 +747,9 @@ async function searchPolls(requestingUserId, filterQuery, searchFlags) {
     const values = [requestingUserId];
     let conditions = [];
 
+    if (searchFlags === 0)
+        return [];
+
     if (searchFlags & 1) { // QUESTION
         values.push(`%${filterQuery}%`);
         conditions.push(`p.question ILIKE $${values.length}`);
