@@ -87,10 +87,8 @@ const AddView = () => {
     };
 
     useEffect(() => {
-        const off = globalEventEmitter.on('pollCreated', () => {
-            resetAddViewForm();
-            });
-        return () => off();
+        globalEventEmitter.on('pollCreated', resetAddViewForm);
+        return () => globalEventEmitter.off('pollCreated', resetAddViewForm);
         }, []);
 
     return (
