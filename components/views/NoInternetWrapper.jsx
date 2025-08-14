@@ -4,7 +4,7 @@ import NetInfo from '@react-native-community/netinfo';
 import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from '../customComponents/AwesomeButton';
 import {globalEventEmitter} from "../../shared/common";
-import {pingServer} from "../../shared/api/apiClient"; // adjust path
+import {pingServer} from "../../shared/api/apiClient";
 
 export default function NoInternetWrapper({ children }) {
     const [isConnected, setIsConnected] = useState(true);
@@ -32,17 +32,31 @@ export default function NoInternetWrapper({ children }) {
 
         lastRef.current = next;
 
-        try {
-            if (state.isConnected && state.isInternetReachable !== false) {
-                console.log(JSON.stringify(state));
-                const pingResult = await pingServer();
-                changeOnlineState(pingResult ?? false);
-            } else {
+        checkNet();
+    }
+
+    const checkNet = () => {
+        setTimeout(async () => {
+            try {
+                let state = await NetInfo.fetch();
+
+                if (state.isConnected && state.isInternetReachable !== false) {
+                    console.log('OFFLINE CHECK: connected to the internet');
+                    console.log(JSON.stringify(state));
+
+                    const pingResult = await pingServer();
+
+                    console.log('OFFLINE CHECK: ping result', pingResult ?? 'null');
+                    changeOnlineState(pingResult ?? false);
+                } else {
+                    console.log('OFFLINE CHECK: not connected to the internet');
+                    changeOnlineState(false);
+                }
+            } catch (err) {
+                console.log('OFFLINE CHECK: error');
                 changeOnlineState(false);
             }
-        } catch (err) {
-            changeOnlineState(false);
-        }
+        }, 1000);
     }
 
     const checkConnection = async () => {
@@ -51,16 +65,17 @@ export default function NoInternetWrapper({ children }) {
     };
 
     const handleTimeout = () => {
+        console.log('OFFLINE CHECK: timeout handled');
         changeOnlineState(false);
     }
 
     useEffect(() => {
-        const unsubscribe = NetInfo.addEventListener(handleNetState);
+        //const unsubscribe = NetInfo.addEventListener(handleNetState);
 
         globalEventEmitter.on('requestTimeout', handleTimeout);
 
         return () => {
-            unsubscribe()
+            //unsubscribe()
             globalEventEmitter.off('requestTimeout', handleTimeout);
         };
     }, []);

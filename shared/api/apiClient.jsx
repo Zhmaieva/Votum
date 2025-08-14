@@ -35,6 +35,11 @@ apiClient.interceptors.response.use(
     async (error) => {
         console.log("API Error:", error);
 
+        if (error.message === 'Network Error' || error.code === 'ENETUNREACH' || error.code === 'ERR_NETWORK') {
+            globalEventEmitter.emit('requestTimeout');
+            return Promise.reject(error);
+        }
+
         if (error.code === 'ECONNABORTED') {
             const paramsStr = error.config?.params ? `?${qs.stringify(error.config.params)}` : '';
             const fullUrl = `${error.config?.baseURL ?? ''}${error.config?.url ?? ''}${paramsStr}`;

@@ -35,7 +35,7 @@ export default function AwesomeButton({
 
     useEffect(() => {
         loading.current = manual ? externalLoading : internalLoading;
-    }, [externalLoading, manual]);
+    }, [externalLoading, manual, internalLoading]);
 
     useEffect(() => {
         const newName = isInChangedTextMode ? changedText : text;
