@@ -9,7 +9,7 @@
     "newArchEnabled": true,
     "scheme": "voteapp",
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/icon.png",
       "resizeMode": "contain",
       "hideExponentText": true,
       "backgroundColor": "#ffffff"
