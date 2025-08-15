@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Vote2",
+    "name": "Votum",
     "slug": "Vote2",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -25,7 +25,7 @@
       "supportsTablet": false,
       "bundleIdentifier": "com.beampie.voteapp",
       "associatedDomains": [
-        "applinks:api-voteapp.beampie.com"
+        "applinks:votum.beampie.com"
       ],
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false

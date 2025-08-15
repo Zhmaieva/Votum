@@ -61,7 +61,7 @@ const AwesomeProfilePhoto = ({ profileImage, setProfileImage }) => {
         <View style={styles.container}>
             <TouchableOpacity style={styles.touchable} onPress={handleImagePick} activeOpacity={0.8}>
                 <Image
-                    source={image ? { uri: image } : require('../../assets/images/default-avatar.png')}
+                    source={(image && !image?.includes('default_avatar')) ? { uri: image } : require('../../assets/images/default-avatar.png')}
                     style={styles.image}
                     contentFit="cover"
                     transition={100}

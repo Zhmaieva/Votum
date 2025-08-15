@@ -55,8 +55,9 @@ export default function App() {
         const { path } = Linking.parse(url);
         Logger.log('Deep link path', path);
         if (path) {
+            const parts = path?.split('/') ?? [];
             navigationRef.navigate('FEED', {});
-            globalEventEmitter.emit('sharedPoll', { pollId: path });
+            globalEventEmitter.emit('sharedPoll', { pollId: parts[parts.length - 1] });
         }
     };
 
