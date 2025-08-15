@@ -75,7 +75,7 @@ const AwesomeUserHeaderPreview = ({ userData, loggedInUserId }) => {
 
     return (
         <TouchableOpacity onPress={handlePress} style={styles.container}>
-            <Image source={{ uri: user.image }} style={styles.avatar} contentFit="cover"
+            <Image source={(user?.image && !user?.image?.includes('default')) ? { uri: image } : require('../../assets/images/default-avatar.png')} style={styles.avatar} contentFit="cover"
                    transition={100}
                    cachePolicy="disk" />
             <View style={styles.textContainer}>

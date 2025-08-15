@@ -96,7 +96,7 @@ const AwesomeUserHeader = ({
         <View style={styles.userContainer}>
             <View style={[styles.row, styles.aligned]}>
                 <View style={styles.avatarContainer}>
-                    <Image source={{ uri: user.image }} style={styles.avatar} contentFit="cover"
+                    <Image source={ (user?.image && !user?.image?.includes('default')) ? { uri: user?.image } : require('../../assets/images/default-avatar.png') } style={styles.avatar} contentFit="cover"
                            transition={100}
                            cachePolicy="disk" />
                 </View>
