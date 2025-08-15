@@ -779,7 +779,7 @@ app.get('/polls/:id?/links', authMiddleware, async (req, res, next) => {
         if (poll?.readableId)
             sharePoll(pollId, req.user.id).then(_ => {});
 
-        return res.status(200).json({ link: `https://api-voteapp.beampie.com/polls/share/${poll?.readableId ?? ''}` });
+        return res.status(200).json({ link: `https://votum.beampie.com/polls/share/${poll?.readableId ?? ''}` });
     } catch (e) {
         next(e);
     }
