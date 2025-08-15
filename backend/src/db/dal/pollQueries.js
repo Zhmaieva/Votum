@@ -696,6 +696,7 @@ async function fetchVotedPolls(userId) {
     const query = `
         ${pollSelect}
         WHERE p.is_deleted = false AND pv.user_id IS NOT NULL
+        ORDER BY pv.created_at DESC;
     `;
     const result = await pool.query(query, [userId]);
     return attachOptionsToPolls(userId, result.rows);
