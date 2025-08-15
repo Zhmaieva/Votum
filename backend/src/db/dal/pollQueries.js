@@ -819,7 +819,7 @@ const getPollById = async (pollId, readable = false) => {
             FROM polls p
                      JOIN users u ON p.created_by = u.id
                      JOIN user_profiles up ON u.id = up.user_id
-            WHERE ${ readable ? 'p.readable_id = $1' : 'p.id = $1' } ${ readable ? '' : 'AND p.ends_in > NOW()' } AND p.is_deleted = false;
+            WHERE ${ readable ? 'p.readable_id = $1' : 'p.id = $1' } AND p.is_deleted = false;
         `;
 
         const pollResult = await pool.query(pollQuery, [pollId]);
