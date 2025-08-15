@@ -68,6 +68,7 @@ const SearchView = () => {
                 </View>
                 <View style={styles.centered}>
                     <AwesomeFeed
+                        screenName={'SEARCH'}
                         data={polls}
                         onRefresh={onRefresh}
                         refreshing={refreshing}

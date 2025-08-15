@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {Text, StyleSheet, SafeAreaView, View} from 'react-native';
+import {Text, StyleSheet, SafeAreaView, View, AppState} from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from '../customComponents/AwesomeButton';
@@ -9,8 +9,30 @@ import {pingServer} from "../../shared/api/apiClient";
 export default function NoInternetWrapper({ children }) {
     const [isConnected, setIsConnected] = useState(true);
     const lastRef = useRef({ isConnected: undefined, isInternetReachable: undefined });
+    const appState = useRef(AppState.currentState);
+    const [allowOfflineSwitch, setAllowOfflineSwitch] = useState(false);
+
+    useEffect(() => {
+        const subscription = AppState.addEventListener("change", nextAppState => {
+            if (appState.current.match(/inactive|background/) && nextAppState === "active") {
+                setAllowOfflineSwitch(false);
+                setTimeout(() => {
+                    setAllowOfflineSwitch(true);
+                }, 2000);
+            }
+            if (appState.current === "active" && nextAppState.match(/inactive|background/)) {
+                setAllowOfflineSwitch(false);
+            }
+            appState.current = nextAppState;
+        });
+
+        return () => subscription.remove();
+    }, []);
 
     const changeOnlineState = (isOnline) => {
+        if (!allowOfflineSwitch)
+            return;
+
         if (isOnline) {
             console.log('going online...');
             globalEventEmitter.emit('online', {});

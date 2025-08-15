@@ -354,14 +354,16 @@ export function AwesomeTabs() {
             <Tab.Screen name="FEED" component={FeedStack} options={{ headerShown: false, gestureEnabled: true }}
                     listeners={({ navigation }) => ({
                         tabPress: (e) => {
-                            globalEventEmitter.emit('feedSwitch');
+                            if (navigation.isFocused())
+                                globalEventEmitter.emit('feedSwitch', {tabName: 'FEED'});
                         },
                     })}
             />
             <Tab.Screen name="SEARCH" component={SearchStack} options={{ headerShown: false, gestureEnabled: true }}
                     listeners={({ navigation }) => ({
                         tabPress: (e) => {
-                            globalEventEmitter.emit('feedSwitch');
+                            if (navigation.isFocused())
+                                globalEventEmitter.emit('feedSwitch', {tabName: 'SEARCH'});
                         },
                     })}
             />
@@ -386,14 +388,16 @@ export function AwesomeTabs() {
                 options={{ headerShown: false }}
                 listeners={({ navigation }) => ({
                     tabPress: (e) => {
-                        globalEventEmitter.emit('feedSwitch');
+                        if (navigation.isFocused())
+                            globalEventEmitter.emit('feedSwitch', {tabName: 'VOTED'});
                     },
                 })}
             />
             <Tab.Screen name="MY PROFILE" component={UserStack} options={{ headerShown: false, gestureEnabled: true }}
                 listeners={({ navigation }) => ({
                     tabPress: (e) => {
-                        globalEventEmitter.emit('feedSwitch');
+                        if (navigation.isFocused())
+                            globalEventEmitter.emit('feedSwitch', {tabName: 'MY PROFILE'});
                     },
                 })}
             />

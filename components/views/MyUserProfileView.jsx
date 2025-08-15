@@ -107,6 +107,7 @@ const MyUserProfileView = () => {
                     </View>
                     {user && polls ? (
                         <AwesomeFeed
+                            screenName={'MY PROFILE'}
                             ref={feedRef}
                             data={polls}
                             onRefresh={onRefresh}

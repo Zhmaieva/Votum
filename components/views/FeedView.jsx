@@ -73,6 +73,10 @@ const FeedView = ({ route }) => {
                     if (!res) return;
                     setTrendingPolls(res);
                 })
+                .catch(() => {
+                    setTrendingPolls([]);
+                    setError('network'); // custom flag for error
+                }),
         ]).then(_ => {});
     }
 
@@ -131,6 +135,7 @@ const FeedView = ({ route }) => {
                 />
             </View>
             <AwesomeFeed
+                screenName={'FEED'}
                 ref={feedRef}
                 data={selectedOption.toLowerCase() === 'my feed' ? polls : trendingPolls}
                 onRefresh={onRefresh}

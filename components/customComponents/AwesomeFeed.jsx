@@ -30,6 +30,7 @@ const AwesomeFeed = forwardRef(({
                                     isLoading = false,
                                     searchQuery = null,
                                     isPollCreatedScrollTop = false,
+                                    screenName = ''
                                 }, externalRef) => {
     const scrollY = useRef(new Animated.Value(0)).current;
 
@@ -99,8 +100,9 @@ const AwesomeFeed = forwardRef(({
     const flatListRef = externalRef || useRef(null);
     const timeoutRef = useRef(setTimeout(() => {}, 100));
 
-    const scrollToTop = () => {
-        flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
+    const scrollToTop = (data) => {
+        if (data?.tabName === screenName)
+            flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
     };
 
     useEffect(() => {

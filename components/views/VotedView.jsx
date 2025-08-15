@@ -62,6 +62,7 @@ const VotedView = () => {
     return (
         (polls || loading) ? (
         <AwesomeFeed
+            screenName={'VOTED'}
             data={polls}
             onRefresh={onRefresh}
             refreshing={refreshing}
