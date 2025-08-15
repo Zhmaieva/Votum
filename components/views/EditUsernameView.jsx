@@ -30,19 +30,6 @@ const EditUsernameView = ({ navigation }) => {
         try {
             setLoading(true);
             const result = await updateUserProfile({ username });
-
-            // if (result?.errorCode === 'USERNAME_TAKEN') {
-            //     setModalMessage("This username is already taken, please choose another one");
-            //     setModalVisible(true);
-            //     return;
-            // }
-            //
-            // if (result?.errorCode === 'USERNAME_COOLDOWN') {
-            //     setModalMessage("You can only change your username once every 14 days, please try again later");
-            //     setModalVisible(true);
-            //     return;
-            // }
-
             getDataService().commitUserChanges();
             navigation.goBack();
         } catch (error) {

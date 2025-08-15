@@ -417,6 +417,8 @@ app.get('/profile/:id?', authMiddleware, async (req, res, next) => {
         const user = await userQueries.getUser(userId ?? req.user.id);
 
         if (!user) {
+            if (!userId)
+                return res.status(401).json();
             return res.status(404).json({ message: 'User not found' });
         }
 

@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import { View, StyleSheet, Animated, Text } from 'react-native';
 import { Colors, Fonts } from '../../utils/colorUtils';
-import AwesomeUserHeader from "../customComponents/AwesomeUserHeader";
+import AwesomeUserHeaderPreview from "../customComponents/AwesomeUserHeaderPreview";
 import {fetchFollowers, fetchFollows, fetchMyProfile} from "../../shared/api/apiClient";
 import {useFocusEffect} from "@react-navigation/native";
 
@@ -43,10 +43,9 @@ const FollowersView = () => {
                     decelerationRate="fast"
                     renderItem={({ item }) => (
                         <View style={styles.margin10}>
-                            <AwesomeUserHeader
+                            <AwesomeUserHeaderPreview
                                 userData={item}
                                 loggedInUserId={user?.userId}
-                                isFollowersPage={true}
                             />
                         </View>
                     )}

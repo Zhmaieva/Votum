@@ -24,7 +24,7 @@ const formatFollowers = (num) => {
 };
 
 const formatTimeLeft = (millisecondsLeft) => {
-    if (millisecondsLeft <= 0) return "Expired";
+    if (millisecondsLeft <= 0) return "Ended";
 
     const secondsLeft = Math.floor(millisecondsLeft / 1000);
     const days = Math.floor(secondsLeft / (60 * 60 * 24));
