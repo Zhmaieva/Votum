@@ -28,6 +28,10 @@ const SomebodysProfileView = ({ route }) => {
         setLoggedInUserId(myId);
 
         new Loader(setLoading).load([
+            fetchUserProfile(user?.userId).then(async res => {
+                setUser(res);
+                setIsFollowing(res.isFollowing);
+            }),
             fetchUserPolls(user?.userId).then(async res => {
                 setPolls(res);
             })

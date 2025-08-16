@@ -898,3 +898,33 @@ CREATE TABLE user_logs (
        log         varchar,
        created_at  TIMESTAMP default (now() AT TIME ZONE 'UTC')
 );
+-- Sat Aug 16 10:57 PM
+CREATE OR REPLACE FUNCTION increment_poll_votes_count()
+    RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE polls
+    SET votes_count = (
+        SELECT COUNT(*) FROM poll_votes
+            WHERE poll_id = NEW.poll_id
+    ) WHERE id = NEW.poll_id;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_increment_poll_votes_count
+    AFTER INSERT ON poll_votes
+    FOR EACH ROW EXECUTE FUNCTION increment_poll_votes_count();
+
+CREATE OR REPLACE FUNCTION increment_votes_count()
+    RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE poll_answer_options
+    SET votes_count = (
+        SELECT COUNT(*) FROM poll_votes
+        WHERE option_id = NEW.option_id
+    ) WHERE id = NEW.option_id;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;

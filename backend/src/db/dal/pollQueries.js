@@ -872,10 +872,18 @@ const getPollById = async (pollId, readable = false) => {
  * Fetches options for a single poll, sorted by option_order ascending.
  * @param {string} pollId - ID of the poll
  * @param {string} userId - ID of the user
- * @returns {Promise<{ text: string, votesCount: number }[] | null>}
+ * @returns {Promise<{ options: [], votesCount: number } | null>}
  */
 const getPollOptionResults = async (pollId, userId) => {
     try {
+        const getTotalVotesQuery = `
+               SELECT SUM(p.votes_count) AS "totalVotes"
+               FROM polls p
+               WHERE p.created_by = (
+                   SELECT created_by FROM polls WHERE id = $1
+               ) 
+        `;
+
         const query = `
             SELECT pao.id, pao.text, pao.votes_count AS "votesCount",
                    bool_or(CASE
@@ -889,9 +897,21 @@ const getPollOptionResults = async (pollId, userId) => {
             GROUP BY pao.id
             ORDER BY pao.option_order
         `;
+        const optionsResult = pool.query(query, [pollId, userId]);
+        const totalVotesResult = pool.query(getTotalVotesQuery, [pollId]);
 
-        const result = await pool.query(query, [pollId, userId]);
-        return result.rows;
+        let options = [];
+        let votesCount = 0;
+
+        await Promise.all([
+            optionsResult,
+            totalVotesResult
+        ]).then(results=> {
+            options = results[0].rows;
+            votesCount = results[1].rows[0].totalVotes;
+        })
+
+        return { options, votesCount };
     } catch (err) {
         console.error('Error fetching poll options:', err);
         return null;

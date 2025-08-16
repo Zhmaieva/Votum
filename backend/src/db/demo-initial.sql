@@ -182,3 +182,6 @@ INSERT INTO user_profiles (user_id, image, bio, followers_number, following_numb
 
 -- demo: follows user1, user4, user6 (3), followed by user1, user4, user6 (3)
 ('281d5a04-f29e-4f9c-b0cc-323bb9f02308', 'https://s3.us-east-1.amazonaws.com/storage.beampie.com/vote/default_avatar.PNG','Yes, I’m that demo user.', 3, 3);
+
+UPDATE polls SET votes_count = 0;
+UPDATE poll_answer_options SET votes_count = 0;

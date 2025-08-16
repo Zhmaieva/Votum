@@ -20,6 +20,7 @@ const AwesomeUserHeaderPreview = ({ userData, loggedInUserId }) => {
     const navigation = useNavigation();
     const [user, setUser] = useState(userData);
     const [isFollowing, setIsFollowing] = useState(userData?.isFollowing);
+    const [totalVotesCount, setTotalVotesCount] = useState(0);
 
     const isOwnProfile = user?.userId === loggedInUserId;
 
@@ -48,7 +49,23 @@ const AwesomeUserHeaderPreview = ({ userData, loggedInUserId }) => {
     useEffect(() => {
         setUser(userData);
         setIsFollowing(userData?.isFollowing);
+
+        setTotalVotesCount(userData.totalVotesNumber || 0);
     }, [userData]);
+
+    const onPollVotedHandler = ({pollCreator}) => {
+        if (pollCreator.userId === userData.userId) {
+            setTotalVotesCount(totalVotesCount + 1);
+        }
+    }
+
+    useEffect(() => {
+        globalEventEmitter.on('pollVoted',onPollVotedHandler);
+
+        return () => {
+            globalEventEmitter.off('pollVoted',onPollVotedHandler);
+        }
+    })
 
     const handleFollowToggle = () => {
         const newFollowState = !isFollowing;
@@ -73,8 +90,6 @@ const AwesomeUserHeaderPreview = ({ userData, loggedInUserId }) => {
         }
     };
 
-    const formattedVotes = formatVotes(user.totalVotesNumber || 0);
-
     return (
         <TouchableOpacity onPress={handlePress} style={styles.container}>
             <Image source={(user?.image && !user?.image?.includes('default')) ? { uri: user?.image } : require('../../assets/images/default-avatar.png')} style={styles.avatar} contentFit="cover"
@@ -83,7 +98,7 @@ const AwesomeUserHeaderPreview = ({ userData, loggedInUserId }) => {
             <View style={styles.textContainer}>
                 <Text style={styles.username}>{user.username}</Text>
                 <Text style={styles.subText}>
-                    {formattedVotes} votes
+                    {totalVotesCount} {totalVotesCount === 1 ? ' vote' : ' votes'}
                 </Text>
             </View>
             {!isOwnProfile && (

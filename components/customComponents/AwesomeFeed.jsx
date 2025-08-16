@@ -15,7 +15,7 @@ import { fetchMyProfile, getPollOptions, viewPoll } from "../../shared/api/apiCl
 import AwesomeLoadingPoll from "./AwesomeLoadingPoll";
 
 const minimumOptionsUpdateInterval = 2000; //1500;
-const maximumOptionsUpdateIntervalIncrease = 0; //10000;
+const maximumOptionsUpdateIntervalIncrease = 10000; //10000;
 const AnimatedFlatList = Animated.createAnimatedComponent(Animated.FlatList);
 
 const AwesomeFeed = forwardRef(({
@@ -317,9 +317,15 @@ const AwesomeFeed = forwardRef(({
                 if (pollOptions) {
                     setPreloadedData(prevData => {
                         const updatedData = [...prevData];
+                        const user = { ...updatedData[index]?.user };
+
                         updatedData[index] = {
                             ...updatedData[index],
-                            options: pollOptions,
+                            user: {
+                              ...user,
+                              totalVotesNumber: pollOptions.votesCount
+                            },
+                            options: pollOptions.options,
                         };
                         return updatedData;
                     });
