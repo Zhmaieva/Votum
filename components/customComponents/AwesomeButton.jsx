@@ -60,6 +60,7 @@ export default function AwesomeButton({
                 await additionalFunc();
             }
         } finally {
+            console.log('on press complete');
             if (!manual) {
                 setInternalLoading(false);
                 loading.current = false;

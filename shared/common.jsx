@@ -115,11 +115,18 @@ export class Loader {
 class DataService {
     user = null;
     oldUser = null;
+    allowOfflineSwitch = true;
 
     error = {
         usernameTaken: false,
         usernameEmpty: false
     };
+
+    getAllowOfflineSwitch = () => this.allowOfflineSwitch;
+    setAllowOfflineSwitch = (value) => {
+        console.log('setAllowOfflineSwitch', value);
+        this.allowOfflineSwitch = value;
+    }
 
     setUser(value) {
         this.user = value;

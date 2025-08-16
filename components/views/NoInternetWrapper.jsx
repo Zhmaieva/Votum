@@ -3,25 +3,24 @@ import {Text, StyleSheet, SafeAreaView, View, AppState} from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from '../customComponents/AwesomeButton';
-import {globalEventEmitter} from "../../shared/common";
+import {getDataService, globalEventEmitter} from "../../shared/common";
 import {pingServer} from "../../shared/api/apiClient";
 
 export default function NoInternetWrapper({ children }) {
     const [isConnected, setIsConnected] = useState(true);
     const lastRef = useRef({ isConnected: undefined, isInternetReachable: undefined });
     const appState = useRef(AppState.currentState);
-    const [allowOfflineSwitch, setAllowOfflineSwitch] = useState(false);
 
     useEffect(() => {
         const subscription = AppState.addEventListener("change", nextAppState => {
-            if (appState.current.match(/inactive|background/) && nextAppState === "active") {
-                setAllowOfflineSwitch(false);
+            if (nextAppState === "active") {
+                getDataService().setAllowOfflineSwitch(false);
                 setTimeout(() => {
-                    setAllowOfflineSwitch(true);
+                    getDataService().setAllowOfflineSwitch(true);
                 }, 2000);
             }
-            if (appState.current === "active" && nextAppState.match(/inactive|background/)) {
-                setAllowOfflineSwitch(false);
+            if (nextAppState !== "active") {
+                getDataService().setAllowOfflineSwitch(false);
             }
             appState.current = nextAppState;
         });
@@ -30,7 +29,7 @@ export default function NoInternetWrapper({ children }) {
     }, []);
 
     const changeOnlineState = (isOnline) => {
-        if (!allowOfflineSwitch)
+        if (!getDataService().getAllowOfflineSwitch())
             return;
 
         if (isOnline) {
@@ -54,31 +53,35 @@ export default function NoInternetWrapper({ children }) {
 
         lastRef.current = next;
 
-        checkNet();
+        await checkNet();
     }
 
     const checkNet = () => {
-        setTimeout(async () => {
-            try {
-                let state = await NetInfo.fetch();
+        return new Promise(resolve => {
+            setTimeout(async () => {
+                try {
+                    let state = await NetInfo.fetch();
 
-                if (state.isConnected && state.isInternetReachable !== false) {
-                    console.log('OFFLINE CHECK: connected to the internet');
-                    console.log(JSON.stringify(state));
+                    if (state.isConnected && state.isInternetReachable !== false) {
+                        console.log('OFFLINE CHECK: connected to the internet');
+                        console.log(JSON.stringify(state));
 
-                    const pingResult = await pingServer();
+                        const pingResult = await pingServer();
 
-                    console.log('OFFLINE CHECK: ping result', pingResult ?? 'null');
-                    changeOnlineState(pingResult ?? false);
-                } else {
-                    console.log('OFFLINE CHECK: not connected to the internet');
+                        console.log('OFFLINE CHECK: ping result', pingResult ?? 'null');
+                        changeOnlineState(pingResult ?? false);
+                    } else {
+                        console.log('OFFLINE CHECK: not connected to the internet');
+                        changeOnlineState(false);
+                    }
+                } catch (err) {
+                    console.log('OFFLINE CHECK: error');
                     changeOnlineState(false);
+                } finally {
+                    resolve();
                 }
-            } catch (err) {
-                console.log('OFFLINE CHECK: error');
-                changeOnlineState(false);
-            }
-        }, 1000);
+            }, 1000);
+        })
     }
 
     const checkConnection = async () => {
@@ -130,7 +133,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
-        justifyContent: 'flex-start'
+        justifyContent: 'center'
     },
     title: {
         fontSize: 22,
@@ -141,7 +144,7 @@ const styles = StyleSheet.create({
     message: {
         fontSize: 16,
         fontFamily: Fonts.regular,
-        textAlign: 'center',
+        textAlign: 'flex-start',
         color: Colors.black,
         marginBottom: 20,
     },
