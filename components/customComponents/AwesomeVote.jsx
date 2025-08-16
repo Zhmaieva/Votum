@@ -167,9 +167,17 @@ const AwesomeVote = ({
         }
     };
 
+    const onVoteEventHandler = ({ pollId, options, optionId, cardId}) => {
+        if (id === pollId) {
+            refreshOptions(options);
+            setSelected(options?.filter(x => x.voted)[0]?.id ?? null);
+        }
+        onVote({ pollId, options, optionId, cardId})
+    }
+
     useEffect(() => {
-        globalEventEmitter.on('vote', onVote);
-        return () => globalEventEmitter.off('vote', onVote); // cleanup!
+        globalEventEmitter.on('vote', onVoteEventHandler);
+        return () => globalEventEmitter.off('vote', onVoteEventHandler); // cleanup!
     }, []);
 
     useEffect(() => {

@@ -300,6 +300,7 @@ const AwesomeFeed = forwardRef(({
             const updatedData = [...prevData];
             const poll = updatedData.find(x => x.id === pollId);
             if (poll) {
+                console.log('found poll to update');
                 poll.options = options;
                 return updatedData;
             }
