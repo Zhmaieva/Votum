@@ -49,12 +49,22 @@ const SomebodysProfileView = ({ route }) => {
                 fetchUserProfile(user?.userId).then(async res => {
                     setUser(res);
                     setIsFollowing(res.isFollowing);
-                    console.log('got follow change event in profile preview')
                 });
             }
         };
         globalEventEmitter.on(followChangedEventName, handler);
-        return () => globalEventEmitter.off(followChangedEventName, handler);
+
+        const interval = setInterval(async () => {
+            fetchUserProfile(user?.userId).then(async res => {
+                setUser(res);
+                setIsFollowing(res.isFollowing);
+            });
+        }, 20000);
+
+        return () => {
+            globalEventEmitter.off(followChangedEventName, handler);
+            clearInterval(interval);
+        }
     }, []);
 
     return (

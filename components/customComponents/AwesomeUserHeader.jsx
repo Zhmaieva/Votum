@@ -31,6 +31,7 @@ const AwesomeUserHeader = ({
     const [showBlockModal, setShowBlockModal] = useState(false);
     const [hasNewNotifications, setHasNewNotifications] = useState(true);
     const [notifications, setNotifications] = useState({});
+    const [totalVotesCount, setTotalVotesCount] = useState(0);
 
     const isOwnProfile = user?.userId === loggedInUserId;
 
@@ -52,6 +53,24 @@ const AwesomeUserHeader = ({
         });
 
     }, []));
+
+    const onPollVotedHandler = ({pollCreator}) => {
+        if (pollCreator.userId === userData.userId) {
+            setTotalVotesCount(totalVotesCount + 1);
+        }
+    }
+
+    useEffect(() => {
+        globalEventEmitter.on('pollVoted',onPollVotedHandler);
+
+        return () => {
+            globalEventEmitter.off('pollVoted',onPollVotedHandler);
+        }
+    })
+
+    useFocusEffect(React.useCallback(() => {
+        setTotalVotesCount(user.totalVotesNumber || 0);
+    }, [user]));
 
     useFocusEffect(React.useCallback(() => {
         setUser(userData);
@@ -96,10 +115,10 @@ const AwesomeUserHeader = ({
                                 {isOwnProfile ? 'your polls got ' : `user's polls got `}
                             </Text>
                             <Text style={styles.counterStyle}>
-                                {formatFollowers(user.totalVotesNumber || 0)}
+                                {formatFollowers(totalVotesCount)}
                             </Text>
                             <Text style={styles.counterTextStyle}>
-                                {(user.totalVotesNumber || 0) === 1 ? ' vote' : ' votes'}
+                                {totalVotesCount === 1 ? ' vote' : ' votes'}
                             </Text>
                         </View>
                     </View>

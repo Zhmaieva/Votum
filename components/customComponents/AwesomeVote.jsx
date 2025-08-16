@@ -58,6 +58,7 @@ const AwesomeVote = ({
                          isLiked = false,
                          createdByUser = false,
                          onDeletePoll,
+                         createdBy,
                      }) => {
     const [optionsData, setOptionsData] = useState(options);
     const [selected, setSelected] = useState(options?.filter(x => x.voted)[0]?.id ?? null);
@@ -158,6 +159,7 @@ const AwesomeVote = ({
             Logger.error('Vote failed:', result.error);
         }
 
+        globalEventEmitter.emit('pollVoted', {pollCreator: createdBy});
         globalEventEmitter.emit('vote', { pollId: id, options: newOptions, optionId, cardId: voteCardId});
 
         if (onVote) {
