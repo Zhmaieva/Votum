@@ -95,12 +95,12 @@ export default function NoInternetWrapper({ children }) {
     }
 
     useEffect(() => {
-        //const unsubscribe = NetInfo.addEventListener(handleNetState);
+        const unsubscribe = NetInfo.addEventListener(handleNetState);
 
         globalEventEmitter.on('requestTimeout', handleTimeout);
 
         return () => {
-            //unsubscribe()
+            unsubscribe()
             globalEventEmitter.off('requestTimeout', handleTimeout);
         };
     }, []);
