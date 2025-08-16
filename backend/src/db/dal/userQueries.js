@@ -90,8 +90,8 @@ async function getFollows(userId) {
 }
 
 
-async function getUser(userId) {
-    const query = `
+async function getUser(userId, currentUserId, isOwnProfile) {
+    const queryOwn = `
         SELECT
             u.id as "userId",
             u.username AS "username",
@@ -122,8 +122,40 @@ async function getUser(userId) {
         GROUP BY u.id, u.username, u.email, up.image, up.birth_date, up.gender, up.followers_number, up.following_number, up.bio, uc."onboardingComplete";
   `;
 
+    const queryOther = `
+        SELECT
+            u.id as "userId",
+            u.username AS "username",
+            up.image,
+            GREATEST(up.followers_number, 0) AS "followersNumber",
+            GREATEST(up.following_number, 0) AS "followingNumber",
+            COALESCE(SUM(p.votes_count), 0)::integer as "totalVotesNumber",
+            up.bio,
+            CASE
+                WHEN uf2.user_follow_id IS NOT NULL THEN TRUE
+                ELSE FALSE
+                END AS "isFollowing"
+        FROM users u
+                 JOIN user_profiles up ON u.id = up.user_id
+                 LEFT JOIN polls p ON p.created_by = u.id AND p.is_deleted = false
+                 LEFT JOIN user_follows uf2
+                           ON uf2.user_follower_id = $2::uuid AND uf2.user_follow_id = u.id
+                 LEFT JOIN LATERAL (
+            SELECT CASE
+                       WHEN COUNT(*) > 0 THEN true
+                       ELSE false
+                       END AS "onboardingComplete"
+            FROM user_categories
+            WHERE user_id = u.id AND is_chosen = true
+            ) uc ON true
+        WHERE u.id = $1::uuid
+        GROUP BY u.id, u.username, u.email, up.image, up.birth_date, up.gender, up.followers_number, up.following_number, up.bio, uc."onboardingComplete", uf2.user_follow_id;
+  `;
+
     try {
-        const res = await pool.query(query, [userId]);
+        const res = isOwnProfile
+            ? await pool.query(queryOwn, [userId])
+            : await pool.query(queryOther, [userId, currentUserId]);
         return res.rows[0] || null; // Return user object or null if not found
     } catch (err) {
         console.error('Error fetching user:', err);

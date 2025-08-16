@@ -67,7 +67,9 @@ const AwesomeUserHeaderPreview = ({ userData, loggedInUserId }) => {
         if (isOwnProfile) {
             navigation.navigate("Profile");
         } else {
-            navigation.navigate("User Profile", { userId: user.userId });
+            const userCopy = {...user};
+            userCopy.isFollowing = isFollowing;
+            navigation.navigate("User Profile", { userData: userCopy });
         }
     };
 

@@ -5,41 +5,57 @@ import AwesomeUserHeader from "../customComponents/AwesomeUserHeader";
 import AwesomeFeed from "../customComponents/AwesomeFeed";
 import AwesomeLoadingHeader from "../customComponents/AwesomeLoadingHeader";
 import {fetchVotedPolls, fetchMyProfile, fetchUserPolls, fetchUserProfile} from "../../shared/api/apiClient";
-import {calculateTimeDifference, getDataService, Loader} from "../../shared/common";
+import {calculateTimeDifference, getDataService, globalEventEmitter, Loader} from "../../shared/common";
 import AwesomeCard from "../customComponents/AwesomeCard";
 import AwesomeLoadingPoll from "../customComponents/AwesomeLoadingPoll";
 import {isLoading} from "expo-font";
+import {useFocusEffect} from "@react-navigation/native";
+
+const followChangedEventName = "followChanged";
 
 const SomebodysProfileView = ({ route }) => {
-    const { userId } = route.params;
     const [selectedOption, setSelectedOption] = useState("active");
     const [modalVisible, setModalVisible] = useState(false);
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState(route.params.userData);
+    const [isFollowing, setIsFollowing] = useState(route.params?.userData?.isFollowing ?? false);
     const [loggedInUserId, setLoggedInUserId] = useState(null);
     const [refreshing, setRefreshing] = useState(false);
     const [polls, setPolls] = useState(null); // default to null for loading state
     const [loading, setLoading] = useState(false);
 
-    useEffect(() => {
+    useFocusEffect(React.useCallback(() => {
         const myId = getDataService().getUser()?.userId;
         setLoggedInUserId(myId);
 
         new Loader(setLoading).load([
-            fetchUserProfile(userId).then(setUser),
-            fetchUserPolls(userId).then(async res => {
-                //await new Promise(resolve => setTimeout(resolve, 4000)); //to test delay
+            fetchUserPolls(user?.userId).then(async res => {
                 setPolls(res);
             })
         ]).then(_ => {});
-    }, []);
+    }, [route.params]));
 
     const onRefresh = () => {
         setRefreshing(true);
-        fetchUserPolls(userId).then(res => {
+
+        fetchUserPolls(user?.userId).then(res => {
             setPolls(res.slice());
             setRefreshing(false);
         });
     };
+
+    useEffect(() => {
+        const handler = (updatedUser) => {
+            if (updatedUser?.userId === user?.userId) {
+                fetchUserProfile(user?.userId).then(async res => {
+                    setUser(res);
+                    setIsFollowing(res.isFollowing);
+                    console.log('got follow change event in profile preview')
+                });
+            }
+        };
+        globalEventEmitter.on(followChangedEventName, handler);
+        return () => globalEventEmitter.off(followChangedEventName, handler);
+    }, []);
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -51,6 +67,7 @@ const SomebodysProfileView = ({ route }) => {
                         user && polls ? (
                             <AwesomeUserHeader
                                 userData={user}
+                                isFollowing={isFollowing}
                                 loggedInUserId={loggedInUserId}
                                 isProfilePage={true}
                             />

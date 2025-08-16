@@ -4,10 +4,11 @@ import { Image } from "expo-image";
 import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from "./AwesomeButton";
 import {globalEventEmitter, Logger, onShare} from "../../shared/common";
-import {fetchUserNotifications, followProfile, unfollowProfile} from "../../shared/api/apiClient";
+import {fetchUserNotifications, fetchUserProfile, followProfile, unfollowProfile} from "../../shared/api/apiClient";
 import {useFocusEffect, useNavigation} from "@react-navigation/native";
 import { AwesomeModal } from "./AwesomeModal";
-import { Ionicons } from "@expo/vector-icons";
+
+const followChangedEventName = "followChanged";
 
 const formatFollowers = (num) => {
     if (num >= 1_000_000_000) return (num / 1_000_000_000).toFixed(1) + 'B';
@@ -16,17 +17,16 @@ const formatFollowers = (num) => {
     return num;
 };
 
-const followChangedEventName = "followChanged";
-
 const AwesomeUserHeader = ({
                                userData,
+                               isFollowing,
                                loggedInUserId,
                                isInsideCard = false,
                                isProfilePage = false
                            }) => {
     const navigation = useNavigation();
     const [user, setUser] = useState(userData);
-    const [isFollowing, setIsFollowing] = useState(userData?.isFollowing);
+    const [following, setFollowing] = useState(isFollowing);
     const [isBlocked, setIsBlocked] = useState(false);
     const [showBlockModal, setShowBlockModal] = useState(false);
     const [hasNewNotifications, setHasNewNotifications] = useState(true);
@@ -53,34 +53,23 @@ const AwesomeUserHeader = ({
 
     }, []));
 
-    useEffect(() => {
-        const handler = (updatedUser) => {
-            if (updatedUser?.userId === user?.userId) {
-                setUser(updatedUser);
-                setIsFollowing(updatedUser.isFollowing);
-            }
-        };
-        globalEventEmitter.on(followChangedEventName, handler);
-        return () => globalEventEmitter.off(followChangedEventName, handler);
-    }, [user?.userId]);
-
-    useEffect(() => {
+    useFocusEffect(React.useCallback(() => {
         setUser(userData);
-        setIsFollowing(userData?.isFollowing);
-    }, [userData]);
+        setFollowing(isFollowing);
+    }, [userData, isFollowing]));
 
     if (!user) return <Text>Loading...</Text>;
 
     // const formattedFollowers = formatFollowers(user.followingNumber);
     // const followersText = user.followingNumber === 1 ? "follower" : "followers";
 
-    const handleFollowToggle = () => {
-        const newFollowState = !isFollowing;
-        setIsFollowing(newFollowState);
+    const handleFollowToggle = async () => {
+        const newFollowState = !user.isFollowing;
+        console.log('newFollowState', newFollowState);
         if (newFollowState) {
-            followProfile(user.userId);
+            await followProfile(user.userId);
         } else {
-            unfollowProfile(user.userId);
+            await unfollowProfile(user.userId);
         }
         globalEventEmitter.emit(followChangedEventName, { ...user, isFollowing: newFollowState });
     };
@@ -134,6 +123,7 @@ const AwesomeUserHeader = ({
                                 text="Account details"
                                 color={Color.BLACK}
                                 screenName="Edit profile"
+                                manual={true}
                             />
                         </View>
                         <View style={styles.row}>
@@ -161,12 +151,10 @@ const AwesomeUserHeader = ({
                     <>
                         <View style={styles.editButton}>
                             <AwesomeButton
-                                text="Follow"
-                                changedText="Unfollow"
-                                isInChangedTextMode={isFollowing}
+                                text={!following ? "Follow" : "Unfollow"}
                                 additionalFunc={handleFollowToggle}
-                                color={Color.BLACK}
-                                textColor={isFollowing ? Colors.black : Colors.white}
+                                color={following ? Color.WHITE : Color.BLACK}
+                                textColor={following ? Colors.black : Colors.white}
                             />
                         </View>
                         {/*<View style={styles.editButton}>

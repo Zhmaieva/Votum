@@ -414,7 +414,11 @@ app.get('/profile/:id?', authMiddleware, async (req, res, next) => {
             userId === 'gender'
         ) return next(); // Forward to next matching route
 
-        const user = await userQueries.getUser(userId ?? req.user.id);
+        const targetUserId = userId ?? req.user.id;
+        const isOwnProfile = targetUserId == req.user.id;
+        const currentUserId = req.user.id;
+
+        const user = await userQueries.getUser(targetUserId, currentUserId, isOwnProfile);
 
         if (!user) {
             if (!userId)
@@ -890,7 +894,7 @@ app.delete('/users', authMiddleware, async (req, res, next) => {
     try {
         const { password } = req.query;
 
-        const existingUser = await getUser(req.user.id);
+        const existingUser = await getUser(req.user.id, req.user.id, true);
 
         if (!existingUser)
             return res.json({ success: true });
