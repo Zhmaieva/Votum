@@ -22,7 +22,7 @@
       "barStyle": "dark-content"
     },
     "ios": {
-      "supportsTablet": false,
+      "supportsTablet": true,
       "bundleIdentifier": "com.beampie.voteapp",
       "associatedDomains": [
         "applinks:votum.beampie.com"

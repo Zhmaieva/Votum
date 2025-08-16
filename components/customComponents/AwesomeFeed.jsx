@@ -88,7 +88,7 @@ const AwesomeFeed = forwardRef(({
             fontSize: 16,
             color: Colors.grey,
             textAlign: 'center',
-            fontFamily: Fonts.regular
+            fontFamily: Fonts.regular,
         },
         row: {
             flexDirection: 'row'

@@ -122,42 +122,42 @@ const FeedView = ({ route }) => {
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            <View style={styles.switcherContainer}>
-                <AwesomeSwitcher
-                    leftOption='MY FEED'
-                    rightOption='TRENDING'
-                    onDisplayModeChangedHandler={(value) => {
-                        setSelectedOption(value);
-                        globalEventEmitter.emit('feedSwitch',{});
-                        // setLoading(true); // will show <AwesomeLoadingPoll /> in AwesomeFeed
-                        // setTimeout(() => setLoading(false), 300); // short delay to smoothen UI
-                    }}
-                />
-            </View>
-            <AwesomeFeed
-                screenName={'FEED'}
-                ref={feedRef}
-                data={selectedOption.toLowerCase() === 'my feed' ? polls : trendingPolls}
-                onRefresh={onRefresh}
-                refreshing={refreshing}
-                isLoading={loading}
-                renderItem={(item) => {
-                    item.timeLeft = calculateTimeDifference(item.endsIn);
-                    return (
-                        <View style={styles.container}>
+            <View style={styles.container}>
+                <View style={styles.switcherContainer}>
+                    <AwesomeSwitcher
+                        leftOption='MY FEED'
+                        rightOption='TRENDING'
+                        onDisplayModeChangedHandler={(value) => {
+                            setSelectedOption(value);
+                            globalEventEmitter.emit('feedSwitch',{});
+                            // setLoading(true); // will show <AwesomeLoadingPoll /> in AwesomeFeed
+                            // setTimeout(() => setLoading(false), 300); // short delay to smoothen UI
+                        }}
+                    />
+                </View>
+                <AwesomeFeed
+                    screenName={'FEED'}
+                    ref={feedRef}
+                    data={selectedOption.toLowerCase() === 'my feed' ? polls : trendingPolls}
+                    onRefresh={onRefresh}
+                    refreshing={refreshing}
+                    isLoading={loading}
+                    renderItem={(item) => {
+                        item.timeLeft = calculateTimeDifference(item.endsIn);
+                        return (
                             <AwesomeCard
                                 item={item}
                                 handleVote={async (itemId, optionId) => {
                                 }}
                                 loggedInUserId={loggedInUserId}
                             />
-                        </View>
-                    )
-                }}
-                appendFunction={async (excludedPollIds) => {
-                    return await getDataService().getMorePolls();
-                }}
-            />
+                        )
+                    }}
+                    appendFunction={async (excludedPollIds) => {
+                        return await getDataService().getMorePolls();
+                    }}
+                />
+            </View>
         </SafeAreaView>
     );
 };
@@ -168,13 +168,12 @@ const styles = StyleSheet.create({
         flex: 1
     },
     container: {
-        paddingLeft: 15,
+        flex: 1,
         paddingRight: 15,
+        paddingLeft: 15
     },
     switcherContainer: {
         marginBottom: 5,
-        marginLeft: 15,
-        marginRight: 15
     },
     emptyContainer: {
         flex: 1,

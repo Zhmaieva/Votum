@@ -33,10 +33,12 @@ const AwesomePasswordInput = forwardRef(({ value, onChangeText, placeholder = '8
 
         if (cleanedText.length < 8 || cleanedText.length > 20) {
             setValidationErrorMessage('Your password must be 8-20 characters');
-            getDataService().getUser().password = '';
+            if (getDataService().getUser())
+                getDataService().getUser().password = '';
         } else {
             setValidationErrorMessage('');
-            getDataService().getUser().password = cleanedText;
+            if (getDataService().getUser())
+                getDataService().getUser().password = cleanedText;
         }
 
         validatePassword(cleanedText); // debounce validity icon update
