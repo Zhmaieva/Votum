@@ -15,6 +15,7 @@ export default function WelcomeView(callback, deps) {
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.container}>
+                <Text style={styles.messageStyle}>Hey there!</Text>
                 <View style={styles.logoContainer}>
                     <Image source={logoVotum} style={styles.logoStyle} resizeMode="contain" />
                 </View>
@@ -40,7 +41,7 @@ const styles = StyleSheet.create({
     messageStyle: {
         fontSize: 22,
         fontFamily: Fonts.medium,
-        alignSelf: 'center',
+        alignSelf: 'flex-start',
     },
     logoContainer: {
         alignItems: 'center',
