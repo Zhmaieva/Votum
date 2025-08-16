@@ -203,7 +203,7 @@ export default function VerificationCodeView({route}) {
                     </View>
                 </View>
                 <View>
-                    {
+                    {/*{
                         flowType === VERIFICATION_FLOW_TYPE.REGISTRATION ? (
                             <View style={styles.margin15}>
                                 <View style={styles.questionContainer}>
@@ -222,7 +222,7 @@ export default function VerificationCodeView({route}) {
                                 </View>
                             ) : (<></>)
                         )
-                    }
+                    }*/}
                     <AwesomeModal
                         visible={isModalVisible}
                         text="VERIFICATION ISSUE"

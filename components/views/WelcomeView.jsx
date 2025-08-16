@@ -15,7 +15,6 @@ export default function WelcomeView(callback, deps) {
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.container}>
-                <Text style={styles.messageStyle}>Hey there!</Text>
                 <View style={styles.logoContainer}>
                     <Image source={logoVotum} style={styles.logoStyle} resizeMode="contain" />
                 </View>
