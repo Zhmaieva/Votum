@@ -95,7 +95,7 @@ async function getUser(userId, currentUserId, isOwnProfile) {
         SELECT
             u.id as "userId",
             u.username AS "username",
-            u.email,
+            '' AS "email",
             up.image,
             GREATEST(up.followers_number, 0) AS "followersNumber",
             GREATEST(up.following_number, 0) AS "followingNumber",
@@ -119,7 +119,7 @@ async function getUser(userId, currentUserId, isOwnProfile) {
             WHERE user_id = u.id AND is_chosen = true
             ) uc ON true
         WHERE u.id = $1::uuid
-        GROUP BY u.id, u.username, u.email, up.image, up.birth_date, up.gender, up.followers_number, up.following_number, up.bio, uc."onboardingComplete";
+        GROUP BY u.id, u.username, up.image, up.birth_date, up.gender, up.followers_number, up.following_number, up.bio, uc."onboardingComplete";
   `;
 
     const queryOther = `
@@ -149,7 +149,7 @@ async function getUser(userId, currentUserId, isOwnProfile) {
             WHERE user_id = u.id AND is_chosen = true
             ) uc ON true
         WHERE u.id = $1::uuid
-        GROUP BY u.id, u.username, u.email, up.image, up.birth_date, up.gender, up.followers_number, up.following_number, up.bio, uc."onboardingComplete", uf2.user_follow_id;
+        GROUP BY u.id, u.username, up.image, up.birth_date, up.gender, up.followers_number, up.following_number, up.bio, uc."onboardingComplete", uf2.user_follow_id;
   `;
 
     try {
@@ -165,16 +165,16 @@ async function getUser(userId, currentUserId, isOwnProfile) {
 
 /**
  * Get or update activation code for a given email.
- * @param {string} email - The email address.
+ * @param {string} emailHash - The email address.
  * @returns {Promise<string>} - The activation code.
  */
-async function getActivationCode(email) {
+async function getActivationCode(emailHash) {
     try {
         const query = `
             WITH user_exists AS (
                 SELECT '-1' AS code, false AS "canSend"
                 FROM users
-                WHERE email = LOWER($1)
+                WHERE email = $1
                 LIMIT 1
             ),
                  existing_record AS (
@@ -186,14 +186,14 @@ async function getActivationCode(email) {
                              END AS "canSend",
                          email
                      FROM activation_codes
-                     WHERE email = LOWER($1)
+                     WHERE email = $1
                        AND created_at >= (NOW() AT TIME ZONE 'UTC') - INTERVAL '10 minutes'
                  ),
                  update_sent_on AS (
                      UPDATE activation_codes
                          SET sent_on = (NOW() AT TIME ZONE 'UTC')
                          FROM existing_record
-                         WHERE LOWER(activation_codes.email) = LOWER(existing_record.email)
+                         WHERE activation_codes.email = existing_record.email
                              AND existing_record."canSend" = true
                          RETURNING activation_codes.code, true AS "canSend"
                  ),
@@ -203,15 +203,15 @@ async function getActivationCode(email) {
                              code = LPAD(FLOOR(RANDOM() * 1000000)::TEXT, 6, '0'),
                              attempts_made = 0,
                              sent_on = (NOW() AT TIME ZONE 'UTC')
-                         WHERE email = LOWER($1)
+                         WHERE email = $1
                              AND created_at <= (NOW() AT TIME ZONE 'UTC') - INTERVAL '1 minute'
                          RETURNING code, true AS "canSend"
                  ),
                  inserted AS (
                      INSERT INTO activation_codes (email, created_at, code, sent_on)
-                         SELECT LOWER($1), (NOW() AT TIME ZONE 'UTC'), LPAD(FLOOR(RANDOM() * 1000000)::TEXT, 6, '0'), (NOW() AT TIME ZONE 'UTC')
-                         WHERE NOT EXISTS (SELECT 1 FROM activation_codes WHERE email = LOWER($1))
-                           AND NOT EXISTS (SELECT 1 FROM users WHERE email = LOWER($1))
+                         SELECT $1, (NOW() AT TIME ZONE 'UTC'), LPAD(FLOOR(RANDOM() * 1000000)::TEXT, 6, '0'), (NOW() AT TIME ZONE 'UTC')
+                         WHERE NOT EXISTS (SELECT 1 FROM activation_codes WHERE email = $1)
+                           AND NOT EXISTS (SELECT 1 FROM users WHERE email = $1)
                          RETURNING code, true AS "canSend"
                  )
             SELECT code, "canSend" FROM user_exists
@@ -223,7 +223,7 @@ async function getActivationCode(email) {
             SELECT code, "canSend" FROM inserted;
         `;
 
-        const result = await pool.query(query, [email]);
+        const result = await pool.query(query, [emailHash]);
 
         if (result.rows.length > 0) {
             return result.rows[0];
@@ -238,10 +238,10 @@ async function getActivationCode(email) {
 
 /**
  * Get or update verification code for a given email.
- * @param {string} email - The email address.
+ * @param {string} emailHash - The email address.
  * @returns {Promise<string>} - The activation code.
  */
-async function getVerificationCode(email) {
+async function getVerificationCode(emailHash) {
     try {
         const query = `
             WITH 
@@ -254,14 +254,14 @@ async function getVerificationCode(email) {
                              END AS "canSend",
                          email
                      FROM activation_codes
-                     WHERE email = LOWER($1)
+                     WHERE email = $1
                        AND created_at >= (NOW() AT TIME ZONE 'UTC') - INTERVAL '10 minutes'
                  ),
                  update_sent_on AS (
                      UPDATE activation_codes
                          SET sent_on = (NOW() AT TIME ZONE 'UTC')
                          FROM existing_record
-                         WHERE LOWER(activation_codes.email) = LOWER(existing_record.email)
+                         WHERE activation_codes.email = existing_record.email
                              AND existing_record."canSend" = true
                          RETURNING activation_codes.code, true AS "canSend"
                  ),
@@ -271,15 +271,15 @@ async function getVerificationCode(email) {
                              code = LPAD(FLOOR(RANDOM() * 1000000)::TEXT, 6, '0'),
                              attempts_made = 0,
                              sent_on = (NOW() AT TIME ZONE 'UTC')
-                         WHERE email = LOWER($1)
+                         WHERE email = $1
                              AND created_at <= (NOW() AT TIME ZONE 'UTC') - INTERVAL '1 minute'
                          RETURNING code, true AS "canSend"
                  ),
                  inserted AS (
                      INSERT INTO activation_codes (email, created_at, code, sent_on)
-                         SELECT LOWER($1), (NOW() AT TIME ZONE 'UTC'), LPAD(FLOOR(RANDOM() * 1000000)::TEXT, 6, '0'), (NOW() AT TIME ZONE 'UTC')
-                         WHERE NOT EXISTS (SELECT 1 FROM activation_codes WHERE email = LOWER($1))
-                           AND EXISTS (SELECT 1 FROM users WHERE email = LOWER($1))
+                         SELECT $1, (NOW() AT TIME ZONE 'UTC'), LPAD(FLOOR(RANDOM() * 1000000)::TEXT, 6, '0'), (NOW() AT TIME ZONE 'UTC')
+                         WHERE NOT EXISTS (SELECT 1 FROM activation_codes WHERE email = $1)
+                           AND EXISTS (SELECT 1 FROM users WHERE email = $1)
                          RETURNING code, true AS "canSend"
                  )
             SELECT code, "canSend" FROM update_sent_on
@@ -289,7 +289,7 @@ async function getVerificationCode(email) {
             SELECT code, "canSend" FROM inserted;
         `;
 
-        const result = await pool.query(query, [email]);
+        const result = await pool.query(query, [emailHash]);
 
         if (result.rows.length > 0) {
             return result.rows[0];
@@ -302,12 +302,12 @@ async function getVerificationCode(email) {
     }
 }
 
-async function checkActivationCode(email, code) {
+async function checkActivationCode(emailHash, code) {
     try {
         const query = `
             WITH matched_code AS (
                 DELETE FROM activation_codes
-                WHERE email = LOWER($1)
+                WHERE email = $1
                       AND code = $2
                       AND created_at >= (NOW() AT TIME ZONE 'UTC') - INTERVAL '10 minutes'
                       RETURNING 1
@@ -315,20 +315,20 @@ async function checkActivationCode(email, code) {
              updated_attempts AS (
                  UPDATE activation_codes
                      SET attempts_made = attempts_made + 1
-                     WHERE email = LOWER($1)
+                     WHERE email = $1
                          AND created_at >= (NOW() AT TIME ZONE 'UTC') - INTERVAL '10 minutes'
                          AND code <> $2
                      RETURNING attempts_made
              ),
              expired_code AS (
                  SELECT 1 AS expired FROM activation_codes
-                 WHERE email = LOWER($1)
+                 WHERE email = $1
                    AND code = $2
                    AND created_at < (NOW() AT TIME ZONE 'UTC') - INTERVAL '10 minutes'
              )
             SELECT
                 CASE
-                    WHEN NOT EXISTS (SELECT 1 FROM activation_codes WHERE email = LOWER($1)) THEN 0
+                    WHEN NOT EXISTS (SELECT 1 FROM activation_codes WHERE email = $1) THEN 0
                     WHEN (SELECT attempts_made FROM updated_attempts LIMIT 1) > 3 THEN -1
                     WHEN (SELECT COUNT(*) FROM expired_code) > 0 THEN 2
                     WHEN (SELECT COUNT(*) FROM matched_code) > 0 THEN 1
@@ -336,7 +336,7 @@ async function checkActivationCode(email, code) {
                     END AS result;
         `;
 
-        const result = await pool.query(query, [email, code]);
+        const result = await pool.query(query, [emailHash, code]);
 
         // Get the result of the query
         if (result.rows.length > 0) {
@@ -353,11 +353,11 @@ async function checkActivationCode(email, code) {
 /**
  * Check username availability, insert user if necessary, and create a user profile.
  * @param {string} username - The desired username.
- * @param {string} email - The user's email.
+ * @param {string} emailHash - The user's email.
  * @param {string} passwordHash - The hashed password.
  * @returns {Promise<{ code: number, user_id: string | null }>}
  */
-async function checkAndInsertUserWithProfile(username, email, passwordHash) {
+async function checkAndInsertUserWithProfile(username, emailHash, passwordHash) {
     const client = await pool.connect();
     try {
         await client.query('BEGIN');
@@ -388,7 +388,7 @@ async function checkAndInsertUserWithProfile(username, email, passwordHash) {
                 COALESCE((SELECT id FROM existing_user), (SELECT id FROM inserted_user)) AS user_id;
         `;
 
-        const result = await client.query(query, [username.toLowerCase(), email.toLowerCase(), passwordHash]);
+        const result = await client.query(query, [username.toLowerCase(), emailHash, passwordHash]);
 
         await client.query('COMMIT');
 
@@ -408,9 +408,8 @@ async function checkAndInsertUserWithProfile(username, email, passwordHash) {
  * @param email
  * @returns {Promise<any>}
  */
-async function changeEmail(userId, email) {
+async function changeEmail(userId, emailHash) {
     console.log('userId', userId);
-    console.log('email', email);
 
     const query = `
         UPDATE users
@@ -419,10 +418,10 @@ async function changeEmail(userId, email) {
         RETURNING id, username;
     `;
 
-    const result = await pool.query(query, [userId, email.toLowerCase()]);
+    const result = await pool.query(query, [userId, emailHash]);
     if (result.rows.length > 0) {
         return { id: result.rows[0].id, username: result.rows[0].username };
-    }
+    }[]
     throw new Error('No such user in the database');
 }
 
@@ -433,20 +432,42 @@ async function changeEmail(userId, email) {
  * @param passwordHash
  * @returns {Promise<any>}
  */
-async function changePassword(email, passwordHash) {
-    console.log('email', email);
+async function changePassword(emailHash, passwordHash) {
     console.log('passwordHash', passwordHash);
 
     const query = `
         UPDATE users
         SET password_hash = $2
         WHERE email = $1
-        RETURNING id, username;
+        RETURNING id;
     `;
 
-    const result = await pool.query(query, [email.toLowerCase(), passwordHash]);
+    const result = await pool.query(query, [emailHash, passwordHash]);
     if (result.rows.length > 0) {
-        return { id: result.rows[0].id, username: result.rows[0].username };
+        return { id: result.rows[0].id };
+    }
+    throw new Error('No such user in the database');
+}
+
+/**
+ * Changes user's password
+ * @param id
+ * @param passwordHash
+ * @returns {Promise<any>}
+ */
+async function changePasswordById(id, passwordHash) {
+    console.log('passwordHash', passwordHash);
+
+    const query = `
+        UPDATE users
+        SET password_hash = $2
+        WHERE id = $1::uuid
+        RETURNING id;
+    `;
+
+    const result = await pool.query(query, [id, passwordHash]);
+    if (result.rows.length > 0) {
+        return { id: result.rows[0].id };
     }
     throw new Error('No such user in the database');
 }
@@ -455,11 +476,11 @@ async function changePassword(email, passwordHash) {
  * Checks if there is a user in DB with matching credentials,
  * optionally excluding a specific user by ID.
  *
- * @param {string} usernameOrEmail
+ * @param {string} usernameOrEmailHash
  * @param {string} [userId] - Optional user ID to exclude from the query
  * @returns {Promise<{id, password}>}
  */
-async function getUserByLogin(usernameOrEmail, userId) {
+async function getUserByLogin(usernameOrEmailHash, userId) {
     try {
         const baseQuery = `
             SELECT id, password_hash as password 
@@ -467,7 +488,7 @@ async function getUserByLogin(usernameOrEmail, userId) {
             WHERE (username = $1 OR email = $1)
         `;
 
-        const values = [usernameOrEmail.toLowerCase()];
+        const values = [usernameOrEmailHash];
 
         // If userId is provided, exclude it from the results
         let query = baseQuery;
@@ -477,6 +498,29 @@ async function getUserByLogin(usernameOrEmail, userId) {
         }
 
         const existingUsers = await pool.query(query, values);
+        return existingUsers?.rows[0];
+    } catch (error) {
+        console.error('Error checking credentials:', error);
+        throw error;
+    }
+}
+
+/**
+ * Checks if there is a user in DB with matching ID,
+ * optionally excluding a specific user by ID.
+ *
+ * @param {string} [userId] - user ID
+ * @returns {Promise<{id, password}>}
+ */
+async function getUserById(userId) {
+    try {
+        const query = `
+            SELECT id, password_hash as password 
+            FROM users 
+            WHERE id = $1::uuid
+        `;
+
+        const existingUsers = await pool.query(query, [userId]);
         return existingUsers?.rows[0];
     } catch (error) {
         console.error('Error checking credentials:', error);
@@ -761,12 +805,14 @@ module.exports = {
     checkAndInsertUserWithProfile,
     changeEmail,
     changePassword,
+    changePasswordById,
     deleteUser,
     followUser,
     getActivationCode,
     getFollowers,
     getFollows,
     getUser,
+    getUserById,
     getUserByLogin,
     getVerificationCode,
     recalculateCategoryScore,

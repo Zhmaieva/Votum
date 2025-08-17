@@ -11,7 +11,9 @@ const pollQueries = require("./db/dal/pollQueries");
 const userQueries = require("./db/dal/userQueries");
 const {getActivationCode, checkActivationCode, checkAndInsertUserWithProfile, getUserByLogin, getUser, getVerificationCode, changePassword,
     addInquiry,
-    changeEmail
+    changeEmail,
+    getUserById,
+    changePasswordById
 } = require("./db/dal/userQueries");
 const {validateEmail, validateUsername, validatePassword} = require("./validation");
 const {uploadMiddleware} = require("./middleware/fileUploadMiddleware");
@@ -47,14 +49,40 @@ app.use(express.json());
 const args = process.argv;
 const portIndex = args.indexOf('-p');
 const isDebug = process.argv.includes('--debug');
+const isRehash = process.argv.includes('--rehash');
 const port = (portIndex !== -1 && args[portIndex + 1]) ? parseInt(args[portIndex + 1], 10) : 3000;
 
-function generateToken({id, username}) {
-    return jwt.sign({ id, username }, SECRET_KEY);//let's make it non-expirale for convenience
+if (isRehash) {
+    (async function() {
+        const query = `
+        SELECT id, email FROM users
+        WHERE email LIKE '%@%';
+    `;
+
+        const result = await pool.query(query);
+
+        for (let i = 0; i < result.rows.length; i++) {
+            const updateQuery = `
+                UPDATE users 
+                SET email = $1
+                WHERE id = $2
+            `;
+
+            const emailHash = await bcrypt.hash(result.rows[i].email.toLowerCase(), process.env.EMAIL_HASH_SALT);
+
+            await pool.query(updateQuery, [emailHash, result.rows[i].id]);
+        }
+    })();
+
+    return;
 }
 
-function generateSignUpToken({email}) {
-    return jwt.sign({ email }, SECRET_KEY);//let's make it non-expirale for convenience
+function generateToken({id}) {
+    return jwt.sign({ id }, SECRET_KEY);//let's make it non-expirale for convenience
+}
+
+function generateSignUpToken({emailHash}) {
+    return jwt.sign({ email: emailHash }, SECRET_KEY);//let's make it non-expirale for convenience
 }
 
 if (isDebug) {
@@ -108,7 +136,9 @@ app.post("/users/passwords/forgot", async (req, res, next) => {
             return res.status(400).send("invalid email");
         }
 
-        const { code, canSend } = await getVerificationCode(email);
+        const emailHash = await bcrypt.hash(email?.toLowerCase(), process.env.EMAIL_HASH_SALT);
+
+        const { code, canSend } = await getVerificationCode(emailHash);
 
         if (code) {
             if (canSend) {
@@ -156,9 +186,24 @@ app.post("/users/passwords", signupAuthMiddleware, async (req, res, next) => {
 
         const passwordHash = await bcrypt.hash(password, 10);
 
-        const {id, username} = await changePassword(req.user.email, passwordHash);
+        const {id} = await changePassword(req.user.email, passwordHash);
 
-        const token = generateToken({id: id, username: username});
+        const token = generateToken({id: id});
+        return res.json({ message: 'Password reset & sign-in successful', token });
+    } catch (e) {
+        next(e);
+    }
+});
+
+app.put("/users/passwords", authMiddleware, async (req, res, next) => {
+    try {
+        const { password } = req.body;
+
+        const passwordHash = await bcrypt.hash(password, 10);
+
+        const {id} = await changePasswordById(req.user.id, passwordHash);
+
+        const token = generateToken({id: id});
         return res.json({ message: 'Password reset & sign-in successful', token });
     } catch (e) {
         next(e);
@@ -173,7 +218,9 @@ app.post("/users/register", async (req, res, next) => {
             return res.status(400).send("invalid email");
         }
 
-        const { code, canSend } = await getActivationCode(email);
+        const emailHash = await bcrypt.hash(email?.toLowerCase(), process.env.EMAIL_HASH_SALT);
+
+        const { code, canSend } = await getActivationCode(emailHash);
 
         if (parseInt(code) === -1) {
             return res.status(409).json({ error: "user registered" });
@@ -201,7 +248,9 @@ app.post("/users/email/verify", authMiddleware, async (req, res, next) => {
             return res.status(400).send("invalid email");
         }
 
-        const { code, canSend } = await getActivationCode(email);
+        const emailHash = await bcrypt.hash(email?.toLowerCase(), process.env.EMAIL_HASH_SALT);
+
+        const { code, canSend } = await getActivationCode(emailHash);
 
         if (parseInt(code) === -1) {
             return res.status(409).json({ error: "user registered" });
@@ -222,13 +271,15 @@ app.put("/users/email/change", authMiddleware, async (req, res, next) => {
     try {
         const { email, code } = req.body;
 
-        const result = await checkActivationCode(email, code);
+        const emailHash = await bcrypt.hash(email?.toLowerCase(), process.env.EMAIL_HASH_SALT);
+
+        const result = await checkActivationCode(emailHash, code);
         switch (result) {
             default:
             case 0:
                 return res.status(404).json({ error: "invalid code" });
             case 1:
-                await changeEmail(req.user.id, email);
+                await changeEmail(req.user.id, emailHash);
                 return res.json({ success: true, message: "email changed" });
             case 2:
                 return res.status(410).json({ error: "code expired" });
@@ -244,13 +295,16 @@ app.post("/user/register/verify", async (req, res, next) => {
     try {
         const { email, code } = req.body;
 
-        const result = await checkActivationCode(email, code);
+        const emailHash = await bcrypt.hash(email?.toLowerCase(), process.env.EMAIL_HASH_SALT);
+
+        const result = await checkActivationCode(emailHash, code);
+
         switch (result) {
             default:
             case 0:
                 return res.status(404).json({ error: "invalid code" });
             case 1:
-                return res.json({ message: "email confirmed", token: (await generateSignUpToken({email})) });
+                return res.json({ message: "email confirmed", token: (await generateSignUpToken({emailHash})) });
             case 2:
                 return res.status(410).json({ error: "code expired" });
             case -1:
@@ -271,7 +325,7 @@ app.get('/users', signupAuthMiddleware, async (req, res, next) => {
             return res.status(400).json({message: "invalid username"});
         }
 
-        const existingUser = await getUserByLogin(username);
+        const existingUser = await getUserByLogin(username.toLowerCase());
 
         if (existingUser) {
             return  res.status(409).json({message: "user already exists"});
@@ -294,7 +348,7 @@ app.get('/users/registered', authMiddleware, async (req, res, next) => {
             return res.status(400).json({message: "invalid username"});
         }
 
-        const existingUser = await getUserByLogin(username, req.user.id);
+        const existingUser = await getUserByLogin(username.toLowerCase(), req.user.id);
 
         if (existingUser) {
             return  res.status(409).json({message: "user already exists"});
@@ -331,7 +385,7 @@ app.post("/profile/register", signupAuthMiddleware,async (req, res, next) => {
             return res.status(409).json({ error: "Username or email already exists" });
         }
 
-        const token = generateToken({id: user_id, username: username.toLowerCase()});
+        const token = generateToken({id: user_id});
         res.status(201).json({ message: "User registered successfully", userId: user_id, token: token});
     } catch (e) {
         next(e);
@@ -352,7 +406,9 @@ app.post('/users/sign-in', async (req, res, next) => {
             return res.status(errorCode).json(errorMessage);
         }
 
-        const existingUser = await getUserByLogin(login);
+        const emailHash = await bcrypt.hash(login.toLowerCase(), process.env.EMAIL_HASH_SALT);
+
+        const existingUser = await getUserByLogin(emailHash);
 
         if (!existingUser) {
             return res.status(errorCode).json(errorMessage);
@@ -363,7 +419,7 @@ app.post('/users/sign-in', async (req, res, next) => {
         }
 
         // If credentials are correct, generate JWT token
-        const token = generateToken({id: existingUser.id, username: login});
+        const token = generateToken({id: existingUser.id});
         return res.json({ message: 'Login successful', token });
     }
     catch (e) {
@@ -385,7 +441,7 @@ app.post('/users/security/verify', authMiddleware, async (req, res, next) => {
             return res.status(errorCode).json(errorMessage);
         }
 
-        const existingUser = await getUserByLogin(req.user.username);
+        const existingUser = await getUserById(req.user.id);
 
         if (!existingUser) {
             return res.status(errorCode).json(errorMessage);
@@ -435,13 +491,12 @@ app.get('/profile/:id?', authMiddleware, async (req, res, next) => {
 
 app.put('/profile', authMiddleware, async (req, res) => {
     try {
-        const { username, bio, email } = req.body;
+        const { username, bio } = req.body;
 
         const updateUsersSql = `UPDATE users
          SET
-             username = COALESCE(NULLIF($1, NULL), username),
-             email = COALESCE(NULLIF($2, NULL), email)
-         WHERE id = $3;`
+             username = COALESCE(NULLIF($1, NULL), username)
+         WHERE id = $2;`
 
         const updateProfilesSql = `UPDATE user_profiles
          SET
@@ -450,7 +505,7 @@ app.put('/profile', authMiddleware, async (req, res) => {
 
         try {
             await Promise.all([
-                pool.query(updateUsersSql, [username?.toLowerCase(), email?.toLowerCase(), req.user.id]),
+                pool.query(updateUsersSql, [username?.toLowerCase(), req.user.id]),
                 pool.query(updateProfilesSql, [bio, req.user.id])
             ]);
         }

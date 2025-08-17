@@ -7,7 +7,7 @@ import { AwesomeModal } from "../customComponents/AwesomeModal";
 import { VERIFICATION_FLOW_TYPE } from "../views/VerificationCodeView";
 import { useNavigation } from "@react-navigation/native";
 import {globalEventEmitter} from "../../shared/common";
-import {resetPassword} from "../../shared/api/apiClient";
+import {resetPassword, updatePassword} from "../../shared/api/apiClient";
 
 const NewPasswordView = ({ route }) => {
     const navigation = useNavigation();
@@ -47,7 +47,7 @@ const NewPasswordView = ({ route }) => {
         }
 
         if (flowType === VERIFICATION_FLOW_TYPE.CHANGE_PASSWORD) {
-            const { success } = await resetPassword(password);
+            const { success } = await updatePassword(password);
             if (!success) {
                 setGenericErrorVisible(true);
                 return;

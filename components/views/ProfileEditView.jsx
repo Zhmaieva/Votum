@@ -134,8 +134,8 @@ const ProfileEditView = ({ route }) => {
                     <AwesomeButton
                         textElement={
                             <>
-                                <Text style={{ fontFamily: Fonts.medium }}>Email: </Text>
-                                <Text style={{ fontFamily: Fonts.regular }}>{email || '—'}</Text>
+                                <Text style={{ fontFamily: Fonts.medium }}>Email</Text>
+                                {/*<Text style={{ fontFamily: Fonts.regular }}>{email || '—'}</Text>*/}
                             </>
                         }
                         color={Color.WHITE}

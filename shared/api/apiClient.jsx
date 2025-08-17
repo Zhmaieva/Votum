@@ -241,6 +241,37 @@ export const resetPassword = async (password) => {
 
 /**
  *
+ * @returns {Promise<{success: boolean, code: number?}>}
+ */
+export const updatePassword = async (password) => {
+    try {
+        const response = await apiClient.put(`/users/passwords`, {
+            password
+        }, {
+            headers: {
+                Authorization: `Bearer ${await getToken()}`,
+            },
+        });
+
+        console.log('password reset complete');
+
+        const { token } = response.data;
+        await AsyncStorage.removeItem('sign_in_auth_token'); // Save token in AsyncStorage
+        await AsyncStorage.setItem('auth_token', token); // Save token in AsyncStorage
+        tokenValue = token;
+
+        return { success: true, code: 200 };
+    } catch (err) {
+        console.log(err);
+        if (err.response && err.response.status) {
+            return { success: false, code: err.response.status };
+        }
+        return { success: false };
+    }
+};
+
+/**
+ *
  * @param {string} email
  * @param {string} code
  * @returns {Promise<{success: boolean, code: number?}>}
