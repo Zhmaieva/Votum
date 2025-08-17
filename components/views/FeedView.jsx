@@ -38,7 +38,8 @@ const FeedView = ({ route }) => {
 
             Linking.getInitialURL().then(url => {
                 const { path } = Linking.parse(url);
-                loadAll(path);
+                const parts = path?.split('/') ?? [];
+                loadAll(parts[parts.length - 1]);
             }).catch(() => {
                 loadAll();
             });
@@ -149,9 +150,9 @@ const FeedView = ({ route }) => {
                                 item={item}
                                 handleVote={async (itemId, optionId) => {
                                 }}
-                                loggedInUserId={loggedInUserId}
-                            />
-                        )
+                        loggedInUserId={loggedInUserId}
+                        />
+                    )
                     }}
                     appendFunction={async (excludedPollIds) => {
                         return await getDataService().getMorePolls();
