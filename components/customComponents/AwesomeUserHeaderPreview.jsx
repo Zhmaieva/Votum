@@ -98,7 +98,7 @@ const AwesomeUserHeaderPreview = ({ userData, loggedInUserId }) => {
             <View style={styles.textContainer}>
                 <Text style={styles.username}>{user.username}</Text>
                 <Text style={styles.subText}>
-                    {totalVotesCount} {totalVotesCount === 1 ? ' vote' : ' votes'}
+                    {totalVotesCount} {totalVotesCount === 1 ? ' vote' : 'votes'}
                 </Text>
             </View>
             {!isOwnProfile && (
