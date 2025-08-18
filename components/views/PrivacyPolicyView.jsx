@@ -20,9 +20,9 @@ const PrivacyPolicyView = ({ navigation }) => {
 
                 <Text style={styles.sectionTitle}>2. What Data We Collect</Text>
                 <Text style={styles.paragraph}>
-                    - Email, username, and profile info you provide.{"\n"}
+                    - Username, and profile info you provide.{"\n"}
                     - Poll responses and votes.{"\n"}
-                    - Device and usage data (e.g., IP address, app interactions).{"\n"}
+                    - Device and usage data (e.g. app interactions for diagnostic purposes).{"\n"}
                     - Optional demographic info (age, gender), only if provided.
                 </Text>
 
@@ -42,10 +42,7 @@ const PrivacyPolicyView = ({ navigation }) => {
 
                 <Text style={styles.sectionTitle}>5. Data Sharing</Text>
                 <Text style={styles.paragraph}>
-                    We only share data with:{"\n"}
-                    - Trusted providers (e.g. cloud hosting, analytics){"\n"}
-                    - Authorities, if required by law{"\n"}
-                    All partners comply with GDPR.
+                    We never share any data with 3rd party services.
                 </Text>
 
                 <Text style={styles.sectionTitle}>6. Your Rights</Text>
@@ -79,7 +76,7 @@ const PrivacyPolicyView = ({ navigation }) => {
 
                 <Text style={styles.sectionTitle}>11. Contact</Text>
                 <Text style={styles.paragraph}>
-                    Email us at votum.contact@gmail.com or write to us at ul. Example Szymanowskiego 11, Gdańsk, Poland.
+                    Email us at votum.contact@gmail.com
                 </Text>
 
                 <View style={styles.buttonContainer}>
