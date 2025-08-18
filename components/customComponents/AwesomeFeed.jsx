@@ -14,8 +14,8 @@ import { useFocusEffect } from "@react-navigation/native";
 import { fetchMyProfile, getPollOptions, viewPoll } from "../../shared/api/apiClient";
 import AwesomeLoadingPoll from "./AwesomeLoadingPoll";
 
-const minimumOptionsUpdateInterval = 2000; //1500;
-const maximumOptionsUpdateIntervalIncrease = 10000; //10000;
+const minimumOptionsUpdateInterval = 100; //1500;
+const maximumOptionsUpdateIntervalIncrease = 0//10000; //10000;
 const AnimatedFlatList = Animated.createAnimatedComponent(Animated.FlatList);
 
 const AwesomeFeed = forwardRef(({

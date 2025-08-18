@@ -324,7 +324,7 @@ const AwesomeVote = ({
                     })
                 )}
                 <View style={[styles.countStyle, styles.row]}>
-                    <Text style={[styles.greyTextStyle, styles.fontFamilyStyle]}>{pollExpired ? "Expired" : `Ends in ${formatTimeLeft(remainingTime)}`}</Text>
+                    <Text style={[styles.greyTextStyle, styles.fontFamilyStyle]}>{pollExpired ? "Ended" : `Ends in ${formatTimeLeft(remainingTime)}`}</Text>
                     <Text style={[styles.greyTextStyle, styles.fontFamilyStyle]}>{formatFollowers(optionsData?.reduce((sum, option) => sum + option.votesCount, 0))} voted</Text>
                 </View>
             </View>
