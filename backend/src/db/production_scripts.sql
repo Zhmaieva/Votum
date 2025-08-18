@@ -1,21 +1,117 @@
+/*TRUNCATE TABLE users cascade;*/
+
 INSERT INTO users (id, username, email, password_hash) VALUES
+       ('ec91a4ff-dfa9-4e5b-8b7c-45753c267995', 'psychology.inna', 'psychology.inna@votum.com', 'Qwerty123'),
        ('8a3ddccb-be98-4998-a541-54a475148b91', 'davis.baumanis', 'davis.baumanis@votum.com', 'Qwerty123'),
+       ('fe3af10d-53cd-4d78-9b2f-870a79d02e28', 'dan2003', 'dan2003@votum.com', 'Qwerty123'),
+       ('5d86e160-3f41-4a67-913b-f08c3d513b92', 'noahthinks', 'noahthinks@votum.com', 'Qwerty123'),
+       ('aa36b066-c33d-4f4b-bb49-67db93a9188a', 'justin.brody', 'justin.brody@votum.com', 'Qwerty123'),
+       ('c5eb8024-b7dd-4b25-a420-bf86a71cc1aa', 'teo.aguilar', 'teo.aguilar@votum.com', 'Qwerty123'),
+       ('afcb53da-f8ae-4f74-bc33-f627de6d9675', 'stevepearson', 'stevepearson@votum.com', 'Qwerty123'),
+       ('6b90bc0d-0f5b-40f5-9622-cc1058e2c664', 'zoe.miller', 'zoe.miller@votum.com', 'Qwerty123');
+
+INSERT INTO user_profiles (user_id, bio, image) VALUES
+       ('ec91a4ff-dfa9-4e5b-8b7c-45753c267995', 'Find me on other social media', 'https://s3.us-east-1.amazonaws.com/storage.beampie.com/vote/default_avatar.PNG'),
+       ('8a3ddccb-be98-4998-a541-54a475148b91', 'Find me on other social media', 'https://s3.us-east-1.amazonaws.com/storage.beampie.com/vote/default_avatar.PNG'),
+       ('fe3af10d-53cd-4d78-9b2f-870a79d02e28', 'Find me on other social media', 'https://s3.us-east-1.amazonaws.com/storage.beampie.com/vote/default_avatar.PNG'),
+       ('5d86e160-3f41-4a67-913b-f08c3d513b92', 'Find me on other social media', 'https://s3.us-east-1.amazonaws.com/storage.beampie.com/vote/default_avatar.PNG'),
+       ('aa36b066-c33d-4f4b-bb49-67db93a9188a', 'Find me on other social media', 'https://s3.us-east-1.amazonaws.com/storage.beampie.com/vote/default_avatar.PNG'),
+       ('c5eb8024-b7dd-4b25-a420-bf86a71cc1aa', 'Find me on other social media', 'https://s3.us-east-1.amazonaws.com/storage.beampie.com/vote/default_avatar.PNG'),
+       ('afcb53da-f8ae-4f74-bc33-f627de6d9675', 'Find me on other social media', 'https://s3.us-east-1.amazonaws.com/storage.beampie.com/vote/default_avatar.PNG'),
+       ('6b90bc0d-0f5b-40f5-9622-cc1058e2c664', 'Find me on other social media', 'https://s3.us-east-1.amazonaws.com/storage.beampie.com/vote/default_avatar.PNG');
+
+-- 2) Could Jack survive on the same door?
+INSERT INTO polls (id, created_by, category_id, readable_id, question, ends_in, is_deleted, created_at, votes_count, likes_per_vote) VALUES
+    ('a6b4c3de-41a2-4d9b-9b1c-6f7e5d3c2b44', 'c5eb8024-b7dd-4b25-a420-bf86a71cc1aa', 3, 'poll102', 'Could Jack survive on the same door?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '12060 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '9 days' - INTERVAL '2 hours' - INTERVAL '7 minutes'), 91, 0.612);
+INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
+    ('f91e5c7b-1a2b-4c3d-8e9f-0a1b2c3d4e55', 'a6b4c3de-41a2-4d9b-9b1c-6f7e5d3c2b44', 'No', 0, 73);
+INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
+    ('c4b3a2d1-9e8f-4d3c-8b7a-6f5e4d3c2b66', 'a6b4c3de-41a2-4d9b-9b1c-6f7e5d3c2b44', 'Yes', 1, 118);
+
+-- 3) Tired of constant ads in content?
+INSERT INTO polls (id, created_by, category_id, readable_id, question, ends_in, is_deleted, created_at, votes_count, likes_per_vote) VALUES
+    ('e3c2b1a0-7f6e-4d5c-8b9a-1c2d3e4f5a77', '8a3ddccb-be98-4998-a541-54a475148b91', 9, 'poll103', 'Tired of constant ads in content?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '24480 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '6 days' - INTERVAL '10 hours' - INTERVAL '12 minutes'), 110, 0.841);
+INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
+    ('0a1b2c3d-4e5f-6789-abcd-ef0123456789', 'e3c2b1a0-7f6e-4d5c-8b9a-1c2d3e4f5a77', 'No', 0, 14);
+INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
+    ('11223344-5566-7788-99aa-bbccddeeff00', 'e3c2b1a0-7f6e-4d5c-8b9a-1c2d3e4f5a77', 'Yes', 1, 96);
+
+-- 7) Who should pay on the first date?
+INSERT INTO polls (id, created_by, category_id, readable_id, question, ends_in, is_deleted, created_at, votes_count, likes_per_vote) VALUES
+    ('0a1b2c3d-4e5f-6071-82a9-bcdef1234507', '6b90bc0d-0f5b-40f5-9622-cc1058e2c664', 1, 'poll207', 'Who should pay on the first date?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '19980 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '10 days' - INTERVAL '7 hours' - INTERVAL '5 minutes'), 131, 0.734);
+INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
+    ('1a2b3c4d-5e6f-7081-92ab-cd0ef1a2b319', '0a1b2c3d-4e5f-6071-82a9-bcdef1234507', 'Split', 0, 67);
+INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
+    ('2b3c4d5e-6f70-8192-a3bc-d0ef1a2b3c20', '0a1b2c3d-4e5f-6071-82a9-bcdef1234507', 'Whoever asked', 1, 48);
+INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
+    ('3c4d5e6f-7081-92a3-bcd0-ef1a2b3c4d21', '0a1b2c3d-4e5f-6071-82a9-bcdef1234507', 'Man', 2, 16);
+
+-- 6. Should billionaires exist?
+INSERT INTO polls (id, created_by, category_id, readable_id, question, ends_in, is_deleted, created_at, votes_count, likes_per_vote) VALUES
+    ('e1a9c5d7-2b4e-47a0-8f2c-7d6a1c3e4b06', 'fe3af10d-53cd-4d78-9b2f-870a79d02e28', 8, 'poll306', 'Should billionaires exist?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '14700 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '5 days' - INTERVAL '2 hours'), 111, 0.65);
+INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
+    ('66666666-6666-4666-8666-666666666601', 'e1a9c5d7-2b4e-47a0-8f2c-7d6a1c3e4b06', 'No', 0, 132);
+INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
+    ('66666666-6666-4666-8666-666666666602', 'e1a9c5d7-2b4e-47a0-8f2c-7d6a1c3e4b06', 'Yes', 1, 79);
+
+-- 7. Is cancel culture a good thing?
+INSERT INTO polls (id, created_by, category_id, readable_id, question, ends_in, is_deleted, created_at, votes_count, likes_per_vote) VALUES
+    ('f2b7d9e1-3c5a-4f2e-9a8b-1d7c3e5f6a07', 'ec91a4ff-dfa9-4e5b-8b7c-45753c267995', 8, 'poll307', 'Is cancel culture a good thing?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '14700 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '6 days' - INTERVAL '9 hours'), 134, 0.81);
+INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
+    ('77777777-7777-4777-8777-777777777701', 'f2b7d9e1-3c5a-4f2e-9a8b-1d7c3e5f6a07', 'Yes', 0, 29);
+INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
+    ('77777777-7777-4777-8777-777777777702', 'f2b7d9e1-3c5a-4f2e-9a8b-1d7c3e5f6a07', 'Sometimes', 1, 38);
+INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
+    ('77777777-7777-4777-8777-777777777703', 'f2b7d9e1-3c5a-4f2e-9a8b-1d7c3e5f6a07', 'No', 2, 77);
+
+-- 9. Should you tip at restaurants?
+INSERT INTO polls (id, created_by, category_id, readable_id, question, ends_in, is_deleted, created_at, votes_count, likes_per_vote) VALUES
+    ('b5d7e9f1-2e3c-4b5a-86c1-3d8e0f2a4c09', 'afcb53da-f8ae-4f74-bc33-f627de6d9675', 5, 'poll309', 'Should you tip at restaurants?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '14700 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '4 days' - INTERVAL '1 hours'), 117, 0.69);
+INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
+    ('99999999-9999-4999-8999-999999999901', 'b5d7e9f1-2e3c-4b5a-86c1-3d8e0f2a4c09', 'No', 0, 84);
+INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
+    ('99999999-9999-4999-8999-999999999902', 'b5d7e9f1-2e3c-4b5a-86c1-3d8e0f2a4c09', 'Yes', 1, 33);
+
+-- 1. Is astrology real or nonsense?
+INSERT INTO polls (id, created_by, category_id, readable_id, question, ends_in, is_deleted, created_at, votes_count, likes_per_vote) VALUES
+    ('c101a1b2-1c2d-4e3f-a456-1b2c3d4e5f10', 'c5eb8024-b7dd-4b25-a420-bf86a71cc1aa', 8, 'poll310', 'Is astrology real or nonsense?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '14700 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '3 days' - INTERVAL '4 hours'), 99, 0.77);
+INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
+    ('aaa11111-1111-4111-8111-aaaaaaaaaaa1', 'c101a1b2-1c2d-4e3f-a456-1b2c3d4e5f10', 'Real', 0, 114);
+INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
+    ('aaa11111-1111-4111-8111-aaaaaaaaaaa2', 'c101a1b2-1c2d-4e3f-a456-1b2c3d4e5f10', 'Nonsense', 1, 158);
+
+-- 6. What’s the best way to eat a pizza?
+INSERT INTO polls (id, created_by, category_id, readable_id, question, ends_in, is_deleted, created_at, votes_count, likes_per_vote) VALUES
+    ('b606f607-6172-839e-f90b-6a7b8c9d0e15', 'aa36b066-c33d-4f4b-bb49-67db93a9188a', 4, 'poll315', 'What’s the best way to eat a pizza?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '14700 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '5 days' - INTERVAL '5 hours'), 123, 0.81);
+INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
+    ('fff66666-6666-4666-8666-fffffffffff1', 'b606f607-6172-839e-f90b-6a7b8c9d0e15', 'Rolled', 0, 38);
+INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
+    ('fff66666-6666-4666-8666-fffffffffff2', 'b606f607-6172-839e-f90b-6a7b8c9d0e15', 'Fork & knife', 1, 66);
+INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
+    ('fff66666-6666-4666-8666-fffffffffff3', 'b606f607-6172-839e-f90b-6a7b8c9d0e15', 'Hands', 2, 19);
+
+-- 8. Should couples share phone passwords?
+INSERT INTO polls (id, created_by, category_id, readable_id, question, ends_in, is_deleted, created_at, votes_count, likes_per_vote) VALUES
+    ('675463e2-e348-40b3-99c9-54e8acdf0c65', '5d86e160-3f41-4a67-913b-f08c3d513b92', 1, 'poll317', 'Should couples share phone passwords?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '14700 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '4 days' - INTERVAL '7 hours'), 160, 0.83);
+INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
+    ('22288888-8888-4888-8888-222222222281', '675463e2-e348-40b3-99c9-54e8acdf0c65', 'Yes', 0, 21);
+INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
+    ('22288888-8888-4888-8888-222222222282', '675463e2-e348-40b3-99c9-54e8acdf0c65', 'Only if asked', 1, 92);
+INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
+    ('22288888-8888-4888-8888-222222222283', '675463e2-e348-40b3-99c9-54e8acdf0c65', 'No', 2, 47);
+
+/*
+INSERT INTO users (id, username, email, password_hash) VALUES
        ('99d5cbae-6473-41ec-a9ca-2852b246029d', 'richard1987', 'richard1987@votum.com', 'Qwerty123'),
        ('b1a9f024-c463-4a77-bcc5-6e53df303ea1', 'mysalsa', 'mysalsa@votum.com', 'Qwerty123'),
        ('43f8c07b-3d76-49f1-b387-7aaefb1ac58d', 'laura.berns', 'laura.berns@votum.com', 'Qwerty123'),
        ('f87a60c0-a8e0-4a41-8841-bb20a4d5a238', 'fernandaherera', 'fernandaherera@votum.com', 'Qwerty123'),
-       ('fe3af10d-53cd-4d78-9b2f-870a79d02e28', 'dan2003', 'dan2003@votum.com', 'Qwerty123'),
-       ('ec91a4ff-dfa9-4e5b-8b7c-45753c267995', 'psychology.inna', 'psychology.inna@votum.com', 'Qwerty123'),
        ('a2c403db-e2da-49ee-8578-f6318a5ffb47', 'helen94', 'helen94@votum.com', 'Qwerty123'),
-       ('afcb53da-f8ae-4f74-bc33-f627de6d9675', 'stevepearson', 'stevepearson@votum.com', 'Qwerty123'),
-       ('c5eb8024-b7dd-4b25-a420-bf86a71cc1aa', 'teo.aguilar', 'teo.aguilar@votum.com', 'Qwerty123'),
        ('76d78b76-78f1-420a-8b02-9d2d7791b8cd', 'dontCallMeSteve', 'dontCallMeSteve@votum.com', 'Qwerty123'),
        ('6edec0a5-c12d-4a06-a1dd-c3a18169266c', 'reginaFran', 'reginaFran@votum.com', 'Qwerty123'),
        ('f2709aa1-9bc1-4f4f-8e85-f21f21e84b9a', 'amanda.marks', 'amanda.marks@votum.com', 'Qwerty123'),
        ('f9f43547-e2dc-4c41-9509-fcc5a0b91968', 'samir.hassan', 'samir.hassan@votum.com', 'Qwerty123'),
-       ('aa36b066-c33d-4f4b-bb49-67db93a9188a', 'justin.brody', 'justin.brody@votum.com', 'Qwerty123'),
        ('c7b3d445-15b4-471f-8c37-62c9d4cf53e6', 'lily.wong', 'lily.wong@votum.com', 'Qwerty123'),
-       ('5d86e160-3f41-4a67-913b-f08c3d513b92', 'noahthinks', 'noahthinks@votum.com', 'Qwerty123'),
        ('c9244f94-35a8-4a4a-96fd-50c5ccf86f10', 'rodrigo.mejia', 'rodrigo.mejia@votum.com', 'Qwerty123'),
        ('a931f699-fb8f-4a4e-92cb-6b9cf65e6df7', 'kristen_92', 'kristen_92@votum.com', 'Qwerty123'),
        ('41877a68-3c11-40f3-8ec4-10d1e8da57c0', 'dasha.sokolova', 'dasha.sokolova@votum.com', 'Qwerty123'),
@@ -53,7 +149,6 @@ INSERT INTO users (id, username, email, password_hash) VALUES
        ('291e928c-3e7d-4f51-92cf-6cb6d7a94852', 'bobby.howell', 'bobby.howell@votum.com', 'Qwerty123'),
        ('bcb58b50-9813-493b-a9cf-f1cc8b659527', 'safiya.rami', 'safiya.rami@votum.com', 'Qwerty123'),
        ('79d55e4c-96de-49f8-93a0-df2024d993a8', 'mario.delgado', 'mario.delgado@votum.com', 'Qwerty123'),
-       ('6b90bc0d-0f5b-40f5-9622-cc1058e2c664', 'zoe.miller', 'zoe.miller@votum.com', 'Qwerty123'),
        ('f6d48b0a-9fd1-4412-a5af-8de4a748d99d', 'diego.luna', 'diego.luna@votum.com', 'Qwerty123'),
        ('4253b73e-f960-4a78-b259-a4cbfae73b7b', 'emre.kaya', 'emre.kaya@votum.com', 'Qwerty123'),
        ('f1c92c4d-90cf-4703-bc84-63ee2745401b', 'chloe.patel', 'chloe.patel@votum.com', 'Qwerty123'),
@@ -388,36 +483,9 @@ INSERT INTO users (id, username, email, password_hash) VALUES
        ('69f3ecdd-bd8f-4cb6-98d8-32d6e189cbbc', 'mehreen.zafar', 'mehreen.zafar@votum.com', 'Qwerty123');
 
 
-
-
-
--- 1) What’s your favorite sushi?
-INSERT INTO polls (id, created_by, category_id, readable_id, question, ends_in, is_deleted, created_at, votes_count, likes_per_vote) VALUES
-    ('8f2a0f03-9c3e-4f2a-9d2a-7a3d2b7bfa11', 8f2a5e4c-b18a-4f9e-bc19-dcbd27a22a2c, 4, 'poll101', 'What’s your favorite sushi?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '19840 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '13 days' - INTERVAL '6 hours' - INTERVAL '21 minutes'), 179, 0.793);
-INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
-    ('b1f1d3d5-0f7e-4a86-8c1c-8b6e4f1f0c21', '8f2a0f03-9c3e-4f2a-9d2a-7a3d2b7bfa11', 'With tuna', 0, 91);
-INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
-    ('d2a5c8b4-bf3c-4df9-9c1b-4a2b9c6d8e32', '8f2a0f03-9c3e-4f2a-9d2a-7a3d2b7bfa11', 'With salmon', 1, 88);
-
--- 2) Could Jack survive on the same door?
-INSERT INTO polls (id, created_by, category_id, readable_id, question, ends_in, is_deleted, created_at, votes_count, likes_per_vote) VALUES
-    ('a6b4c3de-41a2-4d9b-9b1c-6f7e5d3c2b44', c5eb8024-b7dd-4b25-a420-bf86a71cc1aa, 3, 'poll102', 'Could Jack survive on the same door?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '12060 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '9 days' - INTERVAL '2 hours' - INTERVAL '7 minutes'), 91, 0.612);
-INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
-    ('f91e5c7b-1a2b-4c3d-8e9f-0a1b2c3d4e55', 'a6b4c3de-41a2-4d9b-9b1c-6f7e5d3c2b44', 'No', 0, 73);
-INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
-    ('c4b3a2d1-9e8f-4d3c-8b7a-6f5e4d3c2b66', 'a6b4c3de-41a2-4d9b-9b1c-6f7e5d3c2b44', 'Yes', 1, 18);
-
--- 3) Tired of constant ads in content?
-INSERT INTO polls (id, created_by, category_id, readable_id, question, ends_in, is_deleted, created_at, votes_count, likes_per_vote) VALUES
-    ('e3c2b1a0-7f6e-4d5c-8b9a-1c2d3e4f5a77', 8a3ddccb-be98-4998-a541-54a475148b91, 9, 'poll103', 'Tired of constant ads in content?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '24480 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '6 days' - INTERVAL '10 hours' - INTERVAL '12 minutes'), 110, 0.841);
-INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
-    ('0a1b2c3d-4e5f-6789-abcd-ef0123456789', 'e3c2b1a0-7f6e-4d5c-8b9a-1c2d3e4f5a77', 'No', 0, 14);
-INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
-    ('11223344-5566-7788-99aa-bbccddeeff00', 'e3c2b1a0-7f6e-4d5c-8b9a-1c2d3e4f5a77', 'Yes', 1, 96);
-
 -- 4) What is better?
 INSERT INTO polls (id, created_by, category_id, readable_id, question, ends_in, is_deleted, created_at, votes_count, likes_per_vote) VALUES
-    ('5d4c3b2a-1908-4716-8f2a-3b4c5d6e7f88', f9f43547-e2dc-4c41-9509-fcc5a0b91968, 5, 'poll104', 'What is better?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '10320 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '15 days' - INTERVAL '1 hours' - INTERVAL '31 minutes'), 129, 0.702);
+    ('5d4c3b2a-1908-4716-8f2a-3b4c5d6e7f88', 'f9f43547-e2dc-4c41-9509-fcc5a0b91968', 5, 'poll104', 'What is better?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '10320 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '15 days' - INTERVAL '1 hours' - INTERVAL '31 minutes'), 129, 0.702);
 INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
     ('22334455-6677-8899-aabb-ccddeeff0011', '5d4c3b2a-1908-4716-8f2a-3b4c5d6e7f88', 'Autumn', 0, 42);
 INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
@@ -425,7 +493,7 @@ INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) V
 
 -- 5) What’s your favorite?
 INSERT INTO polls (id, created_by, category_id, readable_id, question, ends_in, is_deleted, created_at, votes_count, likes_per_vote) VALUES
-    ('6e5d4c3b-2a19-4c7e-9f0a-1b2c3d4e5f99', 13b291f2-72ae-4c8e-9a6d-09c4f4e78f78, 1, 'poll105', 'What’s your favorite?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '17880 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '11 days' - INTERVAL '3 hours' - INTERVAL '44 minutes'), 132, 0.766);
+    ('6e5d4c3b-2a19-4c7e-9f0a-1b2c3d4e5f99', '13b291f2-72ae-4c8e-9a6d-09c4f4e78f78', 1, 'poll105', 'What’s your favorite?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '17880 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '11 days' - INTERVAL '3 hours' - INTERVAL '44 minutes'), 132, 0.766);
 INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
     ('44556677-8899-aabb-ccdd-eeff00112233', '6e5d4c3b-2a19-4c7e-9f0a-1b2c3d4e5f99', 'Christmas', 0, 77);
 INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
@@ -433,7 +501,7 @@ INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) V
 
 -- 6) Do you believe in aliens?
 INSERT INTO polls (id, created_by, category_id, readable_id, question, ends_in, is_deleted, created_at, votes_count, likes_per_vote) VALUES
-    ('7f6e5d4c-3b2a-4919-8e7f-0a1b2c3d4eaa', 0c07c842-510a-42c3-bb7d-71f1c35c0c2c, 8, 'poll106', 'Do you believe in aliens?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '13560 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '7 days' - INTERVAL '8 hours' - INTERVAL '2 minutes'), 103, 0.589);
+    ('7f6e5d4c-3b2a-4919-8e7f-0a1b2c3d4eaa', '0c07c842-510a-42c3-bb7d-71f1c35c0c2c', 8, 'poll106', 'Do you believe in aliens?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '13560 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '7 days' - INTERVAL '8 hours' - INTERVAL '2 minutes'), 103, 0.589);
 INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
     ('66778899-aabb-ccdd-eeff-001122334455', '7f6e5d4c-3b2a-4919-8e7f-0a1b2c3d4eaa', 'No', 0, 64);
 INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
@@ -441,7 +509,7 @@ INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) V
 
 -- 7) Best superpower?
 INSERT INTO polls (id, created_by, category_id, readable_id, question, ends_in, is_deleted, created_at, votes_count, likes_per_vote) VALUES
-    ('8a7b6c5d-4e3f-4021-9a8b-7c6d5e4f3bbb', d8e10b8f-daa7-49cd-b5aa-b663a3769d5f, 3, 'poll107', 'Best superpower?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '22920 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '10 days' - INTERVAL '5 hours' - INTERVAL '29 minutes'), 159, 0.821);
+    ('8a7b6c5d-4e3f-4021-9a8b-7c6d5e4f3bbb', 'd8e10b8f-daa7-49cd-b5aa-b663a3769d5f', 3, 'poll107', 'Best superpower?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '22920 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '10 days' - INTERVAL '5 hours' - INTERVAL '29 minutes'), 159, 0.821);
 INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
     ('8899aabb-ccdd-eeff-0011-223344556677', '8a7b6c5d-4e3f-4021-9a8b-7c6d5e4f3bbb', 'Flying', 0, 53);
 INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
@@ -453,7 +521,7 @@ INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) V
 
 -- 8) What would you choose?
 INSERT INTO polls (id, created_by, category_id, readable_id, question, ends_in, is_deleted, created_at, votes_count, likes_per_vote) VALUES
-    ('9b8c7d6e-5f4a-4132-8b7a-6c5d4e3f2ccc', 548c27b7-bd67-4b5d-a7ff-27583e2e2b11, 5, 'poll108', 'What would you choose?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '16200 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '4 days' - INTERVAL '12 hours' - INTERVAL '55 minutes'), 122, 0.744);
+    ('9b8c7d6e-5f4a-4132-8b7a-6c5d4e3f2ccc', '548c27b7-bd67-4b5d-a7ff-27583e2e2b11', 5, 'poll108', 'What would you choose?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '16200 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '4 days' - INTERVAL '12 hours' - INTERVAL '55 minutes'), 122, 0.744);
 INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
     ('ccddeeff-0011-2233-4455-66778899aabb', '9b8c7d6e-5f4a-4132-8b7a-6c5d4e3f2ccc', 'City', 0, 85);
 INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
@@ -461,7 +529,7 @@ INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) V
 
 -- 9) Best vacation?
 INSERT INTO polls (id, created_by, category_id, readable_id, question, ends_in, is_deleted, created_at, votes_count, likes_per_vote) VALUES
-    ('0c1d2e3f-4a5b-4678-9c0d-1e2f3a4b5cdd', 79d55e4c-96de-49f8-93a0-df2024d993a8, 5, 'poll109', 'Best vacation?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '31860 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '16 days' - INTERVAL '7 hours' - INTERVAL '13 minutes'), 153, 0.905);
+    ('0c1d2e3f-4a5b-4678-9c0d-1e2f3a4b5cdd', '79d55e4c-96de-49f8-93a0-df2024d993a8', 5, 'poll109', 'Best vacation?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '31860 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '16 days' - INTERVAL '7 hours' - INTERVAL '13 minutes'), 153, 0.905);
 INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
     ('eeff0011-2233-4455-6677-8899aabbccdd', '0c1d2e3f-4a5b-4678-9c0d-1e2f3a4b5cdd', 'Beach', 0, 21);
 INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
@@ -471,7 +539,7 @@ INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) V
 
 -- 10) Is hot dog a sandwich?
 INSERT INTO polls (id, created_by, category_id, readable_id, question, ends_in, is_deleted, created_at, votes_count, likes_per_vote) VALUES
-    ('1d2e3f40-5a6b-47c8-8d9e-0f1a2b3c4dee', 021e2f93-c885-4b29-a26c-3f0624a9a896, 4, 'poll110', 'Is hot dog a sandwich?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '20400 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '5 days' - INTERVAL '4 hours' - INTERVAL '40 minutes'), 103, 0.677);
+    ('1d2e3f40-5a6b-47c8-8d9e-0f1a2b3c4dee', '021e2f93-c885-4b29-a26c-3f0624a9a896', 4, 'poll110', 'Is hot dog a sandwich?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '20400 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '5 days' - INTERVAL '4 hours' - INTERVAL '40 minutes'), 103, 0.677);
 INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
     ('1122aabb-3344-ccdd-5566-eeff77889900', '1d2e3f40-5a6b-47c8-8d9e-0f1a2b3c4dee', 'No', 0, 62);
 INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
@@ -479,7 +547,7 @@ INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) V
 
 -- 1) Does pineapple taste good on pizza?
 INSERT INTO polls (id, created_by, category_id, readable_id, question, ends_in, is_deleted, created_at, votes_count, likes_per_vote) VALUES
-    ('d2a6c9c4-8a9f-4c0c-9f6a-8e3f1b37b401', 8f2a5e4c-b18a-4f9e-bc19-dcbd27a22a2c, 4, 'poll201', 'Does pineapple taste good on pizza?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '21420 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '8 days' - INTERVAL '3 hours' - INTERVAL '19 minutes'), 110, 0.812);
+    ('d2a6c9c4-8a9f-4c0c-9f6a-8e3f1b37b401', '8f2a5e4c-b18a-4f9e-bc19-dcbd27a22a2c', 4, 'poll201', 'Does pineapple taste good on pizza?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '21420 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '8 days' - INTERVAL '3 hours' - INTERVAL '19 minutes'), 110, 0.812);
 INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
     ('b3c1d4f2-2a6c-45c6-9a5f-1a8e03c7f101', 'd2a6c9c4-8a9f-4c0c-9f6a-8e3f1b37b401', 'Yes', 0, 33);
 INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
@@ -489,7 +557,7 @@ INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) V
 
 -- 2) How do you like your steak?
 INSERT INTO polls (id, created_by, category_id, readable_id, question, ends_in, is_deleted, created_at, votes_count, likes_per_vote) VALUES
-    ('5f4c7d0a-2b3e-4a7f-8c1d-9e2b7a6c5d02', 548c27b7-bd67-4b5d-a7ff-27583e2e2b11, 4, 'poll202', 'How do you like your steak?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '18600 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '6 days' - INTERVAL '11 hours' - INTERVAL '7 minutes'), 141, 0.741);
+    ('5f4c7d0a-2b3e-4a7f-8c1d-9e2b7a6c5d02', '548c27b7-bd67-4b5d-a7ff-27583e2e2b11', 4, 'poll202', 'How do you like your steak?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '18600 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '6 days' - INTERVAL '11 hours' - INTERVAL '7 minutes'), 141, 0.741);
 INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
     ('c0f1a2b3-4c5d-6e7f-8a90-b1c2d3e4f205', '5f4c7d0a-2b3e-4a7f-8c1d-9e2b7a6c5d02', 'Medium-rare', 0, 19);
 INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
@@ -501,7 +569,7 @@ INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) V
 
 -- 3) Is cereal a soup?
 INSERT INTO polls (id, created_by, category_id, readable_id, question, ends_in, is_deleted, created_at, votes_count, likes_per_vote) VALUES
-    ('a3b2c1d0-9e8f-4a7b-8c6d-5e4f3a2b1c03', 13b291f2-72ae-4c8e-9a6d-09c4f4e78f78, 4, 'poll203', 'Is cereal a soup?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '24060 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '12 days' - INTERVAL '2 hours' - INTERVAL '33 minutes'), 121, 0.688);
+    ('a3b2c1d0-9e8f-4a7b-8c6d-5e4f3a2b1c03', '13b291f2-72ae-4c8e-9a6d-09c4f4e78f78', 4, 'poll203', 'Is cereal a soup?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '24060 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '12 days' - INTERVAL '2 hours' - INTERVAL '33 minutes'), 121, 0.688);
 INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
     ('1f2e3d4c-5b6a-7980-9a1b-2c3d4e5f9209', 'a3b2c1d0-9e8f-4a7b-8c6d-5e4f3a2b1c03', 'No', 0, 58);
 INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
@@ -509,17 +577,17 @@ INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) V
 INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
     ('3a4b5c6d-7e8f-9012-a3b4-c5d6e7f8d211', 'a3b2c1d0-9e8f-4a7b-8c6d-5e4f3a2b1c03', 'Only if microwaved', 2, 46);
 
--- 4) Should rich people pay more taxes?
+  -- 1) What’s your favorite sushi?
 INSERT INTO polls (id, created_by, category_id, readable_id, question, ends_in, is_deleted, created_at, votes_count, likes_per_vote) VALUES
-    ('c4d5e6f7-0819-4a2b-b3c4-d5e6f7081904', 0c07c842-510a-42c3-bb7d-71f1c35c0c2c, 8, 'poll204', 'Should rich people pay more taxes?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '20580 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '9 days' - INTERVAL '9 hours' - INTERVAL '48 minutes'), 113, 0.803);
+('8f2a0f03-9c3e-4f2a-9d2a-7a3d2b7bfa11', '8f2a5e4c-b18a-4f9e-bc19-dcbd27a22a2c', 4, 'poll101', 'What’s your favorite sushi?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '19840 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '13 days' - INTERVAL '6 hours' - INTERVAL '21 minutes'), 179, 0.793);
 INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
-    ('4e5f6a7b-8c90-41d2-a3b4-c5d6e7f8a312', 'c4d5e6f7-0819-4a2b-b3c4-d5e6f7081904', 'Yes', 0, 84);
+('b1f1d3d5-0f7e-4a86-8c1c-8b6e4f1f0c21', '8f2a0f03-9c3e-4f2a-9d2a-7a3d2b7bfa11', 'With tuna', 0, 91);
 INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
-    ('5a6b7c8d-9e01-42f3-a4b5-c6d7e8f9b413', 'c4d5e6f7-0819-4a2b-b3c4-d5e6f7081904', 'No', 1, 29);
+('d2a5c8b4-bf3c-4df9-9c1b-4a2b9c6d8e32', '8f2a0f03-9c3e-4f2a-9d2a-7a3d2b7bfa11', 'With salmon', 1, 88);
 
--- 5) Is it okay to lie sometimes?
+  -- 5) Is it okay to lie sometimes?
 INSERT INTO polls (id, created_by, category_id, readable_id, question, ends_in, is_deleted, created_at, votes_count, likes_per_vote) VALUES
-    ('e5f6a7b8-9c01-42d3-a4e5-f6a7b8c90105', 021e2f93-c885-4b29-a26c-3f0624a9a896, 8, 'poll205', 'Is it okay to lie sometimes?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '17340 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '5 days' - INTERVAL '6 hours' - INTERVAL '17 minutes'), 137, 0.652);
+    ('e5f6a7b8-9c01-42d3-a4e5-f6a7b8c90105', '021e2f93-c885-4b29-a26c-3f0624a9a896', 8, 'poll205', 'Is it okay to lie sometimes?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '17340 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '5 days' - INTERVAL '6 hours' - INTERVAL '17 minutes'), 137, 0.652);
 INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
     ('6b7c8d9e-0f12-43a4-b5c6-d7e8f9a0c514', 'e5f6a7b8-9c01-42d3-a4e5-f6a7b8c90105', 'Yes', 0, 43);
 INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
@@ -527,27 +595,9 @@ INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) V
 INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
     ('8d9e0f12-3456-45c6-d7e8-f9a0b1c2e716', 'e5f6a7b8-9c01-42d3-a4e5-f6a7b8c90105', 'Only if I don’t get caught', 2, 56);
 
--- 6) Should parents track their kids’ phones?
+  -- 8) Can you stay friends with an ex?
 INSERT INTO polls (id, created_by, category_id, readable_id, question, ends_in, is_deleted, created_at, votes_count, likes_per_vote) VALUES
-    ('f6a7b8c9-0123-43d5-a6e7-b8c90123d606', f9f43547-e2dc-4c41-9509-fcc5a0b91968, 5, 'poll206', 'Should parents track their kids’ phones?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '25800 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '14 days' - INTERVAL '1 hours' - INTERVAL '52 minutes'), 137, 0.776);
-INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
-    ('9e0f1234-5678-46e7-f8a9-0b1c2d3e4717', 'f6a7b8c9-0123-43d5-a6e7-b8c90123d606', 'Yes', 0, 93);
-INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
-    ('0f123456-789a-47f8-a90b-1c2d3e4f5818', 'f6a7b8c9-0123-43d5-a6e7-b8c90123d606', 'No', 1, 44);
-
--- 7) Who should pay on the first date?
-INSERT INTO polls (id, created_by, category_id, readable_id, question, ends_in, is_deleted, created_at, votes_count, likes_per_vote) VALUES
-    ('0a1b2c3d-4e5f-6071-82a9-bcdef1234507', 6b90bc0d-0f5b-40f5-9622-cc1058e2c664, 1, 'poll207', 'Who should pay on the first date?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '19980 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '10 days' - INTERVAL '7 hours' - INTERVAL '5 minutes'), 131, 0.734);
-INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
-    ('1a2b3c4d-5e6f-7081-92ab-cd0ef1a2b319', '0a1b2c3d-4e5f-6071-82a9-bcdef1234507', 'Split', 0, 67);
-INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
-    ('2b3c4d5e-6f70-8192-a3bc-d0ef1a2b3c20', '0a1b2c3d-4e5f-6071-82a9-bcdef1234507', 'Whoever asked', 1, 48);
-INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
-    ('3c4d5e6f-7081-92a3-bcd0-ef1a2b3c4d21', '0a1b2c3d-4e5f-6071-82a9-bcdef1234507', 'Man', 2, 16);
-
--- 8) Can you stay friends with an ex?
-INSERT INTO polls (id, created_by, category_id, readable_id, question, ends_in, is_deleted, created_at, votes_count, likes_per_vote) VALUES
-    ('1b2c3d4e-5f60-7182-93ab-cd0e1f2a3b08', c5eb8024-b7dd-4b25-a420-bf86a71cc1aa, 1, 'poll208', 'Can you stay friends with an ex?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '22140 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '9 days' - INTERVAL '14 hours' - INTERVAL '28 minutes'), 136, 0.701);
+    ('1b2c3d4e-5f60-7182-93ab-cd0e1f2a3b08', 'c5eb8024-b7dd-4b25-a420-bf86a71cc1aa', 1, 'poll208', 'Can you stay friends with an ex?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '22140 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '9 days' - INTERVAL '14 hours' - INTERVAL '28 minutes'), 136, 0.701);
 INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
     ('4d5e6f70-8192-0a3b-bcde-f1a2b3c4d522', '1b2c3d4e-5f60-7182-93ab-cd0e1f2a3b08', 'Yes', 0, 39);
 INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
@@ -557,7 +607,7 @@ INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) V
 
 -- 9) Flirting while in a relationship?
 INSERT INTO polls (id, created_by, category_id, readable_id, question, ends_in, is_deleted, created_at, votes_count, likes_per_vote) VALUES
-    ('2c3d4e5f-6071-8293-a4bd-ce0f1a2b3c09', fe409ec0-38fd-46cb-98b1-c9cfc0f06299, 1, 'poll209', 'Flirting while in a relationship?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '14700 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '4 days' - INTERVAL '9 hours' - INTERVAL '51 minutes'), 143, 0.769);
+    ('2c3d4e5f-6071-8293-a4bd-ce0f1a2b3c09', 'fe409ec0-38fd-46cb-98b1-c9cfc0f06299', 1, 'poll209', 'Flirting while in a relationship?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '14700 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '4 days' - INTERVAL '9 hours' - INTERVAL '51 minutes'), 143, 0.769);
 INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
     ('7081920a-3b4c-5d6e-ef1a-2b3c4d5e7f25', '2c3d4e5f-6071-8293-a4bd-ce0f1a2b3c09', 'Harmless', 0, 41);
 INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
@@ -565,17 +615,7 @@ INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) V
 INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
     ('920a3b4c-5d6e-7f80-1a2b-3c4d5e6f87327', '2c3d4e5f-6071-8293-a4bd-ce0f1a2b3c09', 'Betrayal', 2, 92);
 
--- 1. Should couples share phone passwords?
-INSERT INTO polls (id, created_by, category_id, readable_id, question, ends_in, is_deleted, created_at, votes_count, likes_per_vote) VALUES
-    ('0f9a4e3b-5a13-4c9b-9f2e-0d2e5a7e9a01', '8a3ddccb-be98-4998-a541-54a475148b91', 1, 'poll301', 'Should couples share phone passwords?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '14700 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '3 days' - INTERVAL '5 hours'), 149, 0.81);
-INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
-    ('11111111-1111-4111-8111-111111111101', '0f9a4e3b-5a13-4c9b-9f2e-0d2e5a7e9a01', 'Yes', 0, 26);
-INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
-    ('11111111-1111-4111-8111-111111111102', '0f9a4e3b-5a13-4c9b-9f2e-0d2e5a7e9a01', 'Only if asked', 1, 81);
-INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
-    ('11111111-1111-4111-8111-111111111103', '0f9a4e3b-5a13-4c9b-9f2e-0d2e5a7e9a01', 'No', 2, 42);
-
--- 2. How often do you think about getting old?
+  -- 2. How often do you think about getting old?
 INSERT INTO polls (id, created_by, category_id, readable_id, question, ends_in, is_deleted, created_at, votes_count, likes_per_vote) VALUES
     ('6a3b2c1d-8e4f-4c5a-b2a9-1f0e2d3c4b02', '99d5cbae-6473-41ec-a9ca-2852b246029d', 5, 'poll302', 'How often do you think about getting old?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '14700 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '4 days' - INTERVAL '7 hours'), 131, 0.77);
 INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
@@ -611,25 +651,7 @@ INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) V
 INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
     ('55555555-5555-4555-8555-555555555502', 'd8e2b3c4-5f61-4a8d-b9a3-2c4d7e8f9a05', 'Yes', 1, 49);
 
--- 6. Should billionaires exist?
-INSERT INTO polls (id, created_by, category_id, readable_id, question, ends_in, is_deleted, created_at, votes_count, likes_per_vote) VALUES
-    ('e1a9c5d7-2b4e-47a0-8f2c-7d6a1c3e4b06', 'fe3af10d-53cd-4d78-9b2f-870a79d02e28', 8, 'poll306', 'Should billionaires exist?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '14700 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '5 days' - INTERVAL '2 hours'), 111, 0.65);
-INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
-    ('66666666-6666-4666-8666-666666666601', 'e1a9c5d7-2b4e-47a0-8f2c-7d6a1c3e4b06', 'No', 0, 32);
-INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
-    ('66666666-6666-4666-8666-666666666602', 'e1a9c5d7-2b4e-47a0-8f2c-7d6a1c3e4b06', 'Yes', 1, 79);
-
--- 7. Is cancel culture a good thing?
-INSERT INTO polls (id, created_by, category_id, readable_id, question, ends_in, is_deleted, created_at, votes_count, likes_per_vote) VALUES
-    ('f2b7d9e1-3c5a-4f2e-9a8b-1d7c3e5f6a07', 'ec91a4ff-dfa9-4e5b-8b7c-45753c267995', 8, 'poll307', 'Is cancel culture a good thing?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '14700 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '6 days' - INTERVAL '9 hours'), 134, 0.81);
-INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
-    ('77777777-7777-4777-8777-777777777701', 'f2b7d9e1-3c5a-4f2e-9a8b-1d7c3e5f6a07', 'Yes', 0, 29);
-INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
-    ('77777777-7777-4777-8777-777777777702', 'f2b7d9e1-3c5a-4f2e-9a8b-1d7c3e5f6a07', 'Sometimes', 1, 38);
-INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
-    ('77777777-7777-4777-8777-777777777703', 'f2b7d9e1-3c5a-4f2e-9a8b-1d7c3e5f6a07', 'No', 2, 67);
-
--- 8. Is it okay to recline your airplane seat?
+  -- 8. Is it okay to recline your airplane seat?
 INSERT INTO polls (id, created_by, category_id, readable_id, question, ends_in, is_deleted, created_at, votes_count, likes_per_vote) VALUES
     ('a4c6e8f0-1d2b-4a3c-95af-2b7c9d1e3f08', 'a2c403db-e2da-49ee-8578-f6318a5ffb47', 5, 'poll308', 'Is it okay to recline your airplane seat?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '14700 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '1 days' - INTERVAL '3 hours'), 136, 0.84);
 INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
@@ -637,23 +659,7 @@ INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) V
 INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
     ('88888888-8888-4888-8888-888888888802', 'a4c6e8f0-1d2b-4a3c-95af-2b7c9d1e3f08', 'No', 1, 91);
 
--- 9. Should you tip at restaurants?
-INSERT INTO polls (id, created_by, category_id, readable_id, question, ends_in, is_deleted, created_at, votes_count, likes_per_vote) VALUES
-    ('b5d7e9f1-2e3c-4b5a-86c1-3d8e0f2a4c09', 'afcb53da-f8ae-4f74-bc33-f627de6d9675', 5, 'poll309', 'Should you tip at restaurants?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '14700 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '4 days' - INTERVAL '1 hours'), 117, 0.69);
-INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
-    ('99999999-9999-4999-8999-999999999901', 'b5d7e9f1-2e3c-4b5a-86c1-3d8e0f2a4c09', 'No', 0, 84);
-INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
-    ('99999999-9999-4999-8999-999999999902', 'b5d7e9f1-2e3c-4b5a-86c1-3d8e0f2a4c09', 'Yes', 1, 33);
-
--- 1. Is astrology real or nonsense?
-INSERT INTO polls (id, created_by, category_id, readable_id, question, ends_in, is_deleted, created_at, votes_count, likes_per_vote) VALUES
-    ('c101a1b2-1c2d-4e3f-a456-1b2c3d4e5f10', 'c5eb8024-b7dd-4b25-a420-bf86a71cc1aa', 8, 'poll310', 'Is astrology real or nonsense?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '14700 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '3 days' - INTERVAL '4 hours'), 99, 0.77);
-INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
-    ('aaa11111-1111-4111-8111-aaaaaaaaaaa1', 'c101a1b2-1c2d-4e3f-a456-1b2c3d4e5f10', 'Real', 0, 41);
-INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
-    ('aaa11111-1111-4111-8111-aaaaaaaaaaa2', 'c101a1b2-1c2d-4e3f-a456-1b2c3d4e5f10', 'Nonsense', 1, 58);
-
--- 2. Who’s the best superhero?
+  -- 2. Who’s the best superhero?
 INSERT INTO polls (id, created_by, category_id, readable_id, question, ends_in, is_deleted, created_at, votes_count, likes_per_vote) VALUES
     ('d202b2c3-2d3e-4f5a-b567-2c3d4e5f6a11', '76d78b76-78f1-420a-8b02-9d2d7791b8cd', 3, 'poll311', 'Who’s the best superhero?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '14700 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '5 days' - INTERVAL '2 hours'), 146, 0.82);
 INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
@@ -691,17 +697,7 @@ INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) V
 INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
     ('eee55555-5555-4555-8555-eeeeeeeeeee2', 'a505e5f6-5061-728d-e89a-5f6a7b8c9d14', 'Rich', 1, 92);
 
--- 6. What’s the best way to eat a pizza?
-INSERT INTO polls (id, created_by, category_id, readable_id, question, ends_in, is_deleted, created_at, votes_count, likes_per_vote) VALUES
-    ('b606f607-6172-839e-f90b-6a7b8c9d0e15', 'aa36b066-c33d-4f4b-bb49-67db93a9188a', 4, 'poll315', 'What’s the best way to eat a pizza?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '14700 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '5 days' - INTERVAL '5 hours'), 123, 0.81);
-INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
-    ('fff66666-6666-4666-8666-fffffffffff1', 'b606f607-6172-839e-f90b-6a7b8c9d0e15', 'Rolled', 0, 38);
-INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
-    ('fff66666-6666-4666-8666-fffffffffff2', 'b606f607-6172-839e-f90b-6a7b8c9d0e15', 'Fork & knife', 1, 66);
-INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
-    ('fff66666-6666-4666-8666-fffffffffff3', 'b606f607-6172-839e-f90b-6a7b8c9d0e15', 'Hands', 2, 19);
-
--- 7. Which came first?
+  -- 7. Which came first?
 INSERT INTO polls (id, created_by, category_id, readable_id, question, ends_in, is_deleted, created_at, votes_count, likes_per_vote) VALUES
     ('c707g718-7283-94af-0a1b-7b8c9d0e1f16', 'c7b3d445-15b4-471f-8c37-62c9d4cf53e6', 8, 'poll316', 'Which came first?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '14700 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '1 days' - INTERVAL '8 hours'), 92, 0.69);
 INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
@@ -709,17 +705,16 @@ INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) V
 INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
     ('11177777-7777-4777-8777-111111111172', 'c707g718-7283-94af-0a1b-7b8c9d0e1f16', 'Chicken', 1, 39);
 
--- 8. Should couples share phone passwords? (2nd instance)
+-- 6) Should parents track their kids’ phones?
 INSERT INTO polls (id, created_by, category_id, readable_id, question, ends_in, is_deleted, created_at, votes_count, likes_per_vote) VALUES
-    ('d808h829-8394-a5bf-1b2c-8c9d0e1f2g17', '5d86e160-3f41-4a67-913b-f08c3d513b92', 1, 'poll317', 'Should couples share phone passwords?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '14700 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '4 days' - INTERVAL '7 hours'), 160, 0.83);
+    ('f6a7b8c9-0123-43d5-a6e7-b8c90123d606', 'f9f43547-e2dc-4c41-9509-fcc5a0b91968', 5, 'poll206', 'Should parents track their kids’ phones?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '25800 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '14 days' - INTERVAL '1 hours' - INTERVAL '52 minutes'), 137, 0.776);
 INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
-    ('22288888-8888-4888-8888-222222222281', 'd808h829-8394-a5bf-1b2c-8c9d0e1f2g17', 'Yes', 0, 21);
+    ('9e0f1234-5678-46e7-f8a9-0b1c2d3e4717', 'f6a7b8c9-0123-43d5-a6e7-b8c90123d606', 'Yes', 0, 93);
 INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
-    ('22288888-8888-4888-8888-222222222282', 'd808h829-8394-a5bf-1b2c-8c9d0e1f2g17', 'Only if asked', 1, 92);
-INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
-    ('22288888-8888-4888-8888-222222222283', 'd808h829-8394-a5bf-1b2c-8c9d0e1f2g17', 'No', 2, 47);
+    ('0f123456-789a-47f8-a90b-1c2d3e4f5818', 'f6a7b8c9-0123-43d5-a6e7-b8c90123d606', 'No', 1, 44);
 
--- 9. How often do you think about getting old? (2nd instance)
+
+  -- 9. How often do you think about getting old? (2nd instance)
 INSERT INTO polls (id, created_by, category_id, readable_id, question, ends_in, is_deleted, created_at, votes_count, likes_per_vote) VALUES
     ('e909i930-9405-b6cg-2c3d-9d0e1f2g3h18', 'c9244f94-35a8-4a4a-96fd-50c5ccf86f10', 5, 'poll318', 'How often do you think about getting old?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '14700 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '2 days' - INTERVAL '3 hours'), 136, 0.78);
 INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
@@ -731,52 +726,48 @@ INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) V
 INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
     ('33399999-9999-4999-8999-333333333394', 'e909i930-9405-b6cg-2c3d-9d0e1f2g3h18', 'Daily', 3, 11);
 
--- 1. Are influencers real celebrities?
+-- 4) Should rich people pay more taxes?
 INSERT INTO polls (id, created_by, category_id, readable_id, question, ends_in, is_deleted, created_at, votes_count, likes_per_vote) VALUES
-    ('f111a222-b333-4c44-d555-e666f777a319', 'a931f699-fb8f-4a4e-92cb-6b9cf65e6df7', 9, 'poll319', 'Are influencers real celebrities?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '14700 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '4 days' - INTERVAL '6 hours'), 143, 0.81);
+    ('c4d5e6f7-0819-4a2b-b3c4-d5e6f7081904', '0c07c842-510a-42c3-bb7d-71f1c35c0c2c', 8, 'poll204', 'Should rich people pay more taxes?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '20580 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '9 days' - INTERVAL '9 hours' - INTERVAL '48 minutes'), 113, 0.803);
 INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
-    ('aaa31901-aaaa-4111-8111-aaaaaaaaaaa1', 'f111a222-b333-4c44-d555-e666f777a319', 'No', 0, 55);
+    ('4e5f6a7b-8c90-41d2-a3b4-c5d6e7f8a312', 'c4d5e6f7-0819-4a2b-b3c4-d5e6f7081904', 'Yes', 0, 127);
 INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
-    ('aaa31902-aaaa-4111-8111-aaaaaaaaaaa2', 'f111a222-b333-4c44-d555-e666f777a319', 'Yes', 1, 88);
+    ('5a6b7c8d-9e01-42f3-a4b5-c6d7e8f9b413', 'c4d5e6f7-0819-4a2b-b3c4-d5e6f7081904', 'No', 1, 49);
 
--- 2. Does social media make people dumber?
-INSERT INTO polls (id, created_by, category_id, readable_id, question, ends_in, is_deleted, created_at, votes_count, likes_per_vote) VALUES
-    ('f222b333-c444-5d55-e666-f777a888b320', '41877a68-3c11-40f3-8ec4-10d1e8da57c0', 9, 'poll320', 'Does social media make people dumber?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '14700 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '3 days' - INTERVAL '9 hours'), 117, 0.78);
-INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
-    ('bbb32001-bbbb-4222-8222-bbbbbbbbbbb1', 'f222b333-c444-5d55-e666-f777a888b320', 'Yes', 0, 77);
-INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
-    ('bbb32002-bbbb-4222-8222-bbbbbbbbbbb2', 'f222b333-c444-5d55-e666-f777a888b320', 'No', 1, 40);
+*/
 
--- 3. Should voting be mandatory?
-INSERT INTO polls (id, created_by, category_id, readable_id, question, ends_in, is_deleted, created_at, votes_count, likes_per_vote) VALUES
-    ('f333c444-d555-6e66-f777-a888b999c321', 'd5a3e616-9ae0-4ff5-9c9f-f46962684f07', 8, 'poll321', 'Should voting be mandatory?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '14700 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '5 days' - INTERVAL '2 hours'), 95, 0.72);
-INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
-    ('ccc32101-cccc-4333-8333-ccccccccccc1', 'f333c444-d555-6e66-f777-a888b999c321', 'No', 0, 31);
-INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
-    ('ccc32102-cccc-4333-8333-ccccccccccc2', 'f333c444-d555-6e66-f777-a888b999c321', 'Yes', 1, 64);
 
--- 4. Should billionaires exist?
-INSERT INTO polls (id, created_by, category_id, readable_id, question, ends_in, is_deleted, created_at, votes_count, likes_per_vote) VALUES
-    ('f444d555-e666-7f77-a888-b999c000d322', '27cd07c5-bf53-499a-b60d-48edc6c8c351', 8, 'poll322', 'Should billionaires exist?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '14700 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '6 days' - INTERVAL '1 hours'), 99, 0.75);
-INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
-    ('ddd32201-dddd-4444-8444-ddddddddddd1', 'f444d555-e666-7f77-a888-b999c000d322', 'No', 0, 26);
-INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
-    ('ddd32202-dddd-4444-8444-ddddddddddd2', 'f444d555-e666-7f77-a888-b999c000d322', 'Yes', 1, 73);
+/*
+ simulate poll activity demo
 
--- 5. Is cancel culture a good thing?
-INSERT INTO polls (id, created_by, category_id, readable_id, question, ends_in, is_deleted, created_at, votes_count, likes_per_vote) VALUES
-    ('f555e666-f777-8088-b999-c000d111e323', 'ca615f35-07b8-4aa7-a8f2-c4b1b0a3d4d2', 8, 'poll323', 'Is cancel culture a good thing?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '14700 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '2 days' - INTERVAL '5 hours'), 158, 0.83);
-INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
-    ('eee32301-eeee-4555-8555-eeeeeeeeeee1', 'f555e666-f777-8088-b999-c000d111e323', 'Yes', 0, 29);
-INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
-    ('eee32302-eeee-4555-8555-eeeeeeeeeee2', 'f555e666-f777-8088-b999-c000d111e323', 'Sometimes', 1, 48);
-INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
-    ('eee32303-eeee-4555-8555-eeeeeeeeeee3', 'f555e666-f777-8088-b999-c000d111e323', 'No', 2, 81);
 
--- 6. Is it okay to recline your airplane seat?
-INSERT INTO polls (id, created_by, category_id, readable_id, question, ends_in, is_deleted, created_at, votes_count, likes_per_vote) VALUES
-    ('f666f777-a888-9199-c000-d111e222f324', '13b291f2-72ae-4c8e-9a6d-09c4f4e78f78', 5, 'poll324', 'Is it okay to recline your airplane seat?', (NOW() AT TIME ZONE 'UTC' + INTERVAL '14700 minutes'), FALSE, (NOW() AT TIME ZONE 'UTC' - INTERVAL '1 days' - INTERVAL '7 hours'), 119, 0.79);
-INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
-    ('fff32401-ffff-4666-8666-fffffffffff1', 'f666f777-a888-9199-c000-d111e222f324', 'Yes', 0, 53);
-INSERT INTO poll_answer_options (id, poll_id, text, option_order, votes_count) VALUES
-    ('fff32402-ffff-4666-8666-fffffffffff2', 'f666f777-a888-9199-c000-d111e222f324', 'No', 1, 66);
+ update poll_answer_options
+    set votes_count = votes_count + 1
+where
+    id in (
+        select id from poll_answer_options
+        where poll_id = 'b7b121a4-d3ab-45bd-a551-6a088b5b935e'
+        order by random()
+        limit 1
+        );
+
+update polls
+set votes_count = (
+    select sum(votes_count) from poll_answer_options
+    where poll_id = 'b7b121a4-d3ab-45bd-a551-6a088b5b935e')
+where id = 'b7b121a4-d3ab-45bd-a551-6a088b5b935e';
+
+
+
+update polls
+set votes_count = 0
+where id = 'b7b121a4-d3ab-45bd-a551-6a088b5b935e';
+
+update poll_answer_options
+set votes_count = 0
+where poll_id = 'b7b121a4-d3ab-45bd-a551-6a088b5b935e';
+
+
+
+
+ */
