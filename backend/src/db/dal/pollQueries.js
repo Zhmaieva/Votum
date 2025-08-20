@@ -173,6 +173,7 @@ async function fetchPolls(userId, featuredId) {
                               LEFT JOIN poll_likes pl ON pl.poll_id = p.id AND pl.user_id = $1
                               LEFT JOIN user_follows uf ON uf.user_follower_id = $1 AND uf.user_follow_id = u.id
                      WHERE p.is_deleted = false
+                       AND p.status = 0
                        AND p.ends_in > (NOW() AT TIME ZONE 'UTC')
                        AND p.created_by <> $1
                        AND NOT EXISTS (
@@ -223,6 +224,7 @@ async function fetchPolls(userId, featuredId) {
               JOIN user_follows uf ON uf.user_follower_id = $1 AND uf.user_follow_id = u.id
               LEFT JOIN poll_likes pl ON pl.poll_id = p.id AND pl.user_id = $1
               WHERE p.is_deleted = false
+                AND p.status = 0
                 AND p.ends_in > (NOW() AT TIME ZONE 'UTC')
                 AND p.created_by <> $1
                 AND NOT EXISTS (
@@ -254,6 +256,7 @@ async function fetchPolls(userId, featuredId) {
               SELECT p.*
               FROM polls p
               WHERE p.is_deleted = false
+                AND p.status = 0
                 AND p.created_by <> $1
                 AND p.ends_in > (NOW() AT TIME ZONE 'UTC')
                 AND (
@@ -353,6 +356,7 @@ async function fetchPolls(userId, featuredId) {
                               LEFT JOIN poll_likes pl ON pl.poll_id = p.id AND pl.user_id = $1
                               LEFT JOIN user_follows uf ON uf.user_follower_id = $1 AND uf.user_follow_id = u.id
                      WHERE p.is_deleted = false
+                       AND p.status = 0
                        AND p.ends_in > (NOW() AT TIME ZONE 'UTC')
                        AND p.created_by <> $1
                        AND NOT EXISTS (
@@ -403,6 +407,7 @@ async function fetchPolls(userId, featuredId) {
               JOIN user_follows uf ON uf.user_follower_id = $1 AND uf.user_follow_id = u.id
               LEFT JOIN poll_likes pl ON pl.poll_id = p.id AND pl.user_id = $1
               WHERE p.is_deleted = false
+                AND p.status = 0
                 AND p.ends_in > (NOW() AT TIME ZONE 'UTC')
                 AND p.created_by <> $1
                 AND NOT EXISTS (
@@ -465,6 +470,7 @@ async function fetchPolls(userId, featuredId) {
                               LEFT JOIN poll_likes pl ON pl.poll_id = p.id AND pl.user_id = $1
                               LEFT JOIN user_follows uf ON uf.user_follower_id = $1 AND uf.user_follow_id = u.id
                      WHERE p.is_deleted = false
+                       AND p.status = 0
                        AND p.ends_in > (NOW() AT TIME ZONE 'UTC')
                        AND p.created_by <> $1
                        AND NOT EXISTS (
@@ -527,6 +533,7 @@ async function fetchPolls(userId, featuredId) {
                               LEFT JOIN poll_likes pl ON pl.poll_id = p.id AND pl.user_id = $1
                               LEFT JOIN user_follows uf ON uf.user_follower_id = $1 AND uf.user_follow_id = u.id
                      WHERE p.is_deleted = false
+                       AND p.status = 0
                        AND p.ends_in > (NOW() AT TIME ZONE 'UTC')
                        AND p.created_by <> $1
                        AND NOT EXISTS (

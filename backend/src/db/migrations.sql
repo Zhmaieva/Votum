@@ -928,3 +928,21 @@ BEGIN
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
+
+-- Web Aug 20 1:16 PM
+INSERT INTO Categories (Name) VALUES
+    ('Other');
+
+INSERT INTO user_categories (user_id, category_id)
+SELECT u.id, c.id
+FROM users u
+    CROSS JOIN Categories c
+ON CONFLICT DO NOTHING;
+
+/**
+STATUS:
+0 - ready for feed
+1 - category processing
+*/
+ALTER TABLE polls
+    ADD COLUMN status INTEGER DEFAULT 1;
