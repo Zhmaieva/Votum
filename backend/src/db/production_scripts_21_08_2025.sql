@@ -1,4 +1,10 @@
-/*TRUNCATE TABLE users cascade;*/
+/*TRUNCATE TABLE users cascade;
+
+  TRUNCATE TABLE polls CASCADE;
+
+  DELETE FROM users CASCADE
+  WHERE email LIKE '%@votum.com';
+  */
 
 INSERT INTO users (id, username, email, password_hash) VALUES
        ('ec91a4ff-dfa9-4e5b-8b7c-45753c267995', 'psychology.inna', 'psychology.inna@votum.com', 'Qwerty123'),
