@@ -9,6 +9,7 @@
     "start-indexer-job": "node src/jobs/indexerJob.js",
     "start-notification-job": "node src/jobs/notificationJob.js",
     "start-categorization-job": "node src/jobs/categorizationJob.js"
+    "start-bot-job": "node src/jobs/botJob.js"
   },
   "keywords": [],
   "author": "",

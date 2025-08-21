@@ -946,3 +946,62 @@ STATUS:
 */
 ALTER TABLE polls
     ADD COLUMN status INTEGER DEFAULT 1;
+
+
+-- Thu Aug 21 11:15 AM
+CREATE OR REPLACE FUNCTION increment_poll_votes_count()
+    RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE polls
+    SET votes_count = (
+        SELECT COUNT(*) FROM poll_votes
+        WHERE poll_id = NEW.poll_id
+    ) WHERE id = NEW.poll_id;
+
+    -- 2. Insert event into events_queue
+    INSERT INTO events_queue (entity_id, event_name, event_date)
+    SELECT NEW.poll_id, 'poll_index_update', NOW() AT TIME ZONE 'UTC'
+    WHERE NOT EXISTS (
+        SELECT 1 FROM events_queue
+        WHERE entity_id = NEW.poll_id AND event_name = 'poll_index_update'
+    );
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION increment_likes_count()
+    RETURNS TRIGGER AS $$
+BEGIN
+    INSERT INTO events_queue (entity_id, event_name, event_date)
+    SELECT NEW.poll_id, 'poll_index_update', NOW() AT TIME ZONE 'UTC'
+    WHERE NOT EXISTS (
+        SELECT 1 FROM events_queue
+        WHERE entity_id = NEW.poll_id AND event_name = 'poll_index_update'
+    );
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION decrement_likes_count()
+    RETURNS TRIGGER AS $$
+BEGIN
+    INSERT INTO events_queue (entity_id, event_name, event_date)
+    SELECT OLD.poll_id, 'poll_index_update', NOW() AT TIME ZONE 'UTC'
+    WHERE NOT EXISTS (
+        SELECT 1 FROM events_queue
+        WHERE entity_id = OLD.poll_id AND event_name = 'poll_index_update'
+    );
+
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_increment_likes_count
+    AFTER INSERT ON poll_likes
+    FOR EACH ROW EXECUTE FUNCTION increment_likes_count();
+
+CREATE TRIGGER trigger_decrement_likes_count
+    AFTER DELETE ON poll_likes
+    FOR EACH ROW EXECUTE FUNCTION decrement_likes_count();

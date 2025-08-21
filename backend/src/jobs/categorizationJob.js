@@ -7,7 +7,7 @@ const run_interval = 1000;
 let is_processing = false;
 
 /**
- * The job updates index based on sweeping events_queue table
+ * The job categorizes polls
  * @returns {Promise<void>}
  */
 const job = async function() {

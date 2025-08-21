@@ -163,6 +163,46 @@ async function getUser(userId, currentUserId, isOwnProfile) {
     }
 }
 
+async function getRandomUserId(emailPart) {
+    try {
+        const query = `
+            SELECT id FROM users 
+            WHERE email LIKE ($1)
+            ORDER BY RANDOM()
+            LIMIT 1;
+        `;
+
+        const queryResult = await pool.query(query, [`%${emailPart}%`]);
+        if (queryResult?.rows.length === 0) {
+            console.log('No users found.');
+            return;
+        }
+
+        return queryResult?.rows[0].id;
+    } catch (e) {
+        console.log(e);
+        return null;
+    }
+}
+
+async function getAnotherUserId(userIdToExclude) {
+    try {
+        const query = `
+            SELECT id FROM users 
+            WHERE id <> $1::uuid
+            ORDER BY RANDOM()
+            LIMIT 1;
+        `;
+
+        const result = (await pool.query(query, [userIdToExclude]))?.rows[0].id;
+
+        return result;
+    } catch (e) {
+        console.log(e);
+        return null;
+    }
+}
+
 /**
  * Get or update activation code for a given email.
  * @param {string} emailHash - The email address.
@@ -806,6 +846,8 @@ module.exports = {
     changeEmail,
     changePassword,
     changePasswordById,
+    getRandomUserId,
+    getAnotherUserId,
     deleteUser,
     followUser,
     getActivationCode,
