@@ -59,9 +59,9 @@ const generateActivity = async () => {
             return;
 
         case ACTIONS.FOLLOW:
-            const anotherUserId = await getAnotherUserId(userId);
-            await followUser(userId, anotherUserId);
-            console.log(`${userId} followed user ${anotherUserId}`);
+            // const anotherUserId = await getAnotherUserId(userId);
+            // await followUser(userId, anotherUserId);
+            // console.log(`${userId} followed user ${anotherUserId}`);
 
             return;
     }

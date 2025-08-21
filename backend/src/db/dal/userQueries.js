@@ -186,22 +186,21 @@ async function getRandomUserId(emailPart) {
 }
 
 async function getAnotherUserId(userIdToExclude) {
-    return;
-    // try {
-    //     const query = `
-    //         SELECT id FROM users
-    //         WHERE id <> $1::uuid
-    //         ORDER BY RANDOM()
-    //         LIMIT 1;
-    //     `;
-    //
-    //     const result = (await pool.query(query, [userIdToExclude]))?.rows[0].id;
-    //
-    //     return result;
-    // } catch (e) {
-    //     console.log(e);
-    //     return null;
-    // }
+    try {
+        const query = `
+            SELECT id FROM users 
+            WHERE id <> $1::uuid
+            ORDER BY RANDOM()
+            LIMIT 1;
+        `;
+
+        const result = (await pool.query(query, [userIdToExclude]))?.rows[0].id;
+
+        return result;
+    } catch (e) {
+        console.log(e);
+        return null;
+    }
 }
 
 /**

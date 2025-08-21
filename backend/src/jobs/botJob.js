@@ -2,7 +2,7 @@ require('dotenv').config();
 
 const {generateActivity} = require("../services/botService");
 
-const run_interval = 1000;
+const run_interval = 30000;
 
 let is_processing = false;
 
