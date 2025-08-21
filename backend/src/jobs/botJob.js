@@ -1,5 +1,6 @@
-const {generateActivity} = require("../services/botService");
 require('dotenv').config();
+
+const {generateActivity} = require("../services/botService");
 
 const run_interval = 1000;
 
