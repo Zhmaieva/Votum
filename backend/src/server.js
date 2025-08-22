@@ -25,6 +25,7 @@ const {getUserNotifications, deleteAllUserNotifications, markNotificationsAsRead
 const sendCodeEmail = require("./mail/mailing");
 const {join} = require("node:path");
 const {writeDebugLog, writeActivityReport} = require("./db/dal/activityQueries");
+const {getComments, addComment} = require("./db/dal/commentQueries");
 
 const app = express();
 // Manual CORS header
@@ -868,31 +869,6 @@ app.get('/polls/share/:id', async (req, res, next) => {
     }
 });
 
-// app.get('/polls/share/:id', async (req, res) => {
-//     try {
-//         const pollId = req.params.id;
-//         const poll = await getPollById(pollId, true);
-//
-//         if (!poll) return res.status(404).send('Poll not found');
-//
-//         const html = `
-//           <html>
-//             <head>
-//               <meta property="og:title" content="${poll.question}" />
-//               <meta property="og:description" content="${poll.options.map(o => o.text).join(' | ')}" />
-//               <meta property="og:image" content="${poll.user.image}" />
-//               <meta http-equiv="refresh" content="1; url=voteapp://poll/${poll.readableId}" />
-//             </head>
-//             <body>Welcome to Voteapp</body>
-//           </html>
-//         `;
-//         res.send(html);
-//     }
-//     catch (e) {
-//         next(e);
-//     }
-// });
-
 app.post('/polls/view', authMiddleware, async (req, res, next) => {
     try {
         const { pollId } = req.body;
@@ -962,6 +938,31 @@ app.delete('/users', authMiddleware, async (req, res, next) => {
         return res.json({ success: true });
     }
     catch (e) {
+        next(e);
+    }
+});
+
+app.post('/polls/:id?/comments', authMiddleware, async (req, res, next) => {
+    try {
+        const pollId = req.params.id;
+        const { comment } = req.body;
+
+        const result = await addComment({pollId, userId: req.user.id, comment});
+
+        return res.json(result);
+    } catch (e) {
+        next(e);
+    }
+});
+
+app.get('/polls/:id?/comments', authMiddleware, async (req, res, next) => {
+    try {
+        const pollId = req.params.id;
+
+        const result = await getComments({pollId});
+
+        return res.json(result);
+    } catch (e) {
         next(e);
     }
 });

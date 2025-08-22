@@ -1005,3 +1005,65 @@ CREATE TRIGGER trigger_increment_likes_count
 CREATE TRIGGER trigger_decrement_likes_count
     AFTER DELETE ON poll_likes
     FOR EACH ROW EXECUTE FUNCTION decrement_likes_count();
+
+
+-- Fri Aug 22 10:10 PM
+CREATE TABLE poll_comments (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    poll_id UUID NOT NULL,
+    user_id UUID NOT NULL,
+    text VARCHAR(100) NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
+
+    CONSTRAINT fk_poll FOREIGN KEY (poll_id) REFERENCES polls(id) ON DELETE CASCADE,
+    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_comments_poll_id ON poll_comments(poll_id);
+
+ALTER TABLE polls
+ADD COLUMN comments_count INTEGER DEFAULT 0 NOT NULL;
+
+CREATE OR REPLACE FUNCTION increment_comments_count()
+    RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE polls
+        SET comments_count = comments_count + 1
+    WHERE id = NEW.poll_id;
+
+    INSERT INTO events_queue (entity_id, event_name, event_date)
+    SELECT NEW.poll_id, 'poll_index_update', NOW() AT TIME ZONE 'UTC'
+    WHERE NOT EXISTS (
+        SELECT 1 FROM events_queue
+        WHERE entity_id = NEW.poll_id AND event_name = 'poll_index_update'
+    );
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION decrement_comments_count()
+    RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE polls
+        SET comments_count = comments_count - 1
+    WHERE id = NEW.poll_id;
+
+    INSERT INTO events_queue (entity_id, event_name, event_date)
+    SELECT OLD.poll_id, 'poll_index_update', NOW() AT TIME ZONE 'UTC'
+    WHERE NOT EXISTS (
+        SELECT 1 FROM events_queue
+        WHERE entity_id = OLD.poll_id AND event_name = 'poll_index_update'
+    );
+
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_increment_comments_count
+    AFTER INSERT ON poll_comments
+    FOR EACH ROW EXECUTE FUNCTION increment_comments_count();
+
+CREATE TRIGGER trigger_decrement_comments_count
+    AFTER DELETE ON poll_comments
+    FOR EACH ROW EXECUTE FUNCTION decrement_comments_count();
