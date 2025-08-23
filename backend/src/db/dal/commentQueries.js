@@ -7,6 +7,8 @@ async function addComment({pollId, userId, comment}) {
     `;
 
     await pool.query(query, [pollId, userId, comment]);
+
+    return {}
 }
 
 async function getComments({pollId}) {
@@ -14,7 +16,7 @@ async function getComments({pollId}) {
         SELECT
             c.id,
             c.text,
-            u.id,
+            u.id as userId,
             u.username,
             up.image,
             c.created_at
@@ -22,7 +24,7 @@ async function getComments({pollId}) {
         JOIN users u ON u.id = c.user_id
         JOIN user_profiles up on up.user_id = c.user_id
         WHERE c.poll_id = $1
-        ORDER BY c.created_at
+        ORDER BY c.created_at DESC
         LIMIT 100;
     `;
 

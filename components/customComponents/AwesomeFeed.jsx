@@ -332,6 +332,7 @@ const AwesomeFeed = forwardRef(({
                               ...user,
                               totalVotesNumber: pollOptions.votesCount
                             },
+                            commentsCount: pollOptions.commentsCount,
                             options: pollOptions.options,
                         };
                         return updatedData;

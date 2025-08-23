@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { Colors, Fonts } from '../../utils/colorUtils';
 import ReportPoll from "./AwesomeReportPoll";
+import Comments from "./AwesomeComment";
 import {globalEventEmitter, Logger, onShare} from "../../shared/common";
 import AwesomeLikeButton from "./AwesomeLikeButton";
 import { AwesomeModal } from './AwesomeModal'
@@ -59,7 +60,9 @@ const AwesomeVote = ({
                          createdByUser = false,
                          onDeletePoll,
                          createdBy,
+                         commentsNumber,
                      }) => {
+    const [commentsCount, setCommentsCount] = useState(commentsNumber ?? 0);
     const [optionsData, setOptionsData] = useState(options);
     const [selected, setSelected] = useState(options?.filter(x => x.voted)[0]?.id ?? null);
     const [voteCardId] = useState(generateRandomId());
@@ -76,6 +79,10 @@ const AwesomeVote = ({
         if (percent >= 26) return '#b5c478';
         return '#dfe5bd';
     };
+
+    useEffect(() => {
+        setCommentsCount(commentsNumber);
+    }, [commentsNumber]);
 
     useEffect(() => {
         if (selected) {
@@ -175,9 +182,19 @@ const AwesomeVote = ({
         onVote({ pollId, options, optionId, cardId})
     }
 
+    const onCommentCameHandler = ({ pollId, updatedCount }) => {
+        if (id !== pollId)
+            return;
+        setCommentsCount(updatedCount);
+    }
+
     useEffect(() => {
         globalEventEmitter.on('vote', onVoteEventHandler);
-        return () => globalEventEmitter.off('vote', onVoteEventHandler); // cleanup!
+        globalEventEmitter.on('comment', onCommentCameHandler);
+        return () => {
+            globalEventEmitter.off('vote', onVoteEventHandler);
+            globalEventEmitter.off('comment', onCommentCameHandler);
+        }
     }, []);
 
     useEffect(() => {
@@ -325,7 +342,14 @@ const AwesomeVote = ({
                 )}
                 <View style={[styles.countStyle, styles.row]}>
                     <Text style={[styles.greyTextStyle, styles.fontFamilyStyle]}>{pollExpired ? "Ended" : `Ends in ${formatTimeLeft(remainingTime)}`}</Text>
-                    <Text style={[styles.greyTextStyle, styles.fontFamilyStyle]}>{formatFollowers(optionsData?.reduce((sum, option) => sum + option.votesCount, 0))} voted</Text>
+                    <View style={[styles.countStyle, styles.row]}>
+                        <Text style={[styles.greyTextStyle, styles.fontFamilyStyle]}>{formatFollowers(optionsData?.reduce((sum, option) => sum + option.votesCount, 0))} voted</Text>
+                        <Text>    </Text>
+                        <Text style={[styles.greyTextStyle, styles.fontFamilyStyle]}>{commentsCount} {commentsCount === 1 ? 'comment' : 'comments'}</Text>
+                        <Pressable style={styles.iconContainer} onPress={()=>setModalVisible(true)}>
+                            <Comments pollId={id}/>
+                        </Pressable>
+                    </View>
                 </View>
             </View>
             <AwesomeModal

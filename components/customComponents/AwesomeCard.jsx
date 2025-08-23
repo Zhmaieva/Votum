@@ -52,6 +52,7 @@ const AwesomeCard = ({ item, handleVote, loggedInUserId, loading = false, hideHe
                     createdByUser={item.user?.userId === loggedInUserId}
                     onDeletePoll={() => handleDeletePoll(item?.id)}
                     createdBy={item?.user}
+                    commentsNumber={item?.commentsCount}
                 />
             )}
         </View>

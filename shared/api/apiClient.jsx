@@ -976,6 +976,40 @@ export const deleteUserProfile = async (password) => {
     }
 };
 
+export const addComment = async (pollId, text) => {
+    try {
+        Logger.log(`adding poll comment...`);
+        const response = await apiClient.post(`/polls/${pollId}/comments`, {
+            comment: text
+        }, {
+            headers: {
+                Authorization: `Bearer ${await getToken()}`,
+            },
+        });
+
+        return response?.data;
+    } catch (error) {
+        Logger.log(error);
+        return false;
+    }
+}
+
+export const getComments = async (pollId) => {
+    try {
+        Logger.log(`getting poll comments...`);
+        const response = await apiClient.get(`/polls/${pollId}/comments`, {
+            headers: {
+                Authorization: `Bearer ${await getToken()}`,
+            },
+        });
+
+        return response?.data ?? [];
+    } catch (error) {
+        Logger.log(error);
+        return [];
+    }
+}
+
 export const checkIfPollExists = async (pollId) => {
     try {
         const res = await apiClient.get(`/polls/${pollId}`); // or whatever your route is
