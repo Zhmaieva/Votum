@@ -14,8 +14,8 @@ import { useFocusEffect } from "@react-navigation/native";
 import { fetchMyProfile, getPollOptions, viewPoll } from "../../shared/api/apiClient";
 import AwesomeLoadingPoll from "./AwesomeLoadingPoll";
 
-const minimumOptionsUpdateInterval = 100; //1500;
-const maximumOptionsUpdateIntervalIncrease = 0//10000; //10000;
+const minimumOptionsUpdateInterval = 1500;
+const maximumOptionsUpdateIntervalIncrease = 10000;
 const AnimatedFlatList = Animated.createAnimatedComponent(Animated.FlatList);
 
 const AwesomeFeed = forwardRef(({
@@ -319,6 +319,12 @@ const AwesomeFeed = forwardRef(({
                     setPreloadedData(prevData => {
                         const updatedData = [...prevData];
                         const user = { ...updatedData[index]?.user };
+
+                        if (screenName === 'MY PROFILE')
+                            globalEventEmitter.emit('myProfileRefresh',{});
+
+                        if (screenName === 'SOMEBODY PROFILE')
+                            globalEventEmitter.emit('somebodyProfileRefresh',{});
 
                         updatedData[index] = {
                             ...updatedData[index],

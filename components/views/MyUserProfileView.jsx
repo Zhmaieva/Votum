@@ -43,18 +43,19 @@ const MyUserProfileView = () => {
                 })()
             ]).then(_ => {});
 
-            const interval = setInterval(async () => {
-                const userData = await fetchMyProfile();
-                getDataService().setUser(userData);
-                setUser(userData);
-            }, 100);
-
-            return () => clearInterval(interval); // Cleanup on unmount
+            return  () => {};
         }, [])
     );
 
+    const onMyProfileRefresh = async () => {
+        const userData = await fetchMyProfile();
+        getDataService().setUser(userData);
+        setUser(userData);
+    }
+
     useEffect(() => {
         globalEventEmitter.on('deletePoll', onDeletePollHandler);
+        globalEventEmitter.on('myProfileRefresh', onMyProfileRefresh);
 
         if (route.params?.scrollToTop) {
             feedRef.current?.scrollToTop?.();
@@ -65,6 +66,7 @@ const MyUserProfileView = () => {
 
         return () => {
             globalEventEmitter.off('deletePoll', onDeletePollHandler);
+            globalEventEmitter.off('myProfileRefresh', onMyProfileRefresh);
         }
     }, [route.params?.scrollToTop]);
 

@@ -57,19 +57,28 @@ const SomebodysProfileView = ({ route }) => {
             }
         };
         globalEventEmitter.on(followChangedEventName, handler);
+        globalEventEmitter.on('somebodyProfileRefresh', onSomebodyProfileRefresh);
 
-        const interval = setInterval(async () => {
-            fetchUserProfile(user?.userId).then(async res => {
-                setUser(res);
-                setIsFollowing(res.isFollowing);
-            });
-        }, 20000);
+        // const interval = setInterval(async () => {
+        //     fetchUserProfile(user?.userId).then(async res => {
+        //         setUser(res);
+        //         setIsFollowing(res.isFollowing);
+        //     });
+        // }, 20000);
 
         return () => {
             globalEventEmitter.off(followChangedEventName, handler);
-            clearInterval(interval);
+            globalEventEmitter.off('somebodyProfileRefresh', onSomebodyProfileRefresh);
+            // clearInterval(interval);
         }
     }, []);
+
+    const onSomebodyProfileRefresh = async () => {
+        fetchUserProfile(user?.userId).then(async res => {
+            setUser(res);
+            setIsFollowing(res.isFollowing);
+        });
+    }
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -92,6 +101,7 @@ const SomebodysProfileView = ({ route }) => {
                 </View>
                 {user && polls ? (
                     <AwesomeFeed
+                        screenName={'SOMEBODY PROFILE'}
                         data={polls}
                         onRefresh={onRefresh}
                         refreshing={refreshing}
