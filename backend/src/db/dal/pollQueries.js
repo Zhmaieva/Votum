@@ -23,6 +23,7 @@ async function attachOptionsToPolls(userId, polls) {
             options: [],
             endsIn: new Date(poll.ends_in.replace(' ', 'T') + 'Z').toISOString(),
             isLiked: poll.is_liked,
+            commentsCount: poll.comments_count,
             user: {
                 userId: poll.user_id,
                 username: poll.username,
@@ -82,7 +83,8 @@ const pollSelect = `
         up.followers_number,
         CASE WHEN pl.user_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_liked,
         CASE WHEN uf.user_follower_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_following,
-        CASE WHEN p.created_by = $1 THEN up.bio ELSE '' END AS user_bio
+        CASE WHEN p.created_by = $1 THEN up.bio ELSE '' END AS user_bio,
+        p.comments_count
         FROM polls p
         JOIN users u ON p.created_by = u.id
         JOIN user_profiles up ON u.id = up.user_id
@@ -120,7 +122,8 @@ async function fetchPolls(userId, featuredId) {
                   CASE WHEN uf.user_follower_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_following,
                   CASE WHEN p.created_by = $1 THEN up2.bio ELSE '' END AS user_bio,
                   p.category_id,
-                  p.duration_type
+                  p.duration_type,
+                  p.comments_count
                 FROM polls p
                 JOIN users u ON u.id = p.created_by
                 JOIN user_profiles up2 ON up2.user_id = u.id
@@ -165,7 +168,8 @@ async function fetchPolls(userId, featuredId) {
                          p.votes_count,
                          crw.weighted_score AS category_weight,
                          p.category_id,
-                         p.duration_type
+                         p.duration_type,
+                         p.comments_count
                      FROM polls p
                               JOIN category_random_weights crw ON crw.category_id = p.category_id
                               JOIN users u ON u.id = p.created_by
@@ -194,7 +198,8 @@ async function fetchPolls(userId, featuredId) {
                 is_following,
                 user_bio,
                 category_id,
-                duration_type
+                duration_type,
+                comments_count
             FROM polls_ranked_by_category
             ORDER BY category_weight DESC, votes_count DESC, ends_in ASC
             LIMIT 10;
@@ -217,7 +222,8 @@ async function fetchPolls(userId, featuredId) {
                 p.likes_per_vote AS effective_score,
                 p.created_at,
                 p.category_id,
-                p.duration_type
+                p.duration_type,
+                p.comments_count
               FROM polls p
               JOIN users u ON u.id = p.created_by
               JOIN user_profiles up ON up.user_id = u.id
@@ -245,7 +251,8 @@ async function fetchPolls(userId, featuredId) {
               is_following,
               user_bio,
               category_id,
-              duration_type
+              duration_type,
+              comments_count
             FROM followed_polls
             ORDER BY effective_score DESC, ends_in ASC
             LIMIT 10;
@@ -289,7 +296,8 @@ async function fetchPolls(userId, featuredId) {
                 p.likes_per_vote AS effective_score,
                 p.created_at,
                 p.duration_type,
-                p.category_id
+                p.category_id,
+                p.comments_count
               FROM newly_created_polls p
               JOIN chosen_category cc ON cc.category_id = p.category_id
               JOIN users u ON u.id = p.created_by
@@ -314,7 +322,8 @@ async function fetchPolls(userId, featuredId) {
               is_following,
               user_bio,
               category_id,
-              duration_type
+              duration_type,
+              comments_count
             FROM joined_polls
             ORDER BY effective_score DESC, duration_type, ends_in
             LIMIT 10;
@@ -348,7 +357,8 @@ async function fetchPolls(userId, featuredId) {
                          p.votes_count,
                          crw.weighted_score AS category_weight,
                          p.category_id,
-                         p.duration_type
+                         p.duration_type,
+                         p.comments_count
                      FROM polls p
                               JOIN category_random_weights crw ON crw.category_id = p.category_id
                               JOIN users u ON u.id = p.created_by
@@ -377,7 +387,8 @@ async function fetchPolls(userId, featuredId) {
                 is_following,
                 user_bio,
                 category_id,
-                duration_type
+                duration_type,
+                comments_count
             FROM polls_ranked_by_category
             ORDER BY category_weight DESC, effective_score DESC, ends_in ASC
             LIMIT 10;
@@ -400,7 +411,8 @@ async function fetchPolls(userId, featuredId) {
                 p.votes_count,
                 p.created_at,
                 p.category_id,
-                p.duration_type
+                p.duration_type,
+                p.comments_count
               FROM polls p
               JOIN users u ON u.id = p.created_by
               JOIN user_profiles up ON up.user_id = u.id
@@ -428,7 +440,8 @@ async function fetchPolls(userId, featuredId) {
               is_following,
               user_bio,
               category_id,
-              duration_type
+              duration_type,
+              comments_count
             FROM followed_polls
             ORDER BY votes_count DESC, ends_in ASC
             LIMIT 10;
@@ -462,7 +475,8 @@ async function fetchPolls(userId, featuredId) {
                          p.votes_count,
                          crw.weighted_score AS category_weight,
                          p.category_id,
-                         p.duration_type
+                         p.duration_type,
+                         p.comments_count
                      FROM polls p
                               JOIN category_random_weights crw ON crw.category_id = p.category_id
                               JOIN users u ON u.id = p.created_by
@@ -491,7 +505,8 @@ async function fetchPolls(userId, featuredId) {
                 is_following,
                 user_bio,
                 category_id,
-                duration_type
+                duration_type,
+                comments_count
             FROM polls_ranked_by_category
             ORDER BY category_weight DESC, votes_count DESC, ends_in ASC
             LIMIT 10;
@@ -525,7 +540,8 @@ async function fetchPolls(userId, featuredId) {
                          p.votes_count,
                          crw.weighted_score AS category_weight,
                          p.category_id,
-                         p.duration_type
+                         p.duration_type,
+                         p.comments_count
                      FROM polls p
                               JOIN category_random_weights crw ON crw.category_id = p.category_id
                               JOIN users u ON u.id = p.created_by
@@ -554,7 +570,8 @@ async function fetchPolls(userId, featuredId) {
                 is_following,
                 user_bio,
                 category_id,
-                duration_type
+                duration_type,
+                comments_count
             FROM polls_ranked_by_category
             ORDER BY category_weight DESC, effective_score DESC, ends_in ASC
             LIMIT 10;
@@ -783,7 +800,8 @@ async function searchPolls(requestingUserId, filterQuery, searchFlags) {
                up.followers_number,
                CASE WHEN pl.user_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_liked,
                CASE WHEN uf.user_follower_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_following,
-               CASE WHEN p.created_by = $1 THEN up.bio ELSE '' END AS user_bio
+               CASE WHEN p.created_by = $1 THEN up.bio ELSE '' END AS user_bio,
+               p.comments_count
         FROM polls p
         JOIN users u ON p.created_by = u.id
         JOIN user_profiles up ON u.id = up.user_id
@@ -897,9 +915,11 @@ const getPollOptionResults = async (pollId, userId) => {
                        WHEN pv.user_id = $2
                            THEN true
                        ELSE false
-                       END) AS "voted"
+                       END) AS "voted",
+                max(p.comments_count) as comments_count
             FROM poll_answer_options pao
-                     LEFT JOIN poll_votes pv ON pao.id = pv.option_id
+                JOIN polls p on pao.poll_id = p.id
+                LEFT JOIN poll_votes pv ON pao.id = pv.option_id
             WHERE pao.poll_id = $1
             GROUP BY pao.id
             ORDER BY pao.option_order
@@ -908,6 +928,7 @@ const getPollOptionResults = async (pollId, userId) => {
         const totalVotesResult = pool.query(getTotalVotesQuery, [pollId]);
 
         let options = [];
+        let commentsCount = 0;
         let votesCount = 0;
 
         await Promise.all([
@@ -915,10 +936,11 @@ const getPollOptionResults = async (pollId, userId) => {
             totalVotesResult
         ]).then(results=> {
             options = results[0].rows;
-            votesCount = results[1].rows[0].totalVotes;
+            commentsCount = results[0].rows[0].comments_count;
+            votesCount = Number(results[1].rows[0].totalVotes);
         })
 
-        return { options, votesCount };
+        return { options, commentsCount, votesCount };
     } catch (err) {
         console.error('Error fetching poll options:', err);
         return null;
