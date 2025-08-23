@@ -167,15 +167,6 @@ const Comments = ({ pollId }) => {
                             />
                         )
                     }
-
-                    {/*<View style={styles.row}>*/}
-                    {/*    <TouchableOpacity onPress={closeSheet} style={styles.cancelButton}>*/}
-                    {/*        <Text style={styles.cancelText}>Cancel</Text>*/}
-                    {/*    </TouchableOpacity>*/}
-                    {/*    <TouchableOpacity onPress={handleReport} style={styles.submitButton}>*/}
-                    {/*        <Text style={styles.submitText}>Submit</Text>*/}
-                    {/*    </TouchableOpacity>*/}
-                    {/*</View>*/}
                 </BottomSheetView>
             </BottomSheetModal>
         </>
