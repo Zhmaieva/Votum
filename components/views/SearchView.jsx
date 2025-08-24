@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from "react";
-import {View, Text, StyleSheet, SafeAreaView, ActivityIndicator} from "react-native";
+import {View, Text, StyleSheet, ActivityIndicator} from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeCard from "../customComponents/AwesomeCard";
 import AwesomeFeed from "../customComponents/AwesomeFeed";
@@ -44,7 +45,7 @@ const SearchView = () => {
     };
 
     return (
-        <SafeAreaView style={styles.safeArea}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: Colors.white }} edges={['top']}>
             <View style={styles.container}>
                 <View style={styles.searchContainer}>
                     <AwesomeSearch onSearchPress={async (query, selectedCategories) => {
@@ -103,10 +104,6 @@ const styles = StyleSheet.create({
         paddingRight: 15,
         paddingLeft: 15,
         paddingTop: 10,
-        flex: 1
-    },
-    safeArea: {
-        backgroundColor: Colors.white,
         flex: 1
     },
     alignStyle: {

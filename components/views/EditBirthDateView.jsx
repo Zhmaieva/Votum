@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
-import { SafeAreaView, View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from '../customComponents/AwesomeButton';
 import AwesomeBirthPicker from '../customComponents/AwesomeBirthPicker';
@@ -29,7 +30,7 @@ export default function EditBirthDateView() {
     };
 
     return (
-        <SafeAreaView style={styles.safeArea}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: Colors.white }} edges={['top', 'bottom']}>
             <View style={styles.container}>
                 <View style={styles.firstSubContainer}>
                     <Text style={styles.headerStyle}>Birth Date</Text>
@@ -47,10 +48,6 @@ export default function EditBirthDateView() {
 }
 
 const styles = StyleSheet.create({
-    safeArea: {
-        backgroundColor: Colors.white,
-        flex: 1,
-    },
     container: {
         padding: 15,
         flex: 1,

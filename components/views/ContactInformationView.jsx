@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Linking, SafeAreaView, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Linking, ScrollView } from 'react-native';
 import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from '../customComponents/AwesomeButton';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { AwesomeModal } from '../customComponents/AwesomeModal';
 import {Logger} from "../../shared/common";
 
@@ -32,7 +33,7 @@ const ContactInformationView = () => {
     };
 
     return (
-        <SafeAreaView style={styles.safeArea}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: Colors.white }} edges={['top', 'bottom']}>
             <ScrollView contentContainerStyle={styles.container}>
                 <Text style={styles.title}>We'd love to hear from you!</Text>
                 <Text style={styles.subtitle}></Text>
@@ -72,10 +73,6 @@ const ContactInformationView = () => {
 };
 
 const styles = StyleSheet.create({
-    safeArea: {
-        flex: 1,
-        backgroundColor: Colors.white,
-    },
     container: {
         padding: 15
     },

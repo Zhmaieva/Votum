@@ -2,15 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { getDataService, globalEventEmitter } from '../../shared/common';
 import {
     View, TextInput, Dimensions, Text, StyleSheet,
-    Pressable, SafeAreaView, Image
+    Pressable, Image
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors, Fonts } from "../../utils/colorUtils";
 import { Ionicons } from "@expo/vector-icons";
 import AwesomeButton, { Color } from "../customComponents/AwesomeButton";
 import { AwesomeModal } from "../customComponents/AwesomeModal";
 import { useNavigation } from '@react-navigation/native';
 import AwesomeCategory from "../customComponents/AwesomeCategory";
-
 
 const { width } = Dimensions.get('window');
 
@@ -92,7 +92,7 @@ const AddView = () => {
         }, []);
 
     return (
-        <SafeAreaView style={styles.safeArea}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: Colors.white }} edges={['top', 'bottom']}>
             <View style={styles.container}>
                 <View style={[styles.row, styles.bottomMargin10]}>
                     <Text style={[styles.qTextStyle]}>Q:</Text>
@@ -180,13 +180,9 @@ const AddView = () => {
 };
 
 const styles = StyleSheet.create({
-    safeArea: {
-        backgroundColor: Colors.white,
-        flex: 1,
-        justifyContent: 'space-between',
-    },
     container: {
         padding: 15,
+        justifyContent: 'space-between',
     },
     inputQuestion: {
         fontSize: 20,

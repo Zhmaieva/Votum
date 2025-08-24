@@ -6,8 +6,7 @@ import {
     Text,
     TouchableWithoutFeedback,
     TouchableOpacity,
-    Modal,
-    SafeAreaView
+    Modal
 } from 'react-native';
 import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeButton, {Color} from "../customComponents/AwesomeButton";
@@ -16,6 +15,7 @@ import {signUpFinish} from "../../shared/api/apiClient";
 import {AwesomeModal} from "../customComponents/AwesomeModal";
 import {getDataService, globalEventEmitter, Logger} from "../../shared/common";
 import {useNavigation} from "@react-navigation/native";
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const UsernameView = ({}) => {
 
@@ -31,7 +31,7 @@ const UsernameView = ({}) => {
     const [isChecked, setIsChecked] = useState(false);
 
     return (
-        <SafeAreaView style={styles.safeArea}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: Colors.white }} edges={['top', 'bottom']}>
             <View style={styles.container}>
                 <View>
                     <Text style={styles.headerStyle}>Username</Text>
@@ -140,10 +140,6 @@ const UsernameView = ({}) => {
 };
 
 const styles = StyleSheet.create({
-    safeArea: {
-        flex: 1,
-        backgroundColor: Colors.white,
-    },
     container: {
         flex: 1,
         padding: 15,

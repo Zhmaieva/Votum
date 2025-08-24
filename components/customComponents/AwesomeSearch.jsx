@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import { View, TextInput, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeCategory from "./AwesomeCategory";
+import AwesomeButton, { Color } from '../customComponents/AwesomeButton';
 
 const categoriesList = ['all', 'username', 'question', 'answer'];
 
@@ -44,19 +45,24 @@ const AwesomeSearch = ({ onSearchPress }) => {
     return (
         <View style={styles.searchContainer}>
             <View style={styles.row}>
-                <TextInput
-                    style={styles.searchInput}
-                    placeholder="search polls"
-                    placeholderTextColor={Colors.grey}
-                    value={searchQuery}
-                    onChangeText={setSearchQuery}
-                />
-                <TouchableOpacity
-                    style={styles.searchButton}
-                    onPress={() => onSearchPress(searchQuery, selectedCategories)}
-                >
-                    <Text style={styles.searchButtonText}>Search</Text>
-                </TouchableOpacity>
+                <View style={styles.inputWrap}>
+                    <TextInput
+                        style={styles.searchInput}
+                        placeholder="search polls"
+                        placeholderTextColor={Colors.grey}
+                        value={searchQuery}
+                        onChangeText={setSearchQuery}
+                    />
+                </View>
+                <View style={styles.buttonWrap}>
+                    <AwesomeButton
+                        text="Search"
+                        color={Color.BLACK}
+                        additionalFunc={() => onSearchPress(searchQuery, selectedCategories)}
+                        disableNavigation={true}
+                        manual={true}
+                    />
+                </View>
             </View>
             <View style={[styles.row, styles.categoriesContainer]}>
                 {categoriesList.map((category) => (
@@ -116,6 +122,14 @@ const styles = StyleSheet.create({
     searchButtonText: {
         color: Colors.white,
         fontFamily: Fonts.medium,
+    },
+    inputWrap: {
+        flex: 1,
+        minWidth: 0,
+    },
+    buttonWrap: {
+        width: 80,
+        marginLeft: 8,
     },
 });
 

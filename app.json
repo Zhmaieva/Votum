@@ -57,7 +57,13 @@
         {
           "photosPermission": "The app accesses your photos to let you setup profile avatar."
         }
-      ]
+      ],
+      ["@react-native-community/datetimepicker", {
+        "android": {
+          "datePicker": { "colorAccent": { "light": "#93A548", "dark": "#93A548" } },
+          "timePicker": { "colorAccent": { "light": "#93A548", "dark": "#93A548" } }
+        }
+      }]
     ]
   }
 }

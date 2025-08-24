@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {View, Text, StyleSheet, SafeAreaView, ScrollView, Modal, ActivityIndicator} from "react-native";
+import {View, Text, StyleSheet, ScrollView, Modal, ActivityIndicator} from "react-native";
 import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeUserHeader from "../customComponents/AwesomeUserHeader";
 import AwesomeFeed from "../customComponents/AwesomeFeed";
@@ -10,6 +10,7 @@ import AwesomeCard from "../customComponents/AwesomeCard";
 import AwesomeLoadingPoll from "../customComponents/AwesomeLoadingPoll";
 import {isLoading} from "expo-font";
 import {useFocusEffect} from "@react-navigation/native";
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const followChangedEventName = "followChanged";
 
@@ -81,7 +82,7 @@ const SomebodysProfileView = ({ route }) => {
     }
 
     return (
-        <SafeAreaView style={styles.safeArea}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: Colors.white }} edges={['left', 'right', 'bottom']} >
             <View style={styles.contentWrapper}>
                 <View style={{marginBottom: 10}}>
                     {loading ? (
@@ -135,16 +136,12 @@ export default SomebodysProfileView;
 const styles = StyleSheet.create({
     container: {
         backgroundColor: Colors.white,
-        height: "100%",
+        height: '100%',
     },
     contentWrapper: {
         paddingTop: 10,
         paddingLeft: 15,
         paddingRight: 15,
         height: '100%',
-    },
-    safeArea: {
-        backgroundColor: Colors.white,
-        flex: 1
     },
 });

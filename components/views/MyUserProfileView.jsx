@@ -1,5 +1,5 @@
 import React, {useEffect, useState, useRef} from "react";
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, Modal, Pressable } from "react-native";
+import { View, Text, StyleSheet, ScrollView, Modal, Pressable } from "react-native";
 import { Colors } from '../../utils/colorUtils';
 import AwesomeUserHeader from "../customComponents/AwesomeUserHeader";
 import AwesomeFeed from "../customComponents/AwesomeFeed";
@@ -15,6 +15,7 @@ import {
     MIN_LOADING_TIME
 } from "../../shared/common";
 import AwesomeCard from "../customComponents/AwesomeCard";
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const MyUserProfileView = () => {
     const [modalVisible, setModalVisible] = useState(false);
@@ -89,53 +90,51 @@ const MyUserProfileView = () => {
     };
 
     return (
-        <View style={styles.container}>
-            <SafeAreaView style={styles.safeArea}>
-                <View style={styles.contentWrapper}>
-                    <View style={{ marginBottom: 10 }}>
-                        {userDataLoading ? (
-                            <AwesomeLoadingHeader />
-                        ) : (
-                            user && polls ? (
-                                <AwesomeUserHeader
-                                    userData={user}
-                                    loggedInUserId={user?.userId}
-                                    isProfilePage={true}
-                                />
-                            ) : (
-                                <></>
-                            )
-                        )}
-                    </View>
-                    {user && polls ? (
-                        <AwesomeFeed
-                            screenName={'MY PROFILE'}
-                            ref={feedRef}
-                            data={polls}
-                            onRefresh={onRefresh}
-                            refreshing={refreshing}
-                            isUserProfileView={true}
-                            isLoading={userDataLoading}
-                            isPollCreatedScrollTop = {true}
-                            renderItem={(item) => {
-                                item.timeLeft = calculateTimeDifference(item.endsIn);
-                                return (
-                                    <View style={styles.container}>
-                                        <AwesomeCard
-                                            hideHeader={true}
-                                            item={item}
-                                            loggedInUserId={user?.userId}
-                                        />
-                                    </View>
-                                );
-                            }}
-                        />
+        <SafeAreaView style={{ flex: 1, backgroundColor: Colors.white }} edges={['top', 'bottom']}>
+            <View style={styles.contentWrapper}>
+                <View style={{ marginBottom: 10 }}>
+                    {userDataLoading ? (
+                        <AwesomeLoadingHeader />
                     ) : (
-                        <></>
+                        user && polls ? (
+                            <AwesomeUserHeader
+                                userData={user}
+                                loggedInUserId={user?.userId}
+                                isProfilePage={true}
+                            />
+                        ) : (
+                            <></>
+                        )
                     )}
                 </View>
-            </SafeAreaView>
-        </View>
+                {user && polls ? (
+                    <AwesomeFeed
+                        screenName={'MY PROFILE'}
+                        ref={feedRef}
+                        data={polls}
+                        onRefresh={onRefresh}
+                        refreshing={refreshing}
+                        isUserProfileView={true}
+                        isLoading={userDataLoading}
+                        isPollCreatedScrollTop = {true}
+                        renderItem={(item) => {
+                            item.timeLeft = calculateTimeDifference(item.endsIn);
+                            return (
+                                <View style={styles.container}>
+                                    <AwesomeCard
+                                        hideHeader={true}
+                                        item={item}
+                                        loggedInUserId={user?.userId}
+                                    />
+                                </View>
+                            );
+                        }}
+                    />
+                ) : (
+                    <></>
+                )}
+            </View>
+        </SafeAreaView>
     );
 };
 
@@ -143,17 +142,12 @@ export default MyUserProfileView;
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: Colors.white,
         flex: 1
     },
     contentWrapper: {
-        paddingTop: 10,
         paddingLeft: 15,
         paddingRight: 15,
         height: '100%'
-    },
-    safeArea: {
-        backgroundColor: Colors.white,
     },
     row: {
         flexDirection: 'row'
@@ -164,18 +158,6 @@ const styles = StyleSheet.create({
     userContainer: {
         justifyContent: 'space-between',
         alignItems: 'flex-end',
-    },
-    avatar: {
-        height: 46,
-        width: 46,
-        marginRight: 8,
-        shadowOffset: {
-            width: 3,
-            height: 3
-        },
-        shadowOpacity: 1,
-        shadowRadius: 0,
-        shadowColor: Colors.green,
     },
     userSubContainer: {
         justifyContent: 'flex-end',

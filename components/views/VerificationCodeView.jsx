@@ -1,8 +1,7 @@
 import {
     Text,
     View,
-    StyleSheet,
-    SafeAreaView
+    StyleSheet
 } from 'react-native';
 import { useState, useRef } from 'react';
 import React from 'react';
@@ -13,6 +12,7 @@ import { AwesomeModal } from '../customComponents/AwesomeModal';
 import {signUpStart, signUpVerify, forgotPassword, emailVerifyCheck} from '../../shared/api/apiClient';
 import { getDataService } from '../../shared/common';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export const VERIFICATION_FLOW_TYPE = {
     REGISTRATION: 'REGISTRATION',
@@ -166,7 +166,7 @@ export default function VerificationCodeView({route}) {
     };
 
     return (
-        <SafeAreaView style={styles.safeArea}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: Colors.white }} edges={['top', 'bottom']}>
             <View style={styles.container}>
                 <View>
                     <Text style={[styles.margin10, { fontFamily: Fonts.medium, fontSize: 20 }]}>Enter verification code</Text>
@@ -239,10 +239,6 @@ export default function VerificationCodeView({route}) {
 }
 
 const styles = StyleSheet.create({
-    safeArea: {
-        backgroundColor: Colors.white,
-        flex: 1,
-    },
     container: {
         padding: 15,
         justifyContent: 'space-between',

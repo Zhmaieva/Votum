@@ -5,6 +5,8 @@ import AwesomeFeed from "../customComponents/AwesomeFeed";
 import {calculateTimeDifference, globalEventEmitter, Loader} from "../../shared/common";
 import {fetchVotedPolls, fetchMyProfile} from "../../shared/api/apiClient";
 import {useFocusEffect} from "@react-navigation/native";
+import { SafeAreaView } from 'react-native-safe-area-context';
+import {Colors} from "../../utils/colorUtils";
 
 const VotedView = () => {
 
@@ -61,29 +63,33 @@ const VotedView = () => {
 
     return (
         (polls || loading) ? (
-        <AwesomeFeed
-            screenName={'VOTED'}
-            data={polls}
-            onRefresh={onRefresh}
-            refreshing={refreshing}
-            isVotedPollsView={true}
-            isLoading={loading}
-            renderItem={(item) => {
-                item.timeLeft = calculateTimeDifference(item.endsIn);
-                return (
-                    <View style={styles.container}>
-                        <AwesomeCard
-                            item={item}
-                            handleVote={async (itemId, optionId) => {
-                            }}
-                            loggedInUserId={loggedInUserId}
-                        />
-                    </View>
-                )
-            }}
-        />
+        <SafeAreaView style={{ flex: 1, backgroundColor: Colors.white }} edges={['top']}>
+            <AwesomeFeed
+                screenName={'VOTED'}
+                data={polls}
+                onRefresh={onRefresh}
+                refreshing={refreshing}
+                isVotedPollsView={true}
+                isLoading={loading}
+                renderItem={(item) => {
+                    item.timeLeft = calculateTimeDifference(item.endsIn);
+                    return (
+                        <View style={styles.container}>
+                            <AwesomeCard
+                                item={item}
+                                handleVote={async (itemId, optionId) => {
+                                }}
+                                loggedInUserId={loggedInUserId}
+                            />
+                        </View>
+                    )
+                }}
+            />
+        </SafeAreaView>
         ) : (
+        <SafeAreaView style={{ flex: 1, backgroundColor: Colors.white }} edges={['top']}>
             <></>
+        </SafeAreaView>
         )
     );
 };
@@ -94,6 +100,7 @@ const styles = StyleSheet.create({
     container: {
         paddingTop: 10,
         paddingRight: 15,
-        paddingLeft: 15
+        paddingLeft: 15,
+        backgroundColor: Colors.white
     }
 });

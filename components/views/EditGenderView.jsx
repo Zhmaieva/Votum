@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from 'react';
-import { SafeAreaView, View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import {useFocusEffect, useNavigation, useRoute} from '@react-navigation/native';
 import { Colors, Fonts } from '../../utils/colorUtils';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import AwesomeButton, { Color } from '../customComponents/AwesomeButton';
 import AwesomeSegmentedControls from '../customComponents/AwesomeSegmentedControls';
 import {getDataService, Logger} from "../../shared/common";
@@ -53,7 +54,7 @@ export default function EditGenderView() {
     };
 
     return (
-        <SafeAreaView style={styles.safeArea}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: Colors.white }} edges={['top', 'bottom']}>
             <View style={styles.container}>
                 <View style={styles.firstSubContainer}>
                     <Text style={styles.headerStyle}>Gender</Text>
@@ -75,10 +76,6 @@ export default function EditGenderView() {
 }
 
 const styles = StyleSheet.create({
-    safeArea: {
-        backgroundColor: Colors.white,
-        flex: 1,
-    },
     container: {
         paddingBottom: 15,
         paddingRight: 15,

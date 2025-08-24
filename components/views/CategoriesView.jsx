@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import {View, StyleSheet, Text, SafeAreaView, ActivityIndicator} from 'react-native';
+import {View, StyleSheet, Text, ActivityIndicator} from 'react-native';
 import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeCategory from "../customComponents/AwesomeCategory";
+import { SafeAreaView } from 'react-native-safe-area-context';
 import AwesomeButton, { Color } from "../customComponents/AwesomeButton";
 import { AwesomeModal } from "../customComponents/AwesomeModal";
 import {globalEventEmitter, Loader, Logger} from "../../shared/common";
@@ -80,7 +81,7 @@ const CategoriesView = ({ route }) => {
     }
 
     return (
-        <SafeAreaView style={styles.safeArea}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: Colors.white }} edges={['top', 'bottom']}>
             <View style={styles.container}>
                 <View style={styles.margin10}>
                     <View style={styles.headerContainer}>
@@ -124,10 +125,6 @@ const CategoriesView = ({ route }) => {
 };
 
 const styles = StyleSheet.create({
-    safeArea: {
-        flex: 1,
-        backgroundColor: Colors.white,
-    },
     container: {
         flex: 1,
         padding: 20,

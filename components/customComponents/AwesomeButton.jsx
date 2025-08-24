@@ -1,7 +1,8 @@
-import {Text, StyleSheet, Animated, TouchableWithoutFeedback, ActivityIndicator, View, Image} from 'react-native';
+import {Text, StyleSheet, Platform, Animated, TouchableWithoutFeedback, ActivityIndicator, View, Image, Pressable } from 'react-native';
 import React, {useState, useMemo} from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { Colors, Fonts } from '../../utils/colorUtils';
+import { Shadow } from 'react-native-shadow-2';
 
 export const Color = {
     GREEN: 1,
@@ -85,52 +86,84 @@ export default function AwesomeButton({
     }, [buttonName, changedText, color]);
 
     return (
-        <TouchableWithoutFeedback onPress={animateButton} disabled={isDisabled}>
+        <Pressable onPress={animateButton} disabled={isDisabled} hitSlop={8}>
             <Animated.View
                 style={[
                     { transform: [{ scale: scaleValue }] },
-                    styles.buttonMain,
-                    buttonStyle,
                     disabled && styles.buttonDisabled,
                 ]}
             >
-                <View style={[styles.contentWrapper, settingButton && styles.settingWrapper]}>
-                    {isLoading ? (
-                        <ActivityIndicator size="small" color={color === Color.BLACK ? Colors.white : Colors.black} />
-                    ) : textElement ? (
-                        <Text style={[styles.buttonMainText, textStyle, settingButton && styles.leftAlignedText]}>
-                            {textElement}
-                        </Text>
-                    ) : (
-                        <Text style={[styles.buttonMainText, textStyle, settingButton && styles.leftAlignedText]}>
-                            {buttonName}
-                        </Text>
-                    )}
-                    {settingButton && (
-                        <Image
-                            source={require('../../assets/images/arrowBlack.png')}
-                            style={{ width: 14, height: 14 }}
-                            resizeMode="contain"
-                        />
-                    )}
-                </View>
+            <Shadow
+                distance={0}
+                style={{ width: '100%' }}
+                offset={[3, 3]}
+                startColor="rgba(147,165,72)"
+                finalColor="rgba(147,165,72)"
+                viewStyle={{ borderRadius: 0 }}
+            >
+                    <View
+                style={[
+                    styles.buttonMain,
+                   buttonStyle,
+                settingButton ? styles.settingWrapper : styles.centerWrapper,
+                ]}
+                >
+                    >
+                        {isLoading ? (
+                            <ActivityIndicator size="small" color={color === Color.BLACK ? Colors.white : Colors.black} />
+                        ) : textElement ? (
+                            <Text style={[styles.buttonMainText, textStyle, settingButton && styles.leftAlignedText]}>
+                                {textElement}
+                            </Text>
+                        ) : (
+                            <Text style={[styles.buttonMainText, textStyle, settingButton && styles.leftAlignedText]}>
+                                {buttonName}
+                            </Text>
+                        )}
+                        {settingButton && (
+                            <Image
+                                source={require('../../assets/images/arrowBlack.png')}
+                                style={{ width: 14, height: 14 }}
+                                resizeMode="contain"
+                            />
+                        )}
+                    </View>
+
+            </Shadow>
             </Animated.View>
-        </TouchableWithoutFeedback>
+        </Pressable>
     );
 }
 
 const styles = StyleSheet.create({
-    buttonMain: { justifyContent: 'center', alignItems: 'center', height: 40, minWidth: 85, paddingHorizontal: 10 },
-    buttonGreen: { backgroundColor: Colors.green, shadowRadius: 0, shadowOffset: { width: 2, height: 2 }, shadowOpacity: 1, borderWidth: 1, borderColor: Colors.black, shadowColor: Colors.green },
-    buttonBlack: { backgroundColor: Colors.black, borderColor: Colors.black, borderWidth: 1, shadowRadius: 0, shadowOffset: { width: 2, height: 2 }, shadowOpacity: 1, shadowColor: Colors.green },
-    buttonTransparent: { backgroundColor: Colors.white, borderColor: Colors.black, borderWidth: 1, shadowRadius: 0, shadowOffset: { width: 2, height: 2 }, shadowOpacity: 1, shadowColor: Colors.green },
-    buttonWhite: { backgroundColor: Colors.white, borderColor: Colors.black, borderWidth: 1, shadowRadius: 0, shadowOffset: { width: 2, height: 2 }, shadowOpacity: 1, shadowColor: Colors.green },
+    buttonMain: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: 40,
+        width: '100%',
+        marginHorizontal: -3,
+        paddingHorizontal: 10,
+        borderRadius: 0,
+    },
+    buttonGreen: { backgroundColor: Colors.green, borderWidth: 1, borderColor: Colors.black },
+    buttonBlack: { backgroundColor: Colors.black,  borderWidth: 1, borderColor: Colors.black },
+    buttonWhite: { backgroundColor: Colors.white,  borderWidth: 1, borderColor: Colors.black },
+    buttonTransparent: { backgroundColor: Colors.white, borderWidth: 1, borderColor: Colors.black },
     buttonDisabled: { backgroundColor: Colors.grey },
     buttonMainText: { fontSize: 15, textAlign: 'center', fontFamily: Fonts.medium },
     leftAlignedText: { textAlign: 'left' },
     buttonBlackText: { color: Colors.white },
     buttonGreenText: { color: Colors.white },
     buttonWhiteText: { color: Colors.black },
-    contentWrapper: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', width: '100%' },
-    settingWrapper: { justifyContent: 'space-between', paddingHorizontal: 5 },
+    contentWrapper: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+    centerWrapper: {
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    settingWrapper: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 10,
+    },
 });

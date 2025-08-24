@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, SafeAreaView, Text } from 'react-native';
+import { View, StyleSheet, Text } from 'react-native';
 import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from "../customComponents/AwesomeButton";
+import { SafeAreaView } from 'react-native-safe-area-context';
 import {getDataService, Logger} from "../../shared/common";
 import { updateUserProfile } from "../../shared/api/apiClient";
 import AwesomeUsernameInput from "../customComponents/AwesomeUsernameInput";
@@ -42,7 +43,7 @@ const EditUsernameView = ({ navigation }) => {
     };
 
     return (
-        <SafeAreaView style={styles.safeArea}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: Colors.white }} edges={['bottom']}>
             <View style={styles.container}>
                 <Text style={{ fontFamily: Fonts.bold, fontSize: 20, marginBottom: 10 }}>Username</Text>
                 <Text style={styles.subtittle}>update your username</Text>
@@ -68,15 +69,8 @@ const EditUsernameView = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-    safeArea: {
-        flex: 1,
-        backgroundColor: Colors.white,
-    },
     container: {
-        padding: 15,
-    },
-    margin10: {
-        marginBottom: 8,
+        padding: 15
     },
     subtittle: {
         fontSize: 14,

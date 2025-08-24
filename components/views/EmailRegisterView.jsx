@@ -7,8 +7,8 @@ import {
     Modal,
     TouchableWithoutFeedback,
     TouchableOpacity,
-    SafeAreaView
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeEmailInput from "../customComponents/AwesomeEmailInput";
 import AwesomeButton, {Color} from "../customComponents/AwesomeButton";
@@ -37,7 +37,7 @@ const EmailRegisterView = ({route }) => {
     );
 
     return (
-        <SafeAreaView style={styles.safeArea}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: Colors.white }} edges={['top', 'bottom']}>
             <View style={styles.container}>
                 <View>
                     <View style={styles.margin5}>
@@ -105,10 +105,6 @@ const EmailRegisterView = ({route }) => {
 };
 
 const styles = StyleSheet.create({
-    safeArea: {
-        flex: 1,
-        backgroundColor: Colors.white,
-    },
     container: {
         padding: 15,
         justifyContent: 'space-between',

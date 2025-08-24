@@ -1,7 +1,8 @@
 import React, {useState, useEffect, useRef} from 'react';
 import AwesomeFeed from "../customComponents/AwesomeFeed";
 import AwesomeCard from "../customComponents/AwesomeCard";
-import {View, StyleSheet, Text, SafeAreaView} from 'react-native';
+import { View, StyleSheet, Text } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import {fetchPolls, fetchMyProfile, fetchTrendingPolls} from "../../shared/api/apiClient";
 import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeSwitcher from "../customComponents/AwesomeSwitcher";
@@ -122,7 +123,7 @@ const FeedView = ({ route }) => {
     // }
 
     return (
-        <SafeAreaView style={styles.safeArea}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: Colors.white }} edges={['top']}>
             <View style={styles.container}>
                 <View style={styles.switcherContainer}>
                     <AwesomeSwitcher
@@ -164,14 +165,10 @@ const FeedView = ({ route }) => {
 };
 
 const styles = StyleSheet.create({
-    safeArea: {
-        backgroundColor: Colors.white,
-        flex: 1
-    },
     container: {
         flex: 1,
         paddingRight: 15,
-        paddingLeft: 15
+        paddingLeft: 15,
     },
     switcherContainer: {
         marginBottom: 5,

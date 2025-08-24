@@ -5,7 +5,6 @@ import {
     StyleSheet,
     Dimensions,
     TouchableOpacity,
-    SafeAreaView,
     ScrollView,
     Image
 } from 'react-native';
@@ -20,6 +19,7 @@ import {
 import {getDataService, globalEventEmitter, Logger} from '../../shared/common';
 import AwesomeUserHeaderPreview from "../customComponents/AwesomeUserHeaderPreview";
 import AwesomeLoadingHeader from "../customComponents/AwesomeLoadingHeader";
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const PreviewPollView = () => {
     const route = useRoute();
@@ -75,7 +75,7 @@ const PreviewPollView = () => {
     };
 
     return (
-        <SafeAreaView style={styles.safeArea}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: Colors.white }} edges={['top']}>
             <ScrollView style={styles.container}>
                 <View>
                     {!user || !userDataLoaded ? (
@@ -152,10 +152,6 @@ const PreviewPollView = () => {
 };
 
 const styles = StyleSheet.create({
-    safeArea: {
-        backgroundColor: Colors.white,
-        flex: 1,
-    },
     container: {
         padding: 15,
         flex: 1,

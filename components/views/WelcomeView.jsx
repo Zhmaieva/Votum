@@ -19,7 +19,9 @@ export default function WelcomeView(callback, deps) {
                 <View style={styles.logoContainer}>
                     <Image source={logoVotum} style={styles.logoStyle} resizeMode="contain" />
                 </View>
-                <AwesomeButton text='Continue' color={Color.BLACK} screenName='Profile photo'/>
+                <View>
+                    <AwesomeButton text='Continue' color={Color.BLACK} screenName='Profile photo'/>
+                </View>
             </View>
         </SafeAreaView>
     );
@@ -32,10 +34,7 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        paddingLeft: 15,
-        paddingRight: 15,
-        paddingBottom: 30,
-        paddingTop: 15,
+        padding: 15,
         justifyContent: 'center',
     },
     messageStyle: {

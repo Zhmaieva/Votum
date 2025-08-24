@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, SafeAreaView } from 'react-native';
+import { View, Text, TextInput, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from "../customComponents/AwesomeButton";
 import {getDataService, Logger} from "../../shared/common";
@@ -32,7 +33,7 @@ const BioEditView = ({ navigation, route }) => {
     };
 
     return (
-        <SafeAreaView style={styles.safeArea}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: Colors.white }} edges={['top', 'bottom']}>
             <View style={styles.container}>
                 <Text style={[styles.margin10, { fontFamily: Fonts.medium, fontSize: 20 }]}>Bio</Text>
                 <Text style={styles.subtittle}>update your bio</Text>
@@ -55,10 +56,6 @@ const BioEditView = ({ navigation, route }) => {
 };
 
 const styles = StyleSheet.create({
-    safeArea: {
-        flex: 1,
-        backgroundColor: Colors.white,
-    },
     container: {
         padding: 15
     },
