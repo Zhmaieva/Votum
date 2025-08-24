@@ -100,6 +100,10 @@ const AwesomeFeed = forwardRef(({
     const flatListRef = externalRef || useRef(null);
     const timeoutRef = useRef(setTimeout(() => {}, 100));
 
+    const onSharedPoll = ({pollId, tabName}) => {
+        scrollToTop({ tabName });
+    };
+
     const scrollToTop = (data) => {
         if (data?.tabName === screenName)
             flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
@@ -111,7 +115,7 @@ const AwesomeFeed = forwardRef(({
             flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
         };
 
-        globalEventEmitter.on('sharedPoll', scrollToTop);
+        globalEventEmitter.on('sharedPoll', onSharedPoll);
         globalEventEmitter.on('feedSwitch', scrollToTop);
         globalEventEmitter.on('pollCreated', pollCreatedHandler);
 
@@ -129,7 +133,7 @@ const AwesomeFeed = forwardRef(({
 
         return () => {
             globalEventEmitter.off('feedSwitch', scrollToTop);
-            globalEventEmitter.off('sharedPoll', scrollToTop);
+            globalEventEmitter.off('sharedPoll', onSharedPoll);
             globalEventEmitter.off('pollCreated', pollCreatedHandler);
         };
     }, [data]);

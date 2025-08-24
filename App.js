@@ -57,7 +57,7 @@ export default function App() {
         if (path) {
             const parts = path?.split('/') ?? [];
             navigationRef.navigate('FEED', {});
-            globalEventEmitter.emit('sharedPoll', { pollId: parts[parts.length - 1] });
+            globalEventEmitter.emit('sharedPoll', { pollId: parts[parts.length - 1], tabName: 'FEED' });
         }
     };
 

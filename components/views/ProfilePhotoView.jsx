@@ -5,7 +5,7 @@ import AwesomeButton, { Color } from "../customComponents/AwesomeButton";
 import AwesomeProfilePhoto from "../customComponents/AwesomeProfilePhoto";
 import AgeView from "./AgeView";
 import {useFocusEffect} from "@react-navigation/native";
-import {getDataService} from "../../shared/common";
+import {getDataService, globalEventEmitter} from "../../shared/common";
 import {fetchMyProfile} from "../../shared/api/apiClient";
 
 export default function ProfilePhotoView () {
@@ -13,7 +13,7 @@ export default function ProfilePhotoView () {
     const [profileImage, setProfileImage] = useState('');
 
     useFocusEffect(() => {
-        getDataService().resetUserChanges();
+        // getDataService().resetUserChanges();
 
         if (!getDataService()?.getUser())
             fetchMyProfile().then(res => {
@@ -35,7 +35,10 @@ export default function ProfilePhotoView () {
                 <Text style={{marginBottom: 10, fontFamily: Fonts.regular}}>Personalize your profile</Text>
                 <View style={styles.subContainer}>
                     <View style={styles.photoContainer}>
-                        <AwesomeProfilePhoto profileImage={profileImage} setProfileImage={setProfileImage} />
+                        <AwesomeProfilePhoto
+                            autoUpdateImage={false}
+                            profileImage={profileImage}
+                            setProfileImage={setProfileImage} />
                     </View>
                     {/*{
                         profileImage ? (
@@ -49,10 +52,14 @@ export default function ProfilePhotoView () {
                         )
                     }*/}
                     <View style={styles.buttonContainer}>
-                        <AwesomeButton text='Next' color={Color.BLACK} screenName='Age' />
+                        <AwesomeButton text='Next' color={Color.BLACK} additionalFunc={() => {
+                            globalEventEmitter.emit('imageOnboardingComplete', {isSkipped: false})
+                        }} screenName='Age' />
                     </View>
                     <View style={styles.buttonContainer}>
-                        <AwesomeButton text='Skip' color={Color.WHITE} screenName='Age' />
+                        <AwesomeButton text='Skip' color={Color.WHITE} additionalFunc={() => {
+                            globalEventEmitter.emit('imageOnboardingComplete', {isSkipped: true})
+                        }} screenName='Age' />
                     </View>
                 </View>
             </View>

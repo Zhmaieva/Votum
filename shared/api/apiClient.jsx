@@ -369,6 +369,8 @@ export const signUpFinish = async (username, password) => {
 };
 
 export const uploadProfileImage = async (image) => {
+    Logger.log('Uploading image...');
+
     const formData = new FormData();
     formData.append('file', {
         uri: image.uri,

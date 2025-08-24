@@ -4,6 +4,7 @@ import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeUserHeaderPreview from "../customComponents/AwesomeUserHeaderPreview";
 import {fetchFollowers, fetchFollows, fetchMyProfile} from "../../shared/api/apiClient";
 import {useFocusEffect} from "@react-navigation/native";
+import {getDataService} from "../../shared/common";
 
 const FollowersView = () => {
     const scrollY = useRef(new Animated.Value(0)).current;
@@ -15,7 +16,13 @@ const FollowersView = () => {
         const res = await fetchMyProfile();
         setUser(res);
         const followsData = await fetchFollowers(res.userId);
-        setFollows(followsData?.users || []);
+        const followsList = followsData?.users || [];
+
+        if (getDataService()?.getUser())
+            getDataService().getUser().followersNumber = followsList.length;
+        getDataService().commitUserChanges();
+
+        setFollows(followsList);
     };
 
     useFocusEffect(

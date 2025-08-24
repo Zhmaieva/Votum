@@ -7,7 +7,7 @@ import { uploadProfileImage } from "../../shared/api/apiClient";
 import { AwesomeModal } from "./AwesomeModal";
 import {getDataService, globalEventEmitter, Logger} from "../../shared/common";
 
-const AwesomeProfilePhoto = ({ profileImage, setProfileImage }) => {
+const AwesomeProfilePhoto = ({ profileImage, setProfileImage, autoUpdateImage = true }) => {
     const [isModalVisible, setModalVisible] = useState(false);
 
     const [image, setImage] = useState(profileImage);
@@ -15,7 +15,27 @@ const AwesomeProfilePhoto = ({ profileImage, setProfileImage }) => {
     useEffect(() => {
         console.log('applying image...', profileImage);
         setImage(profileImage);
-    }, [profileImage])
+    }, [profileImage]);
+
+    useEffect(() => {
+        const handler = async ({isSkipped}) => {
+            if (isSkipped) {
+                getDataService().resetUserChanges();
+                return;
+            }
+
+            setProfileImage(getDataService().getUser().image);
+
+            await uploadProfileImage(getDataService().getUser().rawImage);
+
+            getDataService().commitUserChanges();
+        };
+        globalEventEmitter.on('imageOnboardingComplete', handler);
+
+        return () => {
+            globalEventEmitter.off('imageOnboardingComplete', handler);
+        }
+    }, []);
 
     const handleImagePick = async () => {
         const oldImage = image;
@@ -41,11 +61,16 @@ const AwesomeProfilePhoto = ({ profileImage, setProfileImage }) => {
                 Logger.log('Image result available');
                 const uri = result.assets[0].uri;
                 getDataService().getUser().image = uri;
-                getDataService().commitUserChanges();
+                getDataService().getUser().rawImage = result.assets[0];
+
                 setProfileImage(uri);
                 globalEventEmitter.emit('imagePicked', {imageUri: uri, userId: getDataService().getUser().userId});
 
-                Logger.log('Uploading image...');
+                if (!autoUpdateImage) {
+                    return;
+                }
+
+                getDataService().commitUserChanges();
                 await uploadProfileImage(result.assets[0]);
             }
         } catch (err) {
