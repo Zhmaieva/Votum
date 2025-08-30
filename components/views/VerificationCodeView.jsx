@@ -36,7 +36,20 @@ export default function VerificationCodeView({route}) {
 
     useFocusEffect(React.useCallback(() => {
         inputRefs.current[0]?.focus();
-    }, []))
+    }, []));
+
+    const handlePaste = async (index, val) => {
+        console.log(val);
+        // If user pasted multiple chars, distribute across inputs
+        if (val.length > 1) {
+            const chars = val.split('').slice(0, 6);
+            setInputs(chars.concat(Array(6 - chars.length).fill('')));
+            // focus last input
+            inputRefs.current[chars.length - 1]?.focus();
+        } else {
+            handleInput(index, val);
+        }
+    };
 
     const handleInput = (index, value) => {
         const updated = [...inputs];
@@ -75,7 +88,13 @@ export default function VerificationCodeView({route}) {
 
     const handleSubmit = async () => {
         const code = getValue();
-        const email = getDataService()?.getUser()?.email ?? '';
+
+        let email = getDataService()?.getUser()?.email ?? '';
+        if (!email) {
+            email = getDataService()?.getEmailToSet();
+        }
+
+        console.log('email verification code view: ', email);
 
         if (flowType === VERIFICATION_FLOW_TYPE.REGISTRATION) {
             const response = await signUpVerify(email, code);
@@ -176,7 +195,7 @@ export default function VerificationCodeView({route}) {
                             {[...Array(6)].map((_, i) => (
                                 <AwesomeCodeContainer
                                     key={i}
-                                    onTextInput={val => handleInput(i, val)}
+                                    onTextInput={val => handlePaste(i, val)}
                                     onKeyPress={({ nativeEvent }) => {
                                         if (nativeEvent.key === 'Backspace') {
                                             handleBackspace(i);
@@ -184,6 +203,7 @@ export default function VerificationCodeView({route}) {
                                     }}
                                     refOutlet={ref => inputRefs.current[i] = ref}
                                     value = {inputs[i]}
+                                    maxLength={i === 5 ? 1 : 6}
                                 />
                             ))}
                         </View>

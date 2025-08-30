@@ -29,8 +29,12 @@ const EmailEditView = ({route }) => {
                     <AwesomeEmailInput value={text} bareStyle={true}/>
                 </View>
                 <AwesomeButton text='Send verification code' color={Color.BLACK} additionalFunc={async () => {
-                    const email = getDataService()?.getUser()?.email;
+                    let email = getDataService()?.getUser()?.email ?? '';
+                    if (!email) {
+                        email = getDataService()?.getEmailToSet();
+                    }
 
+                    console.log('email edit view:', email);
                     if (!email) {
                         setError(invalidEmailError);
                         setModalVisible(true);

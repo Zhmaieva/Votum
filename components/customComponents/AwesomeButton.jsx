@@ -101,14 +101,12 @@ export default function AwesomeButton({
                 finalColor="rgba(147,165,72)"
                 viewStyle={{ borderRadius: 0 }}
             >
-                    <View
-                style={[
-                    styles.buttonMain,
-                   buttonStyle,
-                settingButton ? styles.settingWrapper : styles.centerWrapper,
-                ]}
-                >
-                    >
+                <View
+                    style={[
+                        styles.buttonMain,
+                        buttonStyle,
+                        settingButton ? styles.settingWrapper : styles.centerWrapper,
+                    ]}>
                         {isLoading ? (
                             <ActivityIndicator size="small" color={color === Color.BLACK ? Colors.white : Colors.black} />
                         ) : textElement ? (

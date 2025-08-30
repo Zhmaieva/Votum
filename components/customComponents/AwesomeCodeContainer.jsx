@@ -1,7 +1,7 @@
 import { TextInput, View, StyleSheet } from 'react-native';
 import { Fonts } from '../../utils/colorUtils';
 
-export default function AwesomeCodeContainer({ value, onTextInput, refOutlet, onKeyPress }) {
+export default function AwesomeCodeContainer({ value, onTextInput, refOutlet, onKeyPress, maxLength = 6 }) {
     return (
         <View style={styles.codeInputContainer}>
             <TextInput
@@ -9,11 +9,11 @@ export default function AwesomeCodeContainer({ value, onTextInput, refOutlet, on
                 value={value}
                 ref={refOutlet}
                 numberOfLines={1}
-                maxLength={1}
+                maxLength={maxLength}
                 style={styles.codeInputField}
                 onChangeText={onTextInput}
                 onKeyPress={onKeyPress}
-                keyboardType='numeric'
+                keyboardType='number-pad'
                 pointerEvents="none"
             />
         </View>

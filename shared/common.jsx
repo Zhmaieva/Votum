@@ -116,11 +116,15 @@ class DataService {
     user = null;
     oldUser = null;
     allowOfflineSwitch = true;
+    emailToSet = '';
 
     error = {
         usernameTaken: false,
         usernameEmpty: false
     };
+
+    getEmailToSet = () => this.emailToSet;
+    setEmailToSet = (value) => {this.emailToSet = value};
 
     getAllowOfflineSwitch = () => this.allowOfflineSwitch;
     setAllowOfflineSwitch = (value) => {

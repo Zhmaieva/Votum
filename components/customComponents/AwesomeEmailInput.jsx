@@ -21,6 +21,8 @@ export default function AwesomeEmailInput({ value, bareStyle = false, onChangeTe
                 onChangeText(text.toLowerCase());
 
             try {
+                console.log('changing email: ', text);
+                getDataService().setEmailToSet(text);
                 getDataService().getUser().email = text;
             } catch (error) {
                 Logger.error('Error saving email:', error);
@@ -28,6 +30,7 @@ export default function AwesomeEmailInput({ value, bareStyle = false, onChangeTe
 
             return;
         } else {
+            getDataService().setEmailToSet('');
             getDataService().getUser().email = '';
             setValidationErrorMessage('Please enter a valid email address');
         }
