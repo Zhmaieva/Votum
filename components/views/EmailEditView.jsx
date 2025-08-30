@@ -1,12 +1,13 @@
 import React, {useState} from 'react';
-import {View, StyleSheet, SafeAreaView, Text} from 'react-native';
+import {View, StyleSheet, Text} from 'react-native';
 import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeEmailInput from "../customComponents/AwesomeEmailInput";
 import AwesomeButton, {Color} from "../customComponents/AwesomeButton";
 import {emailVerify, emailVerifyStart, signUpStart} from "../../shared/api/apiClient";
 import {getDataService} from "../../shared/common";
 import {useNavigation} from "@react-navigation/native";
-import {AwesomeModal} from "../customComponents/AwesomeModal"; // Reuse your AwesomeButton component
+import {AwesomeModal} from "../customComponents/AwesomeModal";
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const EmailEditView = ({route }) => {
 
@@ -21,7 +22,7 @@ const EmailEditView = ({route }) => {
     const navigation = useNavigation();
 
     return (
-        <SafeAreaView style={styles.safeArea}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: Colors.white }} edges={['bottom']}>
             <View style={styles.container}>
                 <Text style={[styles.margin10, { fontFamily: Fonts.medium, fontSize: 20 }]}>Change Email</Text>
                 <Text style={styles.subtittle}>enter new email</Text>
@@ -75,10 +76,6 @@ const EmailEditView = ({route }) => {
 const styles = StyleSheet.create({
     container: {
         padding: 15
-    },
-    safeArea: {
-        flex: 1,
-        backgroundColor: Colors.white,
     },
     input: {
         height: 40,

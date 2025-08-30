@@ -147,6 +147,7 @@ const styles = StyleSheet.create({
     contentWrapper: {
         paddingLeft: 15,
         paddingRight: 15,
+        paddingTop: 10,
         height: '100%'
     },
     row: {

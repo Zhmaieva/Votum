@@ -48,12 +48,8 @@ const Comments = ({ pollId }) => {
 
     return (
         <>
-            <TouchableOpacity onPress={openSheet}>
-                <Image
-                    source={require('../../assets/images/feedBlack.png')}
-                    style={{ width: 28, height: 28 }}
-                    resizeMode="contain"
-                />
+            <TouchableOpacity style={{backgroundColor: Colors.black, }} onPress={openSheet}>
+                <Text style={{color: Colors.white}}>test</Text>
             </TouchableOpacity>
 
             <BottomSheetModal

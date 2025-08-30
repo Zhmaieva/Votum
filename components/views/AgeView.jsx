@@ -92,7 +92,6 @@ export default function AgeView() {
                 <View style={styles.firstSubContainer}>
                     <Text style={styles.headerStyle}>Select Your Birth Date</Text>
                     <Text style={{ marginBottom: 15, fontFamily: Fonts.regular }}>Personalize your profile</Text>
-
                     <View style={styles.margin20}>
                         <AwesomeBirthPicker
                             dateOfBirth={dateOfBirth ?? new Date()}
@@ -101,7 +100,6 @@ export default function AgeView() {
                             maximumDate={maxDate}
                         />
                     </View>
-
                     <View style={styles.subContainer}>
                         <AwesomeButton text="Next" color={Color.BLACK} additionalFunc={handleNext} />
                     </View>

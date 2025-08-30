@@ -4,6 +4,8 @@ import AwesomeCard from "../customComponents/AwesomeCard";
 import AwesomeFeed from "../customComponents/AwesomeFeed";
 import {calculateTimeDifference} from "../../shared/common";
 import {fetchLikedPolls, fetchMyProfile} from "../../shared/api/apiClient";
+import { SafeAreaView } from 'react-native-safe-area-context';
+import {Colors} from "../../utils/colorUtils";
 
     const LikedView = () => {
 
@@ -37,34 +39,38 @@ import {fetchLikedPolls, fetchMyProfile} from "../../shared/api/apiClient";
 
     if (!polls?.length) {
         return (
-            <View style={styles.emptyContainer}>
-                <Text style={styles.emptyText}>
-                    Something went wrong, check your network connection.
-                </Text>
-            </View>
+            <SafeAreaView style={{ flex: 1, backgroundColor: Colors.white }} edges={['left', 'right']}>
+                <View style={styles.emptyContainer}>
+                    <Text style={styles.emptyText}>
+                        Something went wrong, check your network connection.
+                    </Text>
+                </View>
+            </SafeAreaView>
         );
     }
 
     return (
-        <AwesomeFeed
-            data={polls}
-            onRefresh={onRefresh}
-            refreshing={refreshing}
-            isLikedPollsView={true}
-            renderItem={(item) => {
-                item.timeLeft = calculateTimeDifference(item.endsIn);
-                return (
-                    <View style={styles.container}>
-                        <AwesomeCard
-                            item={item}
-                            handleVote={async (itemId, optionId) => {
-                            }}
-                            loggedInUserId={loggedInUserId}
-                        />
-                    </View>
-                )
-            }}
-        />
+        <SafeAreaView style={{ flex: 1, backgroundColor: Colors.white }} edges={['left', 'right']}>
+            <AwesomeFeed
+                data={polls}
+                onRefresh={onRefresh}
+                refreshing={refreshing}
+                isLikedPollsView={true}
+                renderItem={(item) => {
+                    item.timeLeft = calculateTimeDifference(item.endsIn);
+                    return (
+                        <View style={styles.container}>
+                            <AwesomeCard
+                                item={item}
+                                handleVote={async (itemId, optionId) => {
+                                }}
+                                loggedInUserId={loggedInUserId}
+                            />
+                        </View>
+                    )
+                }}
+            />
+        </SafeAreaView>
     );
 };
 

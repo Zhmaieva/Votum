@@ -340,15 +340,15 @@ const AwesomeVote = ({
                         );
                     })
                 )}
+                <Pressable style={styles.iconContainer} onPress={()=>setModalVisible(true)}>
+                    <Comments pollId={id}/>
+                </Pressable>
                 <View style={[styles.countStyle, styles.row]}>
                     <Text style={[styles.greyTextStyle, styles.fontFamilyStyle]}>{pollExpired ? "Ended" : `Ends in ${formatTimeLeft(remainingTime)}`}</Text>
                     <View style={[styles.countStyle, styles.row]}>
                         <Text style={[styles.greyTextStyle, styles.fontFamilyStyle]}>{formatFollowers(optionsData?.reduce((sum, option) => sum + option.votesCount, 0))} voted</Text>
                         <Text>    </Text>
                         <Text style={[styles.greyTextStyle, styles.fontFamilyStyle]}>{commentsCount} {commentsCount === 1 ? 'comment' : 'comments'}</Text>
-                        <Pressable style={styles.iconContainer} onPress={()=>setModalVisible(true)}>
-                            <Comments pollId={id}/>
-                        </Pressable>
                     </View>
                 </View>
             </View>

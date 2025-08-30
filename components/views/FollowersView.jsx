@@ -4,6 +4,7 @@ import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeUserHeaderPreview from "../customComponents/AwesomeUserHeaderPreview";
 import {fetchFollowers, fetchFollows, fetchMyProfile} from "../../shared/api/apiClient";
 import {useFocusEffect} from "@react-navigation/native";
+import { SafeAreaView } from 'react-native-safe-area-context';
 import {getDataService} from "../../shared/common";
 
 const FollowersView = () => {
@@ -32,46 +33,48 @@ const FollowersView = () => {
     );
 
     return (
-        <View style={styles.container}>
-            {follows.length === 0 ? (
-                <View style={styles.emptyContainer}>
-                    <Text style={styles.emptyText}>
-                        No one’s following you yet
-                    </Text>
-                </View>
-            ) : (
-                <Animated.FlatList
-                    data={follows}
-                    keyExtractor={(item) => item?.userId ?? item}
-                    pagingEnabled
-                    scrollEventThrottle={16}
-                    showsVerticalScrollIndicator={false}
-                    snapToAlignment="start"
-                    decelerationRate="fast"
-                    renderItem={({ item }) => (
-                        <View style={styles.margin10}>
-                            <AwesomeUserHeaderPreview
-                                userData={item}
-                                loggedInUserId={user?.userId}
-                            />
-                        </View>
-                    )}
-                    onEndReachedThreshold={0.5}
-                    onScroll={Animated.event(
-                        [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-                        { useNativeDriver: false }
-                    )}
-                />
-            )}
-        </View>
+        <SafeAreaView style={{ flex: 1, backgroundColor: Colors.white }} edges={['left', 'right']}>
+            <View style={styles.container}>
+                {follows.length === 0 ? (
+                    <View style={styles.emptyContainer}>
+                        <Text style={styles.emptyText}>
+                            No one’s following you yet
+                        </Text>
+                    </View>
+                ) : (
+                    <Animated.FlatList
+                        data={follows}
+                        keyExtractor={(item) => item?.userId ?? item}
+                        pagingEnabled
+                        scrollEventThrottle={16}
+                        showsVerticalScrollIndicator={false}
+                        snapToAlignment="start"
+                        decelerationRate="fast"
+                        renderItem={({ item }) => (
+                            <View style={styles.margin10}>
+                                <AwesomeUserHeaderPreview
+                                    userData={item}
+                                    loggedInUserId={user?.userId}
+                                />
+                            </View>
+                        )}
+                        onEndReachedThreshold={0.5}
+                        onScroll={Animated.event(
+                            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+                            { useNativeDriver: false }
+                        )}
+                    />
+                )}
+            </View>
+        </SafeAreaView>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        padding: 15,
-        backgroundColor: Colors.white,
+        paddingLeft: 15,
+        paddingRight: 15,
+        paddingTop: 15,
     },
     margin10: {
         marginBottom: 10,
