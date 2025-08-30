@@ -17,7 +17,7 @@ import AwesomeButton, {Color} from "./AwesomeButton";
 import ReportPoll from "./AwesomeReportPoll";
 import {getDataService, globalEventEmitter, Loader} from "../../shared/common";
 
-const Comments = ({ pollId }) => {
+const AwesomeComments = ({ pollId }) => {
     const [comments, setComments] = useState([]);
     const [commentText, setCommentText] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -290,4 +290,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default Comments;
+export default AwesomeComments;
