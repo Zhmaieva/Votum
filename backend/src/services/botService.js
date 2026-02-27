@@ -16,7 +16,7 @@ const getNextAvailablePoll = async (userId) => {
 }
 
 const generateActivity = async () => {
-    if (Math.random() > 0.25) //randomly skip activity
+    if (Math.random() > 0.95) //randomly skip activity
         return;
 
     const userId = await getRandomUserId('@votum.com');
