@@ -158,6 +158,7 @@ function UserStack() {
             />
             <Stack.Screen name="Privacy Policy" component={PrivacyPolicyWebView} options={{ headerShown: true, gestureEnabled: true }} />
             <Stack.Screen name="Terms Of Service" component={TermsOfServiceWebView} options={{ headerShown: true, gestureEnabled: true }} />
+            <Stack.Screen name="User Profile" component={SomebodysProfileView} options={{ headerShown: true, gestureEnabled: true }} />
 
         </Stack.Navigator>
     );

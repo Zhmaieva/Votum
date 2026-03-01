@@ -2,11 +2,10 @@
   "expo": {
     "name": "Votum",
     "slug": "Vote2",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
     "scheme": "voteapp",
     "splash": {
       "image": "./assets/icon.png",
@@ -58,12 +57,26 @@
           "photosPermission": "The app accesses your photos to let you setup profile avatar."
         }
       ],
-      ["@react-native-community/datetimepicker", {
-        "android": {
-          "datePicker": { "colorAccent": { "light": "#93A548", "dark": "#93A548" } },
-          "timePicker": { "colorAccent": { "light": "#93A548", "dark": "#93A548" } }
+      [
+        "@react-native-community/datetimepicker",
+        {
+          "android": {
+            "datePicker": {
+              "colorAccent": {
+                "light": "#93A548",
+                "dark": "#93A548"
+              }
+            },
+            "timePicker": {
+              "colorAccent": {
+                "light": "#93A548",
+                "dark": "#93A548"
+              }
+            }
+          }
         }
-      }]
+      ],
+      "expo-image"
     ]
   }
 }
