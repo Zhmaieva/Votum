@@ -1,7 +1,6 @@
 const {pool} = require("./pool");
 const {customAlphabet} = require("nanoid");
 const {EVENT_NAMES} = require("../../constants");
-const {promise} = require("bcrypt/promises");
 
 const alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const customNanoid = customAlphabet(alphabet, 6); // 6-char all caps

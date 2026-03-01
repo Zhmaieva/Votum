@@ -44,6 +44,7 @@ async function getFollowers(userId) {
             up.image,
             GREATEST(up.followers_number, 0) AS "followersNumber",
             up.bio,
+            COALESCE(pv.total_votes, 0)::INTEGER AS "totalVotesNumber",
             CASE
                 WHEN uf2.user_follow_id IS NOT NULL THEN TRUE
                 ELSE FALSE
@@ -53,42 +54,54 @@ async function getFollowers(userId) {
                  JOIN user_follows uf ON uf.user_follower_id = u.id
                  LEFT JOIN user_follows uf2
                            ON uf2.user_follower_id = $1::uuid AND uf2.user_follow_id = u.id
+                 LEFT JOIN (
+            SELECT created_by AS user_id, COALESCE(SUM(votes_count), 0) AS total_votes
+            FROM polls
+            WHERE is_deleted = false
+            GROUP BY created_by
+        ) pv ON pv.user_id = u.id
         WHERE uf.user_follow_id = $1::uuid;
-  `;
+    `;
 
     try {
         const res = await pool.query(query, [userId]);
-        return res.rows || []; // Returns an array of followers
+        return res.rows || [];
     } catch (err) {
-        console.error('Error fetching followers:', err);
+        console.error("Error fetching followers:", err);
         return [];
     }
 }
 
 async function getFollows(userId) {
     const query = `
-    SELECT
-      u.id as "userId",
-      u.username AS "username",
-      up.image,
-      up.followers_number AS "followersNumber",
-      up.bio,
-      true as "isFollowing"
-    FROM users u
-    JOIN user_profiles up ON u.id = up.user_id
-    JOIN user_follows uf ON uf.user_follow_id = u.id
-    WHERE uf.user_follower_id = $1::uuid;
-  `;
+        SELECT
+            u.id as "userId",
+            u.username AS "username",
+            up.image,
+            GREATEST(up.followers_number, 0) AS "followersNumber",
+            up.bio,
+            COALESCE(pv.total_votes, 0)::INTEGER AS "totalVotesNumber",
+            true as "isFollowing"
+        FROM users u
+                 JOIN user_profiles up ON u.id = up.user_id
+                 JOIN user_follows uf ON uf.user_follow_id = u.id
+                 LEFT JOIN (
+            SELECT created_by AS user_id, COALESCE(SUM(votes_count), 0) AS total_votes
+            FROM polls
+            WHERE is_deleted = false
+            GROUP BY created_by
+        ) pv ON pv.user_id = u.id
+        WHERE uf.user_follower_id = $1::uuid;
+    `;
 
     try {
         const res = await pool.query(query, [userId]);
-        return res.rows || []; // Returns an array of followers
+        return res.rows || [];
     } catch (err) {
-        console.error('Error fetching followers:', err);
+        console.error("Error fetching follows:", err);
         return [];
     }
 }
-
 
 async function getUser(userId, currentUserId, isOwnProfile) {
     const queryOwn = `
