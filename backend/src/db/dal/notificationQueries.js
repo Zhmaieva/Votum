@@ -9,48 +9,36 @@ const {pool} = require("./pool");
  */
 async function insertNewFollowNotifications() {
     const query = `
-        WITH inserted AS (
-            INSERT INTO notifications (
-                                       user_id,
-                                       notification_tag,
-                                       message_title,
-                                       message_body,
-                                       message_data
-                )
-                SELECT
-                    u.id AS user_id,
-                    0 AS notification_tag,
-                    'New followers!' AS message_title,
-                    FORMAT(
-                            'You''ve got %s new follower%s since yesterday.',
-                            COUNT(f.*),
-                            CASE WHEN COUNT(f.*) = 1 THEN '' ELSE 's' END
-                    ) AS message_body,
-                    FORMAT('{ "screenName": "Notifications", "userId": "%s" }', u.id) AS message_data
-                FROM users u
-                         JOIN user_follows f ON f.user_follow_id = u.id
-                         LEFT JOIN notifications n
-                                   ON n.user_id = u.id
-                                       AND n.notification_tag = 0
-                WHERE (
-                    n.created_at IS NULL
-                        OR n.created_at < NOW() AT TIME ZONE 'UTC' - INTERVAL '22 hours'
-                    )
-                  AND u.is_new_followers_notification_enabled = true
-                  AND f.created_at > COALESCE(
-                        (
-                            SELECT MAX(n2.created_at)
-                            FROM notifications n2
-                            WHERE n2.user_id = u.id AND n2.notification_tag = 0
-                        ),
-                        TIMESTAMP '2000-01-01'
-                                     )
-                  AND (
-                    (NOW() AT TIME ZONE 'UTC' + (u.timezone_offset || ' hours')::INTERVAL)::TIME
-                        BETWEEN TIME '09:00' AND TIME '21:00')
-                GROUP BY u.id
-                RETURNING 1
-        )
+        WITH last_notif AS (
+            SELECT user_id, MAX(created_at) AS last_created_at
+            FROM notifications
+            WHERE notification_tag = 0
+            GROUP BY user_id
+        ),
+             inserted AS (
+                 INSERT INTO notifications (user_id, notification_tag, message_title, message_body, message_data)
+                     SELECT
+                         u.id,
+                         0,
+                         'New followers!',
+                         FORMAT(
+                                 'You''ve got %s new follower%s since yesterday.',
+                                 COUNT(DISTINCT f.user_follower_id),
+                                 CASE WHEN COUNT(DISTINCT f.user_follower_id) = 1 THEN '' ELSE 's' END
+                         ),
+                         FORMAT('{ "screenName": "Notifications", "userId": "%s" }', u.id)
+                     FROM users u
+                              JOIN user_follows f ON f.user_follow_id = u.id
+                              LEFT JOIN last_notif ln ON ln.user_id = u.id
+                     WHERE u.is_new_followers_notification_enabled = true
+                       AND f.created_at > COALESCE(ln.last_created_at, TIMESTAMP '2000-01-01')
+                       AND (NOW() AT TIME ZONE 'UTC' + (u.timezone_offset || ' hours')::INTERVAL)::TIME
+                         BETWEEN TIME '09:00' AND TIME '21:00'
+                       AND COALESCE(ln.last_created_at, TIMESTAMP '2000-01-01')
+                         < NOW() AT TIME ZONE 'UTC' - INTERVAL '22 hours'
+                     GROUP BY u.id
+                     RETURNING 1
+             )
         SELECT COUNT(*) AS inserted_count FROM inserted;
     `;
 
