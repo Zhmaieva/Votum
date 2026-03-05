@@ -1154,6 +1154,85 @@ async function recalculatePollsScore({ pollIds }) {
     await pool.query(query, [pollIds]);
 }
 
+// ---- scheduled polls DAL ----
+
+/**
+ * Atomically takes (gets + deletes) the oldest scheduled poll.
+ * Returns: { id, pollText, options } or null if none.
+ *
+ * Requires table:
+ * scheduled_polls(id uuid, poll_text varchar(50), options jsonb)
+ */
+async function popNextScheduledPoll() {
+    const client = await pool.connect();
+
+    try {
+        await client.query("BEGIN");
+
+        // Lock 1 row so multiple workers/bots don't take the same poll
+        const { rows } = await client.query(`
+            SELECT id, poll_text, options
+            FROM scheduled_polls
+            ORDER BY id ASC
+            FOR UPDATE SKIP LOCKED
+            LIMIT 1;
+        `);
+
+        if (!rows.length) {
+            await client.query("COMMIT");
+            return null;
+        }
+
+        const row = rows[0];
+
+        await client.query(
+            `DELETE FROM scheduled_polls WHERE id = $1;`,
+            [row.id]
+        );
+
+        await client.query("COMMIT");
+
+        return {
+            id: row.id,
+            pollText: row.poll_text,
+            options: Array.isArray(row.options) ? row.options : (row.options ?? []),
+        };
+    } catch (err) {
+        await client.query("ROLLBACK");
+        throw err;
+    } finally {
+        client.release();
+    }
+}
+
+/**
+ * Posts the next scheduled poll as a real poll and removes it from scheduled_polls.
+ * Duration example: "30 days"
+ *
+ * Returns: { pollId, scheduledId } or null (if no scheduled polls)
+ */
+async function postNextScheduledPoll(createdBy, duration = "30 days") {
+    const scheduled = await popNextScheduledPoll();
+    if (!scheduled) return null;
+
+    // Normalize options to array of strings
+    const options = (scheduled.options || [])
+        .map((o) => (typeof o === "string" ? o : String(o ?? "")))
+        .map((s) => s.trim())
+        .filter(Boolean)
+        .slice(0, 4);
+
+    // Safety: need 2+ options
+    if (options.length < 2) return null;
+
+    // Extra safety: title max 50 (your schema)
+    const question = String(scheduled.pollText || "").trim();
+    if (!question || question.length > 50) return null;
+
+    const { pollId } = await createPoll(createdBy, question, options, duration);
+    return { pollId, scheduledId: scheduled.id };
+}
+
 module.exports = {
     createPoll,
     deletePoll,
@@ -1164,6 +1243,8 @@ module.exports = {
     getPollById,
     getPollOptionResults,
     likePoll,
+    popNextScheduledPoll,
+    postNextScheduledPoll,
     recalculatePollsScore,
     SEARCH_FLAGS,
     searchPolls,

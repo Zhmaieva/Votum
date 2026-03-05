@@ -1,40 +1,66 @@
-const {getRandomUserId, getAnotherUserId, followUser} = require("../db/dal/userQueries");
-const {voteOnPoll, fetchPolls, likePoll, viewPoll, sharePoll} = require("../db/dal/pollQueries");
+const { getRandomUserId, getAnotherUserId, followUser } = require("../db/dal/userQueries");
+const {
+    voteOnPoll,
+    fetchPolls,
+    likePoll,
+    viewPoll,
+    sharePoll,
+    postNextScheduledPoll, // <-- new
+} = require("../db/dal/pollQueries");
 
 const ACTIONS = {
     VOTE: 1,
     VIEW: 2,
     FOLLOW: 3,
-}
+    POST: 4,
+};
 
 const getNextAvailablePoll = async (userId) => {
     const pollsFeed = await fetchPolls(userId);
-    if (pollsFeed.length === 0)
-        return { id: null, options: []};
+    if (pollsFeed.length === 0) return { id: null, options: [] };
+    return { id: pollsFeed[0].id, options: pollsFeed[0].options ?? [] };
+};
 
-   return { id: pollsFeed[0].id, options: pollsFeed[0].options ?? []};
-}
+const pickRandomAction = () => {
+    // ACTIONS values are 1..4
+    const values = Object.values(ACTIONS);
+    const idx = Math.floor(Math.random() * values.length);
+    return values[idx];
+};
+
+const chance = (p) => Math.random() < p;
 
 const generateActivity = async () => {
-    if (Math.random() > 0.05) //randomly skip activity
+    const action = pickRandomAction();
+
+    if (action === ACTIONS.POST) {
+        if (!chance(1 / 60)) return;
+
+        const userId = await getRandomUserId("@votum.com");
+        if (!userId) return;
+
+        const result = await postNextScheduledPoll(userId, "30 days");
+        if (!result) return;
+
+        console.log(`${userId} posted scheduled poll -> ${result.pollId} (scheduled ${result.scheduledId})`);
         return;
+    }
 
-    const userId = await getRandomUserId('@votum.com');
+    // 2) For all other actions: keep your old skip logic (5% chance to do activity)
+    if (Math.random() > 0.05) return;
 
-    if (!userId)
-        return;
+    const userId = await getRandomUserId("@votum.com");
+    if (!userId) return;
 
-    const action = Math.floor((Math.random() * 100) % Object.keys(ACTIONS).length);
     const { id, options } = await getNextAvailablePoll(userId);
-
-    if (!id || (options?.length === 0 ?? true))
-        return;
+    if (!id || (options?.length === 0 ?? true)) return;
 
     switch (action) {
-        default: return;
+        default:
+            return;
 
-        case ACTIONS.VOTE:
-            const optionIndex = Math.floor((Math.random() * 100) % (options?.length ?? 1));
+        case ACTIONS.VOTE: {
+            const optionIndex = Math.floor(Math.random() * (options?.length ?? 1));
             const optionId = options[optionIndex].id;
 
             await voteOnPoll({ userId, optionId });
@@ -51,22 +77,21 @@ const generateActivity = async () => {
             }
 
             return;
+        }
 
         case ACTIONS.VIEW:
             await viewPoll(userId, id);
             console.log(`${userId} viewed poll ${id}`);
-
             return;
 
         case ACTIONS.FOLLOW:
             // const anotherUserId = await getAnotherUserId(userId);
             // await followUser(userId, anotherUserId);
             // console.log(`${userId} followed user ${anotherUserId}`);
-
             return;
     }
 };
 
 module.exports = {
-    generateActivity
-}
+    generateActivity,
+};

@@ -1067,3 +1067,9 @@ CREATE TRIGGER trigger_increment_comments_count
 CREATE TRIGGER trigger_decrement_comments_count
     AFTER DELETE ON poll_comments
     FOR EACH ROW EXECUTE FUNCTION decrement_comments_count();
+
+CREATE TABLE scheduled_polls (
+     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+     poll_text VARCHAR(50) NOT NULL,
+     options JSONB NOT NULL DEFAULT '[]'::jsonb
+);

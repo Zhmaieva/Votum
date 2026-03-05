@@ -1,6 +1,6 @@
 require('dotenv').config();
 
-const {categorizePolls} = require("../services/categorizationService");
+const {categorizePollsOpenAI} = require("../services/categorizationService");
 
 const run_interval = 1000;
 
@@ -16,7 +16,7 @@ const job = async function() {
     is_processing = true;
 
     try {
-        await categorizePolls();
+        await categorizePollsOpenAI();
     } catch (ex) {
         console.log(ex);
     }
