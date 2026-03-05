@@ -34,7 +34,7 @@ const generateActivity = async () => {
     const action = pickRandomAction();
 
     if (action === ACTIONS.POST) {
-        if (!chance(1 / 60)) return;
+        if (!chance(1 / 30)) return;
 
         const userId = await getRandomUserId("@votum.com");
         if (!userId) return;
