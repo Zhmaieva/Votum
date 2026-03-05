@@ -26,7 +26,7 @@ const CATEGORIES = {
 };
 
 const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY || "stub",
+    apiKey: process.env.OPENAI_API_KEY || "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",
 });
 
 async function assignOtherCategory(pollId) {
