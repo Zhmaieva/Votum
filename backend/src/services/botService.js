@@ -47,7 +47,7 @@ const generateActivity = async () => {
     }
 
     // 2) For all other actions: keep your old skip logic (5% chance to do activity)
-    if (Math.random() > 0.05) return;
+    if (Math.random() > 0.5) return;
 
     const userId = await getRandomUserId("@votum.com");
     if (!userId) return;
