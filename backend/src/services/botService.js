@@ -46,8 +46,8 @@ const generateActivity = async () => {
         return;
     }
 
-    // 2) For all other actions: keep your old skip logic (5% chance to do activity)
-    if (Math.random() > 0.5) return;
+    // 2) For all other actions: keep your old skip logic (100% chance to do activity)
+    // if (Math.random() > 0.75) return;
 
     const userId = await getRandomUserId("@votum.com");
     if (!userId) return;
@@ -59,6 +59,7 @@ const generateActivity = async () => {
         default:
             return;
 
+        case ACTIONS.FOLLOW:
         case ACTIONS.VOTE: {
             const optionIndex = Math.floor(Math.random() * (options?.length ?? 1));
             const optionId = options[optionIndex].id;
@@ -84,11 +85,11 @@ const generateActivity = async () => {
             console.log(`${userId} viewed poll ${id}`);
             return;
 
-        case ACTIONS.FOLLOW:
-            // const anotherUserId = await getAnotherUserId(userId);
-            // await followUser(userId, anotherUserId);
-            // console.log(`${userId} followed user ${anotherUserId}`);
-            return;
+        // case ACTIONS.FOLLOW:
+        //     // const anotherUserId = await getAnotherUserId(userId);
+        //     // await followUser(userId, anotherUserId);
+        //     // console.log(`${userId} followed user ${anotherUserId}`);
+        //     return;
     }
 };
 
