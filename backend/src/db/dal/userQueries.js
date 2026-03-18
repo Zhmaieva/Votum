@@ -417,14 +417,14 @@ async function insertAnonymousUserWithProfile() {
         const query = `
             WITH inserted_user AS (
                 INSERT INTO users (username, email, password_hash)
-                VALUES ($1, $1, $1)
-                RETURNING id
+                    VALUES ($1::varchar, $1::varchar, $1::text)
+                    RETURNING id
             ),
-            profile_insert AS (
-                INSERT INTO user_profiles (user_id)
-                SELECT id FROM inserted_user
-                RETURNING user_id
-            )
+                 profile_insert AS (
+                     INSERT INTO user_profiles (user_id)
+                         SELECT id FROM inserted_user
+                         RETURNING user_id
+                 )
             SELECT id AS user_id FROM inserted_user;
         `;
 
