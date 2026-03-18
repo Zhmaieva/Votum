@@ -404,6 +404,45 @@ async function checkActivationCode(emailHash, code) {
 }
 
 /**
+ * Insert an anonymous user with default values and create their profile.
+ * @returns {Promise<{ user_id: string }>}
+ */
+async function insertAnonymousUserWithProfile() {
+    const client = await pool.connect();
+    try {
+        await client.query('BEGIN');
+
+        const anonymousId = `anon_${crypto.randomUUID()}`;
+
+        const query = `
+            WITH inserted_user AS (
+                INSERT INTO users (username, email, password_hash)
+                VALUES ($1, $1, $1)
+                RETURNING id
+            ),
+            profile_insert AS (
+                INSERT INTO user_profiles (user_id)
+                SELECT id FROM inserted_user
+                RETURNING user_id
+            )
+            SELECT id AS user_id FROM inserted_user;
+        `;
+
+        const result = await client.query(query, [anonymousId]);
+
+        await client.query('COMMIT');
+
+        return result.rows[0]; // { user_id: UUID }
+    } catch (error) {
+        await client.query('ROLLBACK');
+        console.error('Error inserting anonymous user with profile:', error);
+        throw error;
+    } finally {
+        client.release();
+    }
+}
+
+/**
  * Check username availability, insert user if necessary, and create a user profile.
  * @param {string} username - The desired username.
  * @param {string} emailHash - The user's email.
@@ -870,6 +909,7 @@ module.exports = {
     getUserById,
     getUserByLogin,
     getVerificationCode,
+    insertAnonymousUserWithProfile,
     recalculateCategoryScore,
     setCategories,
     unfollowUser,

@@ -317,7 +317,7 @@ app.post("/user/register/verify", async (req, res, next) => {
 });
 
 // Check username availability endpoint
-app.get('/users', signupAuthMiddleware, async (req, res, next) => {
+app.get('/users', async (req, res, next) => {
     try {
         const { username } = req.query;
 
@@ -358,6 +358,17 @@ app.get('/users/registered', authMiddleware, async (req, res, next) => {
         return res.json({ message: 'username available' });
     }
     catch (e) {
+        next(e);
+    }
+});
+
+app.post("/profile/register-instant", signupAuthMiddleware,async (req, res, next) => {
+    try {
+        const { code, user_id } = await insertAnonymousUserWithProfile();
+
+        const token = generateToken({id: user_id});
+        res.status(201).json({ message: "User registered successfully", userId: user_id, token: token});
+    } catch (e) {
         next(e);
     }
 });
