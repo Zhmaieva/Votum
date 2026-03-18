@@ -13,7 +13,8 @@ const {getActivationCode, checkActivationCode, checkAndInsertUserWithProfile, ge
     addInquiry,
     changeEmail,
     getUserById,
-    changePasswordById
+    changePasswordById,
+    insertAnonymousUserWithProfile
 } = require("./db/dal/userQueries");
 const {validateEmail, validateUsername, validatePassword} = require("./validation");
 const {uploadMiddleware} = require("./middleware/fileUploadMiddleware");
@@ -364,7 +365,7 @@ app.get('/users/registered', authMiddleware, async (req, res, next) => {
 
 app.post("/profile/register-instant", async (req, res, next) => {
     try {
-        const { code, user_id } = await insertAnonymousUserWithProfile();
+        const { user_id } = await insertAnonymousUserWithProfile();
 
         const token = generateToken({id: user_id});
         res.status(201).json({ message: "User registered successfully", userId: user_id, token: token});
