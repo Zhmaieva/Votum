@@ -362,7 +362,7 @@ app.get('/users/registered', authMiddleware, async (req, res, next) => {
     }
 });
 
-app.post("/profile/register-instant", signupAuthMiddleware,async (req, res, next) => {
+app.post("/profile/register-instant", async (req, res, next) => {
     try {
         const { code, user_id } = await insertAnonymousUserWithProfile();
 
