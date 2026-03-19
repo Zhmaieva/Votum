@@ -14,7 +14,6 @@ export default function AwesomeCodeContainer({ value, onTextInput, refOutlet, on
                 onChangeText={onTextInput}
                 onKeyPress={onKeyPress}
                 keyboardType='number-pad'
-                pointerEvents="none"
             />
         </View>
     );

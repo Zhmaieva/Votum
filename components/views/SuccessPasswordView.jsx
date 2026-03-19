@@ -21,6 +21,7 @@ export default function SuccessPasswordView({ navigation, route }) {
                             return;
                         }
 
+                        navigation.navigate('Profile');
                         navigation.reset({
                             index: 0,
                             routes: [

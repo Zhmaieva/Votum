@@ -8,6 +8,9 @@
 <code>npm install -g expo-cli</code> better to install local instead
 <p></p>
 <code>npx expo prebuild</code> may fail for Android, it's fine
+<br>
+<code>npx expo prebuild --platform ios</code> for iOS only
+<code>npx expo prebuild --platform android</code> for Android only
 <p></p>
 <code>npx pod-install</code>
 <p></p>

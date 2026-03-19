@@ -4,7 +4,7 @@ import { Image } from "expo-image";
 import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from "./AwesomeButton";
 import { followProfile, unfollowProfile } from "../../shared/api/apiClient";
-import { globalEventEmitter } from "../../shared/common";
+import {getDataService, globalEventEmitter} from "../../shared/common";
 import { useNavigation } from "@react-navigation/native";
 
 const followChangedEventName = "followChanged";
@@ -67,15 +67,18 @@ const AwesomeUserHeaderPreview = ({ userData, loggedInUserId }) => {
         }
     })
 
-    const handleFollowToggle = () => {
+    const handleFollowToggle = async () => {
         const newFollowState = !isFollowing;
         setIsFollowing(newFollowState);
+        let result = false;
         if (newFollowState) {
-            followProfile(user.userId);
+            result = await followProfile(user.userId, navigation);
         } else {
-            unfollowProfile(user.userId);
+            result = await unfollowProfile(user.userId);
         }
-        globalEventEmitter.emit(followChangedEventName, { ...user, isFollowing: newFollowState });
+        if (result) {
+            globalEventEmitter.emit(followChangedEventName, { ...user, isFollowing: newFollowState });
+        }
     };
 
     if (!user) return null;
@@ -105,7 +108,7 @@ const AwesomeUserHeaderPreview = ({ userData, loggedInUserId }) => {
                 <View style={styles.buttonContainer}>
                     <AwesomeButton
                         color={Color.BLACK}
-                        isInChangedTextMode={isFollowing}
+                        isInChangedTextMode={isFollowing && !getDataService().isAnonymous()}
                         additionalFunc={handleFollowToggle}
                         text="Follow"
                         changedText="Unfollow"

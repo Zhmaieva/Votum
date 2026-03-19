@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity, Pressable } from "react-native";
 import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeButton, { Color } from "./AwesomeButton";
-import {globalEventEmitter, onShare} from "../../shared/common";
+import {getDataService, globalEventEmitter, onShare} from "../../shared/common";
 import { followProfile, unfollowProfile } from "../../shared/api/apiClient";
 import { useNavigation } from "@react-navigation/native";
 import { AwesomeModal } from "./AwesomeModal";
@@ -53,15 +53,18 @@ const AwesomeUserHeader = ({
     // const formattedFollowers = formatFollowers(user.followingNumber);
     // const followersText = user.followingNumber === 1 ? "follower" : "followers";
 
-    const handleFollowToggle = () => {
+    const handleFollowToggle = async () => {
         const newFollowState = !isFollowing;
         setIsFollowing(newFollowState);
+        let result = false;
         if (newFollowState) {
-            followProfile(user.userId);
+            result = await followProfile(user.userId, navigation);
         } else {
-            unfollowProfile(user.userId);
+            result = await unfollowProfile(user.userId);
         }
-        globalEventEmitter.emit(followChangedEventName, { ...user, isFollowing: newFollowState });
+        if (result) {
+            globalEventEmitter.emit(followChangedEventName, { ...user, isFollowing: newFollowState });
+        }
     };
 
     const handleBlockPress = () => setShowBlockModal(true);
@@ -141,7 +144,7 @@ const AwesomeUserHeader = ({
                             <AwesomeButton
                                 text="Follow"
                                 changedText="Unfollow"
-                                isInChangedTextMode={isFollowing}
+                                isInChangedTextMode={isFollowing && !getDataService().isAnonymous()}
                                 additionalFunc={handleFollowToggle}
                                 color={Color.BLACK}
                                 textColor={isFollowing ? Colors.black : Colors.white}

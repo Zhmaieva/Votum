@@ -119,7 +119,8 @@ async function getUser(userId, currentUserId, isOwnProfile) {
             u.is_debug,
             u.is_new_followers_notification_enabled,
             up.birth_date AS "birthdate",
-            up.gender AS "gender"
+            up.gender AS "gender",
+            u.email LIKE 'anon_%' AS "isAnonymous"
         FROM users u
                  JOIN user_profiles up ON u.id = up.user_id
                  LEFT JOIN polls p ON p.created_by = u.id AND p.is_deleted = false
@@ -133,7 +134,7 @@ async function getUser(userId, currentUserId, isOwnProfile) {
             ) uc ON true
         WHERE u.id = $1::uuid
         GROUP BY u.id, u.username, up.image, up.birth_date, up.gender, up.followers_number, up.following_number, up.bio, uc."onboardingComplete";
-  `;
+    `;
 
     const queryOther = `
         SELECT
@@ -153,17 +154,9 @@ async function getUser(userId, currentUserId, isOwnProfile) {
                  LEFT JOIN polls p ON p.created_by = u.id AND p.is_deleted = false
                  LEFT JOIN user_follows uf2
                            ON uf2.user_follower_id = $2::uuid AND uf2.user_follow_id = u.id
-                 LEFT JOIN LATERAL (
-            SELECT CASE
-                       WHEN COUNT(*) > 0 THEN true
-                       ELSE false
-                       END AS "onboardingComplete"
-            FROM user_categories
-            WHERE user_id = u.id AND is_chosen = true
-            ) uc ON true
         WHERE u.id = $1::uuid
-        GROUP BY u.id, u.username, up.image, up.birth_date, up.gender, up.followers_number, up.following_number, up.bio, uc."onboardingComplete", uf2.user_follow_id;
-  `;
+        GROUP BY u.id, u.username, up.image, up.followers_number, up.following_number, up.bio, uf2.user_follow_id;
+    `;
 
     try {
         const res = isOwnProfile

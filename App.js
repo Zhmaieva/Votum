@@ -4,7 +4,7 @@ import * as Linking from 'expo-linking';
 import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
 import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
-import { AwesomeTabs, AuthNavigator } from "./components/views/navigation/AwesomeTabs";
+import {AwesomeTabs, AuthNavigator, AuthenticatedNavigator} from "./components/views/navigation/AwesomeTabs";
 import {getDataService, globalEventEmitter, Loader, Logger} from "./shared/common";
 import {fetchMyProfile, isTokenAvailable, resetToken, updatePushToken} from "./shared/api/apiClient";
 import { ActivityIndicator, View } from "react-native";
@@ -20,10 +20,54 @@ SplashScreen.preventAutoHideAsync().then(_ => {});
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
         shouldShowList: true,
+        shouldShowAlert: true,
         shouldPlaySound: false,
         shouldSetBadge: false,
     }),
 });
+
+import { CommonActions } from "@react-navigation/native";
+import * as Updates from "expo-updates";
+
+export function goToFollowersWithBackToEditProfile(navigationRef, force = false) {
+    // if (!navigationRef.isReady() && !force) {
+    //     setTimeout(() => {
+    //         goToFollowersWithBackToEditProfile(navigationRef, true);
+    //     }, 1000);
+    //     return;
+    // }
+    //
+    // navigationRef.dispatch(
+    //     CommonActions.reset({
+    //         index: 0,
+    //         routes: [
+    //             {
+    //                 name: "Back to the app",
+    //                 state: {
+    //                     index: 4, // <-- tab index: FEED(0), SEARCH(1), ADD(2), VOTED(3), MY PROFILE(4)
+    //                     routes: [
+    //                         { name: "FEED" },
+    //                         { name: "SEARCH" },
+    //                         { name: "ADD POLL" },
+    //                         { name: "VOTED" },
+    //                         {
+    //                             name: "MY PROFILE",
+    //                             state: {
+    //                                 index: 2,
+    //                                 routes: [
+    //                                     { name: "Profile" },
+    //                                     { name: "Edit profile" },
+    //                                     { name: "Followers" },
+    //                                 ],
+    //                             },
+    //                         },
+    //                     ],
+    //                 },
+    //             },
+    //         ],
+    //     })
+    // );
+}
 
 export default function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(true);
@@ -69,7 +113,10 @@ export default function App() {
             profile = await fetchMyProfile();
             if (profile) {
                 getDataService().setUser(profile);
-                isOnboardingDone = profile.onboardingComplete;
+                isOnboardingDone = !!profile.onboardingComplete || !!profile.isAnonymous;
+
+                console.log("profile.onboardingComplete", !!profile.onboardingComplete);
+                console.log("profile.isAnonymous", !!profile.isAnonymous);
             }
         }
         setIsAuthenticated(tokenAvailable && isOnboardingDone);
@@ -87,37 +134,28 @@ export default function App() {
         if (skipMainLoading)
             return;
 
-        getDataService().setUser(null);
-        getDataService().commitUserChanges();
-
-        await checkOnboardingReadiness();
+        await Updates.reloadAsync();
     }
 
     const signIn = async () => {
-        if (isAuthenticated)
-            await registerForPushNotificationsAsync();
+        await registerForPushNotificationsAsync();
 
-        getDataService().setUser(null);
-        getDataService().commitUserChanges();
-
-        setIsAuthenticated(true);
+        await Updates.reloadAsync();
     }
 
     const signOut = async (force) => {
         Logger.log('Sign Out', force);
 
-        getDataService().setUser(null);
-        getDataService().commitUserChanges();
+        await deregisterForPushNotificationsAsync()
+        await resetToken();
 
-        if (isAuthenticated)
-            if (force || await deregisterForPushNotificationsAsync()) {
-                await resetToken();
-                setIsAuthenticated(false);
-            }
+        await Updates.reloadAsync();
     }
 
     const onPasswordReset = async () => {
         const tokenAvailable = await isTokenAvailable();
+        console.log(tokenAvailable, 'tokenAvailable');
+
         let isOnboardingDone = false;
         if (tokenAvailable) {
             const profile = await fetchMyProfile();
@@ -125,12 +163,18 @@ export default function App() {
                 getDataService().setUser(profile);
                 isOnboardingDone = profile.onboardingComplete;
             }
-        }
-        if (tokenAvailable) {
+
             if (!isOnboardingDone)
                 globalEventEmitter.emit('signup', { skipMainLoading: true});
-            else
-                setIsAuthenticated(true );
+            else {
+                setIsAuthenticated(true);
+                navigationRef.navigate('Back to the app', {
+                    screen: 'MY PROFILE',
+                    params: {
+                        screen: 'Profile',
+                    },
+                });
+            }
         }
     }
 
@@ -167,6 +211,10 @@ export default function App() {
     };
 
     useEffect(() => {
+        checkOnboardingReadiness().then();
+    }, [isTokenAvailable()]);
+
+    useEffect(() => {
         loader.load([new Promise(resolve => resolve()).then(async () => {
             await loadFontAndInit();
         })]).then(() => {});
@@ -174,33 +222,35 @@ export default function App() {
         const subscription = Linking.addEventListener('url', handleUrl);
 
         const notificationReceivedListener = Notifications.addNotificationReceivedListener(notification => {
-            Logger.log('Notification received:', notification);
+            //Logger.log('Notification received:', notification);
         });
 
         const notificationResponseReceivedListener = Notifications.addNotificationResponseReceivedListener(response => {
-            const data = response.notification?.request?.content?.data;
-            if (!data?.screenName)
-                return;
-
-            Logger.log('Current routes:', navigationRef.getRootState());
-
-            if (data?.screenName === 'Notifications') {
-                navigationRef.reset({
-                    index: 0,
-                    routes: [
-                        {
-                            name: 'MY PROFILE',
-                            state: {
-                                index: 1,
-                                routes: [
-                                    { name: 'Profile' },
-                                    { name: 'Notifications' },
-                                ]
-                            }
-                        }
-                    ]
-                });
-            }
+            // //Logger.log("Notification response:", response);
+            // const data = response.notification?.request?.content?.data;
+            // if (!data?.screenName)
+            //     return;
+            //
+            // //Logger.log('Current routes:', navigationRef.getRootState());
+            //
+            // if (data?.screenName === 'Notifications') {
+            //     navigationRef.reset({
+            //         index: 0,
+            //         routes: [
+            //             {
+            //                 name: 'MY PROFILE',
+            //                 state: {
+            //                     index: 1,
+            //                     routes: [
+            //                         { name: 'Profile' },
+            //                         { name: 'Notifications' },
+            //                     ]
+            //                 }
+            //             }
+            //         ]
+            //     });
+            // }
+            goToFollowersWithBackToEditProfile(navigationRef);
         });
 
         globalEventEmitter.on('signup', onSignup);
@@ -222,6 +272,8 @@ export default function App() {
         };
     }, []);
 
+    console.log('isAuthenticated', isAuthenticated);
+
     return (
         <SafeAreaProvider style={{backgroundColor: '#ffffff'}}>
             <NoInternetWrapper>
@@ -234,7 +286,7 @@ export default function App() {
                         <GestureHandlerRootView style={{ flex: 1}}>
                             <BottomSheetModalProvider>
                                 <NavigationContainer ref={navigationRef}>
-                                    {isAuthenticated ? <AwesomeTabs /> : <AuthNavigator />}
+                                    {isAuthenticated ? <AuthenticatedNavigator /> : <AuthNavigator />}
                                 </NavigationContainer>
                             </BottomSheetModalProvider>
                         </GestureHandlerRootView>

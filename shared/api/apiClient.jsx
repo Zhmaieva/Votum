@@ -6,11 +6,28 @@ import {BASE_URL} from "./api-constants";
 let tokenValue = null;
 
 const getToken = async function() {
-    return tokenValue ?? await AsyncStorage.getItem('auth_token');
+    // await AsyncStorage.clear();
+    // return;
+
+    const token = tokenValue ?? await AsyncStorage.getItem('auth_token');
+    const newUser = await AsyncStorage.getItem('existing_user');
+
+    if (!token && !newUser) {
+        const result = await signUpInstant();
+        await AsyncStorage.setItem('existing_user', 'true');
+        return result;
+    }
+
+    if (!newUser && token) {
+        await AsyncStorage.setItem('existing_user', 'true');
+    }
+
+    return token;
 }
 
 export const isTokenAvailable = async function() {
-    return !!(tokenValue || await AsyncStorage.getItem('auth_token'));
+    const token = await getToken();
+    return !!token;
 }
 
 export const resetToken = async function() {
@@ -74,6 +91,22 @@ apiClient.interceptors.response.use(
         return Promise.reject(error); // Always reject so the caller can handle it too
     }
 );
+
+const signUpInstant = async () => {
+    try {
+        const response = await apiClient.post(`/profile/register-instant`);
+        const { token } = response.data;
+        await AsyncStorage.setItem('auth_token', token); // Save token in AsyncStorage
+        tokenValue = token;
+
+        console.log('Instant registration successful');
+
+        return tokenValue;
+    } catch (err) {
+        console.log('Instant registration failed', err);
+        return null;
+    }
+};
 
 export const signIn = async (usernameOrEmail, password) => {
     try {
@@ -676,8 +709,13 @@ export const setUserCategories = async (categoryIds) => {
     }
 };
 
-export const followProfile = async (id) => {
+export const followProfile = async (id, navigation) => {
     try {
+        if (navigation && getDataService().isAnonymous()) {
+            navigation.navigate('Auth'); // push auth stack
+            return false;
+        }
+
         Logger.log(`following profile ${id}`);
         const response = await apiClient.post(`/profile/followers`, {
             userId: id

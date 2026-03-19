@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
         paddingBottom: 30,
     },
     buttonContainer: {
-        marginBottom: 15,
+        marginBottom: 55,
     },
     questionContainer: {
         alignItems: 'center',

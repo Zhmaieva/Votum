@@ -129,9 +129,12 @@ const FeedView = ({ route }) => {
                     <AwesomeSwitcher
                         leftOption='MY FEED'
                         rightOption='TRENDING'
-                        onDisplayModeChangedHandler={(value) => {
+                        onDisplayModeChangedHandler={async (value) => {
+                            const refresh = selectedOption !== value
                             setSelectedOption(value);
                             globalEventEmitter.emit('feedSwitch',{});
+                            if (refresh)
+                                await loadAll();
                             // setLoading(true); // will show <AwesomeLoadingPoll /> in AwesomeFeed
                             // setTimeout(() => setLoading(false), 300); // short delay to smoothen UI
                         }}

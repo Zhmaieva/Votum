@@ -85,12 +85,15 @@ const AwesomeUserHeader = ({
     const handleFollowToggle = async () => {
         const newFollowState = !user.isFollowing;
         console.log('newFollowState', newFollowState);
+        let result = false;
         if (newFollowState) {
-            await followProfile(user.userId);
+            result = await followProfile(user.userId, navigation);
         } else {
-            await unfollowProfile(user.userId);
+            result = await unfollowProfile(user.userId);
         }
-        globalEventEmitter.emit(followChangedEventName, { ...user, isFollowing: newFollowState });
+        if (result) {
+            globalEventEmitter.emit(followChangedEventName, { ...user, isFollowing: newFollowState });
+        }
     };
 
     const handleBlockPress = () => setShowBlockModal(true);

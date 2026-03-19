@@ -11,7 +11,7 @@ import ProfileEditView from "../ProfileEditView";
 import BioEditView from "../BioEditView";
 import EmailEditView from "../EmailEditView";
 import {isTokenAvailable} from "../../../shared/api/apiClient";
-import {globalEventEmitter, Logger} from "../../../shared/common";
+import {getDataService, globalEventEmitter, Logger} from "../../../shared/common";
 import FollowingView from "../FollowingView";
 import RegistrationMethodView from "../RegistrationMethodView";
 import EmailRegisterView from "../EmailRegisterView";
@@ -73,7 +73,7 @@ function AuthFlow() {
             <AuthStack.Screen name="Username" component={UsernameView} options={{ headerShown: false, gestureEnabled: true }}/>
             <AuthStack.Screen name="Log in" component={LogInView} options={{ headerShown: false, gestureEnabled: true }}/>
             <AuthStack.Screen name="Forgot password" component={ForgotPasswordView} options={{ headerShown: false, gestureEnabled: true }}/>
-            <AuthStack.Screen name="New Password" component={NewPasswordView} options={{ headerShown: false, gestureEnabled: true }} initialParams={{ flowType: VERIFICATION_FLOW_TYPE.CHANGE_PASSWORD}}/>
+            <AuthStack.Screen name="New Password" component={NewPasswordView} options={{ headerShown: false, gestureEnabled: true }} initialParams={{ flowType: VERIFICATION_FLOW_TYPE.FORGOT_PASSWORD}}/>
             <AuthStack.Screen name="Privacy Policy" component={PrivacyPolicyWebView} options={{ headerShown: true, gestureEnabled: true }} />
             <AuthStack.Screen name="Terms Of Service" component={TermsOfServiceWebView} options={{ headerShown: true, gestureEnabled: true }} />
             <AuthStack.Screen
@@ -159,7 +159,6 @@ function UserStack() {
             <Stack.Screen name="Privacy Policy" component={PrivacyPolicyWebView} options={{ headerShown: true, gestureEnabled: true }} />
             <Stack.Screen name="Terms Of Service" component={TermsOfServiceWebView} options={{ headerShown: true, gestureEnabled: true }} />
             <Stack.Screen name="User Profile" component={SomebodysProfileView} options={{ headerShown: true, gestureEnabled: true }} />
-
         </Stack.Navigator>
     );
 }
@@ -170,7 +169,7 @@ function FeedStack() {
         <Stack.Navigator id="Test2">
             <Stack.Screen name="Feed" component={FeedView} options={{ headerShown: false, gestureEnabled: true }} />
             <Stack.Screen name="User Profile" component={SomebodysProfileView} options={{ headerShown: true, gestureEnabled: true }} />
-            <Stack.Screen name="Profile" component={MyUserProfileView} options={{ headerShown: false, gestureEnabled: true }} />
+            <Stack.Screen name="Profile" component={MyUserProfileView} options={{ headerShown: true, gestureEnabled: true }} />
 
         </Stack.Navigator>
     );
@@ -184,12 +183,12 @@ function VotedStack() {
     return (
         <Stack.Navigator id="Test3">
             <Stack.Screen
-                name="VotedMain"
+                name="Voted"
                 component={VotedView}
                 options={{ headerShown: false, gestureEnabled: true }}
             />
-            <Stack.Screen name="User Profile" component={SomebodysProfileView} options={{ headerShown: false, gestureEnabled: true }} />
-            <Stack.Screen name="Profile" component={MyUserProfileView} options={{ headerShown: false, gestureEnabled: true }} />
+            <Stack.Screen name="User Profile" component={SomebodysProfileView} options={{ headerShown: true, gestureEnabled: true }} />
+            <Stack.Screen name="Profile" component={MyUserProfileView} options={{ headerShown: true, gestureEnabled: true }} />
         </Stack.Navigator>
     );
 }
@@ -198,7 +197,7 @@ function VotedStack() {
 function AddStack() {
     return (
         <Stack.Navigator id="Test4">
-            <Stack.Screen name="AddMain" component={AddView} options={{ headerShown: false, gestureEnabled: true }} />
+            <Stack.Screen name="Add poll" component={AddView} options={{ headerShown: false, gestureEnabled: true }} />
             <Stack.Screen name="Preview Poll" component={PreviewPollView} options={{ headerShown: false, gestureEnabled: true }} />
             <Stack.Screen name="Interm Page" component={IntermediatePage} options={{ headerShown: false, gestureEnabled: true, unmountOnBlur: true }} />
             <Stack.Screen name="Profile" component={MyUserProfileView} options={{ headerShown: false, gestureEnabled: true }} />
@@ -210,9 +209,9 @@ function AddStack() {
 function SearchStack() {
     return (
         <Stack.Navigator id="Test5">
-            <Stack.Screen name="SearchMain" component={SearchView} options={{ headerShown: false, gestureEnabled: true }} />
-            <Stack.Screen name="User Profile" component={SomebodysProfileView} options={{ headerShown: false, gestureEnabled: true }} />
-            <Stack.Screen name="Profile" component={MyUserProfileView} options={{ headerShown: false, gestureEnabled: true }} />
+            <Stack.Screen name="Search" component={SearchView} options={{ headerShown: false, gestureEnabled: true }} />
+            <Stack.Screen name="User Profile" component={SomebodysProfileView} options={{ headerShown: true, gestureEnabled: true }} />
+            <Stack.Screen name="Profile" component={MyUserProfileView} options={{ headerShown: true, gestureEnabled: true }} />
         </Stack.Navigator>
     );
 }
@@ -247,16 +246,25 @@ export function AuthNavigator() {
 
     return authenticated ? (
             <Stack.Navigator screenOptions={{ headerShown: false }}>
-                <Stack.Screen name="Auth" component={OnboardingFlow} />
-                <Stack.Screen name="MainTabs" component={AwesomeTabs} />
+                <Stack.Screen name="Onboarding" component={OnboardingFlow} />
+                <Stack.Screen name="Back to the app" component={AwesomeTabs} />
             </Stack.Navigator>
         )
         : (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name="Auth" component={AuthFlow} />
-            <Stack.Screen name="MainTabs" component={AwesomeTabs} />
+            <Stack.Screen name="Back to the app" component={AwesomeTabs} />
         </Stack.Navigator>
     );
+}
+
+export function AuthenticatedNavigator() {
+    return (
+            <Stack.Navigator screenOptions={{ headerShown: false }}>
+                <Stack.Screen name="Back to the app" component={AwesomeTabs} />
+                <Stack.Screen name="Auth" component={AuthFlow} options={{ headerShown: true, title: '' }} />
+            </Stack.Navigator>
+        );
 }
 
 // 🔹 Main Tab Navigator
@@ -374,8 +382,12 @@ export function AwesomeTabs() {
                 options={{ headerShown: false, gestureEnabled: true }}
                 listeners={({ navigation }) => ({
                     tabPress: (e) => {
-                        e.preventDefault(); // stop default tab behavior
-
+                        if (getDataService().isAnonymous()) {
+                            e.preventDefault(); // block default tab navigation
+                            navigation.navigate('Auth'); // push auth stack
+                            return;
+                        }
+                        
                         // Reset AddStack to show AddMain (the form screen)
                         navigation.navigate('ADD POLL', {
                             screen: 'NoInternetWrapper',
@@ -397,6 +409,11 @@ export function AwesomeTabs() {
             <Tab.Screen name="MY PROFILE" component={UserStack} options={{ headerShown: false, gestureEnabled: true }}
                 listeners={({ navigation }) => ({
                     tabPress: (e) => {
+                        if (getDataService().isAnonymous()) {
+                            e.preventDefault(); // block default tab navigation
+                            navigation.navigate('Auth'); // push auth stack
+                            return;
+                        }
                         if (navigation.isFocused())
                             globalEventEmitter.emit('feedSwitch', {tabName: 'MY PROFILE'});
                     },

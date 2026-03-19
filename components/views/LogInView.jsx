@@ -46,9 +46,9 @@ const LogInView = ({ }) => {
                                 getDataService().getUser().email,
                                 getDataService().getUser().password);
                             if (result) {
-                                globalEventEmitter.emit('signIn', { });
+                                globalEventEmitter.emit('signIn');
                             } else {
-                                setModalVisible(true)
+                                setModalVisible(true);
                             }
                         }} />
                     </View>

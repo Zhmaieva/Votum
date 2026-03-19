@@ -11,7 +11,7 @@ export const Logger = {
     warn: (log) => {
         console.warn(log);
         if (getDataService().getUser()?.is_debug ?? false)
-            writeDebugLog(log).then(_ => {});
+            writeDebugLog(log).then(_ => {}).catch();
     },
     error: (log, templateValue = '') => {
         if (templateValue)
@@ -19,15 +19,15 @@ export const Logger = {
         else
             console.error(log);
         if (getDataService().getUser()?.is_debug ?? false)
-            writeDebugLog(`${log} ${templateValue}`).then(_ => {});
+            writeDebugLog(`${log} ${templateValue}`).then(_ => {}).catch();
     },
     log: (log, templateValue = '') => {
         if (templateValue)
             console.log(log, templateValue);
         else
             console.log(log);
-        if (getDataService().getUser()?.is_debug ?? false)
-            writeDebugLog(`${log} ${templateValue}`).then(_ => {});
+        if (getDataService()?.getUser()?.is_debug ?? false)
+            writeDebugLog(`${log} ${templateValue}`).then(_ => {}).catch();
     }
 }
 
@@ -139,6 +139,10 @@ class DataService {
 
     getUser() {
         return this.user;
+    }
+
+    isAnonymous() {
+        return !!this.user?.isAnonymous;
     }
 
     setUserNameTakenError() {

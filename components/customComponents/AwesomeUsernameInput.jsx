@@ -22,7 +22,7 @@ const AwesomeUsernameInput = ({ route }) => {
     useFocusEffect(
         React.useCallback(() => {
             const user = getDataService().getUser();
-            const actualUsername = user?.username || '';
+            const actualUsername = !getDataService().isAnonymous() ? (user?.username || '') : '';
 
             setUsername(actualUsername);
             setIsAvailable(null);
