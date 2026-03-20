@@ -439,47 +439,70 @@ async function insertAnonymousUserWithProfile() {
  * Check username availability, insert user if necessary, and create a user profile.
  * @param {string} username - The desired username.
  * @param {string} emailHash - The user's email.
+ * @param {string} currentUserId - The anonymous user's ID to recycle.
  * @param {string} passwordHash - The hashed password.
  * @returns {Promise<{ code: number, user_id: string | null }>}
  */
-async function checkAndInsertUserWithProfile(username, emailHash, passwordHash) {
+async function checkAndInsertUserWithProfile({username, emailHash, currentUserId, passwordHash}) {
     const client = await pool.connect();
     try {
         await client.query('BEGIN');
 
         const query = `
             WITH existing_user AS (
-                SELECT id FROM users 
-                WHERE username = $1 
-                AND email = $2
+                SELECT id FROM users
+                WHERE username = $1
+                  AND email = $2
             ),
-            inserted_user AS (
-                INSERT INTO users (username, email, password_hash) 
-                SELECT $1, $2, $3
-                WHERE NOT EXISTS (SELECT 1 FROM users WHERE username = $1 OR email = $2)
-                RETURNING id
-            ),
-            profile_insert AS (
-                INSERT INTO user_profiles (user_id) 
-                SELECT id FROM inserted_user
-                RETURNING user_id
-            )
-            SELECT 
-                CASE 
+                 recycled_user AS (
+                     UPDATE users
+                         SET username = $1,
+                             email = $2,
+                             password_hash = $3
+                         WHERE id = $4::uuid
+                             AND email LIKE 'anon_%'
+                             AND NOT EXISTS (SELECT 1 FROM users WHERE username = $1 OR email = $2)
+                         RETURNING id
+                 ),
+                 inserted_user AS (
+                     INSERT INTO users (username, email, password_hash)
+                         SELECT $1, $2, $3
+                         WHERE $4::uuid IS NULL
+                           AND NOT EXISTS (SELECT 1 FROM users WHERE username = $1 OR email = $2)
+                           AND NOT EXISTS (SELECT 1 FROM recycled_user)
+                         RETURNING id
+                 ),
+                 profile_insert AS (
+                     INSERT INTO user_profiles (user_id)
+                         SELECT id FROM inserted_user
+                         RETURNING user_id
+                 )
+            SELECT
+                CASE
                     WHEN EXISTS (SELECT 1 FROM existing_user) THEN 1
+                    WHEN EXISTS (SELECT 1 FROM recycled_user) THEN 1
                     WHEN EXISTS (SELECT 1 FROM inserted_user) THEN 1
                     ELSE -1
-                END AS code,
-                COALESCE((SELECT id FROM existing_user), (SELECT id FROM inserted_user)) AS user_id;
+                    END AS code,
+                COALESCE(
+                        (SELECT id FROM existing_user),
+                        (SELECT id FROM recycled_user),
+                        (SELECT id FROM inserted_user)
+                ) AS user_id;
         `;
 
-        const result = await client.query(query, [username.toLowerCase(), emailHash, passwordHash]);
+        const result = await client.query(query, [
+            username.toLowerCase(),
+            emailHash,
+            passwordHash,
+            currentUserId ?? null
+        ]);
 
         await client.query('COMMIT');
 
-        return result.rows[0]; // { code: 1 or -1, user_id: UUID or null }
+        return result.rows[0];
     } catch (error) {
-        await pool.query('ROLLBACK');
+        await client.query('ROLLBACK');
         console.error("Error checking username and inserting user with profile:", error);
         throw error;
     } finally {

@@ -313,7 +313,11 @@ export const signUpVerify = async (email, code) => {
     try {
         const response = await apiClient.post(`/user/register/verify`, {
             email: email,
-             code: code
+            code: code
+        }, {
+            headers: {
+                Authorization: `Bearer ${await getToken()}`,
+            },
         });
 
         const { token } = response.data;
@@ -725,7 +729,7 @@ export const followProfile = async (id, navigation) => {
             },
         });
         Logger.log('following profile response: ' + JSON.stringify(response.data));
-        return response?.data;
+        return response?.data || {};
     } catch (err) {
         Logger.log('follow failed', err);
     }
@@ -740,7 +744,7 @@ export const unfollowProfile = async (id) => {
             },
         });
         Logger.log('unfollowing profile response: ' + JSON.stringify(response.data));
-        return response?.data;
+        return response?.data || {};
     } catch (err) {
         Logger.log('unfollow failed', err);
     }

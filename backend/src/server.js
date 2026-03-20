@@ -4,6 +4,7 @@ const { v4: uuidv4 } = require("uuid");
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const authMiddleware = require('./middleware/authMiddleware');
+const authOptionalMiddleware = require('./middleware/authOptionalMiddleware');
 const signupAuthMiddleware = require('./middleware/signupAuthMiddleware');
 const {SECRET_KEY} = require("./constants");
 const {pool} = require("./db/dal/pool");
@@ -83,8 +84,8 @@ function generateToken({id}) {
     return jwt.sign({ id }, SECRET_KEY);//let's make it non-expirale for convenience
 }
 
-function generateSignUpToken({emailHash}) {
-    return jwt.sign({ email: emailHash }, SECRET_KEY);//let's make it non-expirale for convenience
+function generateSignUpToken({emailHash, id}) {
+    return jwt.sign({ email: emailHash, id }, SECRET_KEY);//let's make it non-expirale for convenience
 }
 
 if (isDebug) {
@@ -293,7 +294,7 @@ app.put("/users/email/change", authMiddleware, async (req, res, next) => {
     }
 });
 
-app.post("/user/register/verify", async (req, res, next) => {
+app.post("/user/register/verify", authOptionalMiddleware, async (req, res, next) => {
     try {
         const { email, code } = req.body;
 
@@ -306,7 +307,7 @@ app.post("/user/register/verify", async (req, res, next) => {
             case 0:
                 return res.status(404).json({ error: "invalid code" });
             case 1:
-                return res.json({ message: "email confirmed", token: (await generateSignUpToken({emailHash})) });
+                return res.json({ message: "email confirmed", token: (await generateSignUpToken({ emailHash, id: req.user?.id })) });
             case 2:
                 return res.status(410).json({ error: "code expired" });
             case -1:
@@ -392,7 +393,12 @@ app.post("/profile/register", signupAuthMiddleware,async (req, res, next) => {
 
         const passwordHash = await bcrypt.hash(password, 10);
 
-        const { code, user_id } = await checkAndInsertUserWithProfile(username, req.user.email, passwordHash);
+        const { code, user_id } = await checkAndInsertUserWithProfile({
+            username,
+            emailHash: req.user.email,
+            currentUserId: req.user.id,
+            passwordHash
+        });
 
         if (code === -1 || !user_id) {
             return res.status(409).json({ error: "Username or email already exists" });
