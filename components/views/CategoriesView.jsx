@@ -6,7 +6,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import AwesomeButton, { Color } from "../customComponents/AwesomeButton";
 import { AwesomeModal } from "../customComponents/AwesomeModal";
 import {globalEventEmitter, Loader, Logger} from "../../shared/common";
-import {setUserCategories} from "../../shared/api/apiClient"; // Assuming path is correct
+import {setUserCategories} from "../../shared/api/apiClient";
+
 
 const categoryList = [
     'social life', 'health', 'entertainment', 'food', 'lifestyle',
@@ -62,8 +63,9 @@ const CategoriesView = ({ route }) => {
 
             loader.load([new Promise(resolve => resolve()).then(async () => {
                 await setUserCategories(selectedCategoryIds);
-            })]).then(() => {
+            })]).then(async () => {
                 Logger.log("Proceeding with:", selectedCategories);
+
                 globalEventEmitter.emit('signIn', {});
             });
         }

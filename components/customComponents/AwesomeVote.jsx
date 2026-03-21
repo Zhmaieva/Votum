@@ -15,6 +15,7 @@ import {globalEventEmitter, Logger, onShare} from "../../shared/common";
 import AwesomeLikeButton from "./AwesomeLikeButton";
 import { AwesomeModal } from './AwesomeModal'
 import {REPORT_TYPE, reportActivity, voteOnPoll} from "../../shared/api/apiClient";
+import {Analytics} from "../../shared/analyticsService";
 
 const formatFollowers = (num) => {
 
@@ -165,6 +166,8 @@ const AwesomeVote = ({
         } else {
             Logger.error('Vote failed:', result.error);
         }
+
+        await Analytics.track('poll_first_vote');
 
         globalEventEmitter.emit('pollVoted', {pollCreator: createdBy});
         globalEventEmitter.emit('vote', { pollId: id, options: newOptions, optionId, cardId: voteCardId});

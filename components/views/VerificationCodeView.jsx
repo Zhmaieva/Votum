@@ -13,6 +13,7 @@ import {signUpStart, signUpVerify, forgotPassword, emailVerifyCheck} from '../..
 import { getDataService } from '../../shared/common';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import {Analytics} from "../../shared/analyticsService";
 
 export const VERIFICATION_FLOW_TYPE = {
     REGISTRATION: 'REGISTRATION',
@@ -36,6 +37,9 @@ export default function VerificationCodeView({route}) {
 
     useFocusEffect(React.useCallback(() => {
         inputRefs.current[0]?.focus();
+        if (flowType === VERIFICATION_FLOW_TYPE.REGISTRATION) {
+            Analytics.track('signup_code_request').then().catch();
+        }
     }, []));
 
     const handlePaste = async (index, val) => {
@@ -98,6 +102,7 @@ export default function VerificationCodeView({route}) {
 
         if (flowType === VERIFICATION_FLOW_TYPE.REGISTRATION) {
             const response = await signUpVerify(email, code);
+            await Analytics.track('signup_code_verified');
 
             if (response.success) {
                 navigation.navigate('Username');

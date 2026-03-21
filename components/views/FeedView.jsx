@@ -12,6 +12,7 @@ import {
     globalEventEmitter, Loader, Logger,
 } from "../../shared/common";
 import * as Linking from 'expo-linking';
+import {Analytics} from "../../shared/analyticsService";
 
 const FeedView = ({ route }) => {
     const [selectedOption, setSelectedOption] = useState("my feed");
@@ -41,8 +42,11 @@ const FeedView = ({ route }) => {
                 const { path } = Linking.parse(url);
                 const parts = path?.split('/') ?? [];
                 loadAll(parts[parts.length - 1]);
-            }).catch(() => {
+            }).catch(async () => {
                 loadAll();
+
+                await Analytics.track('feed_viewed');
+                await Analytics.trackRegistration();
             });
         } catch {
             loadAll();

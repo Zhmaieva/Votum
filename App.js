@@ -28,6 +28,7 @@ Notifications.setNotificationHandler({
 
 import { CommonActions } from "@react-navigation/native";
 import * as Updates from "expo-updates";
+import {Analytics} from "./shared/analyticsService";
 
 export function goToFollowersWithBackToEditProfile(navigationRef, force = false) {
     // if (!navigationRef.isReady() && !force) {
@@ -82,6 +83,10 @@ export default function App() {
         setTimeout(() => {
             setAppReady(true);
         }, 1000);
+    }, []);
+
+    useEffect(() => {
+        Analytics.init();
     }, []);
 
     useEffect(() => {

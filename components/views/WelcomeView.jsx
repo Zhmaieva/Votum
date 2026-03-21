@@ -5,11 +5,14 @@ import AwesomeButton, { Color } from "../customComponents/AwesomeButton";
 import {getDataService} from "../../shared/common";
 import logoVotum from '../../assets/images/logoVotum.png';
 import {useFocusEffect} from "@react-navigation/native";
+import {Analytics} from "../../shared/analyticsService";
 
 export default function WelcomeView(callback, deps) {
 
     useFocusEffect(React.useCallback(() => {
         getDataService().setUser(null);
+
+        Analytics.track('onboarding_started').then().catch();
     }, deps));
 
     return (

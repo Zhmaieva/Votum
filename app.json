@@ -76,7 +76,21 @@
           }
         }
       ],
-      "expo-image"
+      "expo-image",
+      "expo-tracking-transparency",
+      [
+        "react-native-fbsdk-next",
+        {
+          "appID": "2686692378397927",
+          "clientToken": "10e872bf0dd20be662562a9dc1fcb050",
+          "displayName": "Votum",
+          "scheme": "fb2686692378397927",
+          "autoLogAppEventsEnabled": true,
+          "isAutoInitEnabled": true,
+          "advertiserIDCollectionEnabled": true,
+          "iosUserTrackingPermission": "We use this to give you better app experience."
+        }
+      ]
     ]
   }
 }

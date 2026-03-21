@@ -2,23 +2,17 @@ import React, {useState, useCallback, useEffect} from 'react';
 import {
     View,
     Text,
-    TouchableOpacity,
     StyleSheet,
-    TouchableWithoutFeedback,
-    Modal,
     ScrollView,
     SafeAreaView, Pressable
 } from 'react-native';
 import { Colors, Fonts } from '../../utils/colorUtils';
 import AwesomeButton, {Color} from '../customComponents/AwesomeButton';
-import AwesomeEditButton from "../customComponents/AwesomeEditButton";
 import {deleteUserProfile, fetchMyProfile, signOut} from "../../shared/api/apiClient";
 import {getDataService, globalEventEmitter} from "../../shared/common";
 import {useFocusEffect} from "@react-navigation/native";
 import AwesomeProfilePhoto from "../customComponents/AwesomeProfilePhoto";
-import AwesomeCategory from "../customComponents/AwesomeCategory";
 import {AwesomeModal} from "../customComponents/AwesomeModal";
-import AwesomePollPublishingLoader from "../customComponents/AwesomePollPublishingLoader";
 import { useNavigation } from "@react-navigation/native";
 import { VERIFICATION_FLOW_TYPE } from "../views/VerificationCodeView";
 

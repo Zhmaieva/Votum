@@ -20,6 +20,7 @@ import {getDataService, globalEventEmitter, Logger} from '../../shared/common';
 import AwesomeUserHeaderPreview from "../customComponents/AwesomeUserHeaderPreview";
 import AwesomeLoadingHeader from "../customComponents/AwesomeLoadingHeader";
 import { SafeAreaView } from 'react-native-safe-area-context';
+import {Analytics} from "../../shared/analyticsService";
 
 const PreviewPollView = () => {
     const route = useRoute();
@@ -62,6 +63,8 @@ const PreviewPollView = () => {
                 options.map(o => o.text),
                 selectedDuration
             );
+
+            await Analytics.track('poll_first_publish');
 
             navigation.navigate('Interm Page', {
                 userId: user?.userId,
