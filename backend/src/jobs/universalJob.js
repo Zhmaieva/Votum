@@ -9,6 +9,8 @@ const {sendPendingNotifications} = require("../services/notificationService");
 const run_interval = 1000;
 const run_interval_bot = 30000;
 
+const sweep_batch_size = 1000;
+
 let is_processing = false;
 let is_processing_bot = false;
 
