@@ -1,9 +1,14 @@
 const {pool} = require("./pool");
 const {customAlphabet} = require("nanoid");
 const {EVENT_NAMES} = require("../../constants");
+const OpenAI = require("openai");
 
 const alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const customNanoid = customAlphabet(alphabet, 6); // 6-char all caps
+
+const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY || "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",
+});
 
 /**
  * Helper function to fetch poll answer options and attach them to their corresponding polls.
@@ -1233,6 +1238,125 @@ async function postNextScheduledPoll(createdBy, duration = "30 days") {
     return { pollId, scheduledId: scheduled.id };
 }
 
+// ---- generated polls DAL ----
+
+const GENERATED_POLL_TOPICS = [
+    "controversial social poll",
+    "movie question about an actress",
+    "opposite sex preferences, appearance, behavior, or dating",
+    "neutral political public-opinion poll",
+    "videogames poll",
+    "hygiene poll",
+    "food poll",
+    "nationality or cultural features poll",
+    "a stupid question",
+    "a joking question",
+    "testament or Bible-related question",
+    "hypothetical would-you question with yes/no options",
+];
+
+function pickRandom(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function trimText(value, max) {
+    return String(value || "").trim().slice(0, max);
+}
+
+function normalizeOptions(options) {
+    const seen = new Set();
+
+    return (Array.isArray(options) ? options : [])
+        .map((o) => trimText(o, 40))
+        .filter(Boolean)
+        .filter((o) => {
+            const key = o.toLowerCase();
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+        })
+        .slice(0, 4);
+}
+
+async function generateRandomPollOpenAI() {
+    const topic = pickRandom(GENERATED_POLL_TOPICS);
+
+    const systemPrompt = `
+You generate short viral poll content for a social polling app.
+
+Return ONLY JSON.
+
+Schema:
+{
+  "question": "max 50 characters",
+  "options": ["1 to 4 options, each max 40 characters"]
+}
+
+Rules:
+- The poll should match the selected topic.
+- Question max length: 50 characters.
+- Each option max length: 40 characters.
+- Prefer 2 to 4 options. Minimum are 2 and maximum are 4. Never exceed these boundaries
+- Slang is allowed.
+- Small grammar mistakes are allowed sometimes.
+- Keep it casual and native internet-style.
+`.trim();
+
+    const userPrompt = `
+Selected topic:
+${topic}
+`.trim();
+
+    const resp = await openai.responses.create({
+        model: "gpt-4.1-mini",
+        temperature: 1.1,
+        text: { format: { type: "json_object" } },
+        input: [
+            { role: "system", content: [{ type: "input_text", text: systemPrompt }] },
+            { role: "user", content: [{ type: "input_text", text: userPrompt }] },
+        ],
+    });
+
+    const parsed = JSON.parse(resp.output_text || "{}");
+
+    const question = trimText(parsed.question, 50);
+    let options = normalizeOptions(parsed.options);
+
+    // Your createPoll currently needs at least 2 options.
+    if (!question || options.length < 2) {
+        return {
+            topic,
+            question: "Would you try this?",
+            options: ["Yes", "No"],
+        };
+    }
+
+    return { topic, question, options };
+}
+
+/**
+ * Generates a random poll with OpenAI and posts it as a real poll.
+ *
+ * Returns: { pollId, topic, question, options }
+ */
+async function postNextGeneratedPoll(createdBy, duration = "30 days") {
+    const generated = await generateRandomPollOpenAI();
+
+    const { pollId } = await createPoll(
+        createdBy,
+        generated.question,
+        generated.options,
+        duration
+    );
+
+    return {
+        pollId,
+        topic: generated.topic,
+        question: generated.question,
+        options: generated.options,
+    };
+}
+
 module.exports = {
     createPoll,
     deletePoll,
@@ -1243,8 +1367,8 @@ module.exports = {
     getPollById,
     getPollOptionResults,
     likePoll,
-    popNextScheduledPoll,
     postNextScheduledPoll,
+    postNextGeneratedPoll,
     recalculatePollsScore,
     SEARCH_FLAGS,
     searchPolls,

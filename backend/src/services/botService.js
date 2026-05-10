@@ -5,7 +5,7 @@ const {
     likePoll,
     viewPoll,
     sharePoll,
-    postNextScheduledPoll, // <-- new
+    postNextGeneratedPoll,
 } = require("../db/dal/pollQueries");
 
 const ACTIONS = {
@@ -34,15 +34,15 @@ const generateActivity = async () => {
     const action = pickRandomAction();
 
     if (action === ACTIONS.POST) {
-        if (!chance(1 / 30)) return;
+        // if (!chance(1 / 10)) return;
 
         const userId = await getRandomUserId("@votum.com");
         if (!userId) return;
 
-        const result = await postNextScheduledPoll(userId, "30 days");
+        const result = await postNextGeneratedPoll(userId, "30 days");
         if (!result) return;
 
-        console.log(`${userId} posted scheduled poll -> ${result.pollId} (scheduled ${result.scheduledId})`);
+        console.log(`${userId} posted scheduled poll -> ${result.pollId} (question: ${result.question})`);
         return;
     }
 
