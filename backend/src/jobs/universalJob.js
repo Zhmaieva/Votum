@@ -81,13 +81,13 @@ setInterval(async () => {
         console.error(e);
     }
 }, run_interval);
-
-setInterval(async () => {
-    try {
-        await botJob();
-    } catch (e) {
-        console.error(e);
-    }
-}, run_interval_bot);
+//
+// setInterval(async () => {
+//     try {
+//         await botJob();
+//     } catch (e) {
+//         console.error(e);
+//     }
+// }, run_interval_bot);
 
 console.info('Universal job is running...');
