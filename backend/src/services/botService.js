@@ -33,18 +33,18 @@ const chance = (p) => Math.random() < p;
 const generateActivity = async () => {
     const action = pickRandomAction();
 
-    if (action === ACTIONS.POST) {
-        // if (!chance(1 / 10)) return;
-
-        const userId = await getRandomUserId("@votum.com");
-        if (!userId) return;
-
-        const result = await postNextGeneratedPoll(userId, "30 days");
-        if (!result) return;
-
-        console.log(`${userId} posted scheduled poll -> ${result.pollId} (question: ${result.question})`);
-        return;
-    }
+    // if (action === ACTIONS.POST) {
+    //     // if (!chance(1 / 10)) return;
+    //
+    //     const userId = await getRandomUserId("@votum.com");
+    //     if (!userId) return;
+    //
+    //     const result = await postNextGeneratedPoll(userId, "30 days");
+    //     if (!result) return;
+    //
+    //     console.log(`${userId} posted scheduled poll -> ${result.pollId} (question: ${result.question})`);
+    //     return;
+    // }
 
     // 2) For all other actions: keep your old skip logic (100% chance to do activity)
     // if (Math.random() > 0.75) return;
